@@ -90,6 +90,18 @@ Do not create another version of a user, provider, product, service, conversatio
 
 For example, product detail pages, search results, provider dashboards, messaging, and reviews should all use the same listing and provider identifiers. This is important so the different parts of the application connect correctly later.
 
+## Database schema
+
+The canonical database contract is `backend/docs/DATABASE_SCHEMA.md`.
+
+Backend models must follow this document. Do not independently redesign a model, relationship, field, or ownership rule without updating the schema contract and discussing the impact with the team.
+
+Any database schema change must update `DATABASE_SCHEMA.md`. If the change can affect existing data, the pull request must include a data-impact assessment and a migration plan where required.
+
+Do not drop databases, collections, or existing records to resolve schema mismatches. Existing data must be preserved unless an explicitly approved migration requires a controlled change.
+
+Database models should contain schema structure and basic validation. Business logic belongs in service files.
+
 ## API consistency
 
 All backend features must follow the API response, validation, authentication, and error-handling conventions already established in the project.
