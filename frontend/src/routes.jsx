@@ -2,6 +2,13 @@
 // Edited by: Raphael Daveal
 
 import { createBrowserRouter } from "react-router-dom";
+import SellerSignupPageOne from "./pages/SellerSignupPage1";
+import SellerSignupPageTwo from "./pages/SellerSignupPage2";
+import SellerSignupPageThree from "./pages/SellerSignupPage3";
+import SellerSignupPageFour from "./pages/SellerSignupPage4";
+import SellerSignupPageFive from "./pages/SellerSignupPage5";
+import SellerSignupPageSix from "./pages/SellerSignupPage6";
+import SellerSignupPageSeven from "./pages/SellerSignupPage7";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -34,7 +41,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <Placeholder name="Register" />,
+    element: <SellerSignupPageOne />,
+  },
+  {
+    path: "/register/page2",
+    element: <SellerSignupPageTwo />,
+  },
+  {
+    path: "/register/page3",
+    element: <SellerSignupPageThree />,
+  },
+  {
+    path: "/register/page4",
+    element: <SellerSignupPageFour />,
+  },
+  {
+    path: "/register/page5",
+    element: <SellerSignupPageFive />,
+  },
+  {
+    path: "/register/page6",
+    element: <SellerSignupPageSix />,
+  },
+  {
+    path: "/register/page7",
+    element: <SellerSignupPageSeven />,
   },
   {
     path: "/products/:id",
