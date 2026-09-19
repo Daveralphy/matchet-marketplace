@@ -417,7 +417,7 @@ export default function Header({
                 Sign in
               </Link>
               <Link
-                to="/register"
+                to="/create-account"
                 onClick={closeOverlays}
                 className="hidden h-11 items-center rounded-lg bg-[#07983f] px-5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-[#068936] sm:flex"
               >
