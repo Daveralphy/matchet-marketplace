@@ -189,14 +189,14 @@ export default function Header({
           <Logo />
         </Link>
 
-        <nav className="hidden min-w-0 items-center justify-start gap-3 pl-7 min-[1160px]:flex min-[1160px]:gap-5" aria-label="Primary navigation">
+        <nav className="hidden min-w-0 items-center justify-start gap-3 pl-7 min-[1160px]:flex min-[1160px]:gap-[clamp(0.75rem,1.4vw,1.25rem)]" aria-label="Primary navigation">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               onClick={closeOverlays}
               className={[
-                "relative whitespace-nowrap py-6 text-[14px] font-medium text-[#24305f] transition-colors",
+                "relative whitespace-nowrap py-6 text-[clamp(12px,1.05vw,14px)] font-medium text-[#24305f] transition-colors",
                 isActive(item.path) ? "text-[#07983f]" : "hover:text-[#07983f]",
               ].join(" ")}
             >
@@ -233,7 +233,7 @@ export default function Header({
                   setProfileOpen(false);
                 }}
                 className={[
-                  "flex h-11 items-center gap-2 rounded-lg border px-3 text-[13px] font-medium transition-colors",
+                  "flex h-11 max-w-[155px] items-center gap-2 rounded-lg border px-2.5 text-[clamp(11px,0.9vw,13px)] font-medium transition-colors",
                   locationOpen
                     ? "border-[#07983f] text-[#24305f]"
                     : "border-slate-200 text-[#24305f] hover:border-slate-300",
