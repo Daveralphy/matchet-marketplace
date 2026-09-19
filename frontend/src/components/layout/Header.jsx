@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import logo from "../../assets/logo/matchet_logoname.png";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
@@ -121,7 +122,7 @@ function Icon({ name, size = 22, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function Logo({ src = "/src/assets/logo/matchet_logo_var.jpeg" }) {
+function Logo({ src = logo }) {
   const [failed, setFailed] = useState(false);
 
   if (!failed) {
