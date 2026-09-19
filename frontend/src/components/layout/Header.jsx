@@ -137,7 +137,7 @@ function Logo({ src = logo }) {
       <img
         src={src}
         alt="Matchet"
-        className="h-10 w-auto object-contain"
+        className="h-9 w-auto object-contain"
         onError={() => setFailed(true)}
       />
     );
@@ -202,26 +202,14 @@ export default function Header({
             >
               {item.label}
               {isActive(item.path) && (
-                <span className="absolute inset-x-0 -bottom-[1px] h-[2px] rounded-full bg-[#07983f]" />
+                <span className="absolute inset-x-0 -bottom-[-1px] h-[2px] rounded-full bg-[#07983f]" />
               )}
             </Link>
           ))}
         </nav>
 
         <div className="flex shrink-0 items-center gap-2 min-[1160px]:gap-2.5">
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen((open) => !open);
-              setLocationOpen(false);
-              setProfileOpen(false);
-            }}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] min-[1160px]:hidden"
-            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={mobileMenuOpen}
-          >
-            <Icon name={mobileMenuOpen ? "x" : "menu"} size={23} />
-          </button>
+
 
 
           {!searchOpen && (
@@ -282,6 +270,20 @@ export default function Header({
               )}
             </div>
           )}
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen((open) => !open);
+              setLocationOpen(false);
+              setProfileOpen(false);
+            }}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] min-[1160px]:hidden"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            <Icon name={mobileMenuOpen ? "x" : "menu"} size={23} />
+          </button>
 
           {searchOpen ? (
             <div className="hidden h-11 w-[300px] items-center gap-2 rounded-lg border border-slate-200 px-3 md:flex lg:w-[310px]">
@@ -455,7 +457,11 @@ export default function Header({
         {mobileMenuOpen && (
           <div className="absolute left-4 right-4 top-[calc(100%-4px)] rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_35px_rgba(16,24,63,0.13)] min-[1160px]:hidden">
             <nav className="space-y-1" aria-label="Mobile navigation">
-              {NAV_ITEMS.map((item) => (
+              {[
+                ...NAV_ITEMS,
+                { label: "Sign in", path: "/login" },
+                { label: "Create account", path: "/create-account" },
+              ].map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
