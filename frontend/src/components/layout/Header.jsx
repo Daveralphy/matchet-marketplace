@@ -170,7 +170,7 @@ export default function Header({
 
   return (
     <header className="relative z-50 w-full px-4 py-4 sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[68px] w-full max-w-[1180px] items-center gap-5 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] lg:px-6">
+      <div className="mx-auto flex min-h-[68px] w-full max-w-[1440px] items-center gap-4 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] xl:gap-5 lg:px-6">
         <Link
           to="/"
           aria-label="Matchet home"
@@ -180,7 +180,7 @@ export default function Header({
           <Logo />
         </Link>
 
-        <nav className="hidden min-w-0 items-center gap-7 lg:flex" aria-label="Primary navigation">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 lg:flex xl:gap-6" aria-label="Primary navigation">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.path}
@@ -199,7 +199,7 @@ export default function Header({
           ))}
         </nav>
 
-        <div className="ml-auto flex min-w-0 items-center gap-3">
+        <div className="ml-2 flex shrink-0 items-center gap-2.5 xl:gap-3">
           {!searchOpen && (
             <div className="relative hidden md:block">
               <button
