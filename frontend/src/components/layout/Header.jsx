@@ -319,6 +319,17 @@ export default function Header({
 
           {isAuthenticated ? (
             <>
+              <button
+                type="button"
+                aria-label="Notifications"
+                className="relative hidden text-[#071449] transition-colors hover:text-[#07983f] md:block"
+              >
+                <Icon name="bell" size={24} />
+                {unreadNotifications && (
+                  <span className="absolute -right-0.5 top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
+                )}
+              </button>
+              <div className="hidden h-8 w-px bg-slate-200 md:block" />
               <div className="hidden h-8 w-px bg-slate-200 md:block" />
 
               <button
