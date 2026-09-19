@@ -202,7 +202,7 @@ export default function Header({
             >
               {item.label}
               {isActive(item.path) && (
-                <span className="absolute inset-x-0 -bottom-[-1px] h-[2px] rounded-full bg-[#07983f]" />
+                <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-[#07983f]" />
               )}
             </Link>
           ))}
@@ -271,19 +271,7 @@ export default function Header({
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen((open) => !open);
-              setLocationOpen(false);
-              setProfileOpen(false);
-            }}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] min-[1160px]:hidden"
-            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={mobileMenuOpen}
-          >
-            <Icon name={mobileMenuOpen ? "x" : "menu"} size={23} />
-          </button>
+
 
           {searchOpen ? (
             <div className="hidden h-11 w-[300px] items-center gap-2 rounded-lg border border-slate-200 px-3 md:flex lg:w-[310px]">
@@ -343,6 +331,20 @@ export default function Header({
             )}
             {cartActive && <span className="absolute -bottom-3 left-0 right-0 mx-auto h-[2px] w-5 rounded-full bg-[#07983f]" />}
           </Link>
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen((open) => !open);
+              setLocationOpen(false);
+              setProfileOpen(false);
+            }}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] min-[1160px]:hidden"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            <Icon name={mobileMenuOpen ? "x" : "menu"} size={23} />
+          </button>
 
           {isAuthenticated ? (
             <>
