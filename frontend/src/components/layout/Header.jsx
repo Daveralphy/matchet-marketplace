@@ -212,105 +212,120 @@ export default function Header({
 
 
 
-          {!searchOpen && (
-            <div className="relative hidden md:block">
-              <button
-                type="button"
-                onClick={() => {
-                  setLocationOpen((open) => !open);
-                  setProfileOpen(false);
-                }}
-                className={[
-                  "flex h-11 max-w-[155px] items-center gap-2 rounded-lg border px-2.5 text-[clamp(11px,0.9vw,13px)] font-medium transition-colors",
-                  locationOpen
-                    ? "border-[#07983f] text-[#24305f]"
-                    : "border-slate-200 text-[#24305f] hover:border-slate-300",
-                ].join(" ")}
-                aria-expanded={locationOpen}
-              >
-                <Icon name="pin" size={19} />
-                <span>{selectedLocation}</span>
-                <Icon name={locationOpen ? "chevronUp" : "chevronDown"} size={16} />
-              </button>
+          <div className="hidden h-11 w-[310px] items-center md:flex">
+            {!searchOpen ? (
+              <>
+                <div className="relative w-[266px]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocationOpen((open) => !open);
+                      setProfileOpen(false);
+                    }}
+                    className={[
+                      "flex h-11 w-[266px] items-center gap-2 rounded-lg border px-2.5 text-[clamp(11px,0.9vw,13px)] font-medium transition-colors",
+                      locationOpen
+                        ? "border-[#07983f] text-[#24305f]"
+                        : "border-slate-200 text-[#24305f] hover:border-slate-300",
+                    ].join(" ")}
+                    aria-expanded={locationOpen}
+                  >
+                    <Icon name="pin" size={19} />
+                    <span className="min-w-0 flex-1 truncate text-left">{selectedLocation}</span>
+                    <Icon name={locationOpen ? "chevronUp" : "chevronDown"} size={16} />
+                  </button>
 
-              {locationOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] w-[246px] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.12)]">
-                  <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2">
-                    <Icon name="search" size={17} />
-                    <input
-                      type="text"
-                      placeholder="Search for a city or state..."
-                      className="w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
-                    />
-                  </div>
+                  {locationOpen && (
+                    <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-[246px] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.12)]">
+                      <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2">
+                        <Icon name="search" size={17} />
+                        <input
+                          type="text"
+                          placeholder="Search for a city or state..."
+                          className="w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
+                        />
+                      </div>
 
-                  {LOCATION_OPTIONS.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() => {
-                        setSelectedLocation(option);
-                        setLocationOpen(false);
-                      }}
-                      className={[
-                        "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] hover:bg-slate-50",
-                        option === selectedLocation ? "bg-[#effaf3]" : "",
-                      ].join(" ")}
-                    >
-                      <span className="flex items-center gap-2">
-                        <Icon name="pin" size={15} />
-                        {option}
-                      </span>
-                      {option === selectedLocation && (
-                        <span className="font-semibold text-[#07983f]">✓</span>
-                      )}
-                    </button>
-                  ))}
+                      {LOCATION_OPTIONS.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => {
+                            setSelectedLocation(option);
+                            setLocationOpen(false);
+                          }}
+                          className={[
+                            "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] hover:bg-slate-50",
+                            option === selectedLocation ? "bg-[#effaf3]" : "",
+                          ].join(" ")}
+                        >
+                          <span className="flex items-center gap-2">
+                            <Icon name="pin" size={15} />
+                            {option}
+                          </span>
+                          {option === selectedLocation && (
+                            <span className="font-semibold text-[#07983f]">✓</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          )}
 
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchOpen(true);
+                    setLocationOpen(false);
+                    setProfileOpen(false);
+                  }}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f]"
+                  aria-label="Open search"
+                >
+                  <Icon name="search" size={24} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchOpen(false);
+                    setSearchValue("");
+                    setLocationOpen(false);
+                  }}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f]"
+                  aria-label="Show location"
+                >
+                  <Icon name="pin" size={21} />
+                </button>
 
-
-          {searchOpen ? (
-            <div className="hidden h-11 w-[300px] items-center gap-2 rounded-lg border border-slate-200 px-3 md:flex lg:w-[310px]">
-              <Icon name="search" size={20} />
-              <input
-                autoFocus
-                type="search"
-                value={searchValue}
-                onChange={(event) => setSearchValue(event.target.value)}
-                placeholder="Search for products, services, or providers..."
-                className="min-w-0 flex-1 bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
-                aria-label="Search Matchet"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchValue("");
-                  setSearchOpen(false);
-                }}
-                className="text-[#24305f] hover:text-[#07983f]"
-                aria-label="Close search"
-              >
-                <Icon name="x" size={18} />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                setSearchOpen(true);
-                setLocationOpen(false);
-                setProfileOpen(false);
-              }}
-              className="hidden text-[#071449] hover:text-[#07983f] md:block"
-              aria-label="Open search"
-            >
-              <Icon name="search" size={24} />
-            </button>
-          )}
+                <div className="flex h-11 w-[266px] items-center gap-2 rounded-lg border border-slate-200 px-3">
+                  <Icon name="search" size={20} />
+                  <input
+                    autoFocus
+                    type="search"
+                    value={searchValue}
+                    onChange={(event) => setSearchValue(event.target.value)}
+                    placeholder="Search for products, services, or providers..."
+                    className="min-w-0 flex-1 bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
+                    aria-label="Search Matchet"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchValue("");
+                      setSearchOpen(false);
+                    }}
+                    className="shrink-0 text-[#24305f] hover:text-[#07983f]"
+                    aria-label="Close search"
+                  >
+                    <Icon name="x" size={18} />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
 
           <div className="hidden h-8 w-px bg-slate-200 md:block" />
 
