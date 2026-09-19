@@ -2,6 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { createBrowserRouter } from "react-router-dom";
+import Login from "./pages/Login";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -30,7 +31,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Placeholder name="Login" />,
+    element: <Login />,
   },
   {
     path: "/register",
