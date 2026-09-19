@@ -9,6 +9,7 @@ import SellerSignupPageFour from "./pages/SellerSignupPage4";
 import SellerSignupPageFive from "./pages/SellerSignupPage5";
 import SellerSignupPageSix from "./pages/SellerSignupPage6";
 import SellerSignupPageSeven from "./pages/SellerSignupPage7";
+import Login from "./pages/Login";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -37,7 +38,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Placeholder name="Login" />,
+    element: <Login />,
   },
   {
     path: "/register",
