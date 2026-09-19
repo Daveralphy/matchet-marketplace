@@ -65,6 +65,13 @@ function Icon({ name, size = 22, strokeWidth = 1.9 }) {
     ),
     chevronDown: <path d="m6 9 6 6 6-6" />,
     chevronUp: <path d="m6 15 6-6 6 6" />,
+    menu: (
+      <>
+        <path d="M4 7h16" />
+        <path d="M4 12h16" />
+        <path d="M4 17h16" />
+      </>
+    ),
     pin: (
       <>
         <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
@@ -156,6 +163,7 @@ export default function Header({
   const [locationOpen, setLocationOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
   const isActive = (path) =>
@@ -166,11 +174,12 @@ export default function Header({
   const closeOverlays = () => {
     setLocationOpen(false);
     setProfileOpen(false);
+    setMobileMenuOpen(false);
   };
 
   return (
     <header className="relative z-50 w-full px-4 py-4 sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[68px] w-full max-w-[1440px] items-center gap-4 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] xl:gap-5 lg:px-6">
+      <div className="mx-auto grid min-h-[68px] w-full max-w-[1180px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] lg:px-6">
         <Link
           to="/"
           aria-label="Matchet home"
@@ -180,7 +189,7 @@ export default function Header({
           <Logo />
         </Link>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 lg:flex xl:gap-6" aria-label="Primary navigation">
+        <nav className="hidden min-w-0 items-center justify-start gap-3 pl-7 min-[1160px]:flex min-[1160px]:gap-5" aria-label="Primary navigation">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.path}
@@ -199,7 +208,22 @@ export default function Header({
           ))}
         </nav>
 
-        <div className="ml-2 flex shrink-0 items-center gap-2.5 xl:gap-3">
+        <div className="flex shrink-0 items-center gap-2 min-[1160px]:gap-2.5">
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen((open) => !open);
+              setLocationOpen(false);
+              setProfileOpen(false);
+            }}
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] min-[1160px]:hidden"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            <Icon name={mobileMenuOpen ? "x" : "menu"} size={23} />
+          </button>
+
+
           {!searchOpen && (
             <div className="relative hidden md:block">
               <button
@@ -428,6 +452,26 @@ export default function Header({
           )}
         </div>
       </div>
+        {mobileMenuOpen && (
+          <div className="absolute left-4 right-4 top-[calc(100%-4px)] rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_35px_rgba(16,24,63,0.13)] min-[1160px]:hidden">
+            <nav className="space-y-1" aria-label="Mobile navigation">
+              {NAV_ITEMS.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={closeOverlays}
+                  className={[
+                    "flex items-center rounded-lg px-4 py-3 text-[14px] font-medium text-[#24305f]",
+                    isActive(item.path) ? "bg-[#effaf3] text-[#07983f]" : "hover:bg-slate-50",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
+
     </header>
   );
 }
