@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../../assets/logo/matchet_logofullbrand.png";
+import logo from "../../assets/logo/matchet_logonamedark.png";
 
 function SocialIcon({ type }) {
   const common = {
@@ -54,7 +54,7 @@ function FooterLogo() {
 
   if (failed) {
     return (
-      <span className="text-[31px] font-semibold tracking-[-0.06em] text-white">
+      <span className="text-[22px] font-semibold tracking-[-0.06em] text-white">
         matchet
       </span>
     );
@@ -64,7 +64,7 @@ function FooterLogo() {
     <img
       src={logo}
       alt="Matchet"
-      className="h-12 w-auto object-contain"
+      className="h-[34px] w-auto object-contain"
       onError={() => setFailed(true)}
     />
   );
@@ -283,7 +283,7 @@ export default function Footer({ isAuthenticated = false }) {
             </Link>
 
             <div className="mt-6">
-              <p className="text-[16px] font-semibold leading-5 text-white">
+              <p className="text-[14px] font-semibold leading-5 text-white">
                 Buy. Book. Hire. All in one place.
               </p>
 
