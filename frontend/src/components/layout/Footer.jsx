@@ -264,13 +264,13 @@ export default function Footer({ isAuthenticated = false }) {
   const columns = isAuthenticated ? loggedInColumns : loggedOutColumns;
 
   return (
-    <footer className="w-full px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1470px] overflow-hidden rounded-[12px] bg-[#061c2d] px-8 py-10 text-white shadow-sm sm:px-10 lg:px-10 lg:py-10">
+    <footer className="w-full px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
+      <div className="mx-auto max-w-[1470px] overflow-hidden rounded-[12px] bg-[#061c2d] px-5 py-7 text-white shadow-sm sm:px-8 sm:py-9 lg:px-10 lg:py-10">
         <div
           className={
             isAuthenticated
-              ? "grid gap-10 lg:grid-cols-[280px_1fr] lg:gap-10"
-              : "grid gap-10 lg:grid-cols-[280px_1fr_315px] lg:gap-10"
+              ? "grid gap-8 lg:grid-cols-[280px_1fr] lg:gap-10"
+              : "grid gap-8 lg:grid-cols-[280px_1fr_315px] lg:gap-10"
           }
         >
           <div className="lg:border-r lg:border-white/20 lg:pr-10">
@@ -282,12 +282,12 @@ export default function Footer({ isAuthenticated = false }) {
               <FooterLogo />
             </Link>
 
-            <div className="mt-6">
+            <div className="mt-5 lg:mt-6">
               <p className="text-[14px] font-semibold leading-5 text-white">
                 Buy. Book. Hire. All in one place.
               </p>
 
-              <p className="mt-2 max-w-[280px] text-[15px] leading-6 text-slate-300">
+              <p className="mt-2 max-w-[280px] text-[14px] leading-6 text-slate-300 sm:text-[15px]">
                 Matchet connects you with trusted products and service
                 providers around you.
               </p>
@@ -296,7 +296,7 @@ export default function Footer({ isAuthenticated = false }) {
             <SocialLinks />
           </div>
 
-          <div className="grid grid-cols-2 gap-x-8 gap-y-9 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-5 gap-y-8 sm:gap-x-8 sm:gap-y-9 sm:grid-cols-4">
             {columns.map((column) => (
               <FooterColumn
                 key={column.title}
