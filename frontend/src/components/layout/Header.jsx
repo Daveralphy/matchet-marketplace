@@ -1,15 +1,24 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/logo/matchet_logoname.png";
+import mobileLogo from "../../assets/logo/matchet_logo.png";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
   { label: "Explore", path: "/explore" },
   { label: "Services", path: "/services" },
   { label: "Products", path: "/products" },
+  { label: "For Providers", path: "/for-providers" },
+];
+
+const MOBILE_NAV_ITEMS = [
+  { label: "Home", path: "/" },
+  { label: "Explore", path: "/explore" },
+  { label: "Products", path: "/products" },
+  { label: "Services", path: "/services" },
   { label: "For Providers", path: "/for-providers" },
 ];
 
@@ -22,12 +31,42 @@ const LOCATION_OPTIONS = [
 ];
 
 const PROFILE_ITEMS = [
-  { label: "My Profile", description: "View and edit your profile", path: "/profile", icon: "user" },
-  { label: "My Orders", description: "Track and manage your orders", path: "/orders", icon: "box" },
-  { label: "My Bookings", description: "View your service bookings", path: "/bookings", icon: "calendar" },
-  { label: "Saved Items", description: "Products and services you saved", path: "/saved-items", icon: "heart" },
-  { label: "Account Settings", description: "Manage your account preferences", path: "/settings", icon: "settings" },
-  { label: "Help & Support", description: "Get help or contact support", path: "/help", icon: "help" },
+  {
+    label: "My Profile",
+    description: "View and edit your profile",
+    path: "/profile",
+    icon: "user",
+  },
+  {
+    label: "My Orders",
+    description: "Track and manage your orders",
+    path: "/orders",
+    icon: "box",
+  },
+  {
+    label: "My Bookings",
+    description: "View your service bookings",
+    path: "/bookings",
+    icon: "calendar",
+  },
+  {
+    label: "Saved Items",
+    description: "Products and services you saved",
+    path: "/saved-items",
+    icon: "heart",
+  },
+  {
+    label: "Account Settings",
+    description: "Manage your account preferences",
+    path: "/settings",
+    icon: "settings",
+  },
+  {
+    label: "Help & Support",
+    description: "Get help or contact support",
+    path: "/help",
+    icon: "help",
+  },
 ];
 
 function Icon({ name, size = 22, strokeWidth = 1.9 }) {
@@ -103,11 +142,13 @@ function Icon({ name, size = 22, strokeWidth = 1.9 }) {
         <path d="M8 3v4M16 3v4M4 10h16" />
       </>
     ),
-    heart: <path d="M20.8 8.8c0 5.2-8.8 10.2-8.8 10.2S3.2 14 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />,
+    heart: (
+      <path d="M20.8 8.8c0 5.2-8.8 10.2-8.8 10.2S3.2 14 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
+    ),
     settings: (
       <>
         <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.8 1.8 0 0 0 .3 2l.1.1-1.8 1.8-.1-.1a1.8 1.8 0 0 0-2-.3 1.8 1.8 0 0 0-1 1.7v.2h-2.5v-.2a1.8 1.8 0 0 0-1-1.7 1.8 1.8 0 0 0-2 .3l-.1.1-1.8-1.8.1-.1a1.8 1.8 0 0 0 .3-2 1.8 1.8 0 0 0-1.7-1H6v-2.5h.2a1.8 1.8 0 0 0 1.7-1 1.8 1.8 0 0 0-.3-2l-.1-.1 1.8-1.8.1.1a1.8 1.8 0 0 0 2 .3 1.8 1.8 0 0 0 1-1.7V4h2.5v.2a1.8 1.8 0 0 0 1 1.7 1.8 1.8 0 0 0 2-.3l.1-.1 1.8 1.8-.1.1a1.8 1.8 0 0 0-.3 2 1.8 1.8 0 0 0 1.7 1h.2v2.5h-.2a1.8 1.8 0 0 0-1.7 1Z" />
+        <path d="M19.4 15a1.8 1.8 0 0 0 .3 2l.1.1-1.8 1.8-.1-.1a1.8 1.8 0 0 0-2-.3 1.8 1.8 0 0 0-1 1.7v.2h-2.5v-.2a1.8 1.8 0 0 0-1-1.7 1.8 1.8 0 0 0-2-.3l-.1.1-1.8-1.8.1-.1a1.8 1.8 0 0 0 .3-2 1.8 1.8 0 0 0-1.7-1H6v-2.5h.2a1.8 1.8 0 0 0 1.7-1 1.8 1.8 0 0 0-.3-2l-.1-.1 1.8-1.8.1.1a1.8 1.8 0 0 0 2 .3 1.8 1.8 0 0 0 1-1.7V4h2.5v.2a1.8 1.8 0 0 0 1 1.7 1.8 1.8 0 0 0 2-.3l.1-.1 1.8 1.8-.1.1a1.8 1.8 0 0 0-.3 2 1.8 1.8 0 0 0 1.7 1h.2v2.5h-.2a1.8 1.8 0 0 0-1.7 1Z" />
       </>
     ),
     help: (
@@ -129,7 +170,7 @@ function Icon({ name, size = 22, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function Logo({ src = logo }) {
+function Logo({ src = logo, mobile = false }) {
   const [failed, setFailed] = useState(false);
 
   if (!failed) {
@@ -137,15 +178,25 @@ function Logo({ src = logo }) {
       <img
         src={src}
         alt="Matchet"
-        className="h-9 w-auto object-contain"
+        className={
+          mobile
+            ? "h-5 w-auto object-contain"
+            : "h-9 w-auto object-contain"
+        }
         onError={() => setFailed(true)}
       />
     );
   }
 
   return (
-    <span className="text-[25px] font-semibold tracking-[-0.06em] text-[#10183f]">
-      matchet
+    <span
+      className={
+        mobile
+          ? "text-[14px] font-semibold tracking-[-0.06em] text-[#10183f]"
+          : "text-[25px] font-semibold tracking-[-0.06em] text-[#10183f]"
+      }
+    >
+      {mobile ? "M" : "matchet"}
     </span>
   );
 }
@@ -159,6 +210,7 @@ export default function Header({
   initialLocation = "Lagos, Nigeria",
 }) {
   const location = useLocation();
+
   const [selectedLocation, setSelectedLocation] = useState(initialLocation);
   const [locationOpen, setLocationOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -166,8 +218,14 @@ export default function Header({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
+  const locationRef = useRef(null);
+  const profileRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+
   const isActive = (path) =>
-    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+    path === "/"
+      ? location.pathname === "/"
+      : location.pathname.startsWith(path);
 
   const cartActive = location.pathname === "/cart";
 
@@ -177,19 +235,65 @@ export default function Header({
     setMobileMenuOpen(false);
   };
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        locationOpen &&
+        locationRef.current &&
+        !locationRef.current.contains(event.target)
+      ) {
+        setLocationOpen(false);
+      }
+
+      if (
+        profileOpen &&
+        profileRef.current &&
+        !profileRef.current.contains(event.target)
+      ) {
+        setProfileOpen(false);
+      }
+
+      if (
+        mobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [locationOpen, profileOpen, mobileMenuOpen]);
+
   return (
     <header className="relative z-50 w-full px-4 py-4 sm:px-6 lg:px-8">
       <div className="mx-auto grid min-h-[68px] w-full max-w-[1180px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] lg:px-6">
         <Link
           to="/"
           aria-label="Matchet home"
-          className="flex shrink-0 items-center"
+          className="flex shrink-0 items-center min-[1160px]:hidden"
+          onClick={closeOverlays}
+        >
+          <Logo src={mobileLogo} mobile />
+        </Link>
+
+        <Link
+          to="/"
+          aria-label="Matchet home"
+          className="hidden shrink-0 items-center min-[1160px]:flex"
           onClick={closeOverlays}
         >
           <Logo />
         </Link>
 
-        <nav className="hidden min-w-0 items-center justify-start gap-3 pl-7 min-[1160px]:flex min-[1160px]:gap-[clamp(0.75rem,1.4vw,1.25rem)]" aria-label="Primary navigation">
+        <nav
+          className="hidden min-w-0 items-center justify-start gap-3 pl-7 min-[1160px]:flex min-[1160px]:gap-[clamp(0.75rem,1.4vw,1.25rem)]"
+          aria-label="Primary navigation"
+        >
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.path}
@@ -197,10 +301,13 @@ export default function Header({
               onClick={closeOverlays}
               className={[
                 "relative whitespace-nowrap py-6 text-[clamp(12px,1.05vw,14px)] font-medium text-[#24305f] transition-colors",
-                isActive(item.path) ? "text-[#07983f]" : "hover:text-[#07983f]",
+                isActive(item.path)
+                  ? "text-[#07983f]"
+                  : "hover:text-[#07983f]",
               ].join(" ")}
             >
               {item.label}
+
               {isActive(item.path) && (
                 <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-[#07983f]" />
               )}
@@ -208,37 +315,46 @@ export default function Header({
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 min-[1160px]:gap-2.5">
-
-
-
-          <div className="hidden h-11 w-[310px] items-center md:flex">
+        <div className="col-span-2 flex min-w-0 items-center gap-1.5 min-[1160px]:col-auto min-[1160px]:hidden">
+          <div className="flex min-w-0 flex-1 items-center">
             {!searchOpen ? (
               <>
-                <div className="relative w-[266px]">
+                <div
+                  ref={locationRef}
+                  className="relative min-w-0 flex-1"
+                >
                   <button
                     type="button"
                     onClick={() => {
                       setLocationOpen((open) => !open);
                       setProfileOpen(false);
+                      setMobileMenuOpen(false);
                     }}
                     className={[
-                      "flex h-11 w-[266px] items-center gap-2 rounded-lg border px-2.5 text-[clamp(11px,0.9vw,13px)] font-medium transition-colors",
+                      "flex h-10 w-full min-w-0 items-center gap-1.5 rounded-lg border px-2 text-[11px] font-medium transition-colors sm:h-11 sm:px-2.5 sm:text-[12px]",
                       locationOpen
                         ? "border-[#07983f] text-[#24305f]"
                         : "border-slate-200 text-[#24305f] hover:border-slate-300",
                     ].join(" ")}
                     aria-expanded={locationOpen}
                   >
-                    <Icon name="pin" size={19} />
-                    <span className="min-w-0 flex-1 truncate text-left">{selectedLocation}</span>
-                    <Icon name={locationOpen ? "chevronUp" : "chevronDown"} size={16} />
+                    <Icon name="pin" size={18} />
+
+                    <span className="min-w-0 flex-1 truncate text-left">
+                      {selectedLocation}
+                    </span>
+
+                    <Icon
+                      name={locationOpen ? "chevronUp" : "chevronDown"}
+                      size={15}
+                    />
                   </button>
 
                   {locationOpen && (
                     <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-[246px] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.12)]">
                       <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2">
                         <Icon name="search" size={17} />
+
                         <input
                           type="text"
                           placeholder="Search for a city or state..."
@@ -256,15 +372,20 @@ export default function Header({
                           }}
                           className={[
                             "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] hover:bg-slate-50",
-                            option === selectedLocation ? "bg-[#effaf3]" : "",
+                            option === selectedLocation
+                              ? "bg-[#effaf3]"
+                              : "",
                           ].join(" ")}
                         >
                           <span className="flex items-center gap-2">
                             <Icon name="pin" size={15} />
                             {option}
                           </span>
+
                           {option === selectedLocation && (
-                            <span className="font-semibold text-[#07983f]">✓</span>
+                            <span className="font-semibold text-[#07983f]">
+                              ✓
+                            </span>
                           )}
                         </button>
                       ))}
@@ -278,6 +399,197 @@ export default function Header({
                     setSearchOpen(true);
                     setLocationOpen(false);
                     setProfileOpen(false);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f] sm:h-11 sm:w-11"
+                  aria-label="Open search"
+                >
+                  <Icon name="search" size={23} />
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchOpen(false);
+                    setSearchValue("");
+                    setLocationOpen(false);
+                  }}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f] sm:h-11 sm:w-11"
+                  aria-label="Show location"
+                >
+                  <Icon name="pin" size={21} />
+                </button>
+
+                <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 px-2.5 sm:h-11 sm:px-3">
+                  <Icon name="search" size={19} />
+
+                  <input
+                    autoFocus
+                    type="search"
+                    value={searchValue}
+                    onChange={(event) => setSearchValue(event.target.value)}
+                    placeholder="Search..."
+                    className="min-w-0 flex-1 bg-transparent text-[11px] text-[#24305f] outline-none placeholder:text-slate-400 sm:text-[12px]"
+                    aria-label="Search Matchet"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSearchValue("");
+                      setSearchOpen(false);
+                    }}
+                    className="shrink-0 text-[#24305f] hover:text-[#07983f]"
+                    aria-label="Close search"
+                  >
+                    <Icon name="x" size={17} />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div ref={mobileMenuRef} className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen((open) => !open);
+                setLocationOpen(false);
+                setProfileOpen(false);
+              }}
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] sm:h-11 sm:w-11"
+              aria-label={
+                mobileMenuOpen
+                  ? "Close navigation menu"
+                  : "Open navigation menu"
+              }
+              aria-expanded={mobileMenuOpen}
+            >
+              <Icon name={mobileMenuOpen ? "x" : "menu"} size={23} />
+            </button>
+
+            {mobileMenuOpen && (
+              <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-max min-w-[185px] rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_35px_rgba(16,24,63,0.13)]">
+                <nav className="space-y-1" aria-label="Mobile navigation">
+                  {[
+                    ...MOBILE_NAV_ITEMS,
+                    ...(isAuthenticated
+                      ? []
+                      : [
+                          { label: "Sign in", path: "/login" },
+                          {
+                            label: "Create account",
+                            path: "/create-account",
+                          },
+                        ]),
+                  ].map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={closeOverlays}
+                      className={[
+                        "flex items-center whitespace-nowrap rounded-lg px-4 py-3 text-[14px] font-medium text-[#24305f]",
+                        isActive(item.path)
+                          ? "bg-[#effaf3] text-[#07983f]"
+                          : "hover:bg-slate-50",
+                      ].join(" ")}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="hidden shrink-0 items-center gap-2 min-[1160px]:flex min-[1160px]:gap-2.5">
+          <div className="hidden h-11 min-w-0 w-[199px] items-center min-[1160px]:flex">
+            {!searchOpen ? (
+              <>
+                <div
+                  ref={locationRef}
+                  className="relative min-w-0 flex-1 max-w-[155px]"
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocationOpen((open) => !open);
+                      setProfileOpen(false);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={[
+                      "flex h-11 w-full min-w-0 items-center gap-2 rounded-lg border px-2.5 text-[clamp(11px,0.9vw,13px)] font-medium transition-colors",
+                      locationOpen
+                        ? "border-[#07983f] text-[#24305f]"
+                        : "border-slate-200 text-[#24305f] hover:border-slate-300",
+                    ].join(" ")}
+                    aria-expanded={locationOpen}
+                  >
+                    <Icon name="pin" size={19} />
+
+                    <span className="min-w-0 flex-1 truncate text-left">
+                      {selectedLocation}
+                    </span>
+
+                    <Icon
+                      name={locationOpen ? "chevronUp" : "chevronDown"}
+                      size={16}
+                    />
+                  </button>
+
+                  {locationOpen && (
+                    <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-[246px] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.12)]">
+                      <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2">
+                        <Icon name="search" size={17} />
+
+                        <input
+                          type="text"
+                          placeholder="Search for a city or state..."
+                          className="w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
+                        />
+                      </div>
+
+                      {LOCATION_OPTIONS.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => {
+                            setSelectedLocation(option);
+                            setLocationOpen(false);
+                          }}
+                          className={[
+                            "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] hover:bg-slate-50",
+                            option === selectedLocation
+                              ? "bg-[#effaf3]"
+                              : "",
+                          ].join(" ")}
+                        >
+                          <span className="flex items-center gap-2">
+                            <Icon name="pin" size={15} />
+                            {option}
+                          </span>
+
+                          {option === selectedLocation && (
+                            <span className="font-semibold text-[#07983f]">
+                              ✓
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchOpen(true);
+                    setLocationOpen(false);
+                    setProfileOpen(false);
+                    setMobileMenuOpen(false);
                   }}
                   className="flex h-11 w-11 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f]"
                   aria-label="Open search"
@@ -300,17 +612,19 @@ export default function Header({
                   <Icon name="pin" size={21} />
                 </button>
 
-                <div className="flex h-11 w-[266px] items-center gap-2 rounded-lg border border-slate-200 px-3">
+                <div className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 px-3">
                   <Icon name="search" size={20} />
+
                   <input
                     autoFocus
                     type="search"
                     value={searchValue}
                     onChange={(event) => setSearchValue(event.target.value)}
-                    placeholder="Search for products, services, or providers..."
+                    placeholder="Search..."
                     className="min-w-0 flex-1 bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
                     aria-label="Search Matchet"
                   />
+
                   <button
                     type="button"
                     onClick={() => {
@@ -327,7 +641,7 @@ export default function Header({
             )}
           </div>
 
-          <div className="hidden h-8 w-px bg-slate-200 md:block" />
+          <div className="hidden h-8 w-px bg-slate-200 min-[1160px]:block" />
 
           <Link
             to="/cart"
@@ -339,69 +653,72 @@ export default function Header({
             aria-label="Cart"
           >
             <Icon name="cart" size={25} />
+
             {cartCount > 0 && (
               <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#07983f] px-1 text-[10px] font-semibold text-white">
                 {cartCount}
               </span>
             )}
-            {cartActive && <span className="absolute -bottom-3 left-0 right-0 mx-auto h-[2px] w-5 rounded-full bg-[#07983f]" />}
-          </Link>
 
-          <button
-            type="button"
-            onClick={() => {
-              setMobileMenuOpen((open) => !open);
-              setLocationOpen(false);
-              setProfileOpen(false);
-            }}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] min-[1160px]:hidden"
-            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={mobileMenuOpen}
-          >
-            <Icon name={mobileMenuOpen ? "x" : "menu"} size={23} />
-          </button>
+            {cartActive && (
+              <span className="absolute -bottom-3 left-0 right-0 mx-auto h-[2px] w-5 rounded-full bg-[#07983f]" />
+            )}
+          </Link>
 
           {isAuthenticated ? (
             <>
               <button
                 type="button"
                 aria-label="Notifications"
-                className="relative hidden text-[#071449] transition-colors hover:text-[#07983f] md:block"
+                className="relative hidden text-[#071449] transition-colors hover:text-[#07983f] min-[1160px]:block"
               >
                 <Icon name="bell" size={24} />
+
                 {unreadNotifications && (
                   <span className="absolute -right-0.5 top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
                 )}
               </button>
-              <div className="hidden h-8 w-px bg-slate-200 md:block" />
-              <div className="hidden h-8 w-px bg-slate-200 md:block" />
+
+              <div className="hidden h-8 w-px bg-slate-200 min-[1160px]:block" />
 
               <button
+                ref={profileRef}
                 type="button"
                 onClick={() => {
                   setProfileOpen((open) => !open);
                   setLocationOpen(false);
+                  setMobileMenuOpen(false);
                 }}
-                className="relative hidden items-center gap-2.5 rounded-lg py-1 pl-1 pr-2 md:flex"
+                className="relative hidden items-center gap-2.5 rounded-lg py-1 pl-1 pr-2 min-[1160px]:flex"
                 aria-expanded={profileOpen}
                 aria-label="Open account menu"
               >
                 <span className="relative flex h-10 w-10 overflow-hidden rounded-full bg-slate-100">
                   {avatarSrc ? (
-                    <img src={avatarSrc} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={avatarSrc}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <span className="flex h-full w-full items-center justify-center text-[#24305f]">
                       <Icon name="user" size={21} />
                     </span>
                   )}
                 </span>
+
                 {unreadNotifications && (
                   <span className="absolute left-[36px] top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
                 )}
+
                 <span className="max-w-[100px] truncate text-[13px] font-semibold text-[#24305f]">
                   {username}
                 </span>
-                <Icon name={profileOpen ? "chevronUp" : "chevronDown"} size={16} />
+
+                <Icon
+                  name={profileOpen ? "chevronUp" : "chevronDown"}
+                  size={16}
+                />
               </button>
 
               {profileOpen && (
@@ -409,7 +726,10 @@ export default function Header({
                   <div className="space-y-1">
                     {PROFILE_ITEMS.map((item, index) => (
                       <div key={item.path}>
-                        {index === 4 && <div className="my-2 h-px bg-slate-200" />}
+                        {index === 4 && (
+                          <div className="my-2 h-px bg-slate-200" />
+                        )}
+
                         <Link
                           to={item.path}
                           onClick={() => setProfileOpen(false)}
@@ -418,10 +738,12 @@ export default function Header({
                           <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[#071449]">
                             <Icon name={item.icon} size={23} />
                           </span>
+
                           <span className="min-w-0">
                             <span className="block text-[14px] font-medium text-[#071449]">
                               {item.label}
                             </span>
+
                             <span className="block text-[11px] text-slate-400">
                               {item.description}
                             </span>
@@ -440,8 +762,12 @@ export default function Header({
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center text-red-500">
                         <Icon name="logout" size={23} />
                       </span>
+
                       <span>
-                        <span className="block text-[14px] font-medium text-red-500">Log out</span>
+                        <span className="block text-[14px] font-medium text-red-500">
+                          Log out
+                        </span>
+
                         <span className="block text-[11px] text-slate-400">
                           Sign out of your account
                         </span>
@@ -456,14 +782,15 @@ export default function Header({
               <Link
                 to="/login"
                 onClick={closeOverlays}
-                className="hidden h-11 items-center rounded-lg border border-slate-200 px-5 text-[13px] font-medium text-[#071449] transition-colors hover:border-slate-300 hover:bg-slate-50 sm:flex"
+                className="hidden h-11 items-center rounded-lg border border-slate-200 px-5 text-[13px] font-medium text-[#071449] transition-colors hover:border-slate-300 hover:bg-slate-50 min-[1160px]:flex"
               >
                 Sign in
               </Link>
+
               <Link
                 to="/create-account"
                 onClick={closeOverlays}
-                className="hidden h-11 items-center rounded-lg bg-[#07983f] px-5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-[#068936] sm:flex"
+                className="hidden h-11 items-center rounded-lg bg-[#07983f] px-5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-[#068936] min-[1160px]:flex"
               >
                 Create account
               </Link>
@@ -471,30 +798,6 @@ export default function Header({
           )}
         </div>
       </div>
-        {mobileMenuOpen && (
-          <div className="absolute left-4 right-4 top-[calc(100%-4px)] rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_35px_rgba(16,24,63,0.13)] min-[1160px]:hidden">
-            <nav className="space-y-1" aria-label="Mobile navigation">
-              {[
-                ...NAV_ITEMS,
-                { label: "Sign in", path: "/login" },
-                { label: "Create account", path: "/create-account" },
-              ].map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={closeOverlays}
-                  className={[
-                    "flex items-center rounded-lg px-4 py-3 text-[14px] font-medium text-[#24305f]",
-                    isActive(item.path) ? "bg-[#effaf3] text-[#07983f]" : "hover:bg-slate-50",
-                  ].join(" ")}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        )}
-
     </header>
   );
 }
