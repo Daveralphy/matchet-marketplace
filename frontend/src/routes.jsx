@@ -1,7 +1,8 @@
 // Created by: Raphael Daveal
-// Edited by: Raphael Daveal
+// Edited by: Brima
 
 import { createBrowserRouter } from "react-router-dom";
+import SavedItems from "./pages/SavedItems";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
 import SellerSignupPageThree from "./pages/SellerSignupPage3";
@@ -88,6 +89,10 @@ const router = createBrowserRouter([
   {
     path: "/register/page7",
     element: <SellerSignupPageSeven />,
+  },
+  {
+    path: "/account/saved-items",
+    element: <SavedItems />,
   },
   {
     path: "/products/:id",
