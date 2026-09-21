@@ -342,6 +342,69 @@ Fields:
 
 Exactly one of `productId` and `serviceId` must be populated. Duplicate saves for the same User and target are prohibited.
 
+### 14.1 SavedItem API
+
+#### Get authenticated user's saved items
+
+**Endpoint:** `GET /api/saved-items`
+
+Returns the saved products and services belonging to the authenticated user.
+
+The backend must derive the user identity from the authenticated session/token and must not accept a client-supplied `userId`.
+
+**Query parameters:**
+
+- `itemType` - optional: `product` or `service`
+- `page` - optional page number, default `1`
+- `limit` - optional number of items per page
+
+**Success response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "items": [],
+    "pagination": {
+      "page": 1,
+      "limit": 12,
+      "totalItems": 0,
+      "totalPages": 0
+    }
+  }
+}
+```
+
+Each saved item should include the SavedItem information and the related Product or Service data required by the frontend to display the saved-item card.
+
+#### Remove a saved item
+
+**Endpoint:** `DELETE /api/saved-items/:id`
+
+Removes the specified saved item belonging to the authenticated user.
+
+The backend must verify that the saved item belongs to the authenticated user.
+
+**Success response:**
+
+```json
+{
+  "success": true,
+  "message": "Saved item removed successfully"
+}
+```
+
+#### SavedItem API errors
+
+The API should use the project's standard error response format.
+
+Possible errors include:
+
+- `401` - unauthenticated
+- `404` - saved item not found
+- `403` - saved item does not belong to the authenticated user
+- `500` - server error
+
 ## 15. Cart
 
 Represents the active shopping cart for a User.

@@ -1,7 +1,8 @@
 // Created by: Raphael Daveal
-// Edited by: Raphael Daveal
+// Edited by: Brima
 
 import { createBrowserRouter } from "react-router-dom";
+import SavedItems from "./pages/SavedItems";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Placeholder name="Register" />,
+  },
+  {
+    path: "/account/saved-items",
+    element: <SavedItems />,
   },
   {
     path: "/products/:id",
