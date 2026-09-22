@@ -42,51 +42,80 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
         <path d="m16 16 4.5 4.5" />
       </>
     ),
+
     pin: (
       <>
         <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
         <circle cx="12" cy="10" r="2.3" />
       </>
     ),
+
     chevronDown: <path d="m6 9 6 6 6-6" />,
+
     chevronUp: <path d="m6 15 6-6 6 6" />,
+
     home: (
       <>
         <path d="m3 10 9-7 9 7" />
         <path d="M5 9v11h14V9M9 20v-6h6v6" />
       </>
     ),
+
     tools: (
       <path d="m14.5 6.5 3-3a4 4 0 0 0-5.3 5.3L5 16a2.1 2.1 0 1 0 3 3l7.2-7.2a4 4 0 0 0 5.3-5.3l-3 3-3-3Z" />
     ),
+
     beauty: (
       <>
         <path d="M12 20c-4.5 0-7-3.2-7-7 0-3.4 2.1-6.1 5.1-7.2C11 4.9 12 3 12 3s1 1.9 1.9 2.8C16.9 6.9 19 9.6 19 13c0 3.8-2.5 7-7 7Z" />
         <path d="M8 13c1.3-1 2.7-1 4 0s2.7 1 4 0" />
       </>
     ),
+
     briefcase: (
       <>
         <rect x="3.5" y="7" width="17" height="13" rx="2" />
         <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3.5 11h17M10 11v2h4v-2" />
       </>
     ),
+
     calendar: (
       <>
         <rect x="4" y="5" width="16" height="15" rx="2" />
         <path d="M8 3v4M16 3v4M4 10h16" />
       </>
     ),
+
     more: (
       <>
-        <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="18" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <circle
+          cx="6"
+          cy="12"
+          r="1.5"
+          fill="currentColor"
+          stroke="none"
+        />
+        <circle
+          cx="12"
+          cy="12"
+          r="1.5"
+          fill="currentColor"
+          stroke="none"
+        />
+        <circle
+          cx="18"
+          cy="12"
+          r="1.5"
+          fill="currentColor"
+          stroke="none"
+        />
       </>
     ),
+
     shield: (
       <path d="M12 3 19 6v5c0 4.8-3 8.2-7 10-4-1.8-7-5.2-7-10V6l7-3Z" />
     ),
+
     users: (
       <>
         <circle cx="9" cy="8" r="3" />
@@ -118,7 +147,11 @@ function LocationSelect({
         aria-haspopup="listbox"
       >
         <Icon name="pin" size={18} />
-        <span className="min-w-0 flex-1 truncate">{selectedLocation}</span>
+
+        <span className="min-w-0 flex-1 truncate">
+          {selectedLocation}
+        </span>
+
         <Icon
           name={locationOpen ? "chevronUp" : "chevronDown"}
           size={15}
@@ -129,6 +162,7 @@ function LocationSelect({
         <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.14)] sm:left-auto sm:right-0 sm:w-[250px]">
           <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
             <Icon name="search" size={16} />
+
             <input
               type="text"
               placeholder="Search for a city or state..."
@@ -158,6 +192,7 @@ function LocationSelect({
                   <Icon name="pin" size={15} />
                   <span className="truncate">{option}</span>
                 </span>
+
                 {option === selectedLocation && (
                   <span className="ml-2 shrink-0 font-semibold text-[#07983f]">
                     ✓
@@ -183,6 +218,7 @@ function SearchBar({
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
       <div className="flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
         <Icon name="search" size={20} />
+
         <input
           type="search"
           placeholder="Search for a service, skill, or provider..."
@@ -239,6 +275,7 @@ function ServiceCategories() {
             >
               <Icon name={category.icon} size={20} />
             </span>
+
             <span className="max-w-full text-center leading-[13px]">
               {category.label}
             </span>
@@ -266,10 +303,12 @@ function ServiceCard({
         >
           <Icon name={icon} size={20} />
         </span>
+
         <div className="min-w-0">
           <p className="text-[11px] font-semibold leading-[15px] text-[#10183f] sm:text-[12px]">
             {title}
           </p>
+
           <p className="mt-0.5 text-[9px] leading-4 text-[#7b84a3] sm:text-[10px]">
             {description}
           </p>
@@ -291,7 +330,7 @@ function HeroVisual({ isAuthenticated }) {
       <img
         src={heroImage}
         alt=""
-        className="absolute left-[50%] top-1/2 h-[99%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain xl:h-[102%]"
+        className="absolute left-[55%] top-[48%] h-[99%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain xl:h-[90%]"
       />
 
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-[#f5fbf5] via-[#f5fbf5]/75 to-transparent" />
@@ -355,53 +394,6 @@ function HeroVisual({ isAuthenticated }) {
   );
 }
 
-function BottomHighlights() {
-  const items = [
-    {
-      icon: "shield",
-      title: "Verified providers",
-      description: "Work with trusted professionals.",
-    },
-    {
-      icon: "pin",
-      title: "Available near you",
-      description: "Find services in your area.",
-    },
-    {
-      icon: "users",
-      title: "Book with confidence",
-      description: "A safer, simpler way to get things done.",
-    },
-  ];
-
-  return (
-    <div className="grid gap-4 border-t border-slate-100 bg-white/60 px-6 py-5 sm:grid-cols-3 sm:px-10 lg:px-12 xl:px-[50px]">
-      {items.map((item, index) => (
-        <div
-          key={item.title}
-          className={[
-            "flex items-center gap-3",
-            index > 0 ? "border-slate-200 sm:border-l sm:pl-6" : "",
-          ].join(" ")}
-        >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e4f9e9] text-[#07983f]">
-            <Icon name={item.icon} size={21} />
-          </span>
-
-          <div>
-            <p className="text-[11px] font-semibold text-[#10183f] sm:text-[12px]">
-              {item.title}
-            </p>
-            <p className="mt-0.5 text-[9px] leading-4 text-[#7b84a3] sm:text-[10px]">
-              {item.description}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export default function Services({ isAuthenticated = false }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -440,7 +432,9 @@ export default function Services({ isAuthenticated = false }) {
                 <>
                   Find help that
                   <br />
-                  <span className="text-[#07863a]">fits your needs.</span>
+                  <span className="text-[#07863a]">
+                    fits your needs.
+                  </span>
                 </>
               ) : (
                 <>
@@ -474,8 +468,6 @@ export default function Services({ isAuthenticated = false }) {
 
           <HeroVisual isAuthenticated={isAuthenticated} />
         </div>
-
-        <BottomHighlights />
       </section>
     </main>
   );
