@@ -13,6 +13,7 @@ import SellerSignupPageSeven from "./pages/SellerSignupPage7";
 import Login from "./pages/Login";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
 import Home from "./pages/Home";
+import Explore from "./pages/Explore";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -31,7 +32,7 @@ const router = createBrowserRouter([
     path: "/explore",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Explore" />
+        <Explore />
       </MarketplaceLayout>
     ),
   },
