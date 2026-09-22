@@ -271,7 +271,7 @@ export default function Header({
 
   return (
     <header className="relative z-50 w-full px-4 py-4 sm:px-6 lg:px-8">
-      <div className="mx-auto grid min-h-[68px] w-full max-w-[1180px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] lg:px-6">
+      <div className="mx-auto grid min-h-[68px] w-full max-w-[1470px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] lg:px-6">
         <Link
           to="/"
           aria-label="Matchet home"
