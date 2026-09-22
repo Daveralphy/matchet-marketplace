@@ -43,23 +43,29 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
         <path d="m16 16 4.5 4.5" />
       </>
     ),
+
     pin: (
       <>
         <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
         <circle cx="12" cy="10" r="2.3" />
       </>
     ),
+
     chevronDown: <path d="m6 9 6 6 6-6" />,
+
     chevronUp: <path d="m6 15 6-6 6 6" />,
+
     laptop: (
       <>
         <rect x="5" y="4" width="14" height="11" rx="1.5" />
         <path d="M3 19h18M8 19l1-2h6l1 2" />
       </>
     ),
+
     hanger: (
       <path d="M12 5a2.5 2.5 0 1 0-2.4-3.2M12 5c0 2.2-2.3 3.1-5.1 4.8L3 12h18l-3.9-2.2C14.3 8.1 12 7.2 12 5Z" />
     ),
+
     sofa: (
       <>
         <path d="M5 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3" />
@@ -67,12 +73,14 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
         <path d="M4 17v3M20 17v3M7 11h10" />
       </>
     ),
+
     monitor: (
       <>
         <rect x="3" y="4" width="18" height="13" rx="1.5" />
         <path d="M9 21h6M12 17v4" />
       </>
     ),
+
     car: (
       <>
         <path d="m5 11 2-4h10l2 4" />
@@ -81,40 +89,65 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
         <circle cx="17" cy="14" r="1.2" />
       </>
     ),
+
     beauty: (
       <>
         <path d="M12 20c-4.5 0-7-3.2-7-7 0-3.4 2.1-6.1 5.1-7.2C11 4.9 12 3 12 3s1 1.9 1.9 2.8C16.9 6.9 19 9.6 19 13c0 3.8-2.5 7-7 7Z" />
         <path d="M8 13c1.3-1 2.7-1 4 0s2.7 1 4 0" />
       </>
     ),
+
     more: (
       <>
-        <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" />
-        <circle cx="18" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <circle
+          cx="6"
+          cy="12"
+          r="1.5"
+          fill="currentColor"
+          stroke="none"
+        />
+        <circle
+          cx="12"
+          cy="12"
+          r="1.5"
+          fill="currentColor"
+          stroke="none"
+        />
+        <circle
+          cx="18"
+          cy="12"
+          r="1.5"
+          fill="currentColor"
+          stroke="none"
+        />
       </>
     ),
+
     shield: (
       <path d="M12 3 19 6v5c0 4.8-3 8.2-7 10-4-1.8-7-5.2-7-10V6l7-3Z" />
     ),
+
     users: (
       <>
         <circle cx="9" cy="8" r="3" />
         <path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5.5M17 14a5 5 0 0 1 4 6" />
       </>
     ),
+
     sparkle: (
       <>
         <path d="m12 3 1.4 5.6L19 10l-5.6 1.4L12 17l-1.4-5.6L5 10l5.6-1.4L12 3Z" />
         <path d="m19 15 .6 2.4L22 18l-2.4.6L19 21l-.6-2.4L16 18l2.4-.6L19 15Z" />
       </>
     ),
+
     bag: (
       <>
         <path d="M5 8h14l1 13H4L5 8Z" />
         <path d="M9 9V6a3 3 0 0 1 6 0v3" />
       </>
     ),
+
     truck: (
       <>
         <path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z" />
@@ -147,14 +180,22 @@ function LocationSelect({
         aria-haspopup="listbox"
       >
         <Icon name="pin" size={18} />
-        <span className="min-w-0 flex-1 truncate">{selectedLocation}</span>
-        <Icon name={locationOpen ? "chevronUp" : "chevronDown"} size={15} />
+
+        <span className="min-w-0 flex-1 truncate">
+          {selectedLocation}
+        </span>
+
+        <Icon
+          name={locationOpen ? "chevronUp" : "chevronDown"}
+          size={15}
+        />
       </button>
 
       {locationOpen && (
         <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.14)] sm:left-auto sm:right-0 sm:w-[250px]">
           <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
             <Icon name="search" size={16} />
+
             <input
               type="text"
               placeholder="Search for a city or state..."
@@ -175,15 +216,20 @@ function LocationSelect({
                 }}
                 className={[
                   "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] transition-colors hover:bg-slate-50",
-                  option === selectedLocation ? "bg-[#effaf3] text-[#07863a]" : "",
+                  option === selectedLocation
+                    ? "bg-[#effaf3] text-[#07863a]"
+                    : "",
                 ].join(" ")}
               >
                 <span className="flex min-w-0 items-center gap-2">
                   <Icon name="pin" size={15} />
                   <span className="truncate">{option}</span>
                 </span>
+
                 {option === selectedLocation && (
-                  <span className="ml-2 shrink-0 font-semibold text-[#07983f]">✓</span>
+                  <span className="ml-2 shrink-0 font-semibold text-[#07983f]">
+                    ✓
+                  </span>
                 )}
               </button>
             ))}
@@ -205,6 +251,7 @@ function SearchBar({
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
       <div className="flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
         <Icon name="search" size={20} />
+
         <input
           type="search"
           placeholder="Search for products..."
@@ -253,9 +300,12 @@ function ProductCategories() {
             type="button"
             className="flex min-h-[66px] w-[70px] shrink-0 flex-col items-center justify-start gap-1.5 rounded-[14px] text-[9px] font-medium text-[#10183f] transition-colors hover:bg-white sm:w-[76px] sm:text-[10px]"
           >
-            <span className={`flex h-10 w-10 items-center justify-center rounded-full ${colors[index]}`}>
+            <span
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${colors[index]}`}
+            >
               <Icon name={category.icon} size={20} />
             </span>
+
             <span className="max-w-full text-center leading-[13px]">
               {category.label}
             </span>
@@ -274,15 +324,21 @@ function ProductCard({
   tone = "bg-[#e4f9e9] text-[#07983f]",
 }) {
   return (
-    <div className={`absolute z-30 hidden rounded-[15px] bg-white px-3.5 py-3 shadow-[0_8px_24px_rgba(16,24,63,0.08)] lg:block ${className}`}>
+    <div
+      className={`absolute z-30 hidden rounded-[15px] bg-white px-3.5 py-3 shadow-[0_8px_24px_rgba(16,24,63,0.08)] lg:block ${className}`}
+    >
       <div className="flex items-center gap-3">
-        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${tone}`}>
+        <span
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${tone}`}
+        >
           <Icon name={icon} size={20} />
         </span>
+
         <div className="min-w-0">
           <p className="text-[11px] font-semibold leading-[15px] text-[#10183f] sm:text-[12px]">
             {title}
           </p>
+
           <p className="mt-0.5 text-[9px] leading-4 text-[#7b84a3] sm:text-[10px]">
             {description}
           </p>
@@ -293,7 +349,9 @@ function ProductCard({
 }
 
 function HeroVisual({ isAuthenticated }) {
-  const heroImage = isAuthenticated ? heroImageLoggedIn : heroImageLoggedOut;
+  const heroImage = isAuthenticated
+    ? heroImageLoggedIn
+    : heroImageLoggedOut;
 
   return (
     <div className="relative hidden lg:absolute lg:inset-y-0 lg:right-0 lg:block lg:h-full lg:w-[58%]">
@@ -306,6 +364,7 @@ function HeroVisual({ isAuthenticated }) {
       />
 
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-[#fbfaf7] via-[#fbfaf7]/75 to-transparent" />
+
       <div className="pointer-events-none absolute inset-y-0 right-0 w-[15%] bg-gradient-to-l from-[#fbfaf7]/70 to-transparent" />
 
       {isAuthenticated ? (
@@ -327,79 +386,32 @@ function HeroVisual({ isAuthenticated }) {
           />
         </>
       ) : (
-        <ProductCard
-          icon="shield"
-          title="Trusted sellers"
-          description="Quality products, safer shopping."
-          tone="bg-[#e4f9e9] text-[#07983f]"
-          className="right-[4%] top-[14%] w-[200px] xl:right-[10%] xl:w-[215px]"
-        />
+        <>
+          <ProductCard
+            icon="truck"
+            title="Wide selection"
+            description="Everything you need in one place."
+            tone="bg-[#e4f9e9] text-[#07983f]"
+            className="left-[7%] bottom-[16%] w-[205px] xl:left-[12%] xl:w-[220px]"
+          />
+
+          <ProductCard
+            icon="shield"
+            title="Secure shopping"
+            description="Your information is protected."
+            tone="bg-[#e4f9e9] text-[#07983f]"
+            className="right-[6%] bottom-[16%] w-[205px] xl:right-[12%] xl:w-[220px]"
+          />
+
+          <ProductCard
+            icon="users"
+            title="Trusted sellers"
+            description="Buy from verified businesses."
+            tone="bg-[#e4f9e9] text-[#07983f]"
+            className="right-[3%] top-[14%] w-[200px] xl:right-[10%] xl:w-[215px]"
+          />
+        </>
       )}
-    </div>
-  );
-}
-
-function BottomHighlights({ isAuthenticated }) {
-  const items = isAuthenticated
-    ? [
-        {
-          icon: "bag",
-          title: "Products you’ll love",
-          description: "Based on your interests.",
-        },
-        {
-          icon: "truck",
-          title: "Fast and reliable delivery",
-          description: "Get your orders with confidence.",
-        },
-        {
-          icon: "shield",
-          title: "Verified sellers",
-          description: "Shop from trusted businesses.",
-        },
-      ]
-    : [
-        {
-          icon: "truck",
-          title: "Wide selection",
-          description: "Everything you need in one place.",
-        },
-        {
-          icon: "shield",
-          title: "Secure shopping",
-          description: "Your information is protected.",
-        },
-        {
-          icon: "users",
-          title: "Trusted sellers",
-          description: "Buy from verified businesses.",
-        },
-      ];
-
-  return (
-    <div className="grid gap-4 border-t border-slate-100 bg-white/60 px-6 py-5 sm:grid-cols-3 sm:px-10 lg:px-12 xl:px-[50px]">
-      {items.map((item, index) => (
-        <div
-          key={item.title}
-          className={[
-            "flex items-center gap-3",
-            index > 0 ? "border-slate-200 sm:border-l sm:pl-6" : "",
-          ].join(" ")}
-        >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e4f9e9] text-[#07983f]">
-            <Icon name={item.icon} size={21} />
-          </span>
-
-          <div>
-            <p className="text-[11px] font-semibold text-[#10183f] sm:text-[12px]">
-              {item.title}
-            </p>
-            <p className="mt-0.5 text-[9px] leading-4 text-[#7b84a3] sm:text-[10px]">
-              {item.description}
-            </p>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
@@ -407,6 +419,7 @@ function BottomHighlights({ isAuthenticated }) {
 export default function Products({ isAuthenticated = false }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
+
   const locationRef = useRef(null);
 
   useEffect(() => {
@@ -421,7 +434,10 @@ export default function Products({ isAuthenticated = false }) {
     };
 
     document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
   }, [locationOpen]);
 
   return (
@@ -438,13 +454,17 @@ export default function Products({ isAuthenticated = false }) {
                 <>
                   Find something
                   <br />
-                  <span className="text-[#07863a]">you’ll love.</span>
+                  <span className="text-[#07863a]">
+                    you’ll love.
+                  </span>
                 </>
               ) : (
                 <>
                   Find products
                   <br />
-                  <span className="text-[#07863a]">worth buying.</span>
+                  <span className="text-[#07863a]">
+                    worth buying.
+                  </span>
                 </>
               )}
             </h1>
@@ -472,8 +492,6 @@ export default function Products({ isAuthenticated = false }) {
 
           <HeroVisual isAuthenticated={isAuthenticated} />
         </div>
-
-        <BottomHighlights isAuthenticated={isAuthenticated} />
       </section>
     </main>
   );
