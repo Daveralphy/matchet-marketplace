@@ -13,7 +13,9 @@ import SellerSignupPageSeven from "./pages/SellerSignupPage7";
 import Login from "./pages/Login";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
 import Home from "./pages/Home";
+import Products from "./pages/Products";
 import Explore from "./pages/Explore";
+import Services from "./pages/Services";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -40,7 +42,7 @@ const router = createBrowserRouter([
     path: "/products",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Products" />
+        <Products />
       </MarketplaceLayout>
     ),
   },
@@ -48,7 +50,7 @@ const router = createBrowserRouter([
     path: "/services",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Services" />
+        <Services />
       </MarketplaceLayout>
     ),
   },
