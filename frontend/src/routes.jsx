@@ -1,7 +1,8 @@
 // Created by: Raphael Daveal
-// Edited by: Raphael Daveal
+// Edited by: Brima
 
 import { createBrowserRouter } from "react-router-dom";
+import SavedItems from "./pages/SavedItems";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
 import SellerSignupPageThree from "./pages/SellerSignupPage3";
@@ -11,6 +12,10 @@ import SellerSignupPageSix from "./pages/SellerSignupPage6";
 import SellerSignupPageSeven from "./pages/SellerSignupPage7";
 import Login from "./pages/Login";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
+import Home from "./pages/Home";
+import Products from "./pages/Products";
+import Explore from "./pages/Explore";
+import Services from "./pages/Services";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -21,7 +26,7 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Home" />
+        <Home />
       </MarketplaceLayout>
     ),
   },
@@ -29,7 +34,7 @@ const router = createBrowserRouter([
     path: "/explore",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Explore" />
+        <Explore />
       </MarketplaceLayout>
     ),
   },
@@ -37,7 +42,7 @@ const router = createBrowserRouter([
     path: "/products",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Products" />
+        <Products />
       </MarketplaceLayout>
     ),
   },
@@ -45,7 +50,7 @@ const router = createBrowserRouter([
     path: "/services",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Services" />
+        <Services />
       </MarketplaceLayout>
     ),
   },
@@ -88,6 +93,10 @@ const router = createBrowserRouter([
   {
     path: "/register/page7",
     element: <SellerSignupPageSeven />,
+  },
+  {
+    path: "/account/saved-items",
+    element: <SavedItems />,
   },
   {
     path: "/products/:id",
