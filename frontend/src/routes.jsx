@@ -16,6 +16,7 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Explore from "./pages/Explore";
 import Services from "./pages/Services";
+import ForProviders from "./pages/ForProviders";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
     path: "/for-providers",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="For Providers" />
+        <ForProviders />
       </MarketplaceLayout>
     ),
   },
