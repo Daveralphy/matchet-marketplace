@@ -10,6 +10,13 @@ import SellerSignupPageFour from "./pages/SellerSignupPage4";
 import SellerSignupPageFive from "./pages/SellerSignupPage5";
 import SellerSignupPageSix from "./pages/SellerSignupPage6";
 import SellerSignupPageSeven from "./pages/SellerSignupPage7";
+import ProviderSignupPageOne from "./pages/ProvderSignupPage1";
+import ProviderSignupPageTwo from "./pages/ProviderSignupPage2";
+import ProviderSignupPageThree from "./pages/ProviderSignupPage3";
+import ProviderSignupPageFour from "./pages/ProviderSignupPage4";
+import ProviderSignupPageFive from "./pages/ProviderSignupPage5";
+import ProviderSignupPageSix from "./pages/ProviderSignupPage6";
+import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
 import Login from "./pages/Login";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
 import Home from "./pages/Home";
@@ -121,7 +128,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/onboarding",
-    element: <Placeholder name="Provider Onboarding" />,
+    element: <ProviderSignupPageOne />,
+  },
+  {
+    path: "/provider/onboarding/page2",
+    element: <ProviderSignupPageTwo />,
+  },
+  {
+    path: "/provider/onboarding/page3",
+    element: <ProviderSignupPageThree />,
+  },
+  {
+    path: "/provider/onboarding/page4",
+    element: <ProviderSignupPageFour />,
+  },
+  {
+    path: "/provider/onboarding/page5",
+    element: <ProviderSignupPageFive />,
+  },
+  {
+    path: "/provider/onboarding/page6",
+    element: <ProviderSignupPageSix />,
+  },
+  {
+    path: "/provider/onboarding/page7",
+    element: <ProviderSignupPageSeven />,
   },
   {
     path: "/provider/listings",

@@ -1,10 +1,12 @@
 // Created by:  Blake Ostler
 // Edited by:  Blake Ostler
 
+import sideImage from "../../assets/inspirations/seller/selleronboarding.png";
+
 function SellerSignupSideImage() {
   return (
     <div className="seller-signup-side-banner">
-      <img src="path" alt="Seller sign-up decoration" />
+      <img src={sideImage} alt="Seller sign-up decoration" />
     </div>
   );
 }
