@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/services/hero 2.png";
+import { getServiceCollection } from "../data/marketplaceApi";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -394,6 +395,128 @@ function HeroVisual({ isAuthenticated }) {
   );
 }
 
+
+function ServiceListingCard({ service }) {
+  return (
+    <article className="overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
+      <div className={`relative h-[218px] overflow-hidden ${service.imageTone || "bg-[#dfe7e2]"}`}>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
+            <Icon name={service.category === "Beauty & Care" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home"} size={42} strokeWidth={1.45} />
+          </span>
+        </div>
+
+        {service.match && (
+          <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold text-[#07863a] shadow-sm">
+            ◈ {service.match}
+          </span>
+        )}
+
+        <button
+          type="button"
+          aria-label={`Save ${service.title}`}
+          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#10183f] shadow-sm"
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="px-4 pb-4 pt-3.5">
+        <h3 className="truncate text-[15px] font-semibold tracking-[-0.02em] text-[#10183f]">
+          {service.title}
+        </h3>
+
+        <p className="mt-2 text-[16px] font-semibold text-[#07863a]">
+          {service.price}
+        </p>
+
+        <p className="mt-2 text-[11px] text-[#69739a]">
+          <span className="mr-1.5 text-[15px] text-[#f4ad00]">★</span>
+          <strong className="text-[#27335f]">{Number(service.rating).toFixed(1)}</strong>
+          <span className="ml-1 text-[#7b84a3]">({service.reviews} reviews)</span>
+        </p>
+
+        <div className="mt-4 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef1f3] text-[11px] font-semibold text-[#10183f]">
+            {service.sellerInitial}
+          </span>
+          <div className="min-w-0">
+            <p className="flex items-center gap-1 truncate text-[11px] font-semibold text-[#10183f]">
+              {service.seller}
+              {service.sellerVerified && (
+                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#18a34a] text-[9px] text-white">✓</span>
+              )}
+            </p>
+            <p className="mt-0.5 text-[10px] text-[#7b84a3]">{service.location}</p>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ServicesListingSection({ isAuthenticated }) {
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+
+    getServiceCollection(isAuthenticated ? "recommended" : "featured").then((items) => {
+      if (active) setServices(items);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [isAuthenticated]);
+
+  return (
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
+      <div className="flex items-start justify-between gap-5">
+        <div className="max-w-[760px]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#07863a] sm:text-[11px]">
+            {isAuthenticated ? "SERVICES FOR YOU" : "POPULAR SERVICES"}
+          </p>
+
+          <h2 className="mt-3 text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
+            {isAuthenticated ? (
+              <>
+                Services that match
+                <br />
+                <span className="text-[#07863a]">what you need.</span>
+              </>
+            ) : (
+              <>
+                Get things done by
+                <br />
+                <span className="text-[#07863a]">the right people.</span>
+              </>
+            )}
+          </h2>
+
+          <p className="mt-3 text-[14px] leading-5 text-[#69739a] sm:text-[17px] sm:leading-6">
+            {isAuthenticated
+              ? "Explore services selected around your interests, location, and activity."
+              : "Explore popular services from trusted providers around Lagos."}
+          </p>
+        </div>
+
+        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e7f8eb] px-6 py-3.5 text-[12px] font-semibold text-[#07863a] sm:flex">
+          View all services <span className="text-[18px]">→</span>
+        </button>
+      </div>
+
+      <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {services.map((service) => (
+          <ServiceListingCard key={service.id} service={service} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Services({ isAuthenticated = false }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -469,6 +592,7 @@ export default function Services({ isAuthenticated = false }) {
           <HeroVisual isAuthenticated={isAuthenticated} />
         </div>
       </section>
+      <ServicesListingSection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
