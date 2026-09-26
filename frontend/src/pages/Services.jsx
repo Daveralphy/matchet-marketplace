@@ -4,7 +4,9 @@
 import { useEffect, useRef, useState } from "react";
 import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/services/hero 2.png";
-import { getServiceCategoryCollections, getServiceCollection } from "../data/marketplaceApi";
+import person1 from "../assets/inspirations/services/person1.png";
+import person2 from "../assets/inspirations/services/person2.png";
+import { getServiceCategoryCollections, getServiceCollection, getServiceExperience } from "../data/marketplaceApi";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -116,6 +118,10 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
     shield: (
       <path d="M12 3 19 6v5c0 4.8-3 8.2-7 10-4-1.8-7-5.2-7-10V6l7-3Z" />
     ),
+
+    lock: <path d="M6 10h12v10H6zM8.5 10V7a3.5 3.5 0 0 1 7 0v3" />,
+
+    star: <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" />,
 
     users: (
       <>
@@ -494,6 +500,110 @@ function ServiceCategoriesSection({ isAuthenticated }) {
   );
 }
 
+
+function ServiceJourneySection({ isAuthenticated }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    getServiceExperience().then((result) => {
+      if (active) setData(result);
+    });
+    return () => { active = false; };
+  }, []);
+
+  if (!data) return null;
+
+  const content = isAuthenticated ? data.experience.loggedIn : data.experience.loggedOut;
+  const reassurance = data.experience.reassurance ?? [];
+  const booking = data.upcomingBooking;
+  const stepImages = isAuthenticated ? [] : [null, person1, null, person2, null];
+
+  return (
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-10 lg:px-9 lg:py-11 ${isAuthenticated ? "bg-[#fbfdfb]" : "bg-[#fbfcfb]"}`}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#07863a] sm:text-[11px]">{content.eyebrow}</p>
+      <h2 className="mt-3 max-w-[900px] text-[38px] font-bold leading-[1] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
+        {isAuthenticated ? <>From match to <span className="text-[#07863a]">completed service.</span></> : <>Getting help <span className="text-[#07863a]">should be simple.</span></>}
+      </h2>
+      <p className="mt-2 text-[14px] leading-5 text-[#69739a] sm:text-[17px]">{content.subtitle}</p>
+
+      {isAuthenticated ? (
+        <>
+          <div className="mt-7 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_230px]">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-5">
+              {content.steps.map((step) => (
+                <div key={step.number} className="relative">
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-full ${step.number === "02" ? "bg-[#e7f1ff] text-[#1467d6]" : step.number === "03" ? "bg-[#fde5f2] text-[#d42c83]" : step.number === "04" ? "bg-[#ffeddc] text-[#c56312]" : step.number === "05" ? "bg-[#eee5ff] text-[#6530d2]" : "bg-[#e4f8e9] text-[#07863a]"}`}>
+                    <Icon name={step.icon} size={27} />
+                  </div>
+                  <span className="mt-2 inline-flex rounded-full bg-[#edf9ef] px-2 py-1 text-[10px] font-semibold text-[#07863a]">{step.number}</span>
+                  <h3 className="mt-2 text-[14px] font-semibold text-[#10183f]">{step.title}</h3>
+                  <p className="mt-1 text-[10px] leading-4 text-[#747d9e] sm:text-[11px]">{step.description}</p>
+                </div>
+              ))}
+            </div>
+            {booking && (
+              <aside className="rounded-[14px] border border-[#e5eaf0] bg-white p-4 shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
+                <div className="flex items-center justify-between text-[10px] font-semibold text-[#10183f]"><span>Upcoming booking</span><span className="text-[#07863a]">View all</span></div>
+                <div className="mt-4 h-20 rounded-[10px] bg-[#e7eee8]">
+                  <div className="flex h-full items-center justify-center text-[#07863a]"><Icon name="home" size={30}/></div>
+                </div>
+                <h3 className="mt-3 text-[11px] font-semibold text-[#10183f]">{booking.provider}</h3>
+                <p className="mt-1 text-[10px] text-[#69739a]">{booking.scheduledLabel}</p>
+                <p className="mt-1 text-[10px] text-[#69739a]">{booking.location}</p>
+                <span className="mt-3 inline-flex rounded-full bg-[#e5f8e9] px-3 py-1.5 text-[9px] font-semibold text-[#07863a]">{booking.status} ✓</span>
+              </aside>
+            )}
+          </div>
+          <div className="mt-7 grid grid-cols-2 gap-3 rounded-[14px] bg-[#effbf1] p-4 sm:grid-cols-4">
+            {["Verified providers","Secure payments","In-app communication","Support when you need it"].map((label, index) => (
+              <div key={label} className="flex items-center gap-2 border-r border-[#dcefe0] last:border-0">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#07863a]"><Icon name={reassurance[index]?.icon || "shield"} size={18}/></span>
+                <span className="text-[10px] font-medium text-[#27335f]">{label}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex items-center justify-between rounded-[14px] border border-[#e4eaf0] bg-white px-5 py-4">
+            <div><p className="text-[12px] font-semibold text-[#10183f]">Need help finding the right service?</p><p className="mt-1 text-[10px] text-[#747d9e]">Our recommendations can help you discover trusted providers based on your activity.</p></div>
+            <button type="button" className="rounded-full border border-[#07863a] px-5 py-2.5 text-[10px] font-semibold text-[#07863a]">Explore services →</button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="mt-7 grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-5">
+            {content.steps.map((step, index) => (
+              <div key={step.number} className="relative">
+                <span className="absolute -left-1 -top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#effbf1] text-[17px] font-semibold text-[#07863a]">{step.number}</span>
+                <div className="h-[180px] overflow-hidden rounded-[14px] bg-[#edf2ef] shadow-[0_5px_18px_rgba(16,24,63,0.06)]">
+                  {stepImages[index] ? <img src={stepImages[index]} alt="" className="h-full w-full object-cover" /> : (
+                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#f2f7f4] to-[#e1eee5]">
+                      <div className="rounded-xl bg-white p-5 text-center shadow-sm">
+                        <Icon name={index === 0 ? "search" : index === 2 ? "calendar" : "star"} size={34} />
+                        <p className="mt-2 text-[10px] font-semibold text-[#10183f]">{step.title}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <h3 className="mt-4 text-[15px] font-semibold text-[#10183f]">{step.title}</h3>
+                <p className="mt-1 text-[11px] leading-5 text-[#747d9e]">{step.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 grid grid-cols-1 gap-4 border-t border-[#e8edf0] pt-6 md:grid-cols-3">
+            {reassurance.map((item) => (
+              <div key={item.title} className="flex items-center gap-3 border-r border-[#e3e9ec] last:border-0">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e7f8eb] text-[#07863a]"><Icon name={item.icon} size={22}/></span>
+                <div><h3 className="text-[11px] font-semibold text-[#07863a]">{item.title}</h3><p className="mt-1 text-[9px] text-[#747d9e]">{item.description}</p></div>
+              </div>
+            ))}
+            <button type="button" className="rounded-[10px] bg-[#07863a] px-5 py-3 text-[11px] font-semibold text-white">Find a service →</button>
+          </div>
+        </>
+      )}
+    </section>
+  );
+}
+
 function ServiceListingCard({ service }) {
   return (
     <article className="overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
@@ -696,6 +806,7 @@ export default function Services({ isAuthenticated = false }) {
       </section>
       <ServicesListingSection isAuthenticated={isAuthenticated} />
       <ServiceCategoriesSection isAuthenticated={isAuthenticated} />
+      <ServiceJourneySection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
