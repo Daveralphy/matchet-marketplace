@@ -2,6 +2,7 @@
 // Edited by: Raphael Daveal
 
 import sellerOnboardingImage from "../../assets/inspirations/seller/selleronboarding.png";
+import "../../styles/seller-onboarding.css";
 
 export default function SellerSignupSideImage() {
   return (
