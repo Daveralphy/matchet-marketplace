@@ -2,6 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
+import { getMarketplaceData } from "../data/marketplaceApi";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
 
@@ -146,6 +147,55 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
         <path d="M5 8h14l1 13H4L5 8Z" />
         <path d="M9 9V6a3 3 0 0 1 6 0v3" />
       </>
+    ),
+
+
+    heart: (
+      <>
+        <path d="M20.8 8.8c0 5.5-8.8 10.2-8.8 10.2S3.2 14.3 3.2 8.8A4.8 4.8 0 0 1 12 6.1a4.8 4.8 0 0 1 8.8 2.7Z" />
+      </>
+    ),
+
+    cart: (
+      <>
+        <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 1.9-1.4L20 8H6" />
+        <circle cx="10" cy="20" r="1.3" />
+        <circle cx="17" cy="20" r="1.3" />
+      </>
+    ),
+
+    filter: (
+      <>
+        <path d="M4 6h16M7 12h10M10 18h4" />
+      </>
+    ),
+
+    grid: (
+      <>
+        <rect x="4" y="4" width="6" height="6" rx="1" />
+        <rect x="14" y="4" width="6" height="6" rx="1" />
+        <rect x="4" y="14" width="6" height="6" rx="1" />
+        <rect x="14" y="14" width="6" height="6" rx="1" />
+      </>
+    ),
+
+    list: (
+      <>
+        <path d="M8 6h12M8 12h12M8 18h12" />
+        <circle cx="4" cy="6" r="1" fill="currentColor" stroke="none" />
+        <circle cx="4" cy="12" r="1" fill="currentColor" stroke="none" />
+        <circle cx="4" cy="18" r="1" fill="currentColor" stroke="none" />
+      </>
+    ),
+
+    sort: (
+      <>
+        <path d="M8 5v14M5 8l3-3 3 3M16 19V5M13 16l3 3 3-3" />
+      </>
+    ),
+
+    refresh: (
+      <path d="M20 11a8 8 0 0 0-14.7-3.9L4 9M4 5v4h4M4 13a8 8 0 0 0 14.7 3.9L20 15m0 4v-4h-4" />
     ),
 
     truck: (
@@ -416,6 +466,330 @@ function HeroVisual({ isAuthenticated }) {
   );
 }
 
+
+function ProductImage({ product }) {
+  const icon = product.icon === "bag" ? "bag" : product.icon === "home" ? "sofa" : "monitor";
+
+  return (
+    <div className={`flex h-[152px] items-center justify-center overflow-hidden rounded-[9px] ${product.imageTone || "bg-[#f1f1ef]"}`}>
+      <div className="flex h-[86px] w-[86px] items-center justify-center rounded-[24px] bg-white/65 text-[#27335f] shadow-[0_8px_20px_rgba(16,24,63,0.08)]">
+        <Icon name={icon} size={52} strokeWidth={1.45} />
+      </div>
+    </div>
+  );
+}
+
+function ProductCatalogueCard({ product }) {
+  const rating = Number(product.rating) || 0;
+
+  return (
+    <article className="group min-w-0 rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+      <div className="relative">
+        <ProductImage product={product} />
+        <button
+          type="button"
+          aria-label={`Save ${product.title}`}
+          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)]"
+        >
+          <Icon name="heart" size={16} />
+        </button>
+      </div>
+
+      <div className="px-0.5 pb-1 pt-2">
+        <h3 className="truncate text-[11px] font-medium leading-4 text-[#10183f] sm:text-[12px]">
+          {product.title}
+        </h3>
+
+        <p className="mt-1 text-[13px] font-bold tracking-[-0.02em] text-[#10183f] sm:text-[14px]">
+          {product.price}
+        </p>
+
+        <div className="mt-1.5 flex items-center gap-1.5">
+          <span className="text-[13px] text-[#f4a900]">★</span>
+          <span className="text-[10px] font-medium text-[#10183f]">{rating.toFixed(1)}</span>
+          {product.reviews != null && (
+            <span className="text-[10px] text-[#7b84a3]">({product.reviews})</span>
+          )}
+          <button
+            type="button"
+            aria-label={`Add ${product.title} to cart`}
+            className="ml-auto flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#e9f8ed] text-[#07863a]"
+          >
+            <Icon name="cart" size={17} />
+          </button>
+        </div>
+
+        <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[9px] text-[#7b84a3]">
+          {product.sellerVerified && <Icon name="shield" size={12} strokeWidth={2.2} />}
+          <span className="truncate">{product.seller} · {product.location}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function FilterSection({ title, children }) {
+  return (
+    <section className="border-b border-[#edf0f3] py-4 first:pt-0">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-[13px] font-semibold text-[#10183f]">{title}</h3>
+        <Icon name="chevronUp" size={14} />
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function CheckRow({ label, checked, onChange, icon, count }) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2.5 py-1 text-[11px] text-[#69739a]">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        className="h-4 w-4 rounded border-[#cfd6df] accent-[#07863a]"
+      />
+      {icon && <span className="text-[#10183f]">{icon}</span>}
+      <span className="min-w-0 flex-1">{label}</span>
+      {count != null && <span className="text-[#7b84a3]">({count})</span>}
+    </label>
+  );
+}
+
+function ProductFilters({ products, filters, setFilters }) {
+  const categories = [...new Set(products.map((item) => item.category))];
+  const categoryCounts = categories.reduce((acc, category) => {
+    acc[category] = products.filter((item) => item.category === category).length;
+    return acc;
+  }, {});
+
+  const prices = products
+    .map((item) => Number(String(item.price).replace(/[^\d]/g, "")))
+    .filter(Number.isFinite);
+
+  const minPrice = prices.length ? Math.min(...prices) : 0;
+  const maxPrice = prices.length ? Math.max(...prices) : 0;
+
+  return (
+    <aside className="hidden w-[255px] shrink-0 rounded-[12px] border border-[#e7ebf0] bg-white px-5 py-4 lg:block">
+      <FilterSection title="Categories">
+        <button
+          type="button"
+          onClick={() => setFilters((current) => ({ ...current, category: "" }))}
+          className={`mb-1 flex w-full items-center justify-between rounded-[8px] px-2 py-1.5 text-left text-[11px] font-medium ${!filters.category ? "bg-[#e5f8ea] text-[#07863a]" : "text-[#69739a]"}`}
+        >
+          <span>All Categories</span>
+          <span>({products.length})</span>
+        </button>
+
+        {categories.map((category) => (
+          <button
+            type="button"
+            key={category}
+            onClick={() => setFilters((current) => ({ ...current, category: current.category === category ? "" : category }))}
+            className={`flex w-full items-center justify-between py-1.5 text-left text-[11px] ${filters.category === category ? "font-semibold text-[#07863a]" : "text-[#69739a]"}`}
+          >
+            <span>{category}</span>
+            <span>({categoryCounts[category]})</span>
+          </button>
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Price Range">
+        <div className="px-1">
+          <input
+            type="range"
+            min={minPrice}
+            max={maxPrice || 1}
+            value={filters.maxPrice}
+            onChange={(event) => setFilters((current) => ({ ...current, maxPrice: Number(event.target.value) }))}
+            className="w-full accent-[#07863a]"
+          />
+          <div className="mt-1 flex justify-between text-[10px] text-[#69739a]">
+            <span>₦{minPrice.toLocaleString("en-NG")}</span>
+            <span>₦{filters.maxPrice.toLocaleString("en-NG")}</span>
+          </div>
+        </div>
+      </FilterSection>
+
+      <FilterSection title="Rating">
+        {[4, 3, 2, 1].map((rating) => (
+          <CheckRow
+            key={rating}
+            label={`${rating} & above`}
+            checked={filters.rating === rating}
+            onChange={() => setFilters((current) => ({ ...current, rating: current.rating === rating ? 0 : rating }))}
+            icon={<span className="text-[#f4a900]">{"★".repeat(rating)}{"☆".repeat(5 - rating)}</span>}
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Condition">
+        {["New", "Used"].map((condition) => (
+          <CheckRow
+            key={condition}
+            label={condition}
+            checked={filters.condition === condition}
+            onChange={() => setFilters((current) => ({ ...current, condition: current.condition === condition ? "" : condition }))}
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Availability">
+        {["In stock", "Fast delivery"].map((availability) => (
+          <CheckRow
+            key={availability}
+            label={availability}
+            checked={filters.availability === availability}
+            onChange={() => setFilters((current) => ({ ...current, availability: current.availability === availability ? "" : availability }))}
+          />
+        ))}
+      </FilterSection>
+
+      <FilterSection title="Seller Type">
+        {["Verified sellers", "Businesses", "Individuals"].map((sellerType) => (
+          <CheckRow
+            key={sellerType}
+            label={sellerType}
+            checked={filters.sellerType === sellerType}
+            onChange={() => setFilters((current) => ({ ...current, sellerType: current.sellerType === sellerType ? "" : sellerType }))}
+          />
+        ))}
+      </FilterSection>
+
+      <button
+        type="button"
+        onClick={() => setFilters({ category: "", maxPrice, rating: 0, condition: "", availability: "", sellerType: "" })}
+        className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-[8px] border border-[#cfd7e2] text-[11px] font-medium text-[#27335f]"
+      >
+        <Icon name="refresh" size={14} />
+        Clear filters
+      </button>
+    </aside>
+  );
+}
+
+function ProductCatalogue({ isAuthenticated }) {
+  const [products, setProducts] = useState([]);
+  const [view, setView] = useState("grid");
+  const [sort, setSort] = useState("recommended");
+  const [filters, setFilters] = useState({
+    category: "",
+    maxPrice: 0,
+    rating: 0,
+    condition: "",
+    availability: "",
+    sellerType: "",
+  });
+
+  useEffect(() => {
+    let active = true;
+
+    getMarketplaceData().then((data) => {
+      if (!active) return;
+      setProducts(data.products);
+      const prices = data.products
+        .map((item) => Number(String(item.price).replace(/[^\d]/g, "")))
+        .filter(Number.isFinite);
+      setFilters((current) => ({
+        ...current,
+        maxPrice: prices.length ? Math.max(...prices) : 0,
+      }));
+    });
+
+    return () => { active = false; };
+  }, []);
+
+  const filtered = products.filter((product) => {
+    const price = Number(String(product.price).replace(/[^\d]/g, ""));
+    const rating = Number(product.rating) || 0;
+
+    return (
+      (!filters.category || product.category === filters.category) &&
+      (!filters.maxPrice || price <= filters.maxPrice) &&
+      (!filters.rating || rating >= filters.rating) &&
+      (!filters.condition || product.condition === filters.condition) &&
+      (!filters.availability || product.availability === filters.availability) &&
+      (!filters.sellerType || product.sellerType === filters.sellerType)
+    );
+  });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "price-low") return Number(String(a.price).replace(/[^\d]/g, "")) - Number(String(b.price).replace(/[^\d]/g, ""));
+    if (sort === "price-high") return Number(String(b.price).replace(/[^\d]/g, "")) - Number(String(a.price).replace(/[^\d]/g, ""));
+    if (sort === "rating") return Number(b.rating) - Number(a.rating);
+    return Number(b.rating) - Number(a.rating);
+  });
+
+  return (
+    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-[#edf0f3] bg-[#fbfcfd] p-4 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-5 lg:p-6">
+      <div className="flex gap-5">
+        <ProductFilters products={products} filters={filters} setFilters={setFilters} />
+
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-col gap-4 border-b border-[#edf0f3] pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#07863a]">
+                {isAuthenticated ? "PRODUCTS FOR YOU" : "EXPLORE PRODUCTS"}
+              </p>
+              <h2 className="mt-2 text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[48px]">
+                {isAuthenticated ? (
+                  <>Find products <span className="text-[#07863a]">you’ll love.</span></>
+                ) : (
+                  <>Discover <span className="text-[#07863a]">great products.</span></>
+                )}
+              </h2>
+              <p className="mt-2 text-[14px] font-medium text-[#69739a]">
+                {filtered.length} {filtered.length === 1 ? "product" : "products"} found in Lagos
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <select
+                value={sort}
+                onChange={(event) => setSort(event.target.value)}
+                className="h-11 rounded-[9px] border border-[#dfe5ec] bg-white px-3 text-[11px] font-medium text-[#27335f] outline-none"
+                aria-label="Sort products"
+              >
+                <option value="recommended">Recommended</option>
+                <option value="rating">Top rated</option>
+                <option value="price-low">Price: low to high</option>
+                <option value="price-high">Price: high to low</option>
+              </select>
+
+              <button type="button" onClick={() => setView("grid")} className={`flex h-11 w-11 items-center justify-center rounded-[9px] border ${view === "grid" ? "border-[#dcefe2] bg-[#e8f8ed] text-[#07863a]" : "border-[#dfe5ec] bg-white text-[#69739a]"}`}>
+                <Icon name="grid" size={18} />
+              </button>
+              <button type="button" onClick={() => setView("list")} className={`flex h-11 w-11 items-center justify-center rounded-[9px] border ${view === "list" ? "border-[#dcefe2] bg-[#e8f8ed] text-[#07863a]" : "border-[#dfe5ec] bg-white text-[#69739a]"}`}>
+                <Icon name="list" size={18} />
+              </button>
+            </div>
+          </div>
+
+          <div className={`mt-4 grid gap-3 ${view === "grid" ? "grid-cols-2 xl:grid-cols-5" : "grid-cols-1"}`}>
+            {sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} />)}
+          </div>
+
+          {!sorted.length && (
+            <div className="flex min-h-[260px] items-center justify-center rounded-[12px] border border-dashed border-[#d9dfe7] bg-white text-[13px] text-[#69739a]">
+              No products match your selected filters.
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-[#dfe5ec] bg-white text-[12px] font-semibold text-[#10183f]"
+          >
+            View more products
+            <Icon name="chevronDown" size={16} />
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
 export default function Products({ isAuthenticated = false }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -493,6 +867,7 @@ export default function Products({ isAuthenticated = false }) {
           <HeroVisual isAuthenticated={isAuthenticated} />
         </div>
       </section>
+      <ProductCatalogue isAuthenticated={isAuthenticated} />
     </main>
   );
 }
