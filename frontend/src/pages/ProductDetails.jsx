@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import MarketplaceLayout from "../components/layout/MarketplaceLayout";
 import { getProductById, getRelatedProducts } from "../data/marketplaceApi";
+import { useCart } from "../context/CartContext";
 
 function Icon({ name, size = 20, strokeWidth = 1.8 }) {
   const paths = {
@@ -155,6 +156,7 @@ function Stars({ rating }) {
 function ProductDetail({ product, related }) {
   const [quantity, setQuantity] = useState(1);
   const [saved, setSaved] = useState(false);
+  const { addItem } = useCart();
 
   return (
     <main className="w-full bg-[#fbfcfd] px-4 pb-12 sm:px-6 lg:px-8">
@@ -222,10 +224,10 @@ function ProductDetail({ product, related }) {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <button type="button" className="flex h-[52px] items-center justify-center gap-2 rounded-[8px] border border-[#07863a] bg-white font-medium text-[#07863a]">
+                <button type="button" onClick={() => addItem(product, quantity)} className="flex h-[52px] items-center justify-center gap-2 rounded-[8px] border border-[#07863a] bg-white font-medium text-[#07863a]">
                   <Icon name="cart" /> Add to cart
                 </button>
-                <button type="button" className="h-[52px] rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</button>
+                <Link to={"/checkout/" + product.id} className="flex h-[52px] items-center justify-center rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</Link>
               </div>
 
               <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">
