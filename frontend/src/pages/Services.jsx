@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/services/hero 2.png";
-import { getServiceCollection } from "../data/marketplaceApi";
+import { getServiceCategoryCollections, getServiceCollection } from "../data/marketplaceApi";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -396,6 +396,104 @@ function HeroVisual({ isAuthenticated }) {
 }
 
 
+
+const SERVICE_CATEGORY_TONES = {
+  green: "bg-[#e4f8e9] text-[#07863a]",
+  blue: "bg-[#e5f1ff] text-[#1467d6]",
+  pink: "bg-[#fde4f4] text-[#c82d9d]",
+  yellow: "bg-[#fff1d6] text-[#9a6200]",
+  purple: "bg-[#eee5ff] text-[#6630d2]",
+  orange: "bg-[#ffe9dd] text-[#c44710]",
+  gray: "bg-[#efeff2] text-[#10183f]",
+};
+
+function ServiceCategoryCard({ category }) {
+  return (
+    <button type="button" className="group flex min-h-[174px] flex-col rounded-[13px] border border-[#e2e7ef] bg-white p-4 text-left transition-shadow hover:shadow-[0_7px_20px_rgba(16,24,63,0.06)] sm:p-4.5">
+      <div className="flex items-start justify-between gap-3">
+        <span className={`flex h-[56px] w-[56px] items-center justify-center rounded-full ${SERVICE_CATEGORY_TONES[category.tone] || SERVICE_CATEGORY_TONES.gray}`}>
+          <Icon name={category.icon} size={27} />
+        </span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ebfaef] text-[20px] text-[#07863a] transition-transform group-hover:translate-x-0.5">
+          →
+        </span>
+      </div>
+      <h3 className="mt-4 text-[14px] font-semibold tracking-[-0.02em] text-[#10183f] sm:text-[15px]">{category.label}</h3>
+      <p className="mt-1 max-w-[210px] text-[11px] leading-[17px] text-[#727b9d] sm:text-[12px]">{category.description}</p>
+    </button>
+  );
+}
+
+function ServiceCategoriesSection({ isAuthenticated }) {
+  const [categories, setCategories] = useState({ featured: [], interests: [], exploreMore: [] });
+
+  useEffect(() => {
+    let active = true;
+    getServiceCategoryCollections().then((data) => {
+      if (active) setCategories(data);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return (
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
+      <div className="flex items-start justify-between gap-5">
+        <div className="max-w-[780px]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#07863a] sm:text-[11px]">
+            {isAuthenticated ? "SERVICES FOR YOU" : "EXPLORE SERVICES"}
+          </p>
+
+          <h2 className="mt-3 text-[37px] font-bold leading-[1] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
+            {isAuthenticated ? (
+              <>
+                What do you <span className="text-[#07863a]">need help with?</span>
+              </>
+            ) : (
+              <>
+                Find help <span className="text-[#07863a]">for every need.</span>
+              </>
+            )}
+          </h2>
+
+          <p className="mt-2 text-[14px] leading-5 text-[#69739a] sm:text-[17px]">
+            {isAuthenticated
+              ? "Start with your interests or explore something new."
+              : "Browse popular service categories and find trusted professionals around you."}
+          </p>
+        </div>
+
+        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e8f9ed] px-6 py-3.5 text-[12px] font-semibold text-[#07863a] sm:flex">
+          View all services <span className="text-[18px]">→</span>
+        </button>
+      </div>
+
+      {isAuthenticated ? (
+        <>
+          <div className="mt-6">
+            <h3 className="text-[15px] font-semibold text-[#10183f]">Your interests</h3>
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {categories.interests.map((category) => <ServiceCategoryCard key={category.id} category={category} />)}
+            </div>
+          </div>
+          <div className="my-5 border-t border-[#e7ebef]" />
+          <div>
+            <h3 className="text-[15px] font-semibold text-[#10183f]">Explore more</h3>
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {categories.exploreMore.map((category) => <ServiceCategoryCard key={category.id} category={category} />)}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {categories.featured.map((category) => <ServiceCategoryCard key={category.id} category={category} />)}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function ServiceListingCard({ service }) {
   return (
     <article className="overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
@@ -597,6 +695,7 @@ export default function Services({ isAuthenticated = false }) {
         </div>
       </section>
       <ServicesListingSection isAuthenticated={isAuthenticated} />
+      <ServiceCategoriesSection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
