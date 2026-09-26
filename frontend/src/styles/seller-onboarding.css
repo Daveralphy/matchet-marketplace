@@ -5,7 +5,7 @@
   width: calc(100% - 40px);
   max-width: 1470px;
   height: calc(100vh - 26px);
-  min-height: 720px;
+  min-height: 0;
   margin: 13px auto;
   display: grid;
   grid-template-columns: 35% 65%;
