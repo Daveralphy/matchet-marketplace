@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import MarketplaceLayout from "../components/layout/MarketplaceLayout";
 import { getProductById, getRelatedProducts } from "../data/marketplaceApi";
+import { useCart } from "../context/CartContext";
 
 function Icon({ name, size = 20, strokeWidth = 1.8 }) {
   const paths = {
@@ -155,6 +156,14 @@ function Stars({ rating }) {
 function ProductDetail({ product, related }) {
   const [quantity, setQuantity] = useState(1);
   const [saved, setSaved] = useState(false);
+  const [added, setAdded] = useState(false);
+  const { addItem } = useCart();
+
+  const handleAddToCart = () => {
+    addItem(product, quantity);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1800);
+  };
 
   return (
     <main className="w-full bg-[#fbfcfd] px-4 pb-12 sm:px-6 lg:px-8">
@@ -222,10 +231,10 @@ function ProductDetail({ product, related }) {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <button type="button" className="flex h-[52px] items-center justify-center gap-2 rounded-[8px] border border-[#07863a] bg-white font-medium text-[#07863a]">
-                  <Icon name="cart" /> Add to cart
+                <button type="button" onClick={handleAddToCart} className={`flex h-[52px] items-center justify-center gap-2 rounded-[8px] border font-medium transition-all duration-200 ${added ? "scale-[1.02] border-[#087d35] bg-[#eaf9ee] text-[#087d35]" : "border-[#07863a] bg-white text-[#07863a]"}`}>
+                  <Icon name="cart" /> {added ? "Added to cart ✓" : "Add to cart"}
                 </button>
-                <button type="button" className="h-[52px] rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</button>
+                <Link to={"/checkout/" + product.id} state={{ quantity }} className="flex h-[52px] items-center justify-center rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</Link>
               </div>
 
               <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">

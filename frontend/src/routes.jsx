@@ -28,6 +28,8 @@ import ServiceDetailsPage from "./pages/ServiceDetails";
 import Explore from "./pages/Explore";
 import Services from "./pages/Services";
 import ForProviders from "./pages/ForProviders";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -131,6 +133,30 @@ const router = createBrowserRouter([
     element: (
       <MarketplaceLayout>
         <ServiceDetailsPage />
+      </MarketplaceLayout>
+    ),
+  },
+  {
+    path: "/cart",
+    element: (
+      <MarketplaceLayout>
+        <Cart />
+      </MarketplaceLayout>
+    ),
+  },
+  {
+    path: "/checkout",
+    element: (
+      <MarketplaceLayout>
+        <Checkout />
+      </MarketplaceLayout>
+    ),
+  },
+  {
+    path: "/checkout/:id",
+    element: (
+      <MarketplaceLayout>
+        <Checkout />
       </MarketplaceLayout>
     ),
   },

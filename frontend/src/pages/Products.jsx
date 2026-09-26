@@ -4,8 +4,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
+import { useCart } from "../context/CartContext";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
+import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -485,18 +487,20 @@ function HeroVisual({ isAuthenticated }) {
 
 
 function ProductImage({ product }) {
-  const icon = product.icon === "bag" ? "bag" : product.icon === "home" ? "sofa" : "monitor";
-
-  return (
-    <div className={`flex h-[152px] items-center justify-center overflow-hidden rounded-[9px] ${product.imageTone || "bg-[#f1f1ef]"}`}>
-      <div className="flex h-[86px] w-[86px] items-center justify-center rounded-[24px] bg-white/65 text-[#27335f] shadow-[0_8px_20px_rgba(16,24,63,0.08)]">
-        <Icon name={icon} size={52} strokeWidth={1.45} />
-      </div>
-    </div>
-  );
+  return <MarketplaceProductVisual product={product} size="standard" />;
 }
 
 function ProductCatalogueCard({ product }) {
+  const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    addItem(product);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1600);
+  };
   const rating = Number(product.rating) || 0;
 
   return (
@@ -505,10 +509,11 @@ function ProductCatalogueCard({ product }) {
         <ProductImage product={product} />
         <button
           type="button"
-          aria-label={`Save ${product.title}`}
-          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)]"
+          aria-label={`Add ${product.title} to cart`}
+          onClick={handleAddToCart}
+          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 ${added ? "scale-110 bg-[#eaf9ee] text-[#07863a]" : "bg-white text-[#07863a]"}`}
         >
-          <Icon name="heart" size={16} />
+          <span className={added ? "animate-[pulse_0.45s_ease-out]" : ""}><Icon name="cart" size={16} /></span>
         </button>
       </div>
 

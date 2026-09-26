@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../../assets/logo/matchet_logoname.png";
 import mobileLogo from "../../assets/logo/matchet_logo.png";
+import { useCart } from "../../context/CartContext";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
@@ -210,6 +211,7 @@ export default function Header({
   initialLocation = "Lagos, Nigeria",
 }) {
   const location = useLocation();
+  const { cartCount: liveCartCount } = useCart();
 
   const [selectedLocation, setSelectedLocation] = useState(initialLocation);
   const [locationOpen, setLocationOpen] = useState(false);
@@ -656,7 +658,7 @@ export default function Header({
 
             {cartCount > 0 && (
               <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#07983f] px-1 text-[10px] font-semibold text-white">
-                {cartCount}
+                {liveCartCount}
               </span>
             )}
 
