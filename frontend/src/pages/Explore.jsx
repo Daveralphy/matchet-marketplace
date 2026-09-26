@@ -478,8 +478,8 @@ function ExploreResultsSection({ isAuthenticated }) {
 
   const filteredItems = sourceItems
     .filter((item) => {
-      if (activeTab === "products") return item.category !== "Services";
-      if (activeTab === "services") return item.category === "Services" || item.category.includes("Service");
+      if (activeTab === "products") return item.type === "product";
+      if (activeTab === "services") return item.type === "service";
       if (activeTab === "providers") return true;
       return true;
     })
