@@ -501,6 +501,212 @@ function ServiceCategoriesSection({ isAuthenticated }) {
 }
 
 
+function MiniSearchVisual() {
+  return (
+    <div className="flex h-full flex-col justify-center gap-2 bg-[#eef3f0] px-3.5">
+      <div className="flex items-center gap-2 rounded-[7px] bg-white px-3 py-2.5 shadow-[0_3px_8px_rgba(16,24,63,0.06)]">
+        <Icon name="search" size={16} strokeWidth={2} />
+        <span className="text-[9px] font-medium text-[#10183f]">Home cleaning</span>
+      </div>
+      {[
+        ["home", "Home Services", "#07863a"],
+        ["tools", "Repairs & Maintenance", "#1467d6"],
+        ["beauty", "Beauty & Personal Care", "#c82d9d"],
+      ].map(([icon, label, color]) => (
+        <div key={label} className="flex items-center gap-2 rounded-[7px] bg-white/95 px-2.5 py-2">
+          <span style={{ color }}><Icon name={icon} size={15} strokeWidth={2} /></span>
+          <span className="text-[8px] font-medium text-[#27335f]">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MiniBookingVisual() {
+  return (
+    <div className="flex h-full flex-col bg-white px-3 py-3">
+      <p className="text-[8px] font-semibold text-[#10183f]">Select a date</p>
+      <div className="mt-2 grid grid-cols-4 gap-1.5">
+        {["Mon", "Tue", "Wed", "Thu"].map((day, i) => (
+          <div key={day} className={\`rounded-[6px] border px-1 py-2 text-center \${i === 1 ? "border-[#07863a] bg-[#07863a] text-white" : "border-[#edf0f3] bg-white text-[#27335f]"}\`}>
+            <span className="block text-[7px]">{day}</span>
+            <span className="mt-1 block text-[8px] font-semibold">{12 + i}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-[8px] font-semibold text-[#10183f]">Select a time</p>
+      <div className="mt-2 grid grid-cols-2 gap-1.5">
+        <span className="rounded-[6px] border border-[#e9edf1] px-2 py-2 text-center text-[8px] text-[#27335f]">9:00 AM</span>
+        <span className="rounded-[6px] bg-[#07863a] px-2 py-2 text-center text-[8px] font-semibold text-white">10:00 AM</span>
+      </div>
+    </div>
+  );
+}
+
+function MiniReviewVisual() {
+  return (
+    <div className="flex h-full flex-col justify-center bg-white px-3.5">
+      <p className="text-[8px] font-semibold text-[#10183f]">How was your experience?</p>
+      <div className="mt-2 flex gap-1 text-[18px] leading-none text-[#f4a900]">★★★★★</div>
+      <div className="mt-3 rounded-[7px] bg-[#f5f7f8] px-2.5 py-2.5 text-[8px] leading-3 text-[#4f5979]">
+        Great service! Very professional and on time.
+      </div>
+      <button type="button" className="mt-2 rounded-full bg-[#07863a] py-2 text-[8px] font-semibold text-white">
+        Submit Review
+      </button>
+    </div>
+  );
+}
+
+function MiniProviderVisual({ image, rating }) {
+  return (
+    <div className="relative h-full overflow-hidden bg-[#ddd]">
+      <img src={image} alt="" className="h-full w-full object-cover" />
+      <div className="absolute bottom-3 left-2.5 rounded-full bg-white px-2.5 py-1.5 text-[9px] font-semibold text-[#10183f] shadow-sm">
+        <span className="mr-1 text-[#f4a900]">★</span>{rating}
+      </div>
+      <div className="absolute bottom-[-2px] left-2.5 translate-y-full rounded-full bg-white px-2.5 py-1.5 text-[8px] font-semibold text-[#07863a] shadow-sm">
+        ✓ Verified
+      </div>
+    </div>
+  );
+}
+
+function LoggedOutServiceJourney({ content, reassurance }) {
+  const visuals = [
+    <MiniSearchVisual key="search" />,
+    <MiniProviderVisual key="provider" image={person1} rating="4.9" />,
+    <MiniBookingVisual key="booking" />,
+    <MiniProviderVisual key="provider-2" image={person2} />,
+    <MiniReviewVisual key="review" />,
+  ];
+
+  return (
+    <>
+      <div className="relative mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5 lg:gap-6">
+        {content.steps.map((step, index) => (
+          <div key={step.number} className="relative">
+            <span className="absolute -left-1 -top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#effbf1] text-[17px] font-semibold text-[#07863a]">
+              {step.number}
+            </span>
+            <div className="h-[180px] overflow-hidden rounded-[15px] bg-white shadow-[0_6px_18px_rgba(16,24,63,0.08)]">
+              {visuals[index]}
+            </div>
+            {index < 4 && (
+              <span className="absolute -right-5 top-[92px] hidden text-[24px] font-light text-[#4f5979] lg:block">→</span>
+            )}
+            <h3 className="mt-5 text-[14px] font-semibold tracking-[-0.02em] text-[#10183f]">{step.title}</h3>
+            <p className="mt-1.5 text-[11px] leading-[17px] text-[#69739a]">{step.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-8 border-t border-[#e8edf0] pt-6">
+        <div className="grid grid-cols-1 items-center gap-5 lg:grid-cols-[1fr_1fr_1fr_auto]">
+          {reassurance.map((item, index) => (
+            <div key={item.title} className="flex min-h-[46px] items-center gap-3 lg:border-r lg:border-[#dfe6e2] lg:pr-5">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e8f9ec] text-[#07863a]">
+                <Icon name={item.icon} size={21} />
+              </span>
+              <div>
+                <h3 className="text-[11px] font-semibold text-[#07863a]">{item.title}</h3>
+                <p className="mt-1 text-[9px] leading-3 text-[#69739a]">{item.description}</p>
+              </div>
+            </div>
+          ))}
+          <button type="button" className="flex h-[49px] items-center justify-center gap-3 rounded-[11px] bg-[#07863a] px-7 text-[11px] font-semibold text-white">
+            Find a service <span className="text-[18px] leading-none">→</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function LoggedInServiceJourney({ content, reassurance, booking }) {
+  const stepColors = [
+    ["bg-[#e7f8eb]", "text-[#07863a]"],
+    ["bg-[#e6f1ff]", "text-[#1467d6]"],
+    ["bg-[#fde7f3]", "text-[#d42c83]"],
+    ["bg-[#ffeddd]", "text-[#c56312]"],
+    ["bg-[#eee6ff]", "text-[#6530d2]"],
+  ];
+
+  return (
+    <>
+      <div className="mt-7 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_230px]">
+        <div className="relative grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-5 sm:gap-x-5">
+          <div className="pointer-events-none absolute left-[8%] right-[5%] top-7 hidden border-t-2 border-dashed border-[#dce4e0] sm:block" />
+          {content.steps.map((step, index) => (
+            <div key={step.number} className="relative z-10">
+              <div className={\`flex h-[58px] w-[58px] items-center justify-center rounded-full \${stepColors[index][0]} \${stepColors[index][1]}\`}>
+                <Icon name={step.icon} size={28} strokeWidth={1.9} />
+              </div>
+              <span className="mt-3 inline-flex rounded-full bg-[#edf9ef] px-2 py-1 text-[9px] font-semibold text-[#07863a]">{step.number}</span>
+              <h3 className="mt-2 text-[14px] font-semibold text-[#10183f]">{step.title}</h3>
+              <p className="mt-1 text-[10px] leading-[15px] text-[#69739a]">{step.description}</p>
+            </div>
+          ))}
+        </div>
+
+        {booking && (
+          <aside className="rounded-[14px] border border-[#e5eaf0] bg-white p-3.5 shadow-[0_6px_20px_rgba(16,24,63,0.05)]">
+            <div className="flex items-center justify-between text-[9px] font-semibold text-[#10183f]">
+              <span>Upcoming booking</span><button type="button" className="text-[#07863a]">View all</button>
+            </div>
+            <div className="mt-3 flex gap-3">
+              <img src={person1} alt="" className="h-[58px] w-[58px] rounded-[8px] object-cover" />
+              <div className="min-w-0">
+                <h3 className="text-[10px] font-semibold text-[#10183f]">{booking.serviceId === "service-recommended-1" ? "Home Cleaning" : booking.provider}</h3>
+                <p className="mt-1 text-[8px] text-[#69739a]">{booking.provider}</p>
+                <p className="mt-1 text-[8px] text-[#69739a]">{booking.scheduledLabel}</p>
+                <p className="mt-1 text-[8px] text-[#69739a]">⌖ {booking.location}</p>
+              </div>
+            </div>
+            <span className="mt-3 inline-flex rounded-full bg-[#e6f9e9] px-3 py-1.5 text-[8px] font-semibold text-[#07863a]">{booking.status} ✓</span>
+            <div className="mt-3 flex gap-2 border-t border-[#edf0f2] pt-3">
+              <button type="button" className="flex-1 rounded-[8px] bg-[#eef7f0] py-2 text-[8px] font-semibold text-[#07863a]">View details</button>
+              <button type="button" className="flex-1 rounded-[8px] bg-[#07863a] py-2 text-[8px] font-semibold text-white">Reschedule</button>
+            </div>
+          </aside>
+        )}
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-[275px_1fr]">
+        <div className="rounded-[14px] bg-[#effbf1] p-5">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#dff6e4] text-[#07863a]"><Icon name="users" size={22}/></span>
+          <h3 className="mt-3 text-[15px] font-semibold leading-5 text-[#10183f]">A better way<br />to get things done.</h3>
+          <p className="mt-3 text-[10px] leading-4 text-[#69739a]">Trusted providers. Simple booking.<br />Real results.</p>
+        </div>
+        <div className="grid grid-cols-2 divide-x divide-[#e3e9e5] rounded-[14px] border border-[#edf1ee] bg-white px-2 py-5 sm:grid-cols-4">
+          {[
+            ["shield", "Verified", "providers"],
+            ["lock", "Secure", "payments"],
+            ["message", "In-app", "communication"],
+            ["users", "Support", "when you need it"],
+          ].map(([icon, title, label]) => (
+            <div key={title} className="flex flex-col items-center justify-center gap-2 px-3 text-center">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e9f9ed] text-[#07863a]"><Icon name={icon} size={19}/></span>
+              <span className="text-[9px] font-medium text-[#27335f]">{title}<br />{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-[14px] border border-[#e1e8e3] bg-white px-5 py-4 sm:flex-row">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e7f9eb] text-[#07863a]"><Icon name="sparkles" size={20}/></span>
+          <div>
+            <p className="text-[11px] font-semibold text-[#10183f]">Need help finding the right service?</p>
+            <p className="mt-1 text-[9px] text-[#69739a]">Our recommendations can help you discover trusted providers based on your activity.</p>
+          </div>
+        </div>
+        <button type="button" className="rounded-[10px] border border-[#07863a] px-6 py-3 text-[10px] font-semibold text-[#07863a]">Explore services <span className="ml-2">→</span></button>
+      </div>
+    </>
+  );
+}
+
 function ServiceJourneySection({ isAuthenticated }) {
   const [data, setData] = useState(null);
 
@@ -516,89 +722,18 @@ function ServiceJourneySection({ isAuthenticated }) {
 
   const content = isAuthenticated ? data.experience.loggedIn : data.experience.loggedOut;
   const reassurance = data.experience.reassurance ?? [];
-  const booking = data.upcomingBooking;
-  const stepImages = isAuthenticated ? [] : [null, person1, null, person2, null];
 
   return (
-    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-10 lg:px-9 lg:py-11 ${isAuthenticated ? "bg-[#fbfdfb]" : "bg-[#fbfcfb]"}`}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#07863a] sm:text-[11px]">{content.eyebrow}</p>
-      <h2 className="mt-3 max-w-[900px] text-[38px] font-bold leading-[1] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
+    <section className={\`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-11 lg:px-10 lg:py-12 \${isAuthenticated ? "bg-[#fbfdfb]" : "bg-[#fbfcfb]"}\`}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#07863a] sm:text-[11px]">{content.eyebrow}</p>
+      <h2 className="mt-3 max-w-[920px] text-[38px] font-bold leading-[1] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
         {isAuthenticated ? <>From match to <span className="text-[#07863a]">completed service.</span></> : <>Getting help <span className="text-[#07863a]">should be simple.</span></>}
       </h2>
       <p className="mt-2 text-[14px] leading-5 text-[#69739a] sm:text-[17px]">{content.subtitle}</p>
-
       {isAuthenticated ? (
-        <>
-          <div className="mt-7 grid grid-cols-1 gap-5 lg:grid-cols-[1fr_230px]">
-            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-5">
-              {content.steps.map((step) => (
-                <div key={step.number} className="relative">
-                  <div className={`flex h-14 w-14 items-center justify-center rounded-full ${step.number === "02" ? "bg-[#e7f1ff] text-[#1467d6]" : step.number === "03" ? "bg-[#fde5f2] text-[#d42c83]" : step.number === "04" ? "bg-[#ffeddc] text-[#c56312]" : step.number === "05" ? "bg-[#eee5ff] text-[#6530d2]" : "bg-[#e4f8e9] text-[#07863a]"}`}>
-                    <Icon name={step.icon} size={27} />
-                  </div>
-                  <span className="mt-2 inline-flex rounded-full bg-[#edf9ef] px-2 py-1 text-[10px] font-semibold text-[#07863a]">{step.number}</span>
-                  <h3 className="mt-2 text-[14px] font-semibold text-[#10183f]">{step.title}</h3>
-                  <p className="mt-1 text-[10px] leading-4 text-[#747d9e] sm:text-[11px]">{step.description}</p>
-                </div>
-              ))}
-            </div>
-            {booking && (
-              <aside className="rounded-[14px] border border-[#e5eaf0] bg-white p-4 shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
-                <div className="flex items-center justify-between text-[10px] font-semibold text-[#10183f]"><span>Upcoming booking</span><span className="text-[#07863a]">View all</span></div>
-                <div className="mt-4 h-20 rounded-[10px] bg-[#e7eee8]">
-                  <div className="flex h-full items-center justify-center text-[#07863a]"><Icon name="home" size={30}/></div>
-                </div>
-                <h3 className="mt-3 text-[11px] font-semibold text-[#10183f]">{booking.provider}</h3>
-                <p className="mt-1 text-[10px] text-[#69739a]">{booking.scheduledLabel}</p>
-                <p className="mt-1 text-[10px] text-[#69739a]">{booking.location}</p>
-                <span className="mt-3 inline-flex rounded-full bg-[#e5f8e9] px-3 py-1.5 text-[9px] font-semibold text-[#07863a]">{booking.status} ✓</span>
-              </aside>
-            )}
-          </div>
-          <div className="mt-7 grid grid-cols-2 gap-3 rounded-[14px] bg-[#effbf1] p-4 sm:grid-cols-4">
-            {["Verified providers","Secure payments","In-app communication","Support when you need it"].map((label, index) => (
-              <div key={label} className="flex items-center gap-2 border-r border-[#dcefe0] last:border-0">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#07863a]"><Icon name={reassurance[index]?.icon || "shield"} size={18}/></span>
-                <span className="text-[10px] font-medium text-[#27335f]">{label}</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-6 flex items-center justify-between rounded-[14px] border border-[#e4eaf0] bg-white px-5 py-4">
-            <div><p className="text-[12px] font-semibold text-[#10183f]">Need help finding the right service?</p><p className="mt-1 text-[10px] text-[#747d9e]">Our recommendations can help you discover trusted providers based on your activity.</p></div>
-            <button type="button" className="rounded-full border border-[#07863a] px-5 py-2.5 text-[10px] font-semibold text-[#07863a]">Explore services →</button>
-          </div>
-        </>
+        <LoggedInServiceJourney content={content} reassurance={reassurance} booking={data.upcomingBooking} />
       ) : (
-        <>
-          <div className="mt-7 grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-5">
-            {content.steps.map((step, index) => (
-              <div key={step.number} className="relative">
-                <span className="absolute -left-1 -top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#effbf1] text-[17px] font-semibold text-[#07863a]">{step.number}</span>
-                <div className="h-[180px] overflow-hidden rounded-[14px] bg-[#edf2ef] shadow-[0_5px_18px_rgba(16,24,63,0.06)]">
-                  {stepImages[index] ? <img src={stepImages[index]} alt="" className="h-full w-full object-cover" /> : (
-                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#f2f7f4] to-[#e1eee5]">
-                      <div className="rounded-xl bg-white p-5 text-center shadow-sm">
-                        <Icon name={index === 0 ? "search" : index === 2 ? "calendar" : "star"} size={34} />
-                        <p className="mt-2 text-[10px] font-semibold text-[#10183f]">{step.title}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <h3 className="mt-4 text-[15px] font-semibold text-[#10183f]">{step.title}</h3>
-                <p className="mt-1 text-[11px] leading-5 text-[#747d9e]">{step.description}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-8 grid grid-cols-1 gap-4 border-t border-[#e8edf0] pt-6 md:grid-cols-3">
-            {reassurance.map((item) => (
-              <div key={item.title} className="flex items-center gap-3 border-r border-[#e3e9ec] last:border-0">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e7f8eb] text-[#07863a]"><Icon name={item.icon} size={22}/></span>
-                <div><h3 className="text-[11px] font-semibold text-[#07863a]">{item.title}</h3><p className="mt-1 text-[9px] text-[#747d9e]">{item.description}</p></div>
-              </div>
-            ))}
-            <button type="button" className="rounded-[10px] bg-[#07863a] px-5 py-3 text-[11px] font-semibold text-white">Find a service →</button>
-          </div>
-        </>
+        <LoggedOutServiceJourney content={content} reassurance={reassurance} />
       )}
     </section>
   );
