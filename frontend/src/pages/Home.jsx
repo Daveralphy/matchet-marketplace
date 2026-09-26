@@ -11,6 +11,8 @@ import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } fro
 import { MOBILE_APP_SECTIONS } from "../data/homeMobileAppMock";
 import mockup2 from "../assets/inspirations/homepage/mockup2.png";
 import mockup3 from "../assets/inspirations/homepage/mockup3.png";
+import appStoreBadge from "../assets/inspirations/homepage/app-store-badge.svg";
+import googlePlayBadge from "../assets/inspirations/homepage/google-play-badge.svg";
 import matchMockup from "../assets/inspirations/homepage/mockup1.png";
 
 const CATEGORIES = [
@@ -987,16 +989,15 @@ const MOBILE_APP_TONES = {
 };
 
 function MobileAppBadge({ store }) {
+  const badge = store === "apple" ? appStoreBadge : googlePlayBadge;
+  const label = store === "apple" ? "Download on the App Store" : "Get it on Google Play";
+
   return (
-    <div className="flex h-[52px] min-w-[154px] items-center gap-2 rounded-[8px] bg-black px-3.5 text-white shadow-[0_5px_12px_rgba(0,0,0,0.12)]">
-      <span className="text-[24px] leading-none">{store === "apple" ? "●" : "▶"}</span>
-      <span className="leading-none">
-        <span className="block text-[8px]">{store === "apple" ? "Download on the" : "GET IT ON"}</span>
-        <span className="mt-0.5 block text-[17px] font-medium tracking-[-0.03em]">
-          {store === "apple" ? "App Store" : "Google Play"}
-        </span>
-      </span>
-    </div>
+    <img
+      src={badge}
+      alt={label}
+      className="h-[52px] w-auto"
+    />
   );
 }
 
