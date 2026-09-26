@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { getProductById } from "../data/marketplaceApi";
 import { useCart, parsePrice, formatNaira } from "../context/CartContext";
+import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
 
 function Icon({ name, size = 22 }) {
   const p={truck:<><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="19" r="1.7"/><circle cx="18" cy="19" r="1.7"/></>,pin:<><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.3"/></>,card:<><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></>,bank:<><path d="m3 9 9-5 9 5"/><path d="M5 10v7M9 10v7M15 10v7M19 10v7M3 19h18"/></>,phone:<><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></>,shield:<path d="M12 3 20 6v5c0 5-3.3 8.7-8 10-4.7-1.3-8-5-8-10V6l8-3Z"/>,package:<><path d="m4 8 8-4 8 4v9l-8 4-8-4V8Z"/><path d="m4 8 8 4 8-4M12 12v9"/></>,cart:<><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.5L20.5 7H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></>};return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{p[name]}</svg>;
 }
-function Thumb({item}){const image=Array.isArray(item.images)?item.images[0]:Array.isArray(item.gallery)?item.gallery[0]:null;return <div className={"flex h-[106px] w-[106px] shrink-0 items-center justify-center overflow-hidden rounded-[9px] "+(item.imageTone||"bg-[#f1f1ef]")}>{image?<img src={image} alt={item.title} className="h-full w-full object-cover"/>:<span className="text-[36px] font-bold text-[#27335f]/30">M</span>}</div>}
+function Thumb({item}){ return <MarketplaceProductVisual product={item} size="checkout" /> }
+
 function Option({selected,onClick,icon,title,description}){return <button type="button" onClick={onClick} className={"flex w-full items-center gap-4 rounded-[9px] border p-4 text-left "+(selected?"border-[#07863a] bg-[#f0fbf3]":"border-[#e0e6ed] bg-white")}><span className={"flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 "+(selected?"border-[#07863a]":"border-[#b8c1d0]")}>{selected&&<span className="h-2.5 w-2.5 rounded-full bg-[#07863a]"/>}</span><Icon name={icon} size={27}/><span><strong className="block text-[14px] text-[#10183f]">{title}</strong><span className="text-[12px] text-[#69739a]">{description}</span></span></button>}
 export default function CheckoutPage(){
- const {id}=useParams();const {items:cartItems,addItem}=useCart();const [product,setProduct]=useState(null);const [delivery,setDelivery]=useState("delivery");const [payment,setPayment]=useState("card");const [address,setAddress]=useState("Lekki Phase 1, Lagos");
+ const {id}=useParams();const location=useLocation();const {items:cartItems,addItem}=useCart();const [product,setProduct]=useState(null);const [delivery,setDelivery]=useState("delivery");const [payment,setPayment]=useState("card");const [address,setAddress]=useState("Lekki Phase 1, Lagos");
  useEffect(()=>{if(id)getProductById(id).then(setProduct)},[id]);
- const checkoutItems=id&&product?[{...product,quantity:1}]:cartItems;
+ const checkoutItems=id&&product?[{...product,quantity:Math.max(1, Number(location.state?.quantity) || 1)}]:cartItems;
  const subtotal=useMemo(()=>checkoutItems.reduce((sum,item)=>sum+parsePrice(item.price)*item.quantity,0),[checkoutItems]);
  const deliveryFee=delivery==="delivery"&&checkoutItems.length?2000:0;const total=subtotal+deliveryFee;
  if(!checkoutItems.length)return <main className="flex min-h-[60vh] items-center justify-center"><div className="text-center"><h1 className="text-2xl font-bold text-[#10183f]">Your cart is empty</h1><Link to="/products" className="mt-4 inline-block text-[#07863a]">Continue shopping →</Link></div></main>;
