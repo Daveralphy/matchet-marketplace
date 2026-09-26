@@ -102,7 +102,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #111827;
+  color: #2563eb;
 }
 
 .profile-camera-button svg {
@@ -206,6 +206,25 @@
 .profile-summary-actions .profile-edit-button {
   width: 100%;
   justify-content: center;
+  gap: 6px;
+  color: #2563eb;
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.profile-summary-actions .profile-edit-button svg {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.profile-summary-actions .profile-edit-button:hover {
+  background-color: #dbeafe;
+  border-color: #93c5fd;
+  color: #2563eb;
+}
+
+.profile-summary-actions .profile-edit-button:hover svg {
+  color: #2563eb;
 }
 
 /* Profile sections */
