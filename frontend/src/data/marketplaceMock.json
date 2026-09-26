@@ -361,6 +361,120 @@
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#10183f] text-white",
       "type": "service"
+    },
+    {
+      "id": "service-featured-1",
+      "title": "AC Repair & Maintenance",
+      "category": "Home Services",
+      "price": "From ₦15,000",
+      "rating": 4.8,
+      "reviews": 124,
+      "seller": "CoolFix Services",
+      "sellerInitial": "C",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#4f806c] via-[#d8d0c6] to-[#8d6b56]",
+      "type": "service"
+    },
+    {
+      "id": "service-featured-2",
+      "title": "Home Hair Styling",
+      "category": "Beauty & Care",
+      "price": "From ₦10,000",
+      "rating": 4.9,
+      "reviews": 88,
+      "seller": "Glow Studio",
+      "sellerInitial": "G",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#8f6754] via-[#e3c8b7] to-[#6b493e]",
+      "type": "service"
+    },
+    {
+      "id": "service-featured-3",
+      "title": "Plumbing Services",
+      "category": "Home Services",
+      "price": "From ₦12,000",
+      "rating": 4.7,
+      "reviews": 96,
+      "seller": "FixIt Right",
+      "sellerInitial": "F",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#5f7283] via-[#d7d9d7] to-[#38536b]",
+      "type": "service"
+    },
+    {
+      "id": "service-featured-4",
+      "title": "Private Chef & Catering",
+      "category": "Food & Catering",
+      "price": "From ₦25,000",
+      "rating": 4.9,
+      "reviews": 76,
+      "seller": "Tasty Bites",
+      "sellerInitial": "T",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#c4a27e] via-[#eee0d1] to-[#76533f]",
+      "type": "service"
+    },
+    {
+      "id": "service-recommended-1",
+      "title": "Home Cleaning",
+      "category": "Home Services",
+      "price": "From ₦12,000",
+      "rating": 4.8,
+      "reviews": 210,
+      "seller": "CleanHub NG",
+      "sellerInitial": "C",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "match": "96% Match",
+      "imageTone": "bg-gradient-to-br from-[#7e9272] via-[#e4dfd1] to-[#5f7156]",
+      "type": "service"
+    },
+    {
+      "id": "service-recommended-2",
+      "title": "Electrical Services",
+      "category": "Repairs",
+      "price": "From ₦15,000",
+      "rating": 4.7,
+      "reviews": 118,
+      "seller": "BrightFix Solutions",
+      "sellerInitial": "B",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#3f5547] via-[#aeb5ad] to-[#28352e]",
+      "type": "service"
+    },
+    {
+      "id": "service-recommended-3",
+      "title": "Facial Treatment",
+      "category": "Beauty & Care",
+      "price": "From ₦18,000",
+      "rating": 4.9,
+      "reviews": 95,
+      "seller": "Glow & Care",
+      "sellerInitial": "G",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#c69e8e] via-[#f0ddd1] to-[#9a7064]",
+      "type": "service"
+    },
+    {
+      "id": "service-recommended-4",
+      "title": "Event Catering",
+      "category": "Food & Catering",
+      "price": "From ₦30,000",
+      "rating": 4.8,
+      "reviews": 132,
+      "seller": "TasteLab Catering",
+      "sellerInitial": "T",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "match": "92% Match",
+      "imageTone": "bg-gradient-to-br from-[#8c6a50] via-[#e7d8c2] to-[#624534]",
+      "type": "service"
     }
   ],
   "collections": {
@@ -400,7 +514,8 @@
   "meta": {
     "source": "mock-backend",
     "version": 1,
-    "providerSource": "mock-backend"
+    "providerSource": "mock-backend",
+    "serviceSource": "mock-backend"
   },
   "providers": [
     {
@@ -612,5 +727,324 @@
         "tone": "blue"
       }
     ]
+  },
+  "serviceCollections": {
+    "featured": [
+      "service-featured-1",
+      "service-featured-2",
+      "service-featured-3",
+      "service-featured-4"
+    ],
+    "recommended": [
+      "service-recommended-1",
+      "service-recommended-2",
+      "service-recommended-3",
+      "service-recommended-4"
+    ]
+  },
+  "serviceCategories": {
+    "featured": [
+      {
+        "id": "home-services",
+        "label": "Home Services",
+        "description": "Cleaning, plumbing, electrical and more.",
+        "icon": "home",
+        "tone": "green"
+      },
+      {
+        "id": "repairs-maintenance",
+        "label": "Repairs & Maintenance",
+        "description": "Phone, appliance, electronics and more.",
+        "icon": "tools",
+        "tone": "blue"
+      },
+      {
+        "id": "beauty-personal-care",
+        "label": "Beauty & Personal Care",
+        "description": "Hair, nails, skincare, spa and more.",
+        "icon": "beauty",
+        "tone": "pink"
+      },
+      {
+        "id": "professional-services",
+        "label": "Professional Services",
+        "description": "Consulting, legal, accounting and more.",
+        "icon": "briefcase",
+        "tone": "yellow"
+      },
+      {
+        "id": "events-catering",
+        "label": "Events & Catering",
+        "description": "Event planning, catering, decor and more.",
+        "icon": "calendar",
+        "tone": "purple"
+      },
+      {
+        "id": "cleaning-services",
+        "label": "Cleaning Services",
+        "description": "Home, office, deep cleaning and more.",
+        "icon": "tools",
+        "tone": "green"
+      },
+      {
+        "id": "automotive-services",
+        "label": "Automotive Services",
+        "description": "Repairs, maintenance, car care and more.",
+        "icon": "car",
+        "tone": "orange"
+      },
+      {
+        "id": "more-services",
+        "label": "More Services",
+        "description": "Explore all service categories.",
+        "icon": "more",
+        "tone": "gray"
+      }
+    ],
+    "interests": [
+      {
+        "id": "home-services",
+        "label": "Home Services",
+        "description": "Cleaning, plumbing, electrical and more.",
+        "icon": "home",
+        "tone": "green"
+      },
+      {
+        "id": "repairs-maintenance",
+        "label": "Repairs & Maintenance",
+        "description": "Phone, appliance, electronics and more.",
+        "icon": "tools",
+        "tone": "blue"
+      },
+      {
+        "id": "beauty-personal-care",
+        "label": "Beauty & Personal Care",
+        "description": "Hair, nails, skincare, spa and more.",
+        "icon": "beauty",
+        "tone": "pink"
+      },
+      {
+        "id": "professional-services",
+        "label": "Professional Services",
+        "description": "Consulting, legal, accounting and more.",
+        "icon": "briefcase",
+        "tone": "yellow"
+      }
+    ],
+    "exploreMore": [
+      {
+        "id": "events-catering",
+        "label": "Events & Catering",
+        "description": "Event planning, catering, decor and more.",
+        "icon": "calendar",
+        "tone": "purple"
+      },
+      {
+        "id": "cleaning-services",
+        "label": "Cleaning Services",
+        "description": "Home, office, deep cleaning and more.",
+        "icon": "tools",
+        "tone": "green"
+      },
+      {
+        "id": "automotive-services",
+        "label": "Automotive Services",
+        "description": "Repairs, maintenance, car care and more.",
+        "icon": "car",
+        "tone": "orange"
+      },
+      {
+        "id": "more-services",
+        "label": "More Services",
+        "description": "Explore all service categories.",
+        "icon": "more",
+        "tone": "gray"
+      }
+    ]
+  },
+  "serviceExperience": {
+    "loggedOut": {
+      "eyebrow": "HOW SERVICES WORK",
+      "title": "Getting help should be simple.",
+      "subtitle": "Find the right provider, book with confidence, and get the job done.",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Find a service",
+          "description": "Search for what you need or explore a category."
+        },
+        {
+          "number": "02",
+          "title": "Choose a provider",
+          "description": "Compare services, ratings, reviews, pricing, and provider details."
+        },
+        {
+          "number": "03",
+          "title": "Book a service",
+          "description": "Choose a date and time, provide the necessary details, and confirm your booking."
+        },
+        {
+          "number": "04",
+          "title": "Get it done",
+          "description": "Connect with the provider, receive the service, and keep track through Matchet."
+        },
+        {
+          "number": "05",
+          "title": "Review your experience",
+          "description": "Rate the service and share feedback to help the community."
+        }
+      ]
+    },
+    "loggedIn": {
+      "eyebrow": "YOUR SERVICE JOURNEY",
+      "title": "From match to completed service.",
+      "subtitle": "Everything you need to find, book, and manage a service in one place.",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Find",
+          "description": "Search for a service or explore categories based on your needs.",
+          "icon": "search"
+        },
+        {
+          "number": "02",
+          "title": "Compare",
+          "description": "View provider profiles, ratings, reviews, pricing, and availability.",
+          "icon": "users"
+        },
+        {
+          "number": "03",
+          "title": "Book",
+          "description": "Select a date and time, share details, and confirm your booking.",
+          "icon": "calendar"
+        },
+        {
+          "number": "04",
+          "title": "Track",
+          "description": "Manage your booking, chat with the provider, and get real-time updates.",
+          "icon": "tools"
+        },
+        {
+          "number": "05",
+          "title": "Review",
+          "description": "Rate your experience and help others get great providers.",
+          "icon": "star"
+        }
+      ]
+    },
+    "reassurance": [
+      {
+        "title": "Verified providers",
+        "description": "Work with trusted and qualified professionals.",
+        "icon": "shield"
+      },
+      {
+        "title": "Secure booking",
+        "description": "Your information is safe and protected.",
+        "icon": "lock"
+      },
+      {
+        "title": "Clear information",
+        "description": "See ratings, reviews, and transparent pricing.",
+        "icon": "users"
+      }
+    ]
+  },
+  "upcomingBooking": {
+    "serviceId": "service-recommended-1",
+    "provider": "CleanHub NG",
+    "scheduledLabel": "Tomorrow · 10:00 AM",
+    "location": "Lagos",
+    "status": "Confirmed"
+  },
+  "serviceReviews": {
+    "loggedOut": {
+      "eyebrow": "WHAT PEOPLE ARE SAYING",
+      "title": "Real people.",
+      "accent": "Real experiences.",
+      "subtitle": "See how customers and service providers use Matchet to get things done.",
+      "reviews": [
+        {
+          "id": "service-review-1",
+          "type": "Customer",
+          "typeTone": "green",
+          "quote": "Finding a reliable cleaner used to take so much searching. Matchet made it easy to compare my options and book someone I felt comfortable with. The whole process was smooth and straightforward.",
+          "name": "Amara Okafor",
+          "role": "Customer",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "AO",
+          "avatarTone": "bg-[#dcefe5]"
+        },
+        {
+          "id": "service-review-2",
+          "type": "Service Provider",
+          "typeTone": "blue",
+          "quote": "Matchet has helped me reach people who are actually looking for the services I offer. I can manage my bookings, build my reputation, and grow my business. It has made it easier for me to connect with the right clients.",
+          "name": "David Adeyemi",
+          "role": "Service Provider",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "DA",
+          "avatarTone": "bg-[#dce6f6]"
+        },
+        {
+          "id": "service-review-3",
+          "type": "Customer",
+          "typeTone": "green",
+          "quote": "I needed a chef for a family event and found an amazing provider on Matchet. The communication was clear, the booking was easy, and the service exceeded my expectations. I will definitely use it again.",
+          "name": "Tomi Balogun",
+          "role": "Customer",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "TB",
+          "avatarTone": "bg-[#f2dfd5]"
+        }
+      ]
+    },
+    "loggedIn": {
+      "eyebrow": "FROM OUR COMMUNITY",
+      "title": "People like you are",
+      "accent": "getting real value.",
+      "subtitle": "Here are recent stories from customers and service providers in the Matchet community.",
+      "reviews": [
+        {
+          "id": "service-story-1",
+          "type": "Customer",
+          "typeTone": "green",
+          "quote": "I was able to find a trusted plumber, compare prices, and book within minutes. The service was excellent and the provider was very professional. Matchet made the whole experience simple and stress-free.",
+          "name": "Kunle Adebayo",
+          "role": "Customer",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "KA",
+          "avatarTone": "bg-[#dce6f6]"
+        },
+        {
+          "id": "service-story-2",
+          "type": "Service Provider",
+          "typeTone": "blue",
+          "quote": "Since joining Matchet, I have received consistent bookings and have been able to grow my business. The platform makes it easy to manage my availability, communicate with clients, and build trust through reviews.",
+          "name": "Grace Nwosu",
+          "role": "Service Provider",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "GN",
+          "avatarTone": "bg-[#dcefe5]"
+        },
+        {
+          "id": "service-story-3",
+          "type": "Customer",
+          "typeTone": "green",
+          "quote": "The booking process was simple and transparent. I loved that I could read reviews, see prices upfront, and chat with the provider. Everything felt safe and reliable. I will definitely be using Matchet again.",
+          "name": "Femi Akinyemi",
+          "role": "Customer",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "FA",
+          "avatarTone": "bg-[#d9e4d8]"
+        }
+      ]
+    }
   }
 }

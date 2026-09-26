@@ -99,3 +99,43 @@ export async function getCategoryCollections() {
     exploreMore: [],
   });
 }
+
+
+export async function getServiceCollection(collection = "featured") {
+  const ids = marketplaceData.serviceCollections?.[collection] ?? [];
+  const services = new Map(
+    (marketplaceData.services ?? []).map((service) => [service.id, service]),
+  );
+
+  return simulateApiResponse(ids.map((id) => services.get(id)).filter(Boolean));
+}
+
+
+export async function getServiceCategoryCollections() {
+  return simulateApiResponse(marketplaceData.serviceCategories ?? {
+    featured: [],
+    interests: [],
+    exploreMore: [],
+  });
+}
+
+
+export async function getServiceExperience() {
+  const experience = marketplaceData.serviceExperience ?? {
+    loggedOut: { eyebrow: "", title: "", subtitle: "", steps: [] },
+    loggedIn: { eyebrow: "", title: "", subtitle: "", steps: [] },
+    reassurance: [],
+  };
+
+  const upcomingBooking = marketplaceData.upcomingBooking ?? null;
+
+  return simulateApiResponse({ experience, upcomingBooking });
+}
+
+
+export async function getServiceReviews() {
+  return simulateApiResponse(marketplaceData.serviceReviews ?? {
+    loggedOut: { eyebrow: "", title: "", accent: "", subtitle: "", reviews: [] },
+    loggedIn: { eyebrow: "", title: "", accent: "", subtitle: "", reviews: [] },
+  });
+}
