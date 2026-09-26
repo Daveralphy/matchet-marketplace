@@ -76,9 +76,30 @@ export default function SellerSignupPageFive() {
               />
             </label>
 
-            <p>???Not sure how to do front of ID file upload???</p>
-            <p>???Not sure how to do back of ID file upload???</p>
-            <p>???Insert tips for successful verification image???</p>
+            <div className="seller-signup-identity-upload-grid">
+              <label className="seller-signup-upload">
+                <span className="seller-signup-upload-icon">↑</span>
+                <strong>Upload front of ID</strong>
+                <span>JPG, PNG or PDF. Max 5MB.</span>
+                <input type="file" accept="image/png,image/jpeg,application/pdf" />
+              </label>
+              <label className="seller-signup-upload">
+                <span className="seller-signup-upload-icon">↑</span>
+                <strong>Upload back of ID</strong>
+                <span>JPG, PNG or PDF. Max 5MB.</span>
+                <input type="file" accept="image/png,image/jpeg,application/pdf" />
+              </label>
+              <div className="seller-signup-tips">
+                <h4>Tips for a successful verification</h4>
+                <ul>
+                  <li>Use a valid, government-issued ID.</li>
+                  <li>Make sure the photos are clear and well-lit.</li>
+                  <li>All information should be visible and readable.</li>
+                  <li>Do not edit or crop the document.</li>
+                  <li>The name on your ID should match your account details.</li>
+                </ul>
+              </div>
+            </div>
           </div>
 
           <div className="seller-signup-form-field-group">
@@ -88,8 +109,24 @@ export default function SellerSignupPageFive() {
             <p className="seller-signup-form-field-group-name-caption">
               Take a clear selfie so we can match it with your ID
             </p>
-            <p>???Not sure how to do selfie file upload???</p>
-            <p>???Insert tips for a good selfie image???</p>
+            <div className="seller-signup-selfie-grid">
+              <label className="seller-signup-upload">
+                <span className="seller-signup-upload-icon">↑</span>
+                <strong>Upload a selfie</strong>
+                <span>JPG or PNG. Max 5MB.</span>
+                <input type="file" accept="image/png,image/jpeg" />
+              </label>
+              <div className="seller-signup-tips">
+                <h4>Tips for a good selfie</h4>
+                <ul>
+                  <li>Be in a well-lit area.</li>
+                  <li>Make sure your face is clearly visible.</li>
+                  <li>Do not wear sunglasses or a face covering.</li>
+                  <li>Look directly at the camera.</li>
+                  <li>Use a neutral background.</li>
+                </ul>
+              </div>
+            </div>
           </div>
           <p className="importantText">
             Your information is secure. We use industry-standard encryption to
