@@ -107,7 +107,5 @@ export async function getServiceCollection(collection = "featured") {
     (marketplaceData.services ?? []).map((service) => [service.id, service]),
   );
 
-  return simulateApiResponse(
-    ids.map((id) => services.get(id)).filter(Boolean),
-  );
+  return simulateApiResponse(ids.map((id) => services.get(id)).filter(Boolean));
 }
