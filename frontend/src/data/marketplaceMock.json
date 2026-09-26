@@ -13,7 +13,12 @@
       "imageTone": "bg-gradient-to-br from-[#d8d5d0] via-[#eeeae5] to-[#c7c3bd]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 124,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "Fast delivery",
+      "sellerType": "Businesses"
     },
     {
       "id": "featured-2",
@@ -28,7 +33,12 @@
       "imageTone": "bg-gradient-to-br from-[#ded6cc] via-[#f3eee8] to-[#c8beb3]",
       "categoryTone": "bg-[#eef0f5] text-[#10183f]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 98,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "featured-4",
@@ -43,7 +53,12 @@
       "imageTone": "bg-gradient-to-br from-[#d8e0e4] via-[#f1f4f5] to-[#bdc8cc]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 210,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "featured-6",
@@ -58,7 +73,12 @@
       "imageTone": "bg-gradient-to-br from-[#c6aa95] via-[#ead8ca] to-[#b18f77]",
       "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
       "avatarTone": "bg-[#ef8d9b] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 76,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "picked-1",
@@ -73,7 +93,12 @@
       "imageTone": "bg-gradient-to-br from-[#c7c8c7] via-[#e8e9e8] to-[#a6a9a7]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 142,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "Fast delivery",
+      "sellerType": "Businesses"
     },
     {
       "id": "picked-3",
@@ -88,7 +113,12 @@
       "imageTone": "bg-gradient-to-br from-[#b7b8b9] via-[#e8e9e9] to-[#96999b]",
       "categoryTone": "bg-[#eef0f5] text-[#10183f]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 68,
+      "sellerVerified": true,
+      "condition": "Used",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "picked-5",
@@ -103,7 +133,12 @@
       "imageTone": "bg-gradient-to-br from-[#e5e0d9] via-[#faf9f7] to-[#c7c0b7]",
       "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 84,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "nearby-1",
@@ -118,7 +153,12 @@
       "imageTone": "bg-gradient-to-br from-[#d58b32] via-[#f0b653] to-[#8e4e1e]",
       "categoryTone": "bg-[#ffe9df] text-[#9d5b45]",
       "avatarTone": "bg-[#f5d95d] text-[#10183f]",
-      "type": "product"
+      "type": "product",
+      "reviews": 156,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "nearby-3",
@@ -133,7 +173,12 @@
       "imageTone": "bg-gradient-to-br from-[#7e8992] via-[#c9d0d5] to-[#4b5660]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 210,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "Fast delivery",
+      "sellerType": "Businesses"
     },
     {
       "id": "nearby-5",
@@ -148,7 +193,12 @@
       "imageTone": "bg-gradient-to-br from-[#d8d4cf] via-[#faf9f7] to-[#aaa39b]",
       "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 92,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "nearby-6",
@@ -163,7 +213,12 @@
       "imageTone": "bg-gradient-to-br from-[#c5cbd0] via-[#f1f4f5] to-[#909aa2]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 174,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "continue-1",
@@ -178,7 +233,12 @@
       "imageTone": "bg-gradient-to-br from-[#c5cbd0] via-[#f1f4f5] to-[#909aa2]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 133,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "continue-2",
@@ -193,7 +253,12 @@
       "imageTone": "bg-gradient-to-br from-[#25282c] via-[#555b60] to-[#101216]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 98,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "Fast delivery",
+      "sellerType": "Businesses"
     },
     {
       "id": "continue-3",
@@ -208,7 +273,12 @@
       "imageTone": "bg-gradient-to-br from-[#565a5d] via-[#a7abad] to-[#292c2f]",
       "categoryTone": "bg-[#eef0f5] text-[#10183f]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 187,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     },
     {
       "id": "continue-5",
@@ -223,7 +293,12 @@
       "imageTone": "bg-gradient-to-br from-[#76513c] via-[#b58b68] to-[#4d3326]",
       "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
       "avatarTone": "bg-[#ef8d9b] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 71,
+      "sellerVerified": true,
+      "condition": "Used",
+      "availability": "In stock",
+      "sellerType": "Businesses"
     }
   ],
   "services": [
