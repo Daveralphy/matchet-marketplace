@@ -1,5 +1,5 @@
 // Created by: Jorge Menjivar
-// Edited by: Jorge Menjivar
+// Edited by: Raphael Daveal
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -89,7 +89,11 @@ function ArrowRightIcon() {
       strokeWidth="2"
       viewBox="0 0 24 24"
     >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14 M13 6l6 6-6 6" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M5 12h14 M13 6l6 6-6 6"
+      />
     </svg>
   );
 }
@@ -149,178 +153,230 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto flex h-[calc(100vh-5rem)] w-full max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#fbfcfb] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
-        <div className="hidden lg:block lg:shrink-0">
-          <img
-            src={loginHero}
-            alt="Matchet: Shop products and book services from trusted providers around you."
-            className="h-full w-auto"
-          />
-        </div>
+    <>
+      <style>{`
+        .login-scrollbar-hidden {
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
 
-        <div className="flex w-full flex-1 flex-col justify-center overflow-y-auto px-6 py-12 sm:px-12 lg:px-24">
-          <div className="mx-auto flex w-full max-w-md flex-col">
-            <div className="mb-8 flex items-center gap-2 lg:hidden">
-              <div className="flex h-9 w-9 items-center justify-center rounded-md border border-dashed border-gray-400 text-xs text-gray-400">
-                M
-              </div>
-              <span className="text-xl font-bold text-gray-900">matchet</span>
-            </div>
+        .login-scrollbar-hidden::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
 
-            <div className="mb-8 flex justify-end text-sm text-gray-500">
-              Don&apos;t have an account?{" "}
+      <div className="flex h-screen items-center justify-center overflow-hidden bg-white px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-[calc(100vh-2rem)] w-full max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#fbfcfb] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
+          {/* Left inspiration panel */}
+          <div className="hidden h-full basis-1/2 flex-none items-center justify-center overflow-hidden bg-[#fbfcfb] lg:flex">
+            <img
+              src={loginHero}
+              alt="Matchet: Shop products and book services from trusted providers around you."
+              className="h-[108%] w-[108%] max-w-none object-contain"
+            />
+          </div>
+
+          {/* Right login panel */}
+          <div className="login-scrollbar-hidden flex h-full basis-1/2 min-w-0 flex-none flex-col overflow-y-auto px-8 py-7 sm:px-10 lg:px-12 xl:px-14">
+            {/* Create account */}
+            <div className="flex shrink-0 justify-end text-[13px] text-[#24305f]">
+              <span>Don&apos;t have an account?</span>
               <Link
                 to="/register"
-                className="ml-1 font-semibold text-green-600 hover:text-green-700"
+                className="ml-2 font-semibold text-[#07983f] transition-colors hover:text-[#068936]"
               >
                 Create account
               </Link>
             </div>
 
-            <h2 className="text-[36px] font-extrabold text-gray-900 sm:text-[48px] lg:text-[43px] xl:text-[48px]">
-              Welcome back
-            </h2>
-            <p className="mt-2 text-gray-500">
-              Log in to your Matchet account to continue.
-            </p>
-
-            <div className="mt-8 grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                disabled={isSubmitting}
-                className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300"
-              >
-                <svg className="h-4 w-4" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.47c-.28 1.5-1.13 2.77-2.4 3.62v3h3.88c2.27-2.09 3.57-5.17 3.57-8.81Z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 24c3.24 0 5.96-1.07 7.95-2.92l-3.88-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.95H1.27v3.11C3.25 21.3 7.31 24 12 24Z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.27 14.28A7.2 7.2 0 0 1 4.89 12c0-.79.14-1.56.38-2.28V6.61H1.27A11.98 11.98 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39l4-3.11Z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 4.77c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.61l4 3.11C6.22 6.88 8.87 4.77 12 4.77Z"
-                  />
-                </svg>
-                Continue with Google
-              </button>
-              <button
-                type="button"
-                disabled={isSubmitting}
-                className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-300"
-              >
-                <svg className="h-4 w-4" viewBox="0 0 384 512" fill="currentColor">
-                  <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
-                </svg>
-                Continue with Apple
-              </button>
-            </div>
-
-            <div className="my-6 flex items-center gap-4">
-              <div className="h-px flex-1 bg-gray-200" />
-              <span className="text-sm text-gray-400">or</span>
-              <div className="h-px flex-1 bg-gray-200" />
-            </div>
-
-            {formError && (
-              <div
-                role="alert"
-                className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
-              >
-                {formError}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
-              <fieldset disabled={isSubmitting} className="flex flex-col gap-5">
-                <Input
-                  id="identifier"
-                  label="Email or username"
-                  type="text"
-                  autoComplete="username"
-                  placeholder="Enter your email or username"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  onBlur={() => handleBlur("identifier")}
-                  error={touched.identifier ? errors.identifier : undefined}
-                  icon={<MailIcon />}
-                />
-
-                <div>
-                  <Input
-                    id="password"
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onBlur={() => handleBlur("password")}
-                    error={touched.password ? errors.password : undefined}
-                    icon={<LockIcon />}
-                    rightElement={
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        className="text-gray-400 hover:text-gray-600"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                      </button>
-                    }
-                  />
-                  <div className="mt-2 flex justify-end">
-                    <Link
-                      to="/forgot-password"
-                      className="text-sm font-medium text-green-600 hover:text-green-700"
-                    >
-                      Forgot password?
-                    </Link>
+            {/* Login content */}
+            <div className="flex flex-1 items-center justify-center py-5">
+              <div className="w-full max-w-[540px]">
+                <div className="mb-5 lg:hidden">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-md border border-dashed border-gray-400 text-xs text-gray-400">
+                      M
+                    </div>
+                    <span className="text-xl font-bold text-gray-900">
+                      matchet
+                    </span>
                   </div>
                 </div>
 
-                <label className="flex items-center gap-2 text-sm text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 accent-green-600 focus:ring-green-500"
-                  />
-                  Remember me
-                </label>
+                <h2 className="text-[36px] font-extrabold leading-[1.05] tracking-[-0.04em] text-[#10183f] sm:text-[40px] lg:text-[42px]">
+                  Welcome back
+                </h2>
 
-                <Button type="submit" loading={isSubmitting} className="w-full">
-                  {isSubmitting ? "Logging in..." : "Log in"}
-                  {!isSubmitting && <ArrowRightIcon />}
-                </Button>
-              </fieldset>
-            </form>
+                <p className="mt-2 text-[15px] leading-6 text-[#747ca1] sm:text-[16px]">
+                  Log in to your Matchet account to continue.
+                </p>
 
-            <p className="mt-6 text-center text-xs text-gray-500">
-              By continuing, you agree to Matchet&apos;s{" "}
-              <Link to="/terms" className="text-green-600 hover:text-green-700">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link
-                to="/privacy"
-                className="text-green-600 hover:text-green-700"
-              >
-                Privacy Policy
-              </Link>
-              .
-            </p>
+                {/* Social login */}
+                <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3.5">
+                  <button
+                    type="button"
+                    disabled={isSubmitting}
+                    className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
+                  >
+                    <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
+                      <path
+                        fill="#4285F4"
+                        d="M23.52 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.47c-.28 1.5-1.13 2.77-2.4 3.62v3h3.88c2.27-2.09 3.57-5.17 3.57-8.81Z"
+                      />
+                      <path
+                        fill="#34A853"
+                        d="M12 24c3.24 0 5.96-1.07 7.95-2.92l-3.88-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.95H1.27v3.11C3.25 21.3 7.31 24 12 24Z"
+                      />
+                      <path
+                        fill="#FBBC05"
+                        d="M5.27 14.28A7.2 7.2 0 0 1 4.89 12c0-.79.14-1.56.38-2.28V6.61H1.27A11.98 11.98 0 0 0 0 12c0 1.94.46 3.77 1.27 5.39l4-3.11Z"
+                      />
+                      <path
+                        fill="#EA4335"
+                        d="M12 4.77c1.77 0 3.35.61 4.6 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.27 6.61l4 3.11C6.22 6.88 8.87 4.77 12 4.77Z"
+                      />
+                    </svg>
+                    Continue with Google
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={isSubmitting}
+                    className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
+                  >
+                    <svg
+                      className="h-5 w-5 shrink-0"
+                      viewBox="0 0 384 512"
+                      fill="currentColor"
+                    >
+                      <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
+                    </svg>
+                    Continue with Apple
+                  </button>
+                </div>
+
+                {/* Divider */}
+                <div className="my-5 flex items-center gap-4">
+                  <div className="h-px flex-1 bg-slate-200" />
+                  <span className="text-[13px] text-[#747ca1]">or</span>
+                  <div className="h-px flex-1 bg-slate-200" />
+                </div>
+
+                {formError && (
+                  <div
+                    role="alert"
+                    className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                  >
+                    {formError}
+                  </div>
+                )}
+
+                <form
+                  onSubmit={handleSubmit}
+                  noValidate
+                  className="flex flex-col gap-4"
+                >
+                  <fieldset
+                    disabled={isSubmitting}
+                    className="flex flex-col gap-4"
+                  >
+                    <Input
+                      id="identifier"
+                      label="Email or username"
+                      type="text"
+                      autoComplete="username"
+                      placeholder="Enter your email or username"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      onBlur={() => handleBlur("identifier")}
+                      error={
+                        touched.identifier ? errors.identifier : undefined
+                      }
+                      icon={<MailIcon />}
+                    />
+
+                    <div>
+                      <Input
+                        id="password"
+                        label="Password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onBlur={() => handleBlur("password")}
+                        error={touched.password ? errors.password : undefined}
+                        icon={<LockIcon />}
+                        rightElement={
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            className="text-[#747ca1] transition-colors hover:text-[#10183f]"
+                            aria-label={
+                              showPassword
+                                ? "Hide password"
+                                : "Show password"
+                            }
+                          >
+                            {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                          </button>
+                        }
+                      />
+
+                      <div className="mt-1.5 flex justify-end">
+                        <Link
+                          to="/forgot-password"
+                          className="text-[13px] font-medium text-[#07983f] transition-colors hover:text-[#068936]"
+                        >
+                          Forgot password?
+                        </Link>
+                      </div>
+                    </div>
+
+                    <label className="flex items-center gap-3 text-[14px] text-[#4d5680]">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="h-4.5 w-4.5 rounded border-gray-300 accent-[#07983f] focus:ring-[#07983f]"
+                      />
+                      Remember me
+                    </label>
+
+                    <Button
+                      type="submit"
+                      loading={isSubmitting}
+                      className="h-[56px] w-full rounded-[10px]"
+                    >
+                      {isSubmitting ? "Logging in..." : "Log in"}
+                      {!isSubmitting && <ArrowRightIcon />}
+                    </Button>
+                  </fieldset>
+                </form>
+
+                <p className="mt-5 text-center text-[11px] leading-5 text-[#747ca1] sm:text-[12px]">
+                  By continuing, you agree to Matchet&apos;s{" "}
+                  <Link
+                    to="/terms"
+                    className="text-[#07983f] hover:text-[#068936]"
+                  >
+                    Terms of Service
+                  </Link>{" "}
+                  and{" "}
+                  <Link
+                    to="/privacy"
+                    className="text-[#07983f] hover:text-[#068936]"
+                  >
+                    Privacy Policy
+                  </Link>
+                  .
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
