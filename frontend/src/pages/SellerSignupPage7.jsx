@@ -567,6 +567,7 @@ export default function SellerSignupPageSeven() {
 
           <button
             type="button"
+            onClick={() => navigate("/register/page8")}
             className="save-button"
           >
             Submit for review →
