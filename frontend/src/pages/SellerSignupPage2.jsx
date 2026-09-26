@@ -139,9 +139,22 @@ export default function SellerSignupPageTwo() {
               </div>
             </fieldset>
 
-            <label htmlFor="business-logo">Business logo (optional)</label>
-            <p>???Not sure how to do file upload???</p>
-            <p>???Insert tips for great profile image???</p>
+            <label className="seller-signup-upload seller-signup-business-logo">
+              <span className="seller-signup-upload-icon">↑</span>
+              <strong>Upload your logo</strong>
+              <span>JPG, PNG or WebP. Max 5MB.</span>
+              <input type="file" accept="image/png,image/jpeg,image/webp" />
+            </label>
+            <div className="seller-signup-tips">
+              <h4>Tips for a great profile</h4>
+              <ul>
+                <li>Use a clear and recognizable business name.</li>
+                <li>Choose the right category.</li>
+                <li>Write a short and compelling description.</li>
+                <li>Add a logo to build trust.</li>
+                <li>Make sure your contact information is accurate.</li>
+              </ul>
+            </div>
           </div>
           <button
             type="button"
