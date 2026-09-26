@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
-import { getMarketplaceData, getProviderCollection } from "../data/marketplaceApi";
+import { getCategoryCollections, getMarketplaceData, getProviderCollection } from "../data/marketplaceApi";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -548,6 +548,112 @@ function ResultsControl({ icon, children, active = false, onClick }) {
   );
 }
 
+
+function CategoryIcon({ name, size = 25 }) {
+  const common = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.9, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true };
+  const paths = {
+    bag: <><path d="M5 9h14l-1 11H6L5 9Z" /><path d="M9 9V7a3 3 0 0 1 6 0v2" /></>,
+    shirt: <path d="m8 4 4 2 4-2 4 4-3 2v10H7V10L4 8l4-4Z" />,
+    chair: <><path d="M6 11V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4" /><path d="M5 11h14v4H5zM7 15v4M17 15v4" /></>,
+    lotus: <path d="M12 20c-4.5 0-8-2.6-8-6.5 0-2.6 1.4-4.5 3.5-5.5.1 3.2 1.8 5.2 4.5 6.2-1.2-3.7.3-7.2 0-10.2 3 1.5 4.5 4.2 4 7.3 1.2-1.5 2.8-2.5 4.5-2.9.5 5-2.7 9.6-8.5 11.6Z" />,
+    laptop: <><rect x="5" y="4" width="14" height="11" rx="1.5" /><path d="M3 19h18M8 19l1-2h6l1 2" /></>,
+    monitor: <><rect x="4" y="4" width="16" height="12" rx="1.5" /><path d="M9 20h6M12 16v4" /></>,
+    car: <><path d="m5 16 1.5-6h11L19 16" /><path d="M4 16h16v3H4zM7 12h10M7 19v1M17 19v1" /></>,
+    tools: <path d="m14.5 6.5 3-3a4 4 0 0 0-5.3 5.3L5 16a2.1 2.1 0 1 0 3 3l7.2-7.2a4 4 0 0 0 5.3-5.3l-3 3-3-3Z" />,
+    paintbrush: <><path d="m14 4 6 6" /><path d="m3 21 3.5-1 9.5-9.5-5-5L1.5 15 3 21Z" /></>,
+    gamepad: <path d="M7 9h10c2 0 4 2.4 4 5.5 0 3-1.2 4.5-2.8 4.5-1.2 0-2.3-1.1-3.2-2.5H9c-.9 1.4-2 2.5-3.2 2.5C4.2 19 3 17.5 3 14.5 3 11.4 5 9 7 9Z" />,
+    dots: <><circle cx="6" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" /><circle cx="18" cy="12" r="1" fill="currentColor" stroke="none" /></>,
+  };
+  return <svg {...common}>{paths[name] || paths.dots}</svg>;
+}
+
+const CATEGORY_TONES = {
+  green: "bg-[#e2f8e8] text-[#07863a]",
+  red: "bg-[#ffe5e5] text-[#db2e35]",
+  yellow: "bg-[#fff1cb] text-[#9b6a00]",
+  pink: "bg-[#fde4f5] text-[#bd2b9b]",
+  purple: "bg-[#eee3ff] text-[#6426d7]",
+  blue: "bg-[#e4efff] text-[#2167d7]",
+  orange: "bg-[#ffebdc] text-[#c36312]",
+  gray: "bg-[#f0f0f0] text-[#333333]",
+};
+
+function CategoryTile({ category }) {
+  return (
+    <Link
+      to={category.id === "services" ? "/services" : "/explore"}
+      className="flex h-[118px] items-center gap-4 rounded-[11px] border border-[#e3e8f0] bg-white px-4 transition-shadow hover:shadow-[0_6px_18px_rgba(16,24,63,0.06)] sm:h-[118px] sm:px-5"
+    >
+      <span className={`flex h-[74px] w-[74px] shrink-0 items-center justify-center rounded-full ${CATEGORY_TONES[category.tone]}`}>
+        <CategoryIcon name={category.icon} size={29} />
+      </span>
+      <span className="min-w-0 flex-1 text-[12px] font-semibold text-[#10183f] sm:text-[13px]">{category.name}</span>
+      <span className="text-[21px] text-[#10183f]">›</span>
+    </Link>
+  );
+}
+
+function CategoriesSection({ isAuthenticated }) {
+  const [categories, setCategories] = useState({ featured: [], interests: [], exploreMore: [] });
+
+  useEffect(() => {
+    let active = true;
+    getCategoryCollections().then((data) => {
+      if (active) setCategories(data);
+    });
+    return () => { active = false; };
+  }, []);
+
+  return (
+    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-[#fbfcfb] px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10">
+      <div className="flex items-start justify-between gap-5">
+        <div className="max-w-[700px]">
+          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+            {isAuthenticated ? "EXPLORE YOUR INTERESTS" : "EXPLORE BY CATEGORY"}
+          </p>
+          <h2 className="mt-2 text-[34px] font-bold leading-[1.02] tracking-[-0.045em] text-[#10183f] sm:text-[48px]">
+            {isAuthenticated ? (
+              <>What would you like<br /><span className="text-[#07863a]">to explore?</span></>
+            ) : (
+              <>Find something that<br /><span className="text-[#07863a]">fits your needs.</span></>
+            )}
+          </h2>
+          <p className="mt-2 max-w-[620px] text-[13px] leading-5 text-[#69739a] sm:text-[17px] sm:leading-6">
+            {isAuthenticated
+              ? "Jump into your favourite categories or discover something new."
+              : "Start with a category and discover products, services, and providers around you."}
+          </p>
+        </div>
+
+        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e9f9ed] px-5 py-3 text-[11px] font-semibold text-[#07863a] sm:flex">
+          View all categories <span className="text-[16px]">→</span>
+        </button>
+      </div>
+
+      {isAuthenticated ? (
+        <>
+          <div className="mt-7 flex items-center justify-between">
+            <h3 className="text-[15px] font-semibold text-[#10183f]">Your interests</h3>
+            <button type="button" className="text-[11px] font-semibold text-[#07863a]">Edit interests <span className="ml-1 text-[15px]">→</span></button>
+          </div>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {categories.interests.map((category) => <CategoryTile key={category.id} category={category} />)}
+          </div>
+          <div className="my-5 border-t border-[#e8ecf1]" />
+          <h3 className="text-[15px] font-semibold text-[#10183f]">Explore more</h3>
+          <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {categories.exploreMore.map((category) => <CategoryTile key={category.id} category={category} />)}
+          </div>
+        </>
+      ) : (
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {categories.featured.map((category) => <CategoryTile key={category.id} category={category} />)}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function ExploreResultsSection({ isAuthenticated }) {
   const [sourceItems, setSourceItems] = useState([]);
   const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
@@ -818,6 +924,7 @@ export default function Explore({ isAuthenticated = false }) {
 
       <ExploreResultsSection isAuthenticated={isAuthenticated} />
       <ProvidersSection isAuthenticated={isAuthenticated} />
+      <CategoriesSection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
