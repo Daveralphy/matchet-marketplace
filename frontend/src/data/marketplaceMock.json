@@ -18,7 +18,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "Fast delivery",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Noise Cancelling Headphones from TechHub NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "featured-2",
@@ -38,7 +50,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Modern 3-Seater Sofa from HomeSpace, available in Lagos. A quality home & living product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Home & Living",
+        "Trusted seller"
+      ]
     },
     {
       "id": "featured-4",
@@ -58,7 +82,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "MacBook Air M2 from DigiStore NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "featured-6",
@@ -78,7 +114,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Leather Handbag from Style Haven, available in Lagos. A quality fashion product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Fashion",
+        "Trusted seller"
+      ]
     },
     {
       "id": "picked-1",
@@ -98,7 +146,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "Fast delivery",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Smartwatch Series 9 from GadgetWorks, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "picked-3",
@@ -118,7 +178,19 @@
       "sellerVerified": true,
       "condition": "Used",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Ergonomic Office Chair from WorkSmart NG, available in Lagos. A quality home & living product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Home & Living",
+        "Trusted seller"
+      ]
     },
     {
       "id": "picked-5",
@@ -138,7 +210,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Classic Sneakers from UrbanKicks, available in Lagos. A quality fashion product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Fashion",
+        "Trusted seller"
+      ]
     },
     {
       "id": "nearby-1",
@@ -158,7 +242,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Jollof Rice (Family Pack) from FlavorsByGoody, available in Lagos. A quality food & catering product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Food & Catering",
+        "Trusted seller"
+      ]
     },
     {
       "id": "nearby-3",
@@ -178,7 +274,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "Fast delivery",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "iPhone 15 Pro from DigiStore NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "nearby-5",
@@ -198,7 +306,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Nike Air Force 1 from UrbanKicks, available in Lagos. A quality fashion product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Fashion",
+        "Trusted seller"
+      ]
     },
     {
       "id": "nearby-6",
@@ -218,7 +338,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "MacBook Air M2 from AppleStore NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "continue-1",
@@ -238,7 +370,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "MacBook Air M2 from DigiStore NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "continue-2",
@@ -258,7 +402,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "Fast delivery",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Sony WH-1000XM5 from TechHub NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "continue-3",
@@ -278,7 +434,19 @@
       "sellerVerified": true,
       "condition": "New",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Ergonomic Office Chair from WorkSmart NG, available in Lagos. A quality home & living product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Home & Living",
+        "Trusted seller"
+      ]
     },
     {
       "id": "continue-5",
@@ -298,7 +466,19 @@
       "sellerVerified": true,
       "condition": "Used",
       "availability": "In stock",
-      "sellerType": "Businesses"
+      "sellerType": "Businesses",
+      "description": "Leather Backpack from Style Haven, available in Lagos. A quality fashion product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Fashion",
+        "Trusted seller"
+      ]
     }
   ],
   "services": [
