@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
+import { useCart } from "../context/CartContext";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
 import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
