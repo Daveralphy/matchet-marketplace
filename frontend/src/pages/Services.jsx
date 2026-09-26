@@ -855,9 +855,15 @@ function ServiceListingCard({ service }) {
         </p>
 
         <p className="mt-2 text-[11px] text-[#69739a]">
-          <span className="mr-1.5 text-[15px] text-[#f4ad00]">★</span>
-          <strong className="text-[#27335f]">{Number(service.rating).toFixed(1)}</strong>
-          <span className="ml-1 text-[#7b84a3]">({service.reviews} reviews)</span>
+          {Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? (
+            <>
+              <span className="mr-1.5 text-[15px] text-[#f4ad00]">★</span>
+              <strong className="text-[#27335f]">{Number(service.rating).toFixed(1)}</strong>
+              <span className="ml-1 text-[#7b84a3]">({service.reviews} reviews)</span>
+            </>
+          ) : (
+            <span className="text-[#7b84a3]">No reviews yet</span>
+          )}
         </p>
 
         <div className="mt-4 flex items-center gap-2.5">
