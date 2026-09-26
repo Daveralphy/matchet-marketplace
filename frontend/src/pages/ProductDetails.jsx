@@ -27,20 +27,103 @@ function Icon({ name, size = 20, strokeWidth = 1.8 }) {
   );
 }
 
-function ProductVisual({ product, large = false, index = 0 }) {
+function ProductVisual({ product, large = false, image = null, index = 0 }) {
   const icon = product?.icon === "bag" ? "store" : product?.icon === "home" ? "package" : "package";
 
   return (
-    <div className={`flex items-center justify-center overflow-hidden rounded-[10px] ${large ? "h-[410px] sm:h-[480px]" : "h-[86px]"} ${product?.imageTone || "bg-[#f1f1ef]"}`}>
-      <div className={`relative flex items-center justify-center rounded-[28px] bg-white/65 shadow-[0_12px_30px_rgba(16,24,63,0.1)] ${large ? "h-[190px] w-[190px]" : "h-[52px] w-[52px]"}`}>
-        <Icon name={icon} size={large ? 112 : 30} strokeWidth={1.35} />
-        {large && (
+    <div className={`relative flex items-center justify-center overflow-hidden rounded-[10px] ${large ? "h-[410px] sm:h-[480px]" : "h-[86px]"} ${product?.imageTone || "bg-[#f1f1ef]"}`}>
+      {image ? (
+        <img
+          src={image}
+          alt={`${product.title} view ${index + 1}`}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <div className={`relative flex items-center justify-center rounded-[28px] bg-white/65 shadow-[0_12px_30px_rgba(16,24,63,0.1)] ${large ? "h-[190px] w-[190px]" : "h-[52px] w-[52px]"}`}>
+          <Icon name={icon} size={large ? 112 : 30} strokeWidth={1.35} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProductGallery({ product }) {
+  const images = Array.isArray(product.images)
+    ? product.images.filter(Boolean)
+    : Array.isArray(product.gallery)
+      ? product.gallery.filter(Boolean)
+      : [];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const hasImages = images.length > 0;
+  const activeImage = hasImages ? images[Math.min(activeIndex, images.length - 1)] : null;
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [product.id]);
+
+  const showPrevious = () => {
+    if (!hasImages) return;
+    setActiveIndex((current) => (current - 1 + images.length) % images.length);
+  };
+
+  const showNext = () => {
+    if (!hasImages) return;
+    setActiveIndex((current) => (current + 1) % images.length);
+  };
+
+  return (
+    <>
+      <div className="relative">
+        {hasImages && images.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={showPrevious}
+              aria-label="Previous product image"
+              className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md"
+            >
+              <Icon name="chevronLeft" />
+            </button>
+            <button
+              type="button"
+              onClick={showNext}
+              aria-label="Next product image"
+              className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md"
+            >
+              <Icon name="chevronRight" />
+            </button>
+          </>
+        )}
+
+        <ProductVisual product={product} large image={activeImage} index={activeIndex} />
+
+        {hasImages && (
           <span className="absolute bottom-3 right-3 rounded-full bg-[#10183f] px-3 py-1 text-[11px] text-white">
-            {index + 1} / {product.galleryCount || 6}
+            {activeIndex + 1} / {images.length}
           </span>
         )}
       </div>
-    </div>
+
+      <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+        {hasImages ? (
+          images.map((image, index) => (
+            <button
+              type="button"
+              key={image + index}
+              onClick={() => setActiveIndex(index)}
+              aria-label={`View product image ${index + 1}`}
+              className={`h-[86px] w-[86px] shrink-0 overflow-hidden rounded-[9px] border-2 bg-white ${activeIndex === index ? "border-[#07863a]" : "border-transparent"}`}
+            >
+              <img src={image} alt="" className="h-full w-full object-cover" />
+            </button>
+          ))
+        ) : (
+          <div className="h-[86px] w-[86px] shrink-0">
+            <ProductVisual product={product} />
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -68,25 +151,7 @@ function ProductDetail({ product, related }) {
 
         <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
           <section>
-            <div className="relative">
-              <button type="button" className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md">
-                <Icon name="chevronLeft" />
-              </button>
-              <ProductVisual product={product} large />
-              <button type="button" className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md">
-                <Icon name="chevronRight" />
-              </button>
-            </div>
-
-            <div className="mt-4 grid grid-cols-6 gap-2">
-              {Array.from({ length: Math.min(product.galleryCount || 6, 6) }).map((_, index) => (
-                <ProductVisual key={index} product={product} index={index} />
-              ))}
-              <button type="button" className="flex h-[86px] flex-col items-center justify-center rounded-[9px] border border-[#dce2e9] bg-white text-[#10183f]">
-                <span className="text-xl">＋</span>
-                <span className="text-[10px]">View all</span>
-              </button>
-            </div>
+            <ProductGallery product={product} />
 
             <div className="mt-16 flex gap-8 text-[12px] text-[#10183f]">
               <button type="button" className="flex items-center gap-2"><Icon name="share" /> Share this product</button>
