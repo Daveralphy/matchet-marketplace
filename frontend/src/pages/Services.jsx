@@ -528,7 +528,7 @@ function MiniBookingVisual() {
       <p className="text-[8px] font-semibold text-[#10183f]">Select a date</p>
       <div className="mt-2 grid grid-cols-4 gap-1.5">
         {["Mon", "Tue", "Wed", "Thu"].map((day, i) => (
-          <div key={day} className={\`rounded-[6px] border px-1 py-2 text-center \${i === 1 ? "border-[#07863a] bg-[#07863a] text-white" : "border-[#edf0f3] bg-white text-[#27335f]"}\`}>
+          <div key={day} className={`rounded-[6px] border px-1 py-2 text-center ${i === 1 ? "border-[#07863a] bg-[#07863a] text-white" : "border-[#edf0f3] bg-white text-[#27335f]"}`}>
             <span className="block text-[7px]">{day}</span>
             <span className="mt-1 block text-[8px] font-semibold">{12 + i}</span>
           </div>
@@ -639,7 +639,7 @@ function LoggedInServiceJourney({ content, reassurance, booking }) {
           <div className="pointer-events-none absolute left-[8%] right-[5%] top-7 hidden border-t-2 border-dashed border-[#dce4e0] sm:block" />
           {content.steps.map((step, index) => (
             <div key={step.number} className="relative z-10">
-              <div className={\`flex h-[58px] w-[58px] items-center justify-center rounded-full \${stepColors[index][0]} \${stepColors[index][1]}\`}>
+              <div className={`flex h-[58px] w-[58px] items-center justify-center rounded-full ${stepColors[index][0]} ${stepColors[index][1]}`}>
                 <Icon name={step.icon} size={28} strokeWidth={1.9} />
               </div>
               <span className="mt-3 inline-flex rounded-full bg-[#edf9ef] px-2 py-1 text-[9px] font-semibold text-[#07863a]">{step.number}</span>
@@ -724,7 +724,7 @@ function ServiceJourneySection({ isAuthenticated }) {
   const reassurance = data.experience.reassurance ?? [];
 
   return (
-    <section className={\`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-11 lg:px-10 lg:py-12 \${isAuthenticated ? "bg-[#fbfdfb]" : "bg-[#fbfcfb]"}\`}>
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-11 lg:px-10 lg:py-12 ${isAuthenticated ? "bg-[#fbfdfb]" : "bg-[#fbfcfb]"}`}>
       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#07863a] sm:text-[11px]">{content.eyebrow}</p>
       <h2 className="mt-3 max-w-[920px] text-[38px] font-bold leading-[1] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
         {isAuthenticated ? <>From match to <span className="text-[#07863a]">completed service.</span></> : <>Getting help <span className="text-[#07863a]">should be simple.</span></>}
