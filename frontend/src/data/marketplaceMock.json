@@ -399,6 +399,114 @@
   },
   "meta": {
     "source": "mock-backend",
-    "version": 1
+    "version": 1,
+    "providerSource": "mock-backend"
+  },
+  "providers": [
+    {
+      "id": "provider-techhub",
+      "name": "TechHub NG",
+      "category": "Electronics & Repairs",
+      "rating": 4.8,
+      "reviews": 320,
+      "location": "Lagos",
+      "listings": 42,
+      "initials": "TH",
+      "logoTone": "bg-[#dff4e7] text-[#1c6b42]",
+      "imageTone": "bg-gradient-to-br from-[#b9a89b] via-[#e2d8cf] to-[#8d7869]",
+      "match": null
+    },
+    {
+      "id": "provider-flavors",
+      "name": "FlavorsByGoody",
+      "category": "Food & Catering",
+      "rating": 4.9,
+      "reviews": 278,
+      "location": "Lagos",
+      "listings": 36,
+      "initials": "♨",
+      "logoTone": "bg-[#fff0dc] text-[#6d4a28]",
+      "imageTone": "bg-gradient-to-br from-[#c99c78] via-[#ead0b9] to-[#8d5d42]",
+      "match": "96% Match"
+    },
+    {
+      "id": "provider-coolfix",
+      "name": "CoolFix",
+      "category": "Home Services",
+      "rating": 4.7,
+      "reviews": 164,
+      "location": "Lagos",
+      "listings": 28,
+      "initials": "❄",
+      "logoTone": "bg-[#e2f1ff] text-[#2867c8]",
+      "imageTone": "bg-gradient-to-br from-[#9aa6b2] via-[#dce2e6] to-[#667482]",
+      "match": null
+    },
+    {
+      "id": "provider-glowhouse",
+      "name": "GlowHouse",
+      "category": "Beauty & Personal Care",
+      "rating": 4.8,
+      "reviews": 199,
+      "location": "Lagos",
+      "listings": 51,
+      "initials": "✿",
+      "logoTone": "bg-[#ffe1ef] text-[#d63382]",
+      "imageTone": "bg-gradient-to-br from-[#c5a58f] via-[#e5d5c9] to-[#8d6d5c]",
+      "match": "Nearby"
+    },
+    {
+      "id": "provider-techhub-match",
+      "name": "TechHub NG",
+      "category": "Electronics & Repairs",
+      "rating": 4.8,
+      "reviews": 320,
+      "location": "Lagos",
+      "listings": 42,
+      "initials": "TH",
+      "logoTone": "bg-[#dff4e7] text-[#1c6b42]",
+      "imageTone": "bg-gradient-to-br from-[#b9a89b] via-[#e2d8cf] to-[#8d7869]",
+      "match": "92% Match"
+    },
+    {
+      "id": "provider-glowhouse-match",
+      "name": "GlowHouse",
+      "category": "Beauty & Personal Care",
+      "rating": 4.8,
+      "reviews": 199,
+      "location": "Lagos",
+      "listings": 51,
+      "initials": "✿",
+      "logoTone": "bg-[#ffe1ef] text-[#d63382]",
+      "imageTone": "bg-gradient-to-br from-[#c5a58f] via-[#e5d5c9] to-[#8d6d5c]",
+      "match": "Nearby"
+    },
+    {
+      "id": "provider-coolfix-match",
+      "name": "CoolFix",
+      "category": "Home Services",
+      "rating": 4.7,
+      "reviews": 164,
+      "location": "Lagos",
+      "listings": 28,
+      "initials": "❄",
+      "logoTone": "bg-[#e2f1ff] text-[#2867c8]",
+      "imageTone": "bg-gradient-to-br from-[#9aa6b2] via-[#dce2e6] to-[#667482]",
+      "match": "Highly rated"
+    }
+  ],
+  "providerCollections": {
+    "featured": [
+      "provider-techhub",
+      "provider-flavors",
+      "provider-coolfix",
+      "provider-glowhouse"
+    ],
+    "recommended": [
+      "provider-flavors",
+      "provider-techhub-match",
+      "provider-glowhouse-match",
+      "provider-coolfix-match"
+    ]
   }
 }
