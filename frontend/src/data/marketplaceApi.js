@@ -131,3 +131,11 @@ export async function getServiceExperience() {
 
   return simulateApiResponse({ experience, upcomingBooking });
 }
+
+
+export async function getServiceReviews() {
+  return simulateApiResponse(marketplaceData.serviceReviews ?? {
+    loggedOut: { eyebrow: "", title: "", accent: "", subtitle: "", reviews: [] },
+    loggedIn: { eyebrow: "", title: "", accent: "", subtitle: "", reviews: [] },
+  });
+}
