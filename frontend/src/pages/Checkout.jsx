@@ -11,7 +11,7 @@ function Thumb({item}){ return <MarketplaceProductVisual product={item} size="ch
 
 function Option({selected,onClick,icon,title,description}){return <button type="button" onClick={onClick} className={"flex w-full items-center gap-4 rounded-[9px] border p-4 text-left "+(selected?"border-[#07863a] bg-[#f0fbf3]":"border-[#e0e6ed] bg-white")}><span className={"flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 "+(selected?"border-[#07863a]":"border-[#b8c1d0]")}>{selected&&<span className="h-2.5 w-2.5 rounded-full bg-[#07863a]"/>}</span><Icon name={icon} size={27}/><span><strong className="block text-[14px] text-[#10183f]">{title}</strong><span className="text-[12px] text-[#69739a]">{description}</span></span></button>}
 export default function CheckoutPage(){
- const {id}=useParams();const location=useLocation();const {items:cartItems,addItem}=useCart();const [product,setProduct]=useState(null);const [delivery,setDelivery]=useState("delivery");const [payment,setPayment]=useState("card");const [address,setAddress]=useState("Lekki Phase 1, Lagos");
+ const {id}=useParams();const location=useLocation();const {items:cartItems,addItem}=useCart();const [product,setProduct]=useState(null);const [addedToCart,setAddedToCart]=useState(false);const [delivery,setDelivery]=useState("delivery");const [payment,setPayment]=useState("card");const [address,setAddress]=useState("Lekki Phase 1, Lagos");
  useEffect(()=>{if(id)getProductById(id).then(setProduct)},[id]);
  const checkoutItems=id&&product?[{...product,quantity:Math.max(1, Number(location.state?.quantity) || 1)}]:cartItems;
  const subtotal=useMemo(()=>checkoutItems.reduce((sum,item)=>sum+parsePrice(item.price)*item.quantity,0),[checkoutItems]);
