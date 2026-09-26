@@ -146,8 +146,15 @@ export default function SellerSignupPageOne() {
               </label>
             </fieldset>
 
-            <label htmlFor="profile-photo">Profile photo</label>
-            <p>???Not sure how to do file upload???</p>
+            <div className="seller-signup-profile-upload-wrap">
+              <span className="seller-signup-form-field-label">Profile photo</span>
+              <label className="seller-signup-avatar-upload">
+                <span className="seller-signup-avatar-circle">M</span>
+                <span className="seller-signup-change-photo">↑ Change photo</span>
+                <input type="file" accept="image/png,image/jpeg,image/webp" />
+              </label>
+              <span className="seller-signup-upload-note">JPG, PNG or WebP. Max 5MB.</span>
+            </div>
 
             <label htmlFor="location">
               Location
