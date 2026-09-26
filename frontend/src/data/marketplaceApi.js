@@ -168,3 +168,18 @@ export async function getRelatedProducts(productId) {
 
   return simulateApiResponse(related);
 }
+
+
+export async function getServiceById(id) {
+  const service = (marketplaceData.services ?? []).find((item) => item.id === id);
+  return simulateApiResponse(service ?? null);
+}
+
+export async function getRelatedServices(serviceId) {
+  const service = (marketplaceData.services ?? []).find((item) => item.id === serviceId);
+  if (!service) return simulateApiResponse([]);
+  const related = (marketplaceData.services ?? [])
+    .filter((item) => item.id !== serviceId && item.category === service.category)
+    .slice(0, 4);
+  return simulateApiResponse(related);
+}
