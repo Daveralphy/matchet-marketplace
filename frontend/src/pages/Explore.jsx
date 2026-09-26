@@ -501,7 +501,7 @@ function ProvidersSection({ isAuthenticated }) {
 
 function ExploreProductCard({ item, listView = false }) {
   return (
-    <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
+    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "block overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
       <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
         <div className={`flex h-full w-full items-center justify-center ${item.imageTone}`}>
           <Icon name={item.icon} size={58} strokeWidth={1.15} />
@@ -531,7 +531,7 @@ function ExploreProductCard({ item, listView = false }) {
           {item.seller} · {item.location}
         </p>
       </div>
-    </article>
+    </Link>
   );
 }
 
