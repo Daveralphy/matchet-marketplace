@@ -861,5 +861,100 @@
         "tone": "gray"
       }
     ]
+  },
+  "serviceExperience": {
+    "loggedOut": {
+      "eyebrow": "HOW SERVICES WORK",
+      "title": "Getting help should be simple.",
+      "subtitle": "Find the right provider, book with confidence, and get the job done.",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Find a service",
+          "description": "Search for what you need or explore a category."
+        },
+        {
+          "number": "02",
+          "title": "Choose a provider",
+          "description": "Compare services, ratings, reviews, pricing, and provider details."
+        },
+        {
+          "number": "03",
+          "title": "Book a service",
+          "description": "Choose a date and time, provide the necessary details, and confirm your booking."
+        },
+        {
+          "number": "04",
+          "title": "Get it done",
+          "description": "Connect with the provider, receive the service, and keep track through Matchet."
+        },
+        {
+          "number": "05",
+          "title": "Review your experience",
+          "description": "Rate the service and share feedback to help the community."
+        }
+      ]
+    },
+    "loggedIn": {
+      "eyebrow": "YOUR SERVICE JOURNEY",
+      "title": "From match to completed service.",
+      "subtitle": "Everything you need to find, book, and manage a service in one place.",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Find",
+          "description": "Search for a service or explore categories based on your needs.",
+          "icon": "search"
+        },
+        {
+          "number": "02",
+          "title": "Compare",
+          "description": "View provider profiles, ratings, reviews, pricing, and availability.",
+          "icon": "users"
+        },
+        {
+          "number": "03",
+          "title": "Book",
+          "description": "Select a date and time, share details, and confirm your booking.",
+          "icon": "calendar"
+        },
+        {
+          "number": "04",
+          "title": "Track",
+          "description": "Manage your booking, chat with the provider, and get real-time updates.",
+          "icon": "tools"
+        },
+        {
+          "number": "05",
+          "title": "Review",
+          "description": "Rate your experience and help others get great providers.",
+          "icon": "star"
+        }
+      ]
+    },
+    "reassurance": [
+      {
+        "title": "Verified providers",
+        "description": "Work with trusted and qualified professionals.",
+        "icon": "shield"
+      },
+      {
+        "title": "Secure booking",
+        "description": "Your information is safe and protected.",
+        "icon": "lock"
+      },
+      {
+        "title": "Clear information",
+        "description": "See ratings, reviews, and transparent pricing.",
+        "icon": "users"
+      }
+    ]
+  },
+  "upcomingBooking": {
+    "serviceId": "service-recommended-1",
+    "provider": "CleanHub NG",
+    "scheduledLabel": "Tomorrow · 10:00 AM",
+    "location": "Lagos",
+    "status": "Confirmed"
   }
 }
