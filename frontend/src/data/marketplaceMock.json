@@ -495,7 +495,20 @@
       "imageTone": "bg-gradient-to-br from-[#d9c6ba] via-[#eee0d7] to-[#bfa99b]",
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "service"
+      "type": "service",
+      "description": "Professional Makeup Artist from GlamByTee. Book a trusted provider for services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "featured-5",
@@ -510,7 +523,20 @@
       "imageTone": "bg-gradient-to-br from-[#b9c4c6] via-[#e8eded] to-[#9ba9ad]",
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "service"
+      "type": "service",
+      "description": "Website Design & Development from CodeCraft. Book a trusted provider for services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "picked-2",
@@ -525,7 +551,20 @@
       "imageTone": "bg-gradient-to-br from-[#dfc08d] via-[#f4dfb1] to-[#bd8c55]",
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#f5d95d] text-[#10183f]",
-      "type": "service"
+      "type": "service",
+      "description": "Home-cooked Meals from FlavorsByGoody. Book a trusted provider for services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "picked-4",
@@ -540,7 +579,20 @@
       "imageTone": "bg-gradient-to-br from-[#c5b6a9] via-[#e7dcd3] to-[#a9978a]",
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#f28b91] text-white",
-      "type": "service"
+      "type": "service",
+      "description": "Personal Training from FitWithAda. Book a trusted provider for services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "picked-6",
@@ -555,7 +607,20 @@
       "imageTone": "bg-gradient-to-br from-[#bca98f] via-[#e6d9c6] to-[#9d886f]",
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#3157d5] text-white",
-      "type": "service"
+      "type": "service",
+      "description": "Business Consultation from BizPro NG. Book a trusted provider for services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "nearby-2",
@@ -570,7 +635,20 @@
       "imageTone": "bg-gradient-to-br from-[#8d6255] via-[#d0a38f] to-[#5a3c38]",
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#f28b91] text-white",
-      "type": "service"
+      "type": "service",
+      "description": "Professional Hair Styling from The Beauty Hub. Book a trusted provider for beauty & wellness services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Beauty & Wellness",
+        "Trusted provider"
+      ]
     },
     {
       "id": "nearby-4",
@@ -585,7 +663,20 @@
       "imageTone": "bg-gradient-to-br from-[#b7a28f] via-[#eee4d8] to-[#8e7865]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "service"
+      "type": "service",
+      "description": "Home Cleaning Service from CleanSpace. Book a trusted provider for home services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Home Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "continue-4",
@@ -600,7 +691,20 @@
       "imageTone": "bg-gradient-to-br from-[#364b58] via-[#91a6b2] to-[#202d35]",
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "service"
+      "type": "service",
+      "description": "Laptop Repair from FixIT NG. Book a trusted provider for services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "continue-6",
@@ -615,7 +719,20 @@
       "imageTone": "bg-gradient-to-br from-[#444d49] via-[#8c9891] to-[#202522]",
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "service"
+      "type": "service",
+      "description": "Personal Training from FitWithTunde. Book a trusted provider for services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "service-featured-1",
@@ -629,7 +746,20 @@
       "location": "Lagos",
       "sellerVerified": true,
       "imageTone": "bg-gradient-to-br from-[#4f806c] via-[#d8d0c6] to-[#8d6b56]",
-      "type": "service"
+      "type": "service",
+      "description": "AC Repair & Maintenance from CoolFix Services. Book a trusted provider for home services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Home Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "service-featured-2",
@@ -643,7 +773,20 @@
       "location": "Lagos",
       "sellerVerified": true,
       "imageTone": "bg-gradient-to-br from-[#8f6754] via-[#e3c8b7] to-[#6b493e]",
-      "type": "service"
+      "type": "service",
+      "description": "Home Hair Styling from Glow Studio. Book a trusted provider for beauty & care services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Beauty & Care",
+        "Trusted provider"
+      ]
     },
     {
       "id": "service-featured-3",
@@ -657,7 +800,20 @@
       "location": "Lagos",
       "sellerVerified": true,
       "imageTone": "bg-gradient-to-br from-[#5f7283] via-[#d7d9d7] to-[#38536b]",
-      "type": "service"
+      "type": "service",
+      "description": "Plumbing Services from FixIt Right. Book a trusted provider for home services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Home Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "service-featured-4",
@@ -671,7 +827,20 @@
       "location": "Lagos",
       "sellerVerified": true,
       "imageTone": "bg-gradient-to-br from-[#c4a27e] via-[#eee0d1] to-[#76533f]",
-      "type": "service"
+      "type": "service",
+      "description": "Private Chef & Catering from Tasty Bites. Book a trusted provider for food & catering services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Food & Catering",
+        "Trusted provider"
+      ]
     },
     {
       "id": "service-recommended-1",
@@ -686,7 +855,20 @@
       "sellerVerified": true,
       "match": "96% Match",
       "imageTone": "bg-gradient-to-br from-[#7e9272] via-[#e4dfd1] to-[#5f7156]",
-      "type": "service"
+      "type": "service",
+      "description": "Home Cleaning from CleanHub NG. Book a trusted provider for home services services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Home Services",
+        "Trusted provider"
+      ]
     },
     {
       "id": "service-recommended-2",
@@ -700,7 +882,20 @@
       "location": "Lagos",
       "sellerVerified": true,
       "imageTone": "bg-gradient-to-br from-[#3f5547] via-[#aeb5ad] to-[#28352e]",
-      "type": "service"
+      "type": "service",
+      "description": "Electrical Services from BrightFix Solutions. Book a trusted provider for repairs services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Repairs",
+        "Trusted provider"
+      ]
     },
     {
       "id": "service-recommended-3",
@@ -714,7 +909,20 @@
       "location": "Lagos",
       "sellerVerified": true,
       "imageTone": "bg-gradient-to-br from-[#c69e8e] via-[#f0ddd1] to-[#9a7064]",
-      "type": "service"
+      "type": "service",
+      "description": "Facial Treatment from Glow & Care. Book a trusted provider for beauty & care services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Beauty & Care",
+        "Trusted provider"
+      ]
     },
     {
       "id": "service-recommended-4",
@@ -729,7 +937,20 @@
       "sellerVerified": true,
       "match": "92% Match",
       "imageTone": "bg-gradient-to-br from-[#8c6a50] via-[#e7d8c2] to-[#624534]",
-      "type": "service"
+      "type": "service",
+      "description": "Event Catering from TasteLab Catering. Book a trusted provider for food & catering services in Lagos.",
+      "providerVerified": true,
+      "responseTime": "Usually responds within a few hours",
+      "experience": "Experienced provider",
+      "availability": "Available for bookings",
+      "serviceDuration": "Varies by service",
+      "bookingNotice": "Book at least 24 hours ahead",
+      "cancellationPolicy": "Flexible cancellation",
+      "gallery": [],
+      "tags": [
+        "Food & Catering",
+        "Trusted provider"
+      ]
     }
   ],
   "collections": {
