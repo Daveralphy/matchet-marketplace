@@ -1001,46 +1001,6 @@ function MobileAppBadge({ store }) {
   );
 }
 
-function MockQrCode() {
-  const cells = [
-    "1111111001011111111",
-    "1000001011011000001",
-    "1011101000011011101",
-    "1011101011111011101",
-    "1011101001011011101",
-    "1000001010111000001",
-    "1111111010101111111",
-    "0000000011110000000",
-    "1101011010011011011",
-    "0011100101110100110",
-    "1010111110001110101",
-    "0110010011010011010",
-    "1111111001101010111",
-    "1000001010110011001",
-    "1011101001101110101",
-    "1011101010010101110",
-    "1011101001111010011",
-    "1000001010011101001",
-    "1111111011100111011",
-  ];
-
-  return (
-    <div
-      className="grid h-[74px] w-[74px] shrink-0 grid-cols-[repeat(19,1fr)] grid-rows-[repeat(19,1fr)] bg-white p-1"
-      aria-label="QR code to download the Matchet app"
-    >
-      {cells.flatMap((row, rowIndex) =>
-        [...row].map((cell, colIndex) => (
-          <span
-            key={`${rowIndex}-${colIndex}`}
-            className={cell === "1" ? "bg-[#101010]" : "bg-white"}
-          />
-        ))
-      )}
-    </div>
-  );
-}
-
 function MobileAppBenefit({ item, compact = false }) {
   const tone = MOBILE_APP_TONES[item.tone] || MOBILE_APP_TONES.green;
 
@@ -1094,19 +1054,6 @@ function MobileAppSection({ isAuthenticated, userName }) {
             <Link to="/explore" aria-label="Download Matchet from Google Play">
               <MobileAppBadge store="google" />
             </Link>
-
-            {!isAuthenticated && (
-              <>
-                <div className="mx-1 hidden h-[52px] w-px bg-[#cbd8d0] sm:block" />
-                <div className="flex items-center gap-3 rounded-[10px] bg-white/80 p-1.5">
-                  <MockQrCode />
-                  <span className="pr-2">
-                    <span className="block text-[13px] font-bold leading-4 text-[#10183f]">Scan to<br />get the app</span>
-                    <span className="mt-1 block text-[10px] leading-4 text-[#69739a]">Available on<br />iOS and Android</span>
-                  </span>
-                </div>
-              </>
-            )}
           </div>
 
           <div className={`mt-8 grid gap-6 ${isAuthenticated ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"}`}>
