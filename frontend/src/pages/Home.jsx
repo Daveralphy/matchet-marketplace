@@ -8,6 +8,9 @@ import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
 import { CONTINUE_ITEMS, POPULAR_NEARBY_ITEMS } from "../data/homePopularMock";
 import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMock";
 import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } from "../data/homeCommunityMock";
+import { MOBILE_APP_SECTIONS } from "../data/homeMobileAppMock";
+import mockup2 from "../assets/inspirations/homepage/mockup2.png";
+import mockup3 from "../assets/inspirations/homepage/mockup3.png";
 import matchMockup from "../assets/inspirations/homepage/mockup1.png";
 
 const CATEGORIES = [
@@ -975,6 +978,172 @@ const COMMUNITY_REVIEW_ANIMATION_STYLES = `
   }
 `;
 
+
+const MOBILE_APP_TONES = {
+  green: "bg-[#dff7e6] text-[#07863a]",
+  purple: "bg-[#eee4ff] text-[#6b35d9]",
+  blue: "bg-[#e2efff] text-[#1769df]",
+  orange: "bg-[#fff0df] text-[#f28a18]",
+};
+
+function MobileAppBadge({ store }) {
+  return (
+    <div className="flex h-[52px] min-w-[154px] items-center gap-2 rounded-[8px] bg-black px-3.5 text-white shadow-[0_5px_12px_rgba(0,0,0,0.12)]">
+      <span className="text-[24px] leading-none">{store === "apple" ? "●" : "▶"}</span>
+      <span className="leading-none">
+        <span className="block text-[8px]">{store === "apple" ? "Download on the" : "GET IT ON"}</span>
+        <span className="mt-0.5 block text-[17px] font-medium tracking-[-0.03em]">
+          {store === "apple" ? "App Store" : "Google Play"}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function MockQrCode() {
+  const cells = [
+    "1111111001011111111",
+    "1000001011011000001",
+    "1011101000011011101",
+    "1011101011111011101",
+    "1011101001011011101",
+    "1000001010111000001",
+    "1111111010101111111",
+    "0000000011110000000",
+    "1101011010011011011",
+    "0011100101110100110",
+    "1010111110001110101",
+    "0110010011010011010",
+    "1111111001101010111",
+    "1000001010110011001",
+    "1011101001101110101",
+    "1011101010010101110",
+    "1011101001111010011",
+    "1000001010011101001",
+    "1111111011100111011",
+  ];
+
+  return (
+    <div
+      className="grid h-[74px] w-[74px] shrink-0 grid-cols-[repeat(19,1fr)] grid-rows-[repeat(19,1fr)] bg-white p-1"
+      aria-label="QR code to download the Matchet app"
+    >
+      {cells.flatMap((row, rowIndex) =>
+        [...row].map((cell, colIndex) => (
+          <span
+            key={`${rowIndex}-${colIndex}`}
+            className={cell === "1" ? "bg-[#101010]" : "bg-white"}
+          />
+        ))
+      )}
+    </div>
+  );
+}
+
+function MobileAppBenefit({ item, compact = false }) {
+  const tone = MOBILE_APP_TONES[item.tone] || MOBILE_APP_TONES.green;
+
+  return (
+    <div className={compact ? "flex items-center gap-3" : "flex items-center gap-3"}>
+      <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${tone}`}>
+        <Icon name={item.icon} size={21} />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[12px] font-semibold leading-[16px] text-[#10183f]">{item.title}</span>
+        <span className="block text-[12px] font-semibold leading-[16px] text-[#10183f]">{item.description}</span>
+      </span>
+    </div>
+  );
+}
+
+function MobileAppSection({ isAuthenticated, userName }) {
+  const content = isAuthenticated ? MOBILE_APP_SECTIONS.loggedIn : MOBILE_APP_SECTIONS.loggedOut;
+  const mockup = isAuthenticated ? mockup3 : mockup2;
+
+  return (
+    <section className={`mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 shadow-[0_10px_35px_rgba(16,24,63,0.04)] ${isAuthenticated ? "bg-[#f8fbff]" : "bg-[#f1fbf4]"}`}>
+      <div className="relative min-h-[560px] lg:min-h-[535px]">
+        <div className="relative z-10 flex min-h-[560px] w-full flex-col justify-center px-7 py-10 sm:px-10 lg:min-h-[535px] lg:w-[52%] lg:px-10 xl:px-[40px]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+            {content.eyebrow}
+          </p>
+
+          <h2 className="mt-4 max-w-[590px] text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[48px]">
+            {content.title}{" "}
+            <span className="text-[#07863a]">{content.accent}</span>
+          </h2>
+
+          <p className="mt-4 max-w-[560px] text-[14px] leading-[22px] text-[#69739a] sm:text-[16px] sm:leading-[25px]">
+            {content.subtitle}
+          </p>
+
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            {isAuthenticated && (
+              <Link
+                to="/explore"
+                className="inline-flex h-[52px] items-center justify-center rounded-[10px] bg-[#07863a] px-7 text-[14px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)]"
+              >
+                {content.primaryCta} <span className="ml-2 text-[19px]">→</span>
+              </Link>
+            )}
+
+            <Link to="/explore" aria-label="Download Matchet from the App Store">
+              <MobileAppBadge store="apple" />
+            </Link>
+            <Link to="/explore" aria-label="Download Matchet from Google Play">
+              <MobileAppBadge store="google" />
+            </Link>
+
+            {!isAuthenticated && (
+              <>
+                <div className="mx-1 hidden h-[52px] w-px bg-[#cbd8d0] sm:block" />
+                <div className="flex items-center gap-3 rounded-[10px] bg-white/80 p-1.5">
+                  <MockQrCode />
+                  <span className="pr-2">
+                    <span className="block text-[13px] font-bold leading-4 text-[#10183f]">Scan to<br />get the app</span>
+                    <span className="mt-1 block text-[10px] leading-4 text-[#69739a]">Available on<br />iOS and Android</span>
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className={`mt-8 grid gap-6 ${isAuthenticated ? "grid-cols-2 sm:grid-cols-4" : "grid-cols-3"}`}>
+            {content.benefits.map((item) => (
+              <MobileAppBenefit key={item.title + item.description} item={item} />
+            ))}
+          </div>
+        </div>
+
+        <div className="absolute inset-y-0 right-0 hidden w-[54%] lg:block">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_45%_50%,rgba(170,235,188,0.52),transparent_55%)]" />
+          <img
+            src={mockup}
+            alt=""
+            className="absolute right-[-35px] top-1/2 w-[650px] max-w-none -translate-y-1/2 object-contain xl:right-[-15px] xl:w-[690px]"
+          />
+
+          <div className="absolute right-5 top-1/2 hidden -translate-y-1/2 flex-col gap-3 xl:flex">
+            {content.sideBenefits.map((item) => {
+              const tone = MOBILE_APP_TONES[item.tone] || MOBILE_APP_TONES.green;
+              return (
+                <div key={item.title + item.description} className={`flex min-h-[62px] w-[142px] items-center gap-3 rounded-[11px] px-3 shadow-[0_5px_15px_rgba(16,24,63,0.03)] ${tone.replace("text-[#07863a]", "text-[#10183f]")}`}>
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${tone}`}>
+                    <Icon name={item.icon} size={18} />
+                  </span>
+                  <span className="text-[11px] font-semibold leading-4 text-[#10183f]">
+                    {item.title}<br />{item.description}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CommunityAvatar({ review, compact = false }) {
   return (
     <div
@@ -1353,6 +1522,7 @@ export default function Home({ isAuthenticated = false, userName }) {
       <NearbyMarketplaceSection isAuthenticated={isAuthenticated} />
       <MatchingSection isAuthenticated={isAuthenticated} userName={userName} />
       <CommunitySection isAuthenticated={isAuthenticated} />
+      <MobileAppSection isAuthenticated={isAuthenticated} userName={userName} />
     </main>
   );
 }
