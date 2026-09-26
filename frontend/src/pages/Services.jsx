@@ -823,7 +823,7 @@ function ServiceListingCard({ service }) {
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
-              <Icon name={service.category === "Beauty & Care" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home"} size={42} strokeWidth={1.45} />
+              <Icon name={service.icon || (service.category === "Beauty & Care" || service.category === "Beauty & Wellness" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home")} size={42} strokeWidth={1.45} />
             </span>
           </div>
         )}
