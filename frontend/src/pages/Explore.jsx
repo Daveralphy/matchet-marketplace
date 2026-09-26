@@ -409,8 +409,14 @@ function ProviderCard({ provider }) {
             ✦ {provider.match}
           </span>
         )}
-        <button type="button" aria-label={`Save ${provider.name}`} className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-sm">
-          <HeartButton />
+        <button
+          type="button"
+          aria-label={`Save ${provider.name}`}
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-sm"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
+          </svg>
         </button>
       </div>
 
