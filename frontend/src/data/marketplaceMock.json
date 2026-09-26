@@ -508,5 +508,109 @@
       "provider-glowhouse-match",
       "provider-coolfix-match"
     ]
+  },
+  "categories": {
+    "featured": [
+      {
+        "id": "electronics",
+        "name": "Electronics",
+        "icon": "bag",
+        "tone": "green"
+      },
+      {
+        "id": "fashion",
+        "name": "Fashion",
+        "icon": "shirt",
+        "tone": "red"
+      },
+      {
+        "id": "home-living",
+        "name": "Home & Living",
+        "icon": "chair",
+        "tone": "yellow"
+      },
+      {
+        "id": "beauty-care",
+        "name": "Beauty & Care",
+        "icon": "lotus",
+        "tone": "pink"
+      },
+      {
+        "id": "computers",
+        "name": "Computers",
+        "icon": "laptop",
+        "tone": "purple"
+      },
+      {
+        "id": "automotive",
+        "name": "Automotive",
+        "icon": "car",
+        "tone": "blue"
+      },
+      {
+        "id": "services",
+        "name": "Services",
+        "icon": "tools",
+        "tone": "green"
+      },
+      {
+        "id": "more",
+        "name": "More Categories",
+        "icon": "dots",
+        "tone": "gray"
+      }
+    ],
+    "interests": [
+      {
+        "id": "electronics",
+        "name": "Electronics",
+        "icon": "laptop",
+        "tone": "green"
+      },
+      {
+        "id": "computers",
+        "name": "Computers",
+        "icon": "monitor",
+        "tone": "purple"
+      },
+      {
+        "id": "design",
+        "name": "Design",
+        "icon": "paintbrush",
+        "tone": "orange"
+      },
+      {
+        "id": "gaming",
+        "name": "Gaming",
+        "icon": "gamepad",
+        "tone": "blue"
+      }
+    ],
+    "exploreMore": [
+      {
+        "id": "fashion",
+        "name": "Fashion",
+        "icon": "shirt",
+        "tone": "red"
+      },
+      {
+        "id": "home-living",
+        "name": "Home & Living",
+        "icon": "chair",
+        "tone": "yellow"
+      },
+      {
+        "id": "beauty-care",
+        "name": "Beauty & Care",
+        "icon": "lotus",
+        "tone": "pink"
+      },
+      {
+        "id": "automotive",
+        "name": "Automotive",
+        "icon": "car",
+        "tone": "blue"
+      }
+    ]
   }
 }
