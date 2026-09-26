@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
 import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
 import { CONTINUE_ITEMS, POPULAR_NEARBY_ITEMS } from "../data/homePopularMock";
+import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMock";
+import matchMockup from "../assets/inspirations/homepage/mockup1.png";
 
 const CATEGORIES = [
   { label: "All Categories", icon: "grid", active: true },
@@ -657,7 +659,265 @@ function NearbyMarketplaceSection({ isAuthenticated }) {
   );
 }
 
-export default function Home({ isAuthenticated = false }) {
+
+function MatchingIcon({ name, size = 22 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.9,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
+
+  const paths = {
+    chat: (
+      <>
+        <path d="M20 11.5a7.5 7.5 0 0 1-8 7.5 8.4 8.4 0 0 1-3.5-.8L4 20l1.7-4.1A7.4 7.4 0 0 1 4.5 11.5 7.5 7.5 0 1 1 20 11.5Z" />
+      </>
+    ),
+    sliders: (
+      <>
+        <path d="M4 6h16M4 12h16M4 18h16" />
+        <circle cx="9" cy="6" r="2" />
+        <circle cx="15" cy="12" r="2" />
+        <circle cx="10" cy="18" r="2" />
+      </>
+    ),
+    spark: (
+      <>
+        <path d="m12 3 1.5 6.5L20 11l-6.5 1.5L12 19l-1.5-6.5L4 11l6.5-1.5L12 3Z" />
+        <path d="m19 4 .5 2L21.5 6 19.5 6.5 19 8l-.5-1.5L17 6l1.5-.5L19 4Z" />
+      </>
+    ),
+    target: (
+      <>
+        <circle cx="12" cy="12" r="8" />
+        <circle cx="12" cy="12" r="4" />
+        <path d="M12 12 19 5M16 5h3v3" />
+      </>
+    ),
+    pin: (
+      <>
+        <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+        <circle cx="12" cy="10" r="2.3" />
+      </>
+    ),
+    star: <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" />,
+    bag: (
+      <>
+        <path d="M5 8h14l-1 12H6L5 8Z" />
+        <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+      </>
+    ),
+    tools: <path d="m14.5 6.5 3-3a4 4 0 0 0-5.3 5.3L5 16a2.1 2.1 0 1 0 3 3l7.2-7.2a4 4 0 0 0 5.3-5.3l-3 3-3-3Z" />,
+    users: (
+      <>
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5.5M17 14a5 5 0 0 1 4 6" />
+      </>
+    ),
+    heart: <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />,
+  };
+
+  return <svg {...common}>{paths[name]}</svg>;
+}
+
+const MATCH_TONES = {
+  green: {
+    icon: "bg-[#e0f8e8] text-[#07863a]",
+    card: "bg-white",
+  },
+  purple: {
+    icon: "bg-[#eee5ff] text-[#6938d7]",
+    card: "bg-white",
+  },
+  blue: {
+    icon: "bg-[#e4efff] text-[#1769df]",
+    card: "bg-white",
+  },
+  red: {
+    icon: "bg-[#ffe5e7] text-[#ef4f5f]",
+    card: "bg-white",
+  },
+};
+
+function MatchingStep({ number, icon, title, description, tone = "green" }) {
+  const colors = MATCH_TONES[tone] || MATCH_TONES.green;
+
+  return (
+    <div className="flex min-w-0 flex-1 items-center">
+      <div className={`min-h-[205px] w-full rounded-[13px] ${colors.card} px-3.5 py-4 shadow-[0_5px_18px_rgba(16,24,63,0.035)] sm:px-4 sm:py-4`}>
+        <div className={`flex h-12 w-12 items-center justify-center rounded-full ${colors.icon}`}>
+          <MatchingIcon name={icon} size={22} />
+        </div>
+        <p className="mt-3 text-[10px] font-semibold text-[#07863a]">{number}</p>
+        <h3 className="mt-1 text-[15px] font-bold leading-[1.12] tracking-[-0.02em] text-[#10183f] sm:text-[16px]">
+          {title}
+        </h3>
+        <p className="mt-2 text-[12px] leading-[17px] text-[#69739a] sm:text-[13px] sm:leading-[18px]">
+          {description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function MatchingStat({ metric }) {
+  const colors = MATCH_TONES[metric.tone] || MATCH_TONES.green;
+
+  return (
+    <div className="min-w-0 flex-1 rounded-[13px] bg-white px-4 py-4 shadow-[0_5px_18px_rgba(16,24,63,0.035)] sm:px-5 sm:py-4">
+      <div className="flex items-center gap-3">
+        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${colors.icon}`}>
+          <MatchingIcon name={metric.icon} size={22} />
+        </div>
+        <span className="text-[27px] font-bold tracking-[-0.04em] text-[#10183f]">{metric.value}</span>
+      </div>
+      <h3 className="mt-3 text-[15px] font-bold tracking-[-0.02em] text-[#10183f]">{metric.title}</h3>
+      <p className="mt-1 text-[12px] leading-[17px] text-[#69739a] sm:text-[13px] sm:leading-[18px]">
+        {metric.description}
+      </p>
+    </div>
+  );
+}
+
+function MatchingRecommendation({ recommendation }) {
+  const colors = MATCH_TONES[recommendation.tone] || MATCH_TONES.green;
+
+  return (
+    <div className="flex items-center gap-3 border-b border-slate-100 px-3 py-2.5 last:border-b-0">
+      <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${colors.icon}`}>
+        <MatchingIcon name={recommendation.icon} size={18} />
+      </div>
+      <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4 text-[#10183f]">
+        {recommendation.label}
+      </span>
+      <span className="text-[18px] text-[#10183f]">›</span>
+    </div>
+  );
+}
+
+function MatchingSection({ isAuthenticated, userName }) {
+  return (
+    <section className="mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#f3fbf6] shadow-[0_10px_35px_rgba(16,24,63,0.04)]">
+      <div className="relative grid min-h-[545px] lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="relative z-10 px-6 py-9 sm:px-8 sm:py-10 lg:px-10 lg:py-11 xl:px-[35px]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+            {isAuthenticated ? "YOUR MATCHES, MADE EASIER" : "MATCHET MATCHING EXPERIENCE"}
+          </p>
+
+          <h2 className="mt-3 max-w-[650px] text-[34px] font-bold leading-[1.02] tracking-[-0.045em] text-[#10183f] sm:text-[43px]">
+            {isAuthenticated ? (
+              <>Your <span className="text-[#07863a]">next match</span></>
+            ) : (
+              <>Find your <span className="text-[#07863a]">right match.</span></>
+            )}
+          </h2>
+
+          <p className="mt-3 max-w-[580px] text-[14px] leading-[22px] text-[#69739a] sm:text-[16px] sm:leading-[25px]">
+            {isAuthenticated
+              ? "We’ve learned from what you browse, save, and explore. Let us help you find your next match."
+              : "Tell us what you need, and we will help you find the right products, services, or providers without making you search endlessly."}
+          </p>
+
+          {!isAuthenticated ? (
+            <>
+              <div className="mt-6 hidden gap-3 sm:flex">
+                <MatchingStep
+                  number="01"
+                  icon="chat"
+                  title="Tell us what you need"
+                  description="Describe what you’re looking for."
+                />
+                <span className="mt-[88px] shrink-0 text-[25px] text-[#07863a]">→</span>
+                <MatchingStep
+                  number="02"
+                  icon="sliders"
+                  title="We understand your needs"
+                  description="We consider your preferences, location, and budget."
+                  tone="purple"
+                />
+                <span className="mt-[88px] shrink-0 text-[25px] text-[#07863a]">→</span>
+                <MatchingStep
+                  number="03"
+                  icon="spark"
+                  title="Get better matches"
+                  description="See products, services and providers that actually fit."
+                  tone="green"
+                />
+              </div>
+
+              <div className="mt-6 grid gap-3 sm:hidden">
+                <MatchingStep number="01" icon="chat" title="Tell us what you need" description="Describe what you’re looking for." />
+                <MatchingStep number="02" icon="sliders" title="We understand your needs" description="We consider your preferences, location, and budget." tone="purple" />
+                <MatchingStep number="03" icon="spark" title="Get better matches" description="See products, services and providers that actually fit." />
+              </div>
+
+              <div className="mt-7 flex flex-wrap items-center gap-7">
+                <Link
+                  to="/explore"
+                  className="inline-flex h-12 items-center justify-center rounded-[12px] bg-[#07863a] px-7 text-[15px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)] transition-transform hover:-translate-y-0.5"
+                >
+                  Find my match <span className="ml-3 text-[20px]">→</span>
+                </Link>
+                <button type="button" className="flex items-center gap-3 text-left">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_4px_15px_rgba(16,24,63,0.06)]">▶</span>
+                  <span>
+                    <span className="block text-[12px] font-semibold text-[#10183f]">See how it works</span>
+                    <span className="block text-[11px] text-[#69739a]">Watch a short video</span>
+                  </span>
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {MATCHING_METRICS.map((metric) => (
+                  <MatchingStat key={metric.title} metric={metric} />
+                ))}
+              </div>
+
+              <div className="mt-7 flex flex-wrap items-center gap-7">
+                <Link
+                  to="/explore"
+                  className="inline-flex h-12 items-center justify-center rounded-[12px] bg-[#07863a] px-7 text-[15px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)] transition-transform hover:-translate-y-0.5"
+                >
+                  See my matches <span className="ml-3 text-[20px]">→</span>
+                </Link>
+                <button type="button" className="flex items-center gap-3 text-left">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_4px_15px_rgba(16,24,63,0.06)]">▶</span>
+                  <span>
+                    <span className="block text-[12px] font-semibold text-[#10183f]">How matching works</span>
+                    <span className="block text-[11px] text-[#69739a]">Watch a short video</span>
+                  </span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="relative hidden min-h-[545px] lg:block">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_48%,rgba(167,236,188,0.5),transparent_55%)]" />
+          <img
+            src={matchMockup}
+            alt="Matchet matching experience"
+            className="absolute right-[-15px] top-1/2 w-[560px] max-w-none -translate-y-1/2 object-contain xl:right-[-5px] xl:w-[600px]"
+          />
+        </div>
+      </div>
+
+      {isAuthenticated && (
+        <div className="absolute left-1/2 top-0 hidden" aria-hidden="true" />
+      )}
+    </section>
+  );
+}
+
+export default function Home({ isAuthenticated = false, userName }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
 
@@ -753,6 +1013,7 @@ export default function Home({ isAuthenticated = false }) {
         items={PICKED_ITEMS}
       />
       <NearbyMarketplaceSection isAuthenticated={isAuthenticated} />
+      <MatchingSection isAuthenticated={isAuthenticated} userName={userName} />
     </main>
   );
 }
