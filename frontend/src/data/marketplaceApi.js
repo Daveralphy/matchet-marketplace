@@ -31,6 +31,10 @@ export async function getMarketplaceData() {
   });
 }
 
+export async function getProductCollection() {
+  return simulateApiResponse([...(marketplaceData.products ?? [])]);
+}
+
 export async function getMarketplaceCollection(collection) {
   const key = COLLECTION_KEYS[collection];
 
@@ -138,4 +142,29 @@ export async function getServiceReviews() {
     loggedOut: { eyebrow: "", title: "", accent: "", subtitle: "", reviews: [] },
     loggedIn: { eyebrow: "", title: "", accent: "", subtitle: "", reviews: [] },
   });
+}
+
+
+export async function getProductExperience() {
+  return simulateApiResponse(marketplaceData.productExperience ?? {
+    loggedOut: { eyebrow: "", title: "", accent: "", subtitle: "", steps: [] },
+    loggedIn: { eyebrow: "", title: "", accent: "", subtitle: "", steps: [] },
+  });
+}
+
+
+export async function getProductById(id) {
+  const product = (marketplaceData.products ?? []).find((item) => item.id === id);
+  return simulateApiResponse(product ?? null);
+}
+
+export async function getRelatedProducts(productId) {
+  const product = (marketplaceData.products ?? []).find((item) => item.id === productId);
+  if (!product) return simulateApiResponse([]);
+
+  const related = (marketplaceData.products ?? [])
+    .filter((item) => item.id !== productId && item.category === product.category)
+    .slice(0, 4);
+
+  return simulateApiResponse(related);
 }

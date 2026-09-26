@@ -13,7 +13,24 @@
       "imageTone": "bg-gradient-to-br from-[#d8d5d0] via-[#eeeae5] to-[#c7c3bd]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 124,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "Fast delivery",
+      "sellerType": "Businesses",
+      "description": "Noise Cancelling Headphones from TechHub NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "featured-2",
@@ -28,7 +45,24 @@
       "imageTone": "bg-gradient-to-br from-[#ded6cc] via-[#f3eee8] to-[#c8beb3]",
       "categoryTone": "bg-[#eef0f5] text-[#10183f]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 98,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "Modern 3-Seater Sofa from HomeSpace, available in Lagos. A quality home & living product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Home & Living",
+        "Trusted seller"
+      ]
     },
     {
       "id": "featured-4",
@@ -43,7 +77,24 @@
       "imageTone": "bg-gradient-to-br from-[#d8e0e4] via-[#f1f4f5] to-[#bdc8cc]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 210,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "MacBook Air M2 from DigiStore NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "featured-6",
@@ -58,7 +109,24 @@
       "imageTone": "bg-gradient-to-br from-[#c6aa95] via-[#ead8ca] to-[#b18f77]",
       "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
       "avatarTone": "bg-[#ef8d9b] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 76,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "Leather Handbag from Style Haven, available in Lagos. A quality fashion product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Fashion",
+        "Trusted seller"
+      ]
     },
     {
       "id": "picked-1",
@@ -73,7 +141,24 @@
       "imageTone": "bg-gradient-to-br from-[#c7c8c7] via-[#e8e9e8] to-[#a6a9a7]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 142,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "Fast delivery",
+      "sellerType": "Businesses",
+      "description": "Smartwatch Series 9 from GadgetWorks, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "picked-3",
@@ -88,7 +173,24 @@
       "imageTone": "bg-gradient-to-br from-[#b7b8b9] via-[#e8e9e9] to-[#96999b]",
       "categoryTone": "bg-[#eef0f5] text-[#10183f]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 68,
+      "sellerVerified": true,
+      "condition": "Used",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "Ergonomic Office Chair from WorkSmart NG, available in Lagos. A quality home & living product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Home & Living",
+        "Trusted seller"
+      ]
     },
     {
       "id": "picked-5",
@@ -103,7 +205,24 @@
       "imageTone": "bg-gradient-to-br from-[#e5e0d9] via-[#faf9f7] to-[#c7c0b7]",
       "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 84,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "Classic Sneakers from UrbanKicks, available in Lagos. A quality fashion product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Fashion",
+        "Trusted seller"
+      ]
     },
     {
       "id": "nearby-1",
@@ -118,7 +237,24 @@
       "imageTone": "bg-gradient-to-br from-[#d58b32] via-[#f0b653] to-[#8e4e1e]",
       "categoryTone": "bg-[#ffe9df] text-[#9d5b45]",
       "avatarTone": "bg-[#f5d95d] text-[#10183f]",
-      "type": "product"
+      "type": "product",
+      "reviews": 156,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "Jollof Rice (Family Pack) from FlavorsByGoody, available in Lagos. A quality food & catering product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Food & Catering",
+        "Trusted seller"
+      ]
     },
     {
       "id": "nearby-3",
@@ -133,7 +269,24 @@
       "imageTone": "bg-gradient-to-br from-[#7e8992] via-[#c9d0d5] to-[#4b5660]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 210,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "Fast delivery",
+      "sellerType": "Businesses",
+      "description": "iPhone 15 Pro from DigiStore NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "nearby-5",
@@ -148,7 +301,24 @@
       "imageTone": "bg-gradient-to-br from-[#d8d4cf] via-[#faf9f7] to-[#aaa39b]",
       "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 92,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "Nike Air Force 1 from UrbanKicks, available in Lagos. A quality fashion product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Fashion",
+        "Trusted seller"
+      ]
     },
     {
       "id": "nearby-6",
@@ -163,7 +333,24 @@
       "imageTone": "bg-gradient-to-br from-[#c5cbd0] via-[#f1f4f5] to-[#909aa2]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 174,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "MacBook Air M2 from AppleStore NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "continue-1",
@@ -178,7 +365,24 @@
       "imageTone": "bg-gradient-to-br from-[#c5cbd0] via-[#f1f4f5] to-[#909aa2]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 133,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "MacBook Air M2 from DigiStore NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "continue-2",
@@ -193,7 +397,24 @@
       "imageTone": "bg-gradient-to-br from-[#25282c] via-[#555b60] to-[#101216]",
       "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 98,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "Fast delivery",
+      "sellerType": "Businesses",
+      "description": "Sony WH-1000XM5 from TechHub NG, available in Lagos. A quality electronics product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Electronics",
+        "Trusted seller"
+      ]
     },
     {
       "id": "continue-3",
@@ -208,7 +429,24 @@
       "imageTone": "bg-gradient-to-br from-[#565a5d] via-[#a7abad] to-[#292c2f]",
       "categoryTone": "bg-[#eef0f5] text-[#10183f]",
       "avatarTone": "bg-[#10183f] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 187,
+      "sellerVerified": true,
+      "condition": "New",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "Ergonomic Office Chair from WorkSmart NG, available in Lagos. A quality home & living product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Home & Living",
+        "Trusted seller"
+      ]
     },
     {
       "id": "continue-5",
@@ -223,7 +461,24 @@
       "imageTone": "bg-gradient-to-br from-[#76513c] via-[#b58b68] to-[#4d3326]",
       "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
       "avatarTone": "bg-[#ef8d9b] text-white",
-      "type": "product"
+      "type": "product",
+      "reviews": 71,
+      "sellerVerified": true,
+      "condition": "Used",
+      "availability": "In stock",
+      "sellerType": "Businesses",
+      "description": "Leather Backpack from Style Haven, available in Lagos. A quality fashion product selected for everyday use.",
+      "stockCount": 12,
+      "deliveryEstimate": "2 – 4 business days",
+      "deliveryFee": "Calculated at checkout",
+      "pickupAvailable": true,
+      "buyerProtection": "7-day return policy",
+      "secureCheckout": true,
+      "galleryCount": 6,
+      "tags": [
+        "Fashion",
+        "Trusted seller"
+      ]
     }
   ],
   "services": [
@@ -1043,6 +1298,94 @@
           "rating": 5,
           "initials": "FA",
           "avatarTone": "bg-[#d9e4d8]"
+        }
+      ]
+    }
+  },
+  "productExperience": {
+    "loggedOut": {
+      "eyebrow": "HOW SHOPPING WORKS",
+      "title": "From order to",
+      "accent": "doorstep.",
+      "subtitle": "A simple way to buy from trusted sellers and keep track of your order every step of the way.",
+      "steps": [
+        {
+          "id": "place-order",
+          "number": "01",
+          "icon": "cart",
+          "title": "Place your order",
+          "description": "Choose your product, confirm your details, and place your order."
+        },
+        {
+          "id": "seller-confirms",
+          "number": "02",
+          "icon": "store",
+          "title": "Seller confirms",
+          "description": "The seller receives your order and prepares it for dispatch."
+        },
+        {
+          "id": "on-the-way",
+          "number": "03",
+          "icon": "truck",
+          "title": "On the way",
+          "description": "Your order is handed over for delivery and you can track its progress."
+        },
+        {
+          "id": "delivered",
+          "number": "04",
+          "icon": "package",
+          "title": "Delivered",
+          "description": "Your product arrives at your chosen location."
+        },
+        {
+          "id": "confirm-review",
+          "number": "05",
+          "icon": "star",
+          "title": "Confirm & review",
+          "description": "Confirm your order and share your experience with the seller."
+        }
+      ]
+    },
+    "loggedIn": {
+      "eyebrow": "HOW SHOPPING WORKS",
+      "title": "From order to",
+      "accent": "doorstep.",
+      "subtitle": "A simple way to buy from trusted sellers and keep track of your order every step of the way.",
+      "steps": [
+        {
+          "id": "place-order",
+          "number": "01",
+          "icon": "cart",
+          "title": "Place your order",
+          "description": "Choose your product, confirm your details, and place your order."
+        },
+        {
+          "id": "seller-confirms",
+          "number": "02",
+          "icon": "store",
+          "title": "Seller confirms",
+          "description": "The seller receives your order and prepares it for dispatch."
+        },
+        {
+          "id": "on-the-way",
+          "number": "03",
+          "icon": "truck",
+          "title": "On the way",
+          "description": "Your order is handed over for delivery and you can track its progress."
+        },
+        {
+          "id": "delivered",
+          "number": "04",
+          "icon": "package",
+          "title": "Delivered",
+          "description": "Your product arrives at your chosen location."
+        },
+        {
+          "id": "confirm-review",
+          "number": "05",
+          "icon": "star",
+          "title": "Confirm & review",
+          "description": "Confirm your order and share your experience with the seller."
         }
       ]
     }
