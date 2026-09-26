@@ -57,7 +57,18 @@ export default function SellerSignupPageThree() {
             <p className="seller-signup-form-field-group-name-caption">
               Upload clear photos of your product. You can add up to 5 images.
             </p>
-            <p>???Not sure how to do file upload???</p>
+            <div className="seller-signup-product-images">
+              <label className="seller-signup-product-upload">
+                <span className="seller-signup-upload-icon">↑</span>
+                <strong>Upload images</strong>
+                <span>JPG, PNG or WebP. Max 5MB each</span>
+                <input type="file" accept="image/png,image/jpeg,image/webp" multiple />
+              </label>
+              <div className="seller-signup-product-thumb">Basket</div>
+              <div className="seller-signup-product-thumb">Basket</div>
+              <div className="seller-signup-product-thumb">Basket</div>
+              <button type="button" className="seller-signup-add-image">+<span>Add more</span></button>
+            </div>
 
             <label htmlFor="productName">
               Product name *
