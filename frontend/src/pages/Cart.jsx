@@ -1,20 +1,38 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 import { useCart, formatNaira } from "../context/CartContext";
+import { getProductCollection } from "../data/marketplaceApi";
+import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
 
 function Icon({ name, size = 22 }) {
   const paths={cart:<><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.5L20.5 7H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></>,trash:<><path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 14h10l1-14M9 7V4h6v3"/></>,plus:<path d="M12 5v14M5 12h14"/>,minus:<path d="M5 12h14"/>,shield:<path d="M12 3 20 6v5c0 5-3.3 8.7-8 10-4.7-1.3-8-5-8-10V6l8-3Z"/>,package:<><path d="m4 8 8-4 8 4v9l-8 4-8-4V8Z"/><path d="m4 8 8 4 8-4M12 12v9"/></>}; return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
-function Thumb({item}) {
- const image=Array.isArray(item.images)?item.images[0]:Array.isArray(item.gallery)?item.gallery[0]:null;
- return <div className={"flex h-[116px] w-[116px] shrink-0 items-center justify-center overflow-hidden rounded-[9px] "+(item.imageTone||"bg-[#f1f1ef]")}>{image?<img src={image} alt={item.title} className="h-full w-full object-cover"/>:<span className="text-[38px] font-bold text-[#27335f]/30">M</span>}</div>;
+function SuggestedProducts({ items, cartIds }) {
+ const suggestions = useMemo(() => items.filter((item) => !cartIds.has(item.id)).slice(0, 4), [items, cartIds]);
+ if (!suggestions.length) return null;
+ return <section className="mt-10">
+  <div><h2 className="text-[23px] font-bold tracking-[-0.035em] text-[#10183f]">You may also like</h2><p className="mt-1 text-[13px] text-[#69739a]">Keep shopping and find something else worth adding to your cart.</p></div>
+  <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+   {suggestions.map((item) => <Link key={item.id} to={"/products/"+item.id} className="group rounded-[10px] border border-[#e4e8ee] bg-white p-2.5 transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+    <MarketplaceProductVisual product={item} size="standard" />
+    <h3 className="mt-2 truncate text-[12px] font-medium text-[#10183f]">{item.title}</h3>
+    <p className="mt-1 text-[15px] font-bold text-[#10183f]">{item.price}</p>
+    <p className="mt-1 truncate text-[10px] text-[#69739a]">{item.seller} · {item.location}</p>
+   </Link>)}
+  </div>
+ </section>;
 }
+
 export default function CartPage(){
- const {items,subtotal,updateQuantity,removeItem}=useCart(); const navigate=useNavigate(); const delivery=items.length?2000:0; const total=subtotal+delivery;
+ const {items,subtotal,updateQuantity,removeItem}=useCart(); const navigate=useNavigate(); const [products,setProducts]=useState([]);
+ useEffect(()=>{getProductCollection().then(setProducts)},[]);
+ const delivery=items.length?2000:0; const total=subtotal+delivery; const cartIds=new Set(items.map((item)=>item.id));
  return <main className="w-full bg-[#fbfcfd] px-4 pb-14 sm:px-6 lg:px-8"><div className="mx-auto max-w-[1400px] pt-7">
   <nav className="text-[12px] text-[#69739a]"><Link to="/">Home</Link><span className="mx-2">›</span>Cart</nav>
   <div className="mt-3 flex items-end justify-between"><div><h1 className="text-[32px] font-bold tracking-[-0.045em] text-[#10183f]">Your cart</h1><p className="text-[15px] text-[#69739a]">Review your products before you checkout.</p></div><span className="text-[13px] text-[#69739a]">{items.length} item{items.length===1?"":"s"}</span></div>
   {!items.length?<section className="mt-8 rounded-[12px] border border-[#e1e6ec] bg-white p-12 text-center"><div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#eaf9ee] text-[#07863a]"><Icon name="cart" size={30}/></div><h2 className="mt-4 text-[22px] font-bold text-[#10183f]">Your cart is empty</h2><p className="mt-2 text-[14px] text-[#69739a]">Add products from the marketplace and they will appear here.</p><Link to="/products" className="mt-6 inline-flex h-12 items-center rounded-[8px] bg-[#07863a] px-7 font-semibold text-white">Continue shopping</Link></section>:
-  <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(350px,1fr)]"><div className="space-y-3">{items.map(item=><article key={item.id} className="rounded-[10px] border border-[#e1e6ec] bg-white p-4"><div className="flex flex-wrap gap-5"><Thumb item={item}/><div className="min-w-[200px] flex-1"><Link to={"/products/"+item.id} className="text-[17px] font-semibold text-[#10183f] hover:text-[#07863a]">{item.title}</Link><p className="mt-1 text-[12px] text-[#69739a]">{item.category} · {item.seller}</p><p className="mt-3 text-[19px] font-bold text-[#10183f]">{item.price}</p><p className="mt-1 text-[11px] text-[#69739a]">{item.availability}</p></div><div className="flex items-start gap-3"><div className="flex h-10 overflow-hidden rounded-[7px] border"><button onClick={()=>updateQuantity(item.id,item.quantity-1)} className="w-10"><Icon name="minus" size={15}/></button><span className="flex w-10 items-center justify-center border-x text-[13px]">{item.quantity}</span><button onClick={()=>updateQuantity(item.id,item.quantity+1)} className="w-10"><Icon name="plus" size={15}/></button></div><button onClick={()=>removeItem(item.id)} className="flex h-10 w-10 items-center justify-center rounded-[7px] text-[#c03b3b]" aria-label="Remove item"><Icon name="trash" size={18}/></button></div></div></article>)}</div>
+  <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.7fr)_minmax(350px,1fr)]"><div className="space-y-3">{items.map(item=><article key={item.id} className="rounded-[10px] border border-[#e1e6ec] bg-white p-4"><div className="flex flex-wrap gap-5"><MarketplaceProductVisual product={item} size="cart"/><div className="min-w-[200px] flex-1"><Link to={"/products/"+item.id} className="text-[17px] font-semibold text-[#10183f] hover:text-[#07863a]">{item.title}</Link><p className="mt-1 text-[12px] text-[#69739a]">{item.category} · {item.seller}</p><p className="mt-3 text-[19px] font-bold text-[#10183f]">{item.price}</p><p className="mt-1 text-[11px] text-[#69739a]">{item.availability}</p></div><div className="flex items-start gap-3"><div className="flex h-10 overflow-hidden rounded-[7px] border"><button onClick={()=>updateQuantity(item.id,item.quantity-1)} className="w-10"><Icon name="minus" size={15}/></button><span className="flex w-10 items-center justify-center border-x text-[13px]">{item.quantity}</span><button onClick={()=>updateQuantity(item.id,item.quantity+1)} className="w-10"><Icon name="plus" size={15}/></button></div><button onClick={()=>removeItem(item.id)} className="flex h-10 w-10 items-center justify-center rounded-[7px] text-[#c03b3b]" aria-label="Remove item"><Icon name="trash" size={18}/></button></div></div></article>)}</div>
   <aside className="space-y-4"><section className="rounded-[10px] border border-[#e1e6ec] bg-white p-5"><h2 className="text-[21px] font-bold text-[#10183f]">Order summary</h2><div className="mt-5 space-y-3 text-[14px]"><div className="flex justify-between"><span>Subtotal</span><strong>{formatNaira(subtotal)}</strong></div><div className="flex justify-between"><span>Delivery fee</span><strong>{formatNaira(delivery)}</strong></div><div className="mt-4 flex justify-between rounded-[8px] bg-[#eaf9ee] p-4 text-[18px] font-bold text-[#087d35]"><span>Total</span><span>{formatNaira(total)}</span></div></div><button onClick={()=>navigate("/checkout")} className="mt-4 h-14 w-full rounded-[8px] bg-[#087d35] font-semibold text-white">Proceed to checkout →</button><Link to="/products" className="mt-3 flex h-12 items-center justify-center rounded-[8px] border border-[#07863a] text-[#07863a]">Continue shopping</Link></section><section className="rounded-[10px] border border-[#e1e6ec] bg-white p-5 space-y-4"><div className="flex gap-3"><Icon name="shield" size={25}/><div><strong className="text-[13px]">Secure checkout</strong><p className="text-[11px] text-[#69739a]">Your information is protected.</p></div></div><div className="flex gap-3"><Icon name="package" size={25}/><div><strong className="text-[13px]">Easy returns</strong><p className="text-[11px] text-[#69739a]">Seller return policies apply.</p></div></div></section></aside></div>}
+  <SuggestedProducts items={products} cartIds={cartIds} />
  </div></main>;
 }
