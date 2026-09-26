@@ -182,7 +182,7 @@ const Login = () => {
             <div className="flex shrink-0 justify-end text-[13px] text-[#24305f]">
               <span>Don&apos;t have an account?</span>
               <Link
-                to="/register"
+                to="/create-account"
                 className="ml-2 font-semibold text-[#07983f] transition-colors hover:text-[#068936]"
               >
                 Create account
