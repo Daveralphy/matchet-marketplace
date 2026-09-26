@@ -393,6 +393,17 @@ function HeartIcon({ size = 18 }) {
   );
 }
 
+function getMarketplacePlaceholderIcon(item) {
+  if (item.type === "service") {
+    if (item.icon) return item.icon;
+    if (item.category === "Beauty & Care" || item.category === "Beauty & Wellness") return "beauty";
+    if (item.category === "Repairs") return "tools";
+    if (item.category === "Food & Catering") return "calendar";
+    return "home";
+  }
+  return item.icon || "package";
+}
+
 function MarketplaceCard({ item, compact = false }) {
   return (
     <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={`group block shrink-0 overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)] ${compact ? "w-[166px]" : "w-[172px] sm:w-[180px]"}`}>
@@ -404,7 +415,7 @@ function MarketplaceCard({ item, compact = false }) {
         ].join(" ")}
       >
         <span className="text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105">
-          <Icon name={item.icon} size={72} strokeWidth={1.25} />
+          <Icon name={getMarketplacePlaceholderIcon(item)} size={72} strokeWidth={1.25} />
         </span>
 
         <button
