@@ -3,6 +3,7 @@
 
 import { createBrowserRouter } from "react-router-dom";
 import SavedItems from "./pages/SavedItems";
+import MyProfile from "./pages/MyProfile";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
 import SellerSignupPageThree from "./pages/SellerSignupPage3";
@@ -98,6 +99,10 @@ const router = createBrowserRouter([
   {
     path: "/account/saved-items",
     element: <SavedItems />,
+  },
+  {
+    path: "/account/profile",
+    element: <MyProfile />,
   },
   {
     path: "/products/:id",
