@@ -4,6 +4,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
+import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
+import { CONTINUE_ITEMS, POPULAR_NEARBY_ITEMS } from "../data/homePopularMock";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -378,6 +380,259 @@ function HeroVisual({ isAuthenticated }) {
   );
 }
 
+
+function HeartButton() {
+  return (
+    <button
+      type="button"
+      aria-label="Save item"
+      className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.12)]"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
+      </svg>
+    </button>
+  );
+}
+
+function ExploreProductCard({ item, listView = false }) {
+  return (
+    <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
+      <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
+        <div className={`flex h-full w-full items-center justify-center ${item.imageTone}`}>
+          <Icon name={item.icon} size={58} strokeWidth={1.15} />
+        </div>
+        <HeartButton />
+      </div>
+
+      <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "px-2.5 pb-2.5 pt-2"}>
+        <div className="flex items-center justify-between gap-1.5">
+          <span className={`max-w-[105px] truncate text-[8px] font-medium text-[#6f7899] ${listView ? "text-[9px]" : ""}`}>
+            {item.category}
+          </span>
+          <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]">
+            <span className="text-[#f4b400]">★</span>{item.rating}
+          </span>
+        </div>
+
+        <h3 className="mt-1.5 truncate text-[10px] font-semibold leading-4 text-[#10183f] sm:text-[11px]">
+          {item.title}
+        </h3>
+
+        <p className="mt-1 text-[11px] font-bold leading-4 text-[#07863a]">
+          {item.price}
+        </p>
+
+        <p className="mt-1 truncate text-[8px] text-[#7b84a3]">
+          {item.seller} · {item.location}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function ResultsControl({ icon, children, active = false, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex h-9 shrink-0 items-center gap-2 rounded-full border px-3 text-[10px] font-medium transition-colors sm:h-10 sm:px-4 sm:text-[11px] ${active ? "border-transparent bg-[#dff7e7] text-[#07863a]" : "border-[#e4e9f0] bg-white text-[#10183f] hover:bg-[#f7faf8]"}`}
+    >
+      {icon && <Icon name={icon} size={15} />}
+      {children}
+    </button>
+  );
+}
+
+function ExploreResultsSection({ isAuthenticated }) {
+  const sourceItems = Array.from(
+    new Map(
+      [...FEATURED_ITEMS, ...PICKED_ITEMS, ...POPULAR_NEARBY_ITEMS, ...CONTINUE_ITEMS].map((item) => [
+        item.title,
+        item,
+      ]),
+    ).values(),
+  );
+
+  const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
+  const [search, setSearch] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("Lagos");
+  const [sortBy, setSortBy] = useState("relevance");
+  const [listView, setListView] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  const tabs = [
+    { id: "all", label: "All", icon: "grid" },
+    { id: "products", label: "Products", icon: "products" },
+    { id: "services", label: "Services", icon: "service" },
+    { id: "providers", label: "Providers", icon: "provider" },
+  ];
+
+  const normalizedSearch = search.trim().toLowerCase();
+
+  const filteredItems = sourceItems
+    .filter((item) => {
+      if (activeTab === "products") return item.category !== "Services";
+      if (activeTab === "services") return item.category === "Services" || item.category.includes("Service");
+      if (activeTab === "providers") return true;
+      return true;
+    })
+    .filter((item) => {
+      if (!normalizedSearch) return true;
+      return [item.title, item.category, item.seller, item.location]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedSearch);
+    })
+    .filter((item) => !selectedLocation || item.location === selectedLocation)
+    .sort((a, b) => {
+      if (sortBy === "price-low") {
+        return Number(String(a.price).replace(/[^0-9]/g, "")) - Number(String(b.price).replace(/[^0-9]/g, ""));
+      }
+      if (sortBy === "price-high") {
+        return Number(String(b.price).replace(/[^0-9]/g, "")) - Number(String(a.price).replace(/[^0-9]/g, ""));
+      }
+      if (sortBy === "rating") return Number(b.rating) - Number(a.rating);
+      return 0;
+    });
+
+  const visibleItems = filteredItems.slice(0, visibleCount);
+
+  const updateTab = (tab) => {
+    setActiveTab(tab);
+    setVisibleCount(12);
+  };
+
+  return (
+    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-[#fbfcfb] px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-8 lg:py-9">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0">
+          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+            {isAuthenticated ? "EXPLORE FOR YOU" : "DISCOVER ON MATCHET"}
+          </p>
+
+          <h2 className="mt-2 text-[32px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[43px]">
+            {isAuthenticated ? (
+              <>More of what <span className="text-[#07863a]">matches you.</span></>
+            ) : (
+              <>Explore what’s <span className="text-[#07863a]">available.</span></>
+            )}
+          </h2>
+
+          <p className="mt-2 text-[12px] leading-5 text-[#69739a] sm:text-[14px]">
+            {isAuthenticated
+              ? "Browse recommendations, nearby options, and everything else available on Matchet."
+              : "Browse products, services, and providers from around you."}
+          </p>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2 self-start">
+          <span className="text-[10px] font-semibold text-[#7b84a3] sm:text-[11px]">
+            {filteredItems.length.toLocaleString("en-NG")} results
+          </span>
+          <button
+            type="button"
+            aria-label="Grid view"
+            onClick={() => setListView(false)}
+            className={`flex h-9 w-9 items-center justify-center rounded-full ${!listView ? "bg-[#dff7e7] text-[#07863a]" : "bg-white text-[#69739a]"}`}
+          >
+            <Icon name="grid" size={16} />
+          </button>
+          <button
+            type="button"
+            aria-label="List view"
+            onClick={() => setListView(true)}
+            className={`flex h-9 w-9 items-center justify-center rounded-full ${listView ? "bg-[#dff7e7] text-[#07863a]" : "bg-white text-[#69739a]"}`}
+          >
+            <span className="text-[15px] leading-none">☷</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center gap-2">
+        {isAuthenticated && (
+          <ResultsControl icon="sparkles" active={activeTab === "recommended"} onClick={() => updateTab("recommended")}>
+            Recommended
+          </ResultsControl>
+        )}
+        {tabs.map((tab) => (
+          <ResultsControl
+            key={tab.id}
+            icon={tab.icon}
+            active={activeTab === tab.id}
+            onClick={() => updateTab(tab.id)}
+          >
+            {tab.label}
+          </ResultsControl>
+        ))}
+
+        <div className="ml-0 flex h-9 min-w-[210px] flex-1 items-center gap-2 rounded-full border border-[#e4e9f0] bg-white px-3.5 sm:h-10 sm:min-w-[260px]">
+          <Icon name="search" size={15} />
+          <input
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setVisibleCount(12);
+            }}
+            placeholder="Search within results..."
+            className="min-w-0 flex-1 bg-transparent text-[10px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[11px]"
+          />
+        </div>
+
+        <select
+          value={selectedLocation}
+          onChange={(event) => setSelectedLocation(event.target.value)}
+          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
+          aria-label="Location"
+        >
+          <option value="Lagos">Lagos</option>
+          <option value="Abuja">Abuja</option>
+          <option value="Port Harcourt">Port Harcourt</option>
+          <option value="Kano">Kano</option>
+        </select>
+
+        <ResultsControl icon="grid">Filters</ResultsControl>
+
+        <select
+          value={sortBy}
+          onChange={(event) => setSortBy(event.target.value)}
+          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
+          aria-label="Sort results"
+        >
+          <option value="relevance">Sort by: Relevance</option>
+          <option value="rating">Highest rated</option>
+          <option value="price-low">Price: Low to high</option>
+          <option value="price-high">Price: High to low</option>
+        </select>
+      </div>
+
+      <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"}>
+        {visibleItems.map((item) => (
+          <ExploreProductCard key={item.title} item={item} listView={listView} />
+        ))}
+      </div>
+
+      {visibleItems.length === 0 && (
+        <div className="mt-5 rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-12 text-center text-[12px] text-[#69739a]">
+          No results match your current search and filters.
+        </div>
+      )}
+
+      {visibleCount < filteredItems.length && (
+        <div className="mt-5 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((count) => count + 12)}
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-[#e7f8ec] px-6 text-[10px] font-semibold text-[#07863a] transition-colors hover:bg-[#d9f3e1]"
+          >
+            Load more results <span className="text-[16px]">→</span>
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export default function Explore({ isAuthenticated = false }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -451,6 +706,8 @@ export default function Explore({ isAuthenticated = false }) {
           <HeroVisual isAuthenticated={isAuthenticated} />
         </div>
       </section>
+
+      <ExploreResultsSection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
