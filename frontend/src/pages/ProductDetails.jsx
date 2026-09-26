@@ -189,9 +189,15 @@ function ProductDetail({ product, related }) {
               </div>
 
               <div className="mt-3 flex items-center gap-3 text-[13px]">
-                <Stars rating={product.rating} />
-                <strong className="text-[#10183f]">{Number(product.rating).toFixed(1)}</strong>
-                <span className="text-[#69739a]">({product.reviews ?? 0} reviews)</span>
+                {Number(product.reviews) > 0 && Number.isFinite(Number(product.rating)) ? (
+                  <>
+                    <Stars rating={product.rating} />
+                    <strong className="text-[#10183f]">{Number(product.rating).toFixed(1)}</strong>
+                    <span className="text-[#69739a]">({product.reviews} reviews)</span>
+                  </>
+                ) : (
+                  <span className="text-[#69739a]">No reviews yet</span>
+                )}
               </div>
 
               <p className="mt-3 text-[14px] leading-6 text-[#69739a]">{product.description}</p>
