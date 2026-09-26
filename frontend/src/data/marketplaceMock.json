@@ -1,0 +1,616 @@
+{
+  "products": [
+    {
+      "id": "featured-1",
+      "title": "Noise Cancelling Headphones",
+      "category": "Electronics",
+      "rating": "4.8",
+      "price": "₦120,000",
+      "seller": "TechHub NG",
+      "sellerInitial": "T",
+      "location": "Lagos",
+      "icon": "monitor",
+      "imageTone": "bg-gradient-to-br from-[#d8d5d0] via-[#eeeae5] to-[#c7c3bd]",
+      "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "featured-2",
+      "title": "Modern 3-Seater Sofa",
+      "category": "Home & Living",
+      "rating": "4.6",
+      "price": "₦450,000",
+      "seller": "HomeSpace",
+      "sellerInitial": "H",
+      "location": "Lagos",
+      "icon": "home",
+      "imageTone": "bg-gradient-to-br from-[#ded6cc] via-[#f3eee8] to-[#c8beb3]",
+      "categoryTone": "bg-[#eef0f5] text-[#10183f]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "featured-4",
+      "title": "MacBook Air M2",
+      "category": "Electronics",
+      "rating": "4.7",
+      "price": "₦1,200,000",
+      "seller": "DigiStore NG",
+      "sellerInitial": "D",
+      "location": "Lagos",
+      "icon": "monitor",
+      "imageTone": "bg-gradient-to-br from-[#d8e0e4] via-[#f1f4f5] to-[#bdc8cc]",
+      "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "featured-6",
+      "title": "Leather Handbag",
+      "category": "Fashion",
+      "rating": "4.5",
+      "price": "₦85,000",
+      "seller": "Style Haven",
+      "sellerInitial": "S",
+      "location": "Lagos",
+      "icon": "bag",
+      "imageTone": "bg-gradient-to-br from-[#c6aa95] via-[#ead8ca] to-[#b18f77]",
+      "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
+      "avatarTone": "bg-[#ef8d9b] text-white",
+      "type": "product"
+    },
+    {
+      "id": "picked-1",
+      "title": "Smartwatch Series 9",
+      "category": "Electronics",
+      "rating": "4.8",
+      "price": "₦180,000",
+      "seller": "GadgetWorks",
+      "sellerInitial": "G",
+      "location": "Lagos",
+      "icon": "monitor",
+      "imageTone": "bg-gradient-to-br from-[#c7c8c7] via-[#e8e9e8] to-[#a6a9a7]",
+      "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "picked-3",
+      "title": "Ergonomic Office Chair",
+      "category": "Home & Living",
+      "rating": "4.7",
+      "price": "₦95,000",
+      "seller": "WorkSmart NG",
+      "sellerInitial": "W",
+      "location": "Lagos",
+      "icon": "home",
+      "imageTone": "bg-gradient-to-br from-[#b7b8b9] via-[#e8e9e9] to-[#96999b]",
+      "categoryTone": "bg-[#eef0f5] text-[#10183f]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "picked-5",
+      "title": "Classic Sneakers",
+      "category": "Fashion",
+      "rating": "4.6",
+      "price": "₦70,000",
+      "seller": "UrbanKicks",
+      "sellerInitial": "U",
+      "location": "Lagos",
+      "icon": "bag",
+      "imageTone": "bg-gradient-to-br from-[#e5e0d9] via-[#faf9f7] to-[#c7c0b7]",
+      "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "nearby-1",
+      "title": "Jollof Rice (Family Pack)",
+      "category": "Food & Catering",
+      "rating": "4.8",
+      "price": "₦25,000",
+      "seller": "FlavorsByGoody",
+      "sellerInitial": "F",
+      "location": "Lagos",
+      "icon": "home",
+      "imageTone": "bg-gradient-to-br from-[#d58b32] via-[#f0b653] to-[#8e4e1e]",
+      "categoryTone": "bg-[#ffe9df] text-[#9d5b45]",
+      "avatarTone": "bg-[#f5d95d] text-[#10183f]",
+      "type": "product"
+    },
+    {
+      "id": "nearby-3",
+      "title": "iPhone 15 Pro",
+      "category": "Electronics",
+      "rating": "4.7",
+      "price": "₦1,150,000",
+      "seller": "DigiStore NG",
+      "sellerInitial": "D",
+      "location": "Lagos",
+      "icon": "monitor",
+      "imageTone": "bg-gradient-to-br from-[#7e8992] via-[#c9d0d5] to-[#4b5660]",
+      "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "nearby-5",
+      "title": "Nike Air Force 1",
+      "category": "Fashion",
+      "rating": "4.6",
+      "price": "₦80,000",
+      "seller": "UrbanKicks",
+      "sellerInitial": "U",
+      "location": "Lagos",
+      "icon": "bag",
+      "imageTone": "bg-gradient-to-br from-[#d8d4cf] via-[#faf9f7] to-[#aaa39b]",
+      "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "nearby-6",
+      "title": "MacBook Air M2",
+      "category": "Electronics",
+      "rating": "4.8",
+      "price": "₦1,200,000",
+      "seller": "AppleStore NG",
+      "sellerInitial": "A",
+      "location": "Lagos",
+      "icon": "monitor",
+      "imageTone": "bg-gradient-to-br from-[#c5cbd0] via-[#f1f4f5] to-[#909aa2]",
+      "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "continue-1",
+      "title": "MacBook Air M2",
+      "category": "Electronics",
+      "rating": "4.8",
+      "price": "₦1,200,000",
+      "seller": "DigiStore NG",
+      "sellerInitial": "D",
+      "location": "Lagos",
+      "icon": "monitor",
+      "imageTone": "bg-gradient-to-br from-[#c5cbd0] via-[#f1f4f5] to-[#909aa2]",
+      "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "continue-2",
+      "title": "Sony WH-1000XM5",
+      "category": "Electronics",
+      "rating": "4.7",
+      "price": "₦450,000",
+      "seller": "TechHub NG",
+      "sellerInitial": "T",
+      "location": "Lagos",
+      "icon": "monitor",
+      "imageTone": "bg-gradient-to-br from-[#25282c] via-[#555b60] to-[#101216]",
+      "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "continue-3",
+      "title": "Ergonomic Office Chair",
+      "category": "Home & Living",
+      "rating": "4.6",
+      "price": "₦95,000",
+      "seller": "WorkSmart NG",
+      "sellerInitial": "W",
+      "location": "Lagos",
+      "icon": "home",
+      "imageTone": "bg-gradient-to-br from-[#565a5d] via-[#a7abad] to-[#292c2f]",
+      "categoryTone": "bg-[#eef0f5] text-[#10183f]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "product"
+    },
+    {
+      "id": "continue-5",
+      "title": "Leather Backpack",
+      "category": "Fashion",
+      "rating": "4.8",
+      "price": "₦70,000",
+      "seller": "Style Haven",
+      "sellerInitial": "S",
+      "location": "Lagos",
+      "icon": "bag",
+      "imageTone": "bg-gradient-to-br from-[#76513c] via-[#b58b68] to-[#4d3326]",
+      "categoryTone": "bg-[#ffe8df] text-[#9d5b45]",
+      "avatarTone": "bg-[#ef8d9b] text-white",
+      "type": "product"
+    }
+  ],
+  "services": [
+    {
+      "id": "featured-3",
+      "title": "Professional Makeup Artist",
+      "category": "Services",
+      "rating": "4.9",
+      "price": "From ₦50,000",
+      "seller": "GlamByTee",
+      "sellerInitial": "G",
+      "location": "Lagos",
+      "icon": "users",
+      "imageTone": "bg-gradient-to-br from-[#d9c6ba] via-[#eee0d7] to-[#bfa99b]",
+      "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "service"
+    },
+    {
+      "id": "featured-5",
+      "title": "Website Design & Development",
+      "category": "Services",
+      "rating": "4.9",
+      "price": "From ₦150,000",
+      "seller": "CodeCraft",
+      "sellerInitial": "<>",
+      "location": "Lagos",
+      "icon": "tools",
+      "imageTone": "bg-gradient-to-br from-[#b9c4c6] via-[#e8eded] to-[#9ba9ad]",
+      "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "service"
+    },
+    {
+      "id": "picked-2",
+      "title": "Home-cooked Meals",
+      "category": "Services",
+      "rating": "4.9",
+      "price": "From ₦25,000",
+      "seller": "FlavorsByGoody",
+      "sellerInitial": "F",
+      "location": "Lagos",
+      "icon": "home",
+      "imageTone": "bg-gradient-to-br from-[#dfc08d] via-[#f4dfb1] to-[#bd8c55]",
+      "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
+      "avatarTone": "bg-[#f5d95d] text-[#10183f]",
+      "type": "service"
+    },
+    {
+      "id": "picked-4",
+      "title": "Personal Training",
+      "category": "Services",
+      "rating": "4.9",
+      "price": "From ₦40,000",
+      "seller": "FitWithAda",
+      "sellerInitial": "A",
+      "location": "Lagos",
+      "icon": "users",
+      "imageTone": "bg-gradient-to-br from-[#c5b6a9] via-[#e7dcd3] to-[#a9978a]",
+      "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
+      "avatarTone": "bg-[#f28b91] text-white",
+      "type": "service"
+    },
+    {
+      "id": "picked-6",
+      "title": "Business Consultation",
+      "category": "Services",
+      "rating": "4.8",
+      "price": "From ₦100,000",
+      "seller": "BizPro NG",
+      "sellerInitial": "↗",
+      "location": "Lagos",
+      "icon": "users",
+      "imageTone": "bg-gradient-to-br from-[#bca98f] via-[#e6d9c6] to-[#9d886f]",
+      "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
+      "avatarTone": "bg-[#3157d5] text-white",
+      "type": "service"
+    },
+    {
+      "id": "nearby-2",
+      "title": "Professional Hair Styling",
+      "category": "Beauty & Wellness",
+      "rating": "4.9",
+      "price": "From ₦10,000",
+      "seller": "The Beauty Hub",
+      "sellerInitial": "B",
+      "location": "Lagos",
+      "icon": "users",
+      "imageTone": "bg-gradient-to-br from-[#8d6255] via-[#d0a38f] to-[#5a3c38]",
+      "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
+      "avatarTone": "bg-[#f28b91] text-white",
+      "type": "service"
+    },
+    {
+      "id": "nearby-4",
+      "title": "Home Cleaning Service",
+      "category": "Home Services",
+      "rating": "4.8",
+      "price": "From ₦15,000",
+      "seller": "CleanSpace",
+      "sellerInitial": "C",
+      "location": "Lagos",
+      "icon": "home",
+      "imageTone": "bg-gradient-to-br from-[#b7a28f] via-[#eee4d8] to-[#8e7865]",
+      "categoryTone": "bg-[#e4f8ea] text-[#07863a]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "service"
+    },
+    {
+      "id": "continue-4",
+      "title": "Laptop Repair",
+      "category": "Services",
+      "rating": "4.9",
+      "price": "From ₦15,000",
+      "seller": "FixIT NG",
+      "sellerInitial": "F",
+      "location": "Lagos",
+      "icon": "tools",
+      "imageTone": "bg-gradient-to-br from-[#364b58] via-[#91a6b2] to-[#202d35]",
+      "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "service"
+    },
+    {
+      "id": "continue-6",
+      "title": "Personal Training",
+      "category": "Services",
+      "rating": "4.9",
+      "price": "From ₦40,000",
+      "seller": "FitWithTunde",
+      "sellerInitial": "F",
+      "location": "Lagos",
+      "icon": "users",
+      "imageTone": "bg-gradient-to-br from-[#444d49] via-[#8c9891] to-[#202522]",
+      "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
+      "avatarTone": "bg-[#10183f] text-white",
+      "type": "service"
+    }
+  ],
+  "collections": {
+    "featured": [
+      "featured-1",
+      "featured-2",
+      "featured-3",
+      "featured-4",
+      "featured-5",
+      "featured-6"
+    ],
+    "picked": [
+      "picked-1",
+      "picked-2",
+      "picked-3",
+      "picked-4",
+      "picked-5",
+      "picked-6"
+    ],
+    "popularNearby": [
+      "nearby-1",
+      "nearby-2",
+      "nearby-3",
+      "nearby-4",
+      "nearby-5",
+      "nearby-6"
+    ],
+    "continueExploring": [
+      "continue-1",
+      "continue-2",
+      "continue-3",
+      "continue-4",
+      "continue-5",
+      "continue-6"
+    ]
+  },
+  "meta": {
+    "source": "mock-backend",
+    "version": 1,
+    "providerSource": "mock-backend"
+  },
+  "providers": [
+    {
+      "id": "provider-techhub",
+      "name": "TechHub NG",
+      "category": "Electronics & Repairs",
+      "rating": 4.8,
+      "reviews": 320,
+      "location": "Lagos",
+      "listings": 42,
+      "initials": "TH",
+      "logoTone": "bg-[#dff4e7] text-[#1c6b42]",
+      "imageTone": "bg-gradient-to-br from-[#b9a89b] via-[#e2d8cf] to-[#8d7869]",
+      "match": null
+    },
+    {
+      "id": "provider-flavors",
+      "name": "FlavorsByGoody",
+      "category": "Food & Catering",
+      "rating": 4.9,
+      "reviews": 278,
+      "location": "Lagos",
+      "listings": 36,
+      "initials": "♨",
+      "logoTone": "bg-[#fff0dc] text-[#6d4a28]",
+      "imageTone": "bg-gradient-to-br from-[#c99c78] via-[#ead0b9] to-[#8d5d42]",
+      "match": "96% Match"
+    },
+    {
+      "id": "provider-coolfix",
+      "name": "CoolFix",
+      "category": "Home Services",
+      "rating": 4.7,
+      "reviews": 164,
+      "location": "Lagos",
+      "listings": 28,
+      "initials": "❄",
+      "logoTone": "bg-[#e2f1ff] text-[#2867c8]",
+      "imageTone": "bg-gradient-to-br from-[#9aa6b2] via-[#dce2e6] to-[#667482]",
+      "match": null
+    },
+    {
+      "id": "provider-glowhouse",
+      "name": "GlowHouse",
+      "category": "Beauty & Personal Care",
+      "rating": 4.8,
+      "reviews": 199,
+      "location": "Lagos",
+      "listings": 51,
+      "initials": "✿",
+      "logoTone": "bg-[#ffe1ef] text-[#d63382]",
+      "imageTone": "bg-gradient-to-br from-[#c5a58f] via-[#e5d5c9] to-[#8d6d5c]",
+      "match": "Nearby"
+    },
+    {
+      "id": "provider-techhub-match",
+      "name": "TechHub NG",
+      "category": "Electronics & Repairs",
+      "rating": 4.8,
+      "reviews": 320,
+      "location": "Lagos",
+      "listings": 42,
+      "initials": "TH",
+      "logoTone": "bg-[#dff4e7] text-[#1c6b42]",
+      "imageTone": "bg-gradient-to-br from-[#b9a89b] via-[#e2d8cf] to-[#8d7869]",
+      "match": "92% Match"
+    },
+    {
+      "id": "provider-glowhouse-match",
+      "name": "GlowHouse",
+      "category": "Beauty & Personal Care",
+      "rating": 4.8,
+      "reviews": 199,
+      "location": "Lagos",
+      "listings": 51,
+      "initials": "✿",
+      "logoTone": "bg-[#ffe1ef] text-[#d63382]",
+      "imageTone": "bg-gradient-to-br from-[#c5a58f] via-[#e5d5c9] to-[#8d6d5c]",
+      "match": "Nearby"
+    },
+    {
+      "id": "provider-coolfix-match",
+      "name": "CoolFix",
+      "category": "Home Services",
+      "rating": 4.7,
+      "reviews": 164,
+      "location": "Lagos",
+      "listings": 28,
+      "initials": "❄",
+      "logoTone": "bg-[#e2f1ff] text-[#2867c8]",
+      "imageTone": "bg-gradient-to-br from-[#9aa6b2] via-[#dce2e6] to-[#667482]",
+      "match": "Highly rated"
+    }
+  ],
+  "providerCollections": {
+    "featured": [
+      "provider-techhub",
+      "provider-flavors",
+      "provider-coolfix",
+      "provider-glowhouse"
+    ],
+    "recommended": [
+      "provider-flavors",
+      "provider-techhub-match",
+      "provider-glowhouse-match",
+      "provider-coolfix-match"
+    ]
+  },
+  "categories": {
+    "featured": [
+      {
+        "id": "electronics",
+        "name": "Electronics",
+        "icon": "bag",
+        "tone": "green"
+      },
+      {
+        "id": "fashion",
+        "name": "Fashion",
+        "icon": "shirt",
+        "tone": "red"
+      },
+      {
+        "id": "home-living",
+        "name": "Home & Living",
+        "icon": "chair",
+        "tone": "yellow"
+      },
+      {
+        "id": "beauty-care",
+        "name": "Beauty & Care",
+        "icon": "lotus",
+        "tone": "pink"
+      },
+      {
+        "id": "computers",
+        "name": "Computers",
+        "icon": "laptop",
+        "tone": "purple"
+      },
+      {
+        "id": "automotive",
+        "name": "Automotive",
+        "icon": "car",
+        "tone": "blue"
+      },
+      {
+        "id": "services",
+        "name": "Services",
+        "icon": "tools",
+        "tone": "green"
+      },
+      {
+        "id": "more",
+        "name": "More Categories",
+        "icon": "dots",
+        "tone": "gray"
+      }
+    ],
+    "interests": [
+      {
+        "id": "electronics",
+        "name": "Electronics",
+        "icon": "laptop",
+        "tone": "green"
+      },
+      {
+        "id": "computers",
+        "name": "Computers",
+        "icon": "monitor",
+        "tone": "purple"
+      },
+      {
+        "id": "design",
+        "name": "Design",
+        "icon": "paintbrush",
+        "tone": "orange"
+      },
+      {
+        "id": "gaming",
+        "name": "Gaming",
+        "icon": "gamepad",
+        "tone": "blue"
+      }
+    ],
+    "exploreMore": [
+      {
+        "id": "fashion",
+        "name": "Fashion",
+        "icon": "shirt",
+        "tone": "red"
+      },
+      {
+        "id": "home-living",
+        "name": "Home & Living",
+        "icon": "chair",
+        "tone": "yellow"
+      },
+      {
+        "id": "beauty-care",
+        "name": "Beauty & Care",
+        "icon": "lotus",
+        "tone": "pink"
+      },
+      {
+        "id": "automotive",
+        "name": "Automotive",
+        "icon": "car",
+        "tone": "blue"
+      }
+    ]
+  }
+}

@@ -4,8 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
-import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
-import { CONTINUE_ITEMS, POPULAR_NEARBY_ITEMS } from "../data/homePopularMock";
+import { getMarketplaceCollection } from "../data/marketplaceApi";
 import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMock";
 import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } from "../data/homeCommunityMock";
 import { MOBILE_APP_SECTIONS } from "../data/homeMobileAppMock";
@@ -558,10 +557,9 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, viewPath 
 }
 
 
-function NearbyMarketplaceSection({ isAuthenticated }) {
+function NearbyMarketplaceSection({ isAuthenticated, items }) {
   const railRef = useRef(null);
 
-  const items = isAuthenticated ? CONTINUE_ITEMS : POPULAR_NEARBY_ITEMS;
   const title = isAuthenticated ? "Continue" : "Popular";
   const accent = isAuthenticated ? "exploring" : "near you";
   const eyebrow = isAuthenticated ? "CONTINUE WHERE YOU LEFT OFF" : "EXPLORE LOCALLY";
@@ -1375,8 +1373,38 @@ function CommunitySection({ isAuthenticated }) {
 export default function Home({ isAuthenticated = false, userName }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
+  const [marketplace, setMarketplace] = useState({
+    featured: [],
+    picked: [],
+    popularNearby: [],
+    continueExploring: [],
+  });
 
   const locationRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+
+    Promise.all([
+      getMarketplaceCollection("featured"),
+      getMarketplaceCollection("picked"),
+      getMarketplaceCollection("popularNearby"),
+      getMarketplaceCollection("continueExploring"),
+    ]).then(([featured, picked, popularNearby, continueExploring]) => {
+      if (!active) return;
+
+      setMarketplace({
+        featured,
+        picked,
+        popularNearby,
+        continueExploring,
+      });
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -1457,7 +1485,7 @@ export default function Home({ isAuthenticated = false, userName }) {
         title="Featured on"
         accent="Matchet"
         subtitle="Popular products and services from trusted providers."
-        items={FEATURED_ITEMS}
+        items={marketplace.featured}
       />
 
       <MarketplaceSection
@@ -1465,9 +1493,9 @@ export default function Home({ isAuthenticated = false, userName }) {
         title="Picked"
         accent="for you"
         subtitle="Matches based on what you browse, save, and buy."
-        items={PICKED_ITEMS}
+        items={marketplace.picked}
       />
-      <NearbyMarketplaceSection isAuthenticated={isAuthenticated} />
+      <NearbyMarketplaceSection isAuthenticated={isAuthenticated} items={isAuthenticated ? marketplace.continueExploring : marketplace.popularNearby} />
       <MatchingSection isAuthenticated={isAuthenticated} userName={userName} />
       <CommunitySection isAuthenticated={isAuthenticated} />
       <MobileAppSection isAuthenticated={isAuthenticated} userName={userName} />
