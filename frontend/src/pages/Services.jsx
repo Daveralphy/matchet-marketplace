@@ -400,11 +400,15 @@ function ServiceListingCard({ service }) {
   return (
     <article className="overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
       <div className={`relative h-[218px] overflow-hidden ${service.imageTone || "bg-[#dfe7e2]"}`}>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
-            <Icon name={service.category === "Beauty & Care" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home"} size={42} strokeWidth={1.45} />
-          </span>
-        </div>
+        {service.image ? (
+          <img src={service.image} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
+              <Icon name={service.category === "Beauty & Care" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home"} size={42} strokeWidth={1.45} />
+            </span>
+          </div>
+        )}
 
         {service.match && (
           <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold text-[#07863a] shadow-sm">
