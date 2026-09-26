@@ -6,7 +6,7 @@ import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/services/hero 2.png";
 import person1 from "../assets/inspirations/services/person1.png";
 import person2 from "../assets/inspirations/services/person2.png";
-import { getServiceCategoryCollections, getServiceCollection, getServiceExperience } from "../data/marketplaceApi";
+import { getServiceCategoryCollections, getServiceCollection, getServiceExperience, getServiceReviews } from "../data/marketplaceApi";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -739,6 +739,80 @@ function ServiceJourneySection({ isAuthenticated }) {
   );
 }
 
+
+function ServiceReviewsSection({ isAuthenticated }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    getServiceReviews().then((result) => {
+      if (active) setData(result);
+    });
+    return () => { active = false; };
+  }, []);
+
+  if (!data) return null;
+
+  const content = isAuthenticated ? data.loggedIn : data.loggedOut;
+
+  const badgeTone = {
+    green: "bg-[#e3f8e8] text-[#087d35]",
+    blue: "bg-[#e5f0ff] text-[#0965dc]",
+  };
+
+  return (
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-10 lg:px-10 lg:py-11 ${isAuthenticated ? "bg-[#f4fcf5]" : "bg-[#fbfcfb]"}`}>
+      <div className="max-w-[720px]">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#07863a] sm:text-[11px]">
+          {content.eyebrow}
+        </p>
+        <h2 className="mt-3 text-[39px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[50px] lg:text-[54px]">
+          {content.title}
+          <br />
+          <span className="text-[#07863a]">{content.accent}</span>
+        </h2>
+        <p className="mt-3 max-w-[650px] text-[14px] leading-5 text-[#69739a] sm:text-[17px] sm:leading-6">
+          {content.subtitle}
+        </p>
+      </div>
+
+      <div className="mt-7 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {content.reviews.map((review) => (
+          <article key={review.id} className="flex min-h-[405px] flex-col rounded-[14px] border border-[#e2e8ed] bg-white px-5 py-4 shadow-[0_5px_18px_rgba(16,24,63,0.035)] sm:px-5">
+            <div className="flex items-center justify-between gap-3">
+              <span className={`rounded-full px-4 py-2 text-[10px] font-medium ${badgeTone[review.typeTone] || badgeTone.green}`}>
+                {review.type}
+              </span>
+              <span className="whitespace-nowrap text-[18px] tracking-[-0.08em] text-[#f4a900]" aria-label={`${review.rating} out of 5 stars`}>
+                {"★".repeat(Math.max(0, Math.min(5, Number(review.rating) || 0)))}
+              </span>
+            </div>
+
+            <blockquote className="mt-5 text-[15px] leading-[1.55] tracking-[-0.02em] text-[#10183f] sm:text-[16px]">
+              “{review.quote}”
+            </blockquote>
+
+            <div className="mt-auto flex items-center gap-4 pt-8">
+              {review.avatarUrl ? (
+                <img src={review.avatarUrl} alt="" className="h-[86px] w-[86px] rounded-[13px] object-cover" />
+              ) : (
+                <div className={`flex h-[86px] w-[86px] shrink-0 items-center justify-center rounded-[13px] ${review.avatarTone || "bg-[#e8edf0]"} text-[18px] font-semibold text-[#10183f]`}>
+                  {review.initials}
+                </div>
+              )}
+              <div className="min-w-0">
+                <h3 className="text-[14px] font-semibold text-[#10183f] sm:text-[15px]">{review.name}</h3>
+                <p className="mt-1 text-[12px] text-[#7b84a3]">{review.role}</p>
+                <p className="mt-1 text-[12px] text-[#7b84a3]">{review.location}</p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ServiceListingCard({ service }) {
   return (
     <article className="overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
@@ -942,6 +1016,7 @@ export default function Services({ isAuthenticated = false }) {
       <ServicesListingSection isAuthenticated={isAuthenticated} />
       <ServiceCategoriesSection isAuthenticated={isAuthenticated} />
       <ServiceJourneySection isAuthenticated={isAuthenticated} />
+      <ServiceReviewsSection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
