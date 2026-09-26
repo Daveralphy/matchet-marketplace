@@ -31,6 +31,10 @@ export async function getMarketplaceData() {
   });
 }
 
+export async function getProductCollection() {
+  return simulateApiResponse([...(marketplaceData.products ?? [])]);
+}
+
 export async function getMarketplaceCollection(collection) {
   const key = COLLECTION_KEYS[collection];
 
