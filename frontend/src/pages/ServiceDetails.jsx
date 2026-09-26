@@ -25,7 +25,7 @@ function Stars({rating}) {
 function ServiceVisual({service,large=false,image=null}) {
   const icon=service.icon==="tools"?"tools":service.icon==="home"?"home":"users";
   return <div className={`flex items-center justify-center overflow-hidden rounded-[10px] ${large?"h-[410px] sm:h-[480px]":"h-[86px]"} ${service.imageTone||"bg-[#f1f1ef]"}`}>
-    {image?<img src={image} alt={service.title} className="h-full w-full object-cover"/>:<span className="flex items-center justify-center rounded-full bg-white/45 text-[#10183f]/60 ${large?"h-[190px] w-[190px]":"h-[52px] w-[52px]"}"><Icon name={icon} size={large?92:28} strokeWidth={1.35}/></span>}
+    {image?<img src={image} alt={service.title} className="h-full w-full object-cover"/>:<span className={`flex items-center justify-center rounded-full bg-white/45 text-[#10183f]/60 ${large ? "h-[190px] w-[190px]" : "h-[52px] w-[52px]"}`}><Icon name={icon} size={large?92:28} strokeWidth={1.35}/></span>}
   </div>;
 }
 
