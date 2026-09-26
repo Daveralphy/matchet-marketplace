@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
+import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -485,15 +486,7 @@ function HeroVisual({ isAuthenticated }) {
 
 
 function ProductImage({ product }) {
-  const icon = product.icon === "bag" ? "bag" : product.icon === "home" ? "sofa" : "monitor";
-
-  return (
-    <div className={`flex h-[152px] items-center justify-center overflow-hidden rounded-[9px] ${product.imageTone || "bg-[#f1f1ef]"}`}>
-      <div className="flex h-[86px] w-[86px] items-center justify-center rounded-[24px] bg-white/65 text-[#27335f] shadow-[0_8px_20px_rgba(16,24,63,0.08)]">
-        <Icon name={icon} size={52} strokeWidth={1.45} />
-      </div>
-    </div>
-  );
+  return <MarketplaceProductVisual product={product} size="standard" />;
 }
 
 function ProductCatalogueCard({ product }) {
