@@ -151,3 +151,20 @@ export async function getProductExperience() {
     loggedIn: { eyebrow: "", title: "", accent: "", subtitle: "", steps: [] },
   });
 }
+
+
+export async function getProductById(id) {
+  const product = (marketplaceData.products ?? []).find((item) => item.id === id);
+  return simulateApiResponse(product ?? null);
+}
+
+export async function getRelatedProducts(productId) {
+  const product = (marketplaceData.products ?? []).find((item) => item.id === productId);
+  if (!product) return simulateApiResponse([]);
+
+  const related = (marketplaceData.products ?? [])
+    .filter((item) => item.id !== productId && item.category === product.category)
+    .slice(0, 4);
+
+  return simulateApiResponse(related);
+}
