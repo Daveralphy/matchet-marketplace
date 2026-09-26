@@ -741,5 +741,125 @@
       "service-recommended-3",
       "service-recommended-4"
     ]
+  },
+  "serviceCategories": {
+    "featured": [
+      {
+        "id": "home-services",
+        "label": "Home Services",
+        "description": "Cleaning, plumbing, electrical and more.",
+        "icon": "home",
+        "tone": "green"
+      },
+      {
+        "id": "repairs-maintenance",
+        "label": "Repairs & Maintenance",
+        "description": "Phone, appliance, electronics and more.",
+        "icon": "tools",
+        "tone": "blue"
+      },
+      {
+        "id": "beauty-personal-care",
+        "label": "Beauty & Personal Care",
+        "description": "Hair, nails, skincare, spa and more.",
+        "icon": "beauty",
+        "tone": "pink"
+      },
+      {
+        "id": "professional-services",
+        "label": "Professional Services",
+        "description": "Consulting, legal, accounting and more.",
+        "icon": "briefcase",
+        "tone": "yellow"
+      },
+      {
+        "id": "events-catering",
+        "label": "Events & Catering",
+        "description": "Event planning, catering, decor and more.",
+        "icon": "calendar",
+        "tone": "purple"
+      },
+      {
+        "id": "cleaning-services",
+        "label": "Cleaning Services",
+        "description": "Home, office, deep cleaning and more.",
+        "icon": "tools",
+        "tone": "green"
+      },
+      {
+        "id": "automotive-services",
+        "label": "Automotive Services",
+        "description": "Repairs, maintenance, car care and more.",
+        "icon": "car",
+        "tone": "orange"
+      },
+      {
+        "id": "more-services",
+        "label": "More Services",
+        "description": "Explore all service categories.",
+        "icon": "more",
+        "tone": "gray"
+      }
+    ],
+    "interests": [
+      {
+        "id": "home-services",
+        "label": "Home Services",
+        "description": "Cleaning, plumbing, electrical and more.",
+        "icon": "home",
+        "tone": "green"
+      },
+      {
+        "id": "repairs-maintenance",
+        "label": "Repairs & Maintenance",
+        "description": "Phone, appliance, electronics and more.",
+        "icon": "tools",
+        "tone": "blue"
+      },
+      {
+        "id": "beauty-personal-care",
+        "label": "Beauty & Personal Care",
+        "description": "Hair, nails, skincare, spa and more.",
+        "icon": "beauty",
+        "tone": "pink"
+      },
+      {
+        "id": "professional-services",
+        "label": "Professional Services",
+        "description": "Consulting, legal, accounting and more.",
+        "icon": "briefcase",
+        "tone": "yellow"
+      }
+    ],
+    "exploreMore": [
+      {
+        "id": "events-catering",
+        "label": "Events & Catering",
+        "description": "Event planning, catering, decor and more.",
+        "icon": "calendar",
+        "tone": "purple"
+      },
+      {
+        "id": "cleaning-services",
+        "label": "Cleaning Services",
+        "description": "Home, office, deep cleaning and more.",
+        "icon": "tools",
+        "tone": "green"
+      },
+      {
+        "id": "automotive-services",
+        "label": "Automotive Services",
+        "description": "Repairs, maintenance, car care and more.",
+        "icon": "car",
+        "tone": "orange"
+      },
+      {
+        "id": "more-services",
+        "label": "More Services",
+        "description": "Explore all service categories.",
+        "icon": "more",
+        "tone": "gray"
+      }
+    ]
   }
 }
