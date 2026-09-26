@@ -2,6 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/services/hero 2.png";
 import person1 from "../assets/inspirations/services/person1.png";
@@ -815,7 +816,7 @@ function ServiceReviewsSection({ isAuthenticated }) {
 
 function ServiceListingCard({ service }) {
   return (
-    <article className="overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
+    <Link to={`/services/${service.id}`} className="block overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
       <div className={`relative h-[218px] overflow-hidden ${service.imageTone || "bg-[#dfe7e2]"}`}>
         {service.image ? (
           <img src={service.image} alt="" className="h-full w-full object-cover" />
@@ -874,7 +875,7 @@ function ServiceListingCard({ service }) {
           </div>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 

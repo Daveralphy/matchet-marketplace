@@ -24,6 +24,7 @@ import MarketplaceLayout from "./components/layout/MarketplaceLayout";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import ProductDetailsPage from "./pages/ProductDetails";
+import ServiceDetailsPage from "./pages/ServiceDetails";
 import Explore from "./pages/Explore";
 import Services from "./pages/Services";
 import ForProviders from "./pages/ForProviders";
@@ -129,7 +130,7 @@ const router = createBrowserRouter([
     path: "/services/:id",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Service Details" />
+        <ServiceDetailsPage />
       </MarketplaceLayout>
     ),
   },
