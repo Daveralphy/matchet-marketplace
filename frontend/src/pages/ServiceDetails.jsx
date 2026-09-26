@@ -52,7 +52,7 @@ function ServiceDetails({service,related}) {
    <section className="space-y-5">
     <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
      <p className="text-[12px] font-medium text-[#69739a]">{service.category}</p><h1 className="mt-1 text-[31px] font-bold leading-[1.05] tracking-[-0.045em] text-[#10183f] sm:text-[38px]">{service.title}</h1>
-     <div className="mt-3 flex items-center gap-3 text-[13px]"><Stars rating={service.rating}/><strong>{Number(service.rating).toFixed(1)}</strong><span className="text-[#69739a]">({service.reviews||0} reviews)</span></div>
+     <div className="mt-3 flex items-center gap-3 text-[13px]">{Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? <><Stars rating={service.rating}/><strong>{Number(service.rating).toFixed(1)}</strong><span className="text-[#69739a]">({service.reviews} reviews)</span></> : <span className="text-[#69739a]">No reviews yet</span>}</div>
      <p className="mt-3 text-[14px] leading-6 text-[#69739a]">{service.description}</p>
      <div className="mt-5 flex items-center justify-between gap-4"><p className="text-[30px] font-bold tracking-[-0.04em] text-[#10183f]">{service.price}</p><span className="rounded-[8px] bg-[#e7f8ec] px-3 py-2 text-[11px] font-medium text-[#07863a]">● {service.availability}</span></div>
      <div className="mt-6 flex gap-3"><button onClick={()=>setSaved(v=>!v)} className="flex h-[52px] flex-1 items-center justify-center gap-2 rounded-[8px] border border-[#dfe5ec] font-medium text-[#10183f]"><Icon name="heart"/>{saved?"Saved":"Save service"}</button><button className="h-[52px] flex-1 rounded-[8px] bg-[#087d35] font-medium text-white">Request booking</button></div>
