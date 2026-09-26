@@ -99,3 +99,15 @@ export async function getCategoryCollections() {
     exploreMore: [],
   });
 }
+
+
+export async function getServiceCollection(collection = "featured") {
+  const ids = marketplaceData.serviceCollections?.[collection] ?? [];
+  const services = new Map(
+    (marketplaceData.services ?? []).map((service) => [service.id, service]),
+  );
+
+  return simulateApiResponse(
+    ids.map((id) => services.get(id)).filter(Boolean),
+  );
+}
