@@ -23,6 +23,7 @@ import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
+import ProductDetailsPage from "./pages/ProductDetails";
 import Explore from "./pages/Explore";
 import Services from "./pages/Services";
 import ForProviders from "./pages/ForProviders";
@@ -120,7 +121,7 @@ const router = createBrowserRouter([
     path: "/products/:id",
     element: (
       <MarketplaceLayout>
-        <Placeholder name="Product Details" />
+        <ProductDetailsPage />
       </MarketplaceLayout>
     ),
   },
