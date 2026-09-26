@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
 import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
+import { CONTINUE_ITEMS, POPULAR_NEARBY_ITEMS } from "../data/homePopularMock";
 
 const CATEGORIES = [
   { label: "All Categories", icon: "grid", active: true },
@@ -385,12 +386,13 @@ function HeartIcon({ size = 18 }) {
   );
 }
 
-function MarketplaceCard({ item }) {
+function MarketplaceCard({ item, compact = false }) {
   return (
-    <article className="group w-[172px] shrink-0 overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)] sm:w-[180px]">
+    <article className={`group shrink-0 overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)] ${compact ? "w-[166px]" : "w-[172px] sm:w-[180px]"}`}>
       <div
         className={[
-          "relative flex h-[178px] items-center justify-center overflow-hidden",
+          "relative flex items-center justify-center overflow-hidden",
+          compact ? "h-[145px]" : "h-[178px]",
           item.imageTone,
         ].join(" ")}
       >
@@ -407,7 +409,7 @@ function MarketplaceCard({ item }) {
         </button>
       </div>
 
-      <div className="px-3 pb-3.5 pt-2.5">
+      <div className={compact ? "px-3 pb-3 pt-2.5" : "px-3 pb-3.5 pt-2.5"}>
         <div className="flex items-center justify-between gap-2">
           <span className={`max-w-[112px] truncate rounded-full px-2.5 py-1 text-[9px] font-medium ${item.categoryTone}`}>
             {item.category}
@@ -547,6 +549,114 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, viewPath 
   );
 }
 
+
+function NearbyMarketplaceSection({ isAuthenticated }) {
+  const railRef = useRef(null);
+
+  const items = isAuthenticated ? CONTINUE_ITEMS : POPULAR_NEARBY_ITEMS;
+  const title = isAuthenticated ? "Continue" : "Popular";
+  const accent = isAuthenticated ? "exploring" : "near you";
+  const eyebrow = isAuthenticated ? "CONTINUE WHERE YOU LEFT OFF" : "EXPLORE LOCALLY";
+  const subtitle = isAuthenticated
+    ? "Pick up where you left off or discover something new."
+    : "See what people are discovering, buying, and booking around Lagos.";
+  const sectionTone = isAuthenticated ? "bg-[#f5fcf8]" : "bg-[#fbfcff]";
+
+  const scrollRail = (direction) => {
+    railRef.current?.scrollBy({
+      left: direction * 380,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <section
+      className={`mx-auto mt-6 max-w-[1470px] rounded-[14px] border border-slate-100 ${sectionTone} px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-10 lg:py-9`}
+    >
+      <div className="flex items-end justify-between gap-5">
+        <div className="min-w-0">
+          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+            {eyebrow}
+          </p>
+
+          <h2 className="mt-2 text-[30px] font-bold leading-none tracking-[-0.045em] text-[#10183f] sm:text-[38px]">
+            {title}{" "}
+            <span className="text-[#07863a]">{accent}</span>
+          </h2>
+
+          <p className="mt-2 text-[12px] leading-5 text-[#69739a] sm:text-[14px]">
+            {subtitle}
+          </p>
+        </div>
+
+        <div className="hidden shrink-0 items-center gap-4 sm:flex">
+          <Link
+            to="/explore"
+            className="text-[12px] font-semibold text-[#07863a] transition-colors hover:text-[#056e2c]"
+          >
+            View all <span className="ml-1 text-[16px]">→</span>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label={`Scroll ${title} left`}
+              onClick={() => scrollRail(-1)}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f1f4f8] text-[#7782a8] transition-colors hover:bg-[#e7ebf1]"
+            >
+              <span className="text-[20px] leading-none">‹</span>
+            </button>
+
+            <button
+              type="button"
+              aria-label={`Scroll ${title} right`}
+              onClick={() => scrollRail(1)}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
+            >
+              <span className="text-[20px] leading-none">›</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center justify-between sm:hidden">
+        <Link to="/explore" className="text-[11px] font-semibold text-[#07863a]">
+          View all <span className="ml-1 text-[15px]">→</span>
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label={`Scroll ${title} left`}
+            onClick={() => scrollRail(-1)}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f1f4f8] text-[#7782a8]"
+          >
+            <span className="text-[19px] leading-none">‹</span>
+          </button>
+
+          <button
+            type="button"
+            aria-label={`Scroll ${title} right`}
+            onClick={() => scrollRail(1)}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)]"
+          >
+            <span className="text-[19px] leading-none">›</span>
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={railRef}
+        className="mt-6 flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+      >
+        {items.map((item) => (
+          <MarketplaceCard key={item.id} item={item} compact />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home({ isAuthenticated = false }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -642,6 +752,7 @@ export default function Home({ isAuthenticated = false }) {
         subtitle="Matches based on what you browse, save, and buy."
         items={PICKED_ITEMS}
       />
+      <NearbyMarketplaceSection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
