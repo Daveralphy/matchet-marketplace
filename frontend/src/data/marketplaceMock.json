@@ -1121,5 +1121,93 @@
         }
       ]
     }
+  },
+  "productExperience": {
+    "loggedOut": {
+      "eyebrow": "HOW SHOPPING WORKS",
+      "title": "From order to",
+      "accent": "doorstep.",
+      "subtitle": "A simple way to buy from trusted sellers and keep track of your order every step of the way.",
+      "steps": [
+        {
+          "id": "place-order",
+          "number": "01",
+          "icon": "cart",
+          "title": "Place your order",
+          "description": "Choose your product, confirm your details, and place your order."
+        },
+        {
+          "id": "seller-confirms",
+          "number": "02",
+          "icon": "store",
+          "title": "Seller confirms",
+          "description": "The seller receives your order and prepares it for dispatch."
+        },
+        {
+          "id": "on-the-way",
+          "number": "03",
+          "icon": "truck",
+          "title": "On the way",
+          "description": "Your order is handed over for delivery and you can track its progress."
+        },
+        {
+          "id": "delivered",
+          "number": "04",
+          "icon": "package",
+          "title": "Delivered",
+          "description": "Your product arrives at your chosen location."
+        },
+        {
+          "id": "confirm-review",
+          "number": "05",
+          "icon": "star",
+          "title": "Confirm & review",
+          "description": "Confirm your order and share your experience with the seller."
+        }
+      ]
+    },
+    "loggedIn": {
+      "eyebrow": "HOW SHOPPING WORKS",
+      "title": "From order to",
+      "accent": "doorstep.",
+      "subtitle": "A simple way to buy from trusted sellers and keep track of your order every step of the way.",
+      "steps": [
+        {
+          "id": "place-order",
+          "number": "01",
+          "icon": "cart",
+          "title": "Place your order",
+          "description": "Choose your product, confirm your details, and place your order."
+        },
+        {
+          "id": "seller-confirms",
+          "number": "02",
+          "icon": "store",
+          "title": "Seller confirms",
+          "description": "The seller receives your order and prepares it for dispatch."
+        },
+        {
+          "id": "on-the-way",
+          "number": "03",
+          "icon": "truck",
+          "title": "On the way",
+          "description": "Your order is handed over for delivery and you can track its progress."
+        },
+        {
+          "id": "delivered",
+          "number": "04",
+          "icon": "package",
+          "title": "Delivered",
+          "description": "Your product arrives at your chosen location."
+        },
+        {
+          "id": "confirm-review",
+          "number": "05",
+          "icon": "star",
+          "title": "Confirm & review",
+          "description": "Confirm your order and share your experience with the seller."
+        }
+      ]
+    }
   }
 }
