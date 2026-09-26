@@ -118,3 +118,16 @@ export async function getServiceCategoryCollections() {
     exploreMore: [],
   });
 }
+
+
+export async function getServiceExperience() {
+  const experience = marketplaceData.serviceExperience ?? {
+    loggedOut: { eyebrow: "", title: "", subtitle: "", steps: [] },
+    loggedIn: { eyebrow: "", title: "", subtitle: "", steps: [] },
+    reassurance: [],
+  };
+
+  const upcomingBooking = marketplaceData.upcomingBooking ?? null;
+
+  return simulateApiResponse({ experience, upcomingBooking });
+}
