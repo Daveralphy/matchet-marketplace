@@ -1,5 +1,5 @@
-// Created by: Brima
-// Edited by: Brima
+// Created by: Brigham
+// Edited by: Brigham
 
 import "./MyProfile.css";
 import Button from "../components/common/Button";
