@@ -361,6 +361,120 @@
       "categoryTone": "bg-[#eee7ff] text-[#7135d8]",
       "avatarTone": "bg-[#10183f] text-white",
       "type": "service"
+    },
+    {
+      "id": "service-featured-1",
+      "title": "AC Repair & Maintenance",
+      "category": "Home Services",
+      "price": "From ₦15,000",
+      "rating": 4.8,
+      "reviews": 124,
+      "seller": "CoolFix Services",
+      "sellerInitial": "C",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#4f806c] via-[#d8d0c6] to-[#8d6b56]",
+      "type": "service"
+    },
+    {
+      "id": "service-featured-2",
+      "title": "Home Hair Styling",
+      "category": "Beauty & Care",
+      "price": "From ₦10,000",
+      "rating": 4.9,
+      "reviews": 88,
+      "seller": "Glow Studio",
+      "sellerInitial": "G",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#8f6754] via-[#e3c8b7] to-[#6b493e]",
+      "type": "service"
+    },
+    {
+      "id": "service-featured-3",
+      "title": "Plumbing Services",
+      "category": "Home Services",
+      "price": "From ₦12,000",
+      "rating": 4.7,
+      "reviews": 96,
+      "seller": "FixIt Right",
+      "sellerInitial": "F",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#5f7283] via-[#d7d9d7] to-[#38536b]",
+      "type": "service"
+    },
+    {
+      "id": "service-featured-4",
+      "title": "Private Chef & Catering",
+      "category": "Food & Catering",
+      "price": "From ₦25,000",
+      "rating": 4.9,
+      "reviews": 76,
+      "seller": "Tasty Bites",
+      "sellerInitial": "T",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#c4a27e] via-[#eee0d1] to-[#76533f]",
+      "type": "service"
+    },
+    {
+      "id": "service-recommended-1",
+      "title": "Home Cleaning",
+      "category": "Home Services",
+      "price": "From ₦12,000",
+      "rating": 4.8,
+      "reviews": 210,
+      "seller": "CleanHub NG",
+      "sellerInitial": "C",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "match": "96% Match",
+      "imageTone": "bg-gradient-to-br from-[#7e9272] via-[#e4dfd1] to-[#5f7156]",
+      "type": "service"
+    },
+    {
+      "id": "service-recommended-2",
+      "title": "Electrical Services",
+      "category": "Repairs",
+      "price": "From ₦15,000",
+      "rating": 4.7,
+      "reviews": 118,
+      "seller": "BrightFix Solutions",
+      "sellerInitial": "B",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#3f5547] via-[#aeb5ad] to-[#28352e]",
+      "type": "service"
+    },
+    {
+      "id": "service-recommended-3",
+      "title": "Facial Treatment",
+      "category": "Beauty & Care",
+      "price": "From ₦18,000",
+      "rating": 4.9,
+      "reviews": 95,
+      "seller": "Glow & Care",
+      "sellerInitial": "G",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "imageTone": "bg-gradient-to-br from-[#c69e8e] via-[#f0ddd1] to-[#9a7064]",
+      "type": "service"
+    },
+    {
+      "id": "service-recommended-4",
+      "title": "Event Catering",
+      "category": "Food & Catering",
+      "price": "From ₦30,000",
+      "rating": 4.8,
+      "reviews": 132,
+      "seller": "TasteLab Catering",
+      "sellerInitial": "T",
+      "location": "Lagos",
+      "sellerVerified": true,
+      "match": "92% Match",
+      "imageTone": "bg-gradient-to-br from-[#8c6a50] via-[#e7d8c2] to-[#624534]",
+      "type": "service"
     }
   ],
   "collections": {
@@ -400,7 +514,8 @@
   "meta": {
     "source": "mock-backend",
     "version": 1,
-    "providerSource": "mock-backend"
+    "providerSource": "mock-backend",
+    "serviceSource": "mock-backend"
   },
   "providers": [
     {
@@ -611,6 +726,20 @@
         "icon": "car",
         "tone": "blue"
       }
+    ]
+  },
+  "serviceCollections": {
+    "featured": [
+      "service-featured-1",
+      "service-featured-2",
+      "service-featured-3",
+      "service-featured-4"
+    ],
+    "recommended": [
+      "service-recommended-1",
+      "service-recommended-2",
+      "service-recommended-3",
+      "service-recommended-4"
     ]
   }
 }
