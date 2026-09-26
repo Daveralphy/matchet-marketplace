@@ -1,5 +1,5 @@
-/* Created by: Brigham */
-/* Edited by: Brigham */
+/* Created by: Brima */
+/* Edited by: Brima */
 
 .my-profile-page {
   min-height: 100vh;
@@ -102,7 +102,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  color: #111827;
+}
+
+.profile-camera-button svg {
+  display: block;
 }
 
 /* Profile details */
@@ -129,7 +133,14 @@
 }
 
 .profile-summary-details .profile-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: #4b5563;
+}
+
+.profile-summary-details .profile-location svg {
+  flex-shrink: 0;
 }
 
 .profile-summary-details .profile-bio {
@@ -169,10 +180,15 @@
 }
 
 .profile-stat-icon {
-  font-size: 20px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #2563eb;
   margin-bottom: 2px;
+}
+
+.profile-stat-icon svg {
+  display: block;
 }
 
 .profile-stats strong {
@@ -247,10 +263,16 @@
 
 .profile-row-icon {
   width: 28px;
+  height: 28px;
   flex-shrink: 0;
-  text-align: center;
-  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #111827;
+}
+
+.profile-row-icon svg {
+  display: block;
 }
 
 .profile-information-main > div {
@@ -339,12 +361,18 @@
   font-size: 16px;
 }
 
+.profile-account-icon svg {
+  display: block;
+}
+
 .security-icon {
   background-color: #eff6ff;
+  color: #2563eb;
 }
 
 .delete-icon {
   background-color: #fef2f2;
+  color: #dc2626;
 }
 
 .profile-account-text {
