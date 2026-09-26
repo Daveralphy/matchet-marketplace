@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
+import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
 
 const CATEGORIES = [
   { label: "All Categories", icon: "grid", active: true },
@@ -365,6 +366,187 @@ function MobileFeatureCards() {
   );
 }
 
+
+function HeartIcon({ size = 18 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.8 8.8c0 5.4-8.8 10.2-8.8 10.2S3.2 14.2 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
+    </svg>
+  );
+}
+
+function MarketplaceCard({ item }) {
+  return (
+    <article className="group w-[172px] shrink-0 overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)] sm:w-[180px]">
+      <div
+        className={[
+          "relative flex h-[178px] items-center justify-center overflow-hidden",
+          item.imageTone,
+        ].join(" ")}
+      >
+        <span className="text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105">
+          <Icon name={item.icon} size={72} strokeWidth={1.25} />
+        </span>
+
+        <button
+          type="button"
+          aria-label={`Save ${item.title}`}
+          className="absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_10px_rgba(16,24,63,0.12)] transition-colors hover:text-[#07983f]"
+        >
+          <HeartIcon size={17} />
+        </button>
+      </div>
+
+      <div className="px-3 pb-3.5 pt-2.5">
+        <div className="flex items-center justify-between gap-2">
+          <span className={`max-w-[112px] truncate rounded-full px-2.5 py-1 text-[9px] font-medium ${item.categoryTone}`}>
+            {item.category}
+          </span>
+
+          <span className="flex shrink-0 items-center gap-1 text-[9px] font-semibold text-[#10183f]">
+            <span className="text-[#f4b400]">★</span>
+            {item.rating}
+          </span>
+        </div>
+
+        <h3 className="mt-2.5 truncate text-[12px] font-semibold tracking-[-0.015em] text-[#10183f]">
+          {item.title}
+        </h3>
+
+        <p className="mt-2 text-[14px] font-bold tracking-[-0.02em] text-[#07863a]">
+          {item.price}
+        </p>
+
+        <div className="mt-3 flex min-w-0 items-center gap-2">
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${item.avatarTone}`}>
+            {item.sellerInitial}
+          </span>
+
+          <div className="min-w-0">
+            <p className="truncate text-[10px] font-medium text-[#10183f]">
+              {item.seller}
+            </p>
+
+            <p className="mt-0.5 flex items-center gap-1 truncate text-[9px] text-[#7b84a3]">
+              <Icon name="pin" size={11} />
+              {item.location}
+            </p>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function MarketplaceSection({ eyebrow, title, accent, subtitle, items, viewPath = "/explore" }) {
+  const railRef = useRef(null);
+
+  const scrollRail = (direction) => {
+    railRef.current?.scrollBy({
+      left: direction * 380,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-[#fbfcfb] px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:mt-6 lg:px-10 lg:py-9">
+      <div className="flex items-end justify-between gap-5">
+        <div className="min-w-0">
+          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+            {eyebrow}
+          </p>
+
+          <h2 className="mt-2 text-[30px] font-bold leading-none tracking-[-0.045em] text-[#10183f] sm:text-[38px]">
+            {title}{" "}
+            <span className="text-[#07863a]">{accent}</span>
+          </h2>
+
+          <p className="mt-2 text-[12px] leading-5 text-[#69739a] sm:text-[14px]">
+            {subtitle}
+          </p>
+        </div>
+
+        <div className="hidden shrink-0 items-center gap-4 sm:flex">
+          <Link
+            to={viewPath}
+            className="text-[12px] font-semibold text-[#07863a] transition-colors hover:text-[#056e2c]"
+          >
+            View all <span className="ml-1 text-[16px]">→</span>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label={`Scroll ${title} left`}
+              onClick={() => scrollRail(-1)}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f1f4f8] text-[#7782a8] transition-colors hover:bg-[#e7ebf1]"
+            >
+              <span className="text-[20px] leading-none">‹</span>
+            </button>
+
+            <button
+              type="button"
+              aria-label={`Scroll ${title} right`}
+              onClick={() => scrollRail(1)}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
+            >
+              <span className="text-[20px] leading-none">›</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center justify-between sm:hidden">
+        <Link
+          to={viewPath}
+          className="text-[11px] font-semibold text-[#07863a]"
+        >
+          View all <span className="ml-1 text-[15px]">→</span>
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label={`Scroll ${title} left`}
+            onClick={() => scrollRail(-1)}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f1f4f8] text-[#7782a8]"
+          >
+            <span className="text-[19px] leading-none">‹</span>
+          </button>
+
+          <button
+            type="button"
+            aria-label={`Scroll ${title} right`}
+            onClick={() => scrollRail(1)}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)]"
+          >
+            <span className="text-[19px] leading-none">›</span>
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={railRef}
+        className="mt-6 flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+      >
+        {items.map((item) => (
+          <MarketplaceCard key={item.id} item={item} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Home({ isAuthenticated = false }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -444,6 +626,22 @@ export default function Home({ isAuthenticated = false }) {
 
         <MobileFeatureCards />
       </section>
+
+      <MarketplaceSection
+        eyebrow="FEATURED ON MATCHET"
+        title="Featured on"
+        accent="Matchet"
+        subtitle="Popular products and services from trusted providers."
+        items={FEATURED_ITEMS}
+      />
+
+      <MarketplaceSection
+        eyebrow="PICKED FOR YOU"
+        title="Picked"
+        accent="for you"
+        subtitle="Matches based on what you browse, save, and buy."
+        items={PICKED_ITEMS}
+      />
     </main>
   );
 }
