@@ -952,6 +952,29 @@ function CommunityIcon({ name, size = 22 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
+const COMMUNITY_REVIEW_ANIMATION_STYLES = `
+  @keyframes communityReviewEnter {
+    from {
+      opacity: 0;
+      transform: translate3d(18px, 0, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .community-review-card {
+    animation: communityReviewEnter 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .community-review-card {
+      animation: none;
+    }
+  }
+`;
+
 function CommunityAvatar({ review, compact = false }) {
   return (
     <div
@@ -1013,9 +1036,12 @@ function ReviewStars({ rating, size = "normal" }) {
   );
 }
 
-function CommunityReviewCard({ review }) {
+function CommunityReviewCard({ review, animationKey }) {
   return (
-    <article className="flex min-h-[320px] items-center gap-7 rounded-[14px] border border-slate-100 bg-white px-6 py-7 shadow-[0_5px_18px_rgba(16,24,63,0.025)] sm:px-7 lg:px-8">
+    <article
+      key={animationKey}
+      className="community-review-card flex min-h-[320px] items-center gap-7 rounded-[14px] border border-slate-100 bg-white px-6 py-7 shadow-[0_5px_18px_rgba(16,24,63,0.025)] sm:px-7 lg:px-8"
+    >
       <CommunityAvatar review={review} />
       <div className="min-w-0">
         <blockquote className="max-w-[640px] text-[17px] font-medium leading-[1.38] tracking-[-0.02em] text-[#10183f] sm:text-[20px] lg:text-[22px]">
@@ -1110,7 +1136,9 @@ function CommunitySection({ isAuthenticated }) {
   };
 
   return (
-    <section
+    <>
+      <style>{COMMUNITY_REVIEW_ANIMATION_STYLES}</style>
+      <section
       className={[
         "mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-8 lg:py-9",
         isAuthenticated ? "bg-[#f3fbf6]" : "bg-[#fbfcff]",
@@ -1160,7 +1188,22 @@ function CommunitySection({ isAuthenticated }) {
       </div>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,2.15fr)_minmax(270px,0.9fr)]">
-        <CommunityReviewCard review={review} />
+        <div
+          className="min-w-0"
+          onMouseEnter={() => setIsReviewPaused(true)}
+          onMouseLeave={() => setIsReviewPaused(false)}
+          onFocusCapture={() => setIsReviewPaused(true)}
+          onBlurCapture={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+              setIsReviewPaused(false);
+            }
+          }}
+        >
+          <CommunityReviewCard
+            review={review}
+            animationKey={review.id}
+          />
+        </div>
 
         {isAuthenticated ? (
           <CommunityPoints points={content.communityPoints} />
@@ -1176,7 +1219,7 @@ function CommunitySection({ isAuthenticated }) {
               key={item.id}
               type="button"
               aria-label={`Show review ${index + 1}`}
-              onClick={() => setActiveIndex(index)}
+              onClick={() => selectReview(index)}
               className={[
                 "h-2.5 rounded-full transition-all",
                 index === activeIndex ? "w-4 bg-[#07863a]" : "w-2.5 bg-[#d6dceb]",
