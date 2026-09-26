@@ -107,7 +107,12 @@ export default function SellerSignupPageSeven() {
           <p>
             {formData.productPrice} | {formData.productStock} in stock
           </p>
-          <p>???Populate product image thumbnails???</p>
+          <div className="seller-signup-review-thumbs">
+            <span>Basket</span>
+            <span>Basket</span>
+            <span>Basket</span>
+            <span>+3</span>
+          </div>
         </div>
         <div className="seller-signup-verification-card">
           <h3 className="seller-signup-verification-card-shipping-details-heading">
