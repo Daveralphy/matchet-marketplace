@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import { getMarketplaceData } from "../data/marketplaceApi";
+import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
 
@@ -196,6 +196,22 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
 
     refresh: (
       <path d="M20 11a8 8 0 0 0-14.7-3.9L4 9M4 5v4h4M4 13a8 8 0 0 0 14.7 3.9L20 15m0 4v-4h-4" />
+    ),
+
+
+    store: (
+      <path d="M4 10h16M6 10v9h12v-9M5 10l2-5h10l2 5M9 14h6" />
+    ),
+
+    package: (
+      <>
+        <path d="m4 8 8-4 8 4v9l-8 4-8-4V8Z" />
+        <path d="m4 8 8 4 8-4M12 12v9M8 6l8 4" />
+      </>
+    ),
+
+    star: (
+      <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" />
     ),
 
     truck: (
@@ -792,6 +808,83 @@ function ProductCatalogue({ isAuthenticated }) {
 }
 
 
+
+function ShoppingJourneySection({ isAuthenticated }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    getProductExperience().then((result) => {
+      if (active) setData(result);
+    });
+    return () => { active = false; };
+  }, []);
+
+  if (!data) return null;
+
+  const content = isAuthenticated ? data.loggedIn : data.loggedOut;
+
+  return (
+    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-white px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-10 lg:px-14 lg:py-11">
+      <div className="max-w-[900px]">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#07863a] sm:text-[11px]">
+          {content.eyebrow}
+        </p>
+        <h2 className="mt-4 text-[42px] font-bold leading-[0.98] tracking-[-0.05em] text-[#10183f] sm:text-[54px] lg:text-[62px]">
+          {content.title} <span className="text-[#07863a]">{content.accent}</span>
+        </h2>
+        <p className="mt-4 max-w-[720px] text-[16px] leading-[1.4] text-[#7a82a5] sm:text-[19px]">
+          {content.subtitle}
+        </p>
+      </div>
+
+      <div className="mt-12 hidden items-start lg:grid lg:grid-cols-5">
+        {content.steps.map((step, index) => (
+          <div key={step.id} className="relative px-2 text-center">
+            {index < content.steps.length - 1 && (
+              <div className="absolute left-[calc(50%+68px)] right-[-calc(50%-68px)] top-[31px] flex items-center" aria-hidden="true">
+                <div className="w-full border-t-2 border-dotted border-[#8a8db3]" />
+                <span className="absolute right-0 translate-x-1/2 text-[22px] leading-none text-[#72779f]">›</span>
+              </div>
+            )}
+
+            <div className="relative mx-auto flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#e4f8eb] text-[#07863a]">
+              <Icon name={step.icon} size={46} strokeWidth={1.8} />
+              <span className="absolute -right-2 -top-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#e5f8eb] text-[18px] font-semibold text-[#087d35]">
+                {step.number}
+              </span>
+            </div>
+
+            <h3 className="mt-5 text-[19px] font-semibold tracking-[-0.03em] text-[#10183f]">
+              {step.title}
+            </h3>
+            <p className="mx-auto mt-2 max-w-[220px] text-[14px] leading-[1.45] text-[#7a82a5]">
+              {step.description}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:hidden">
+        {content.steps.map((step) => (
+          <div key={step.id} className="flex items-start gap-4 rounded-[12px] border border-[#edf0f3] p-4">
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#e4f8eb] text-[#07863a]">
+              <Icon name={step.icon} size={31} strokeWidth={1.8} />
+              <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#e5f8eb] text-[11px] font-semibold text-[#087d35]">
+                {step.number}
+              </span>
+            </div>
+            <div>
+              <h3 className="text-[15px] font-semibold text-[#10183f]">{step.title}</h3>
+              <p className="mt-1 text-[12px] leading-5 text-[#7a82a5]">{step.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Products({ isAuthenticated = false }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -870,6 +963,7 @@ export default function Products({ isAuthenticated = false }) {
         </div>
       </section>
       <ProductCatalogue isAuthenticated={isAuthenticated} />
+      <ShoppingJourneySection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
