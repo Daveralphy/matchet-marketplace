@@ -109,3 +109,12 @@ export async function getServiceCollection(collection = "featured") {
 
   return simulateApiResponse(ids.map((id) => services.get(id)).filter(Boolean));
 }
+
+
+export async function getServiceCategoryCollections() {
+  return simulateApiResponse(marketplaceData.serviceCategories ?? {
+    featured: [],
+    interests: [],
+    exploreMore: [],
+  });
+}
