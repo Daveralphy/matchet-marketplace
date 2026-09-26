@@ -90,3 +90,12 @@ export async function getProviderCollection(collection = "featured") {
     ids.map((id) => providers.get(id)).filter(Boolean),
   );
 }
+
+
+export async function getCategoryCollections() {
+  return simulateApiResponse(marketplaceData.categories ?? {
+    featured: [],
+    interests: [],
+    exploreMore: [],
+  });
+}
