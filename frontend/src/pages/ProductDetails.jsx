@@ -131,10 +131,10 @@ function ProductDetail({ product, related }) {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <button type="button" className="flex h-13 items-center justify-center gap-2 rounded-[8px] border border-[#07863a] bg-white font-medium text-[#07863a]">
+                <button type="button" className="flex h-[52px] items-center justify-center gap-2 rounded-[8px] border border-[#07863a] bg-white font-medium text-[#07863a]">
                   <Icon name="cart" /> Add to cart
                 </button>
-                <button type="button" className="h-13 rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</button>
+                <button type="button" className="h-[52px] rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</button>
               </div>
 
               <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">
