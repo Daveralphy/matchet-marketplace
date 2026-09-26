@@ -10,6 +10,7 @@ import SellerSignupPageFour from "./pages/SellerSignupPage4";
 import SellerSignupPageFive from "./pages/SellerSignupPage5";
 import SellerSignupPageSix from "./pages/SellerSignupPage6";
 import SellerSignupPageSeven from "./pages/SellerSignupPage7";
+import SellerSignupPageEight from "./pages/SellerSignupPage8";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -99,6 +100,10 @@ const router = createBrowserRouter([
   {
     path: "/register/page7",
     element: <SellerSignupPageSeven />,
+  },
+  {
+    path: "/register/page8",
+    element: <SellerSignupPageEight />,
   },
   {
     path: "/account/saved-items",
