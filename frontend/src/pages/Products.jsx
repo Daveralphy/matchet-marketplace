@@ -497,6 +497,7 @@ function ProductImage({ product }) {
 }
 
 function ProductCatalogueCard({ product }) {
+  const { addItem } = useCart();
   const rating = Number(product.rating) || 0;
 
   return (
@@ -505,10 +506,11 @@ function ProductCatalogueCard({ product }) {
         <ProductImage product={product} />
         <button
           type="button"
-          aria-label={`Save ${product.title}`}
-          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)]"
+          aria-label={`Add ${product.title} to cart`}
+          onClick={(event) => { event.preventDefault(); event.stopPropagation(); addItem(product); }}
+          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#07863a] shadow-[0_2px_8px_rgba(16,24,63,0.1)]"
         >
-          <Icon name="heart" size={16} />
+          <Icon name="cart" size={16} />
         </button>
       </div>
 
