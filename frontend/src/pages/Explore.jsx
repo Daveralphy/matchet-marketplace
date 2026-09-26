@@ -499,12 +499,23 @@ function ProvidersSection({ isAuthenticated }) {
   );
 }
 
+function getMarketplacePlaceholderIcon(item) {
+  if (item.type === "service") {
+    if (item.icon) return item.icon;
+    if (item.category === "Beauty & Care" || item.category === "Beauty & Wellness") return "beauty";
+    if (item.category === "Repairs") return "tools";
+    if (item.category === "Food & Catering") return "calendar";
+    return "home";
+  }
+  return item.icon || "package";
+}
+
 function ExploreProductCard({ item, listView = false }) {
   return (
     <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "block overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
       <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
         <div className={`flex h-full w-full items-center justify-center ${item.imageTone}`}>
-          <Icon name={item.icon} size={58} strokeWidth={1.15} />
+          <Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} />
         </div>
         <HeartButton />
       </div>
