@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
-import { getMarketplaceData } from "../data/marketplaceApi";
+import { getMarketplaceData, getProviderCollection } from "../data/marketplaceApi";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -396,6 +396,103 @@ function HeartButton() {
   );
 }
 
+
+function ProviderCard({ provider }) {
+  return (
+    <article className="overflow-hidden rounded-[12px] border border-[#e4e9f0] bg-white shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
+      <div className="relative h-[150px]">
+        <div className={`flex h-full w-full items-center justify-center ${provider.imageTone}`}>
+          <Icon name="provider" size={72} strokeWidth={1.2} />
+        </div>
+        {provider.match && (
+          <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[9px] font-semibold text-[#07863a] shadow-sm">
+            ✦ {provider.match}
+          </span>
+        )}
+        <button type="button" aria-label={`Save ${provider.name}`} className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-sm">
+          <HeartButton />
+        </button>
+      </div>
+
+      <div className="px-3 pb-3 pt-2.5">
+        <div className="flex items-center gap-2.5">
+          <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[14px] font-semibold ${provider.logoTone}`}>
+            {provider.initials}
+          </span>
+          <div className="min-w-0">
+            <h3 className="truncate text-[13px] font-semibold text-[#10183f]">
+              {provider.name} <span className="text-[#2682e9]">●</span>
+            </h3>
+            <p className="mt-0.5 truncate text-[10px] text-[#747d9e]">{provider.category}</p>
+          </div>
+        </div>
+
+        <div className="mt-3 space-y-2 text-[10px] text-[#27335f]">
+          <p><span className="mr-2 text-[#f4b400]">★</span><strong>{provider.rating}</strong> <span className="text-[#7b84a3]">({provider.reviews} reviews)</span></p>
+          <p><span className="mr-2 text-[#10183f]">⌖</span>{provider.location}</p>
+          <p><span className="mr-2 text-[#10183f]">▱</span>{provider.listings} listings</p>
+        </div>
+
+        <button type="button" className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#e9f9ed] text-[11px] font-semibold text-[#07863a]">
+          View profile <span className="text-[16px]">→</span>
+        </button>
+      </div>
+    </article>
+  );
+}
+
+function ProvidersSection({ isAuthenticated }) {
+  const [providers, setProviders] = useState([]);
+
+  useEffect(() => {
+    let active = true;
+    getProviderCollection(isAuthenticated ? "recommended" : "featured").then((items) => {
+      if (active) setProviders(items);
+    });
+    return () => {
+      active = false;
+    };
+  }, [isAuthenticated]);
+
+  const title = isAuthenticated ? (
+    <>People <span className="text-[#07863a]">worth knowing.</span></>
+  ) : (
+    <>Discover <span className="text-[#07863a]">trusted providers.</span></>
+  );
+
+  return (
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-9 lg:py-9 ${isAuthenticated ? "bg-[#f5fcf8]" : "bg-[#fbfcfb]"}`}>
+      <div className="flex items-end justify-between gap-5">
+        <div>
+          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+            {isAuthenticated ? "PROVIDERS FOR YOU" : "MEET THE COMMUNITY"}
+          </p>
+          <h2 className="mt-2 text-[31px] font-bold leading-none tracking-[-0.045em] text-[#10183f] sm:text-[42px]">
+            {title}
+          </h2>
+          <p className="mt-2 text-[12px] leading-5 text-[#69739a] sm:text-[15px]">
+            {isAuthenticated
+              ? "Discover providers based on your interests, location, and previous activity."
+              : "Find skilled people and businesses ready to help with what you need."}
+          </p>
+        </div>
+
+        <div className="hidden items-center gap-3 sm:flex">
+          <button type="button" aria-label="Previous providers" className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_10px_rgba(16,24,63,0.05)]">‹</button>
+          <button type="button" aria-label="Next providers" className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_10px_rgba(16,24,63,0.05)]">›</button>
+          <button type="button" className="ml-3 flex h-11 items-center gap-2 rounded-full bg-[#e6f8eb] px-5 text-[11px] font-semibold text-[#07863a]">
+            View all providers <span className="text-[16px]">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {providers.map((provider) => <ProviderCard key={provider.id} provider={provider} />)}
+      </div>
+    </section>
+  );
+}
+
 function ExploreProductCard({ item, listView = false }) {
   return (
     <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
@@ -714,6 +811,7 @@ export default function Explore({ isAuthenticated = false }) {
       </section>
 
       <ExploreResultsSection isAuthenticated={isAuthenticated} />
+      <ProvidersSection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
