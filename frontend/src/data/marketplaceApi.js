@@ -143,3 +143,11 @@ export async function getServiceReviews() {
     loggedIn: { eyebrow: "", title: "", accent: "", subtitle: "", reviews: [] },
   });
 }
+
+
+export async function getProductExperience() {
+  return simulateApiResponse(marketplaceData.productExperience ?? {
+    loggedOut: { eyebrow: "", title: "", accent: "", subtitle: "", steps: [] },
+    loggedIn: { eyebrow: "", title: "", accent: "", subtitle: "", steps: [] },
+  });
+}
