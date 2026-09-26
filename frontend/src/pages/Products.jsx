@@ -673,6 +673,7 @@ function ProductCatalogue({ isAuthenticated }) {
   const [products, setProducts] = useState([]);
   const [view, setView] = useState("grid");
   const [sort, setSort] = useState("recommended");
+  const [location, setLocation] = useState("");
   const [filters, setFilters] = useState({
     category: "",
     maxPrice: 0,
@@ -688,6 +689,7 @@ function ProductCatalogue({ isAuthenticated }) {
     getMarketplaceData().then((data) => {
       if (!active) return;
       setProducts(data.products);
+      setLocation(data.products[0]?.location || "");
       const prices = data.products
         .map((item) => Number(String(item.price).replace(/[^\d]/g, "")))
         .filter(Number.isFinite);
@@ -710,7 +712,7 @@ function ProductCatalogue({ isAuthenticated }) {
       (!filters.rating || rating >= filters.rating) &&
       (!filters.condition || product.condition === filters.condition) &&
       (!filters.availability || product.availability === filters.availability) &&
-      (!filters.sellerType || product.sellerType === filters.sellerType)
+      (!filters.sellerType || (filters.sellerType === "Verified sellers" ? product.sellerVerified : product.sellerType === filters.sellerType))
     );
   });
 
@@ -740,7 +742,7 @@ function ProductCatalogue({ isAuthenticated }) {
                 )}
               </h2>
               <p className="mt-2 text-[14px] font-medium text-[#69739a]">
-                {filtered.length} {filtered.length === 1 ? "product" : "products"} found in Lagos
+                {filtered.length} {filtered.length === 1 ? "product" : "products"} found{location ? ` in ${location}` : ""}
               </p>
             </div>
 
