@@ -395,7 +395,7 @@ function HeartIcon({ size = 18 }) {
 
 function MarketplaceCard({ item, compact = false }) {
   return (
-    <article className={`group shrink-0 overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)] ${compact ? "w-[166px]" : "w-[172px] sm:w-[180px]"}`}>
+    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={`group block shrink-0 overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)] ${compact ? "w-[166px]" : "w-[172px] sm:w-[180px]"}`}>
       <div
         className={[
           "relative flex items-center justify-center overflow-hidden",
@@ -453,7 +453,7 @@ function MarketplaceCard({ item, compact = false }) {
           </div>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 
