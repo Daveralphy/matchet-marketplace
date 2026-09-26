@@ -2,8 +2,9 @@
 // Edited by: Raphael Daveal
 
 // Temporary UI fixture only.
-// Replace testimonials, community metrics, and avatar URLs with review/community API data.
-// The Home page renders this data without embedding testimonial content in the page component.
+// Review people, quotes, ratings, and roles should be replaced by Review/User API data.
+// Aggregate values are intentionally derived from the review records instead of being
+// manually entered, so the UI stays consistent when the backend data changes.
 
 export const COMMUNITY_REVIEW_SECTION = {
   loggedOut: {
@@ -30,7 +31,7 @@ export const COMMUNITY_REVIEW_SECTION = {
         name: "Chiamaka Nwosu",
         role: "Buyer",
         location: "Lagos",
-        rating: 5,
+        rating: 4,
         initials: "CN",
         avatarUrl: "",
         avatarTone: "bg-[#f2dfd5]",
@@ -47,14 +48,6 @@ export const COMMUNITY_REVIEW_SECTION = {
         avatarTone: "bg-[#dce6f6]",
       },
     ],
-    stats: {
-      rating: "4.8 / 5",
-      ratingLabel: "Average community rating",
-      reviewCount: "2,400+",
-      reviewLabel: "Reviews from buyers and providers",
-      reviewBasis: "Based on 2,400+ reviews",
-      communityLabel: "A growing community you can trust",
-    },
   },
   loggedIn: {
     eyebrow: "FROM THE MATCHET COMMUNITY",
@@ -91,7 +84,7 @@ export const COMMUNITY_REVIEW_SECTION = {
         name: "Chiamaka Nwosu",
         role: "Provider",
         location: "Lagos",
-        rating: 5,
+        rating: 4,
         initials: "CN",
         avatarUrl: "",
         avatarTone: "bg-[#f2dfd5]",
@@ -125,3 +118,23 @@ export const COMMUNITY_REVIEW_SECTION = {
     ],
   },
 };
+
+export function calculateReviewStats(reviews = []) {
+  const validRatings = reviews
+    .map((review) => Number(review.rating))
+    .filter((rating) => Number.isFinite(rating) && rating >= 1 && rating <= 5);
+
+  const reviewCount = reviews.length;
+  const averageRating = validRatings.length
+    ? validRatings.reduce((total, rating) => total + rating, 0) / validRatings.length
+    : 0;
+
+  return {
+    averageRating: Number(averageRating.toFixed(1)),
+    reviewCount,
+  };
+}
+
+export function formatReviewCount(count) {
+  return new Intl.NumberFormat("en-NG").format(count);
+}
