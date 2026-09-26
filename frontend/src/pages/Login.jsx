@@ -182,7 +182,7 @@ const Login = () => {
             <div className="flex shrink-0 justify-end text-[13px] text-[#24305f]">
               <span>Don&apos;t have an account?</span>
               <Link
-                to="/register"
+                to="/create-account"
                 className="ml-2 font-semibold text-[#07983f] transition-colors hover:text-[#068936]"
               >
                 Create account
@@ -192,17 +192,6 @@ const Login = () => {
             {/* Login content */}
             <div className="flex flex-1 items-center justify-center py-5">
               <div className="w-full max-w-[540px]">
-                <div className="mb-5 lg:hidden">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-md border border-dashed border-gray-400 text-xs text-gray-400">
-                      M
-                    </div>
-                    <span className="text-xl font-bold text-gray-900">
-                      matchet
-                    </span>
-                  </div>
-                </div>
-
                 <h2 className="text-[36px] font-extrabold leading-[1.05] tracking-[-0.04em] text-[#10183f] sm:text-[40px] lg:text-[42px]">
                   Welcome back
                 </h2>
