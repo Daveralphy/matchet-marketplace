@@ -7,7 +7,7 @@ import heroImage from "../assets/inspirations/homepage/hero.png";
 import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
 import { CONTINUE_ITEMS, POPULAR_NEARBY_ITEMS } from "../data/homePopularMock";
 import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMock";
-import { COMMUNITY_REVIEW_SECTION } from "../data/homeCommunityMock";
+import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } from "../data/homeCommunityMock";
 import matchMockup from "../assets/inspirations/homepage/mockup1.png";
 
 const CATEGORIES = [
@@ -999,35 +999,48 @@ function CommunityReviewCard({ review }) {
   );
 }
 
-function CommunityStats({ stats }) {
+function CommunityStats({ reviews }) {
+  const { averageRating, reviewCount } = calculateReviewStats(reviews);
+  const reviewerAvatars = reviews.slice(0, 3);
+
   return (
     <aside className="rounded-[14px] bg-[#eaf9ef] px-6 py-6">
       <div>
-        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-[#10183f]">{stats.rating}</p>
-        <p className="mt-1 text-[12px] text-[#69739a]">{stats.ratingLabel}</p>
-        <ReviewStars rating={5} />
-        <p className="mt-1 text-[11px] text-[#69739a]">{stats.reviewBasis}</p>
+        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-[#10183f]">
+          {averageRating.toFixed(1)} / 5
+        </p>
+        <p className="mt-1 text-[12px] text-[#69739a]">Average community rating</p>
+        <ReviewStars rating={averageRating} />
+        <p className="mt-1 text-[11px] text-[#69739a]">
+          Based on {formatReviewCount(reviewCount)} {reviewCount === 1 ? "review" : "reviews"}
+        </p>
       </div>
 
       <div className="my-4 h-px bg-[#cfe8d6]" />
 
       <div>
-        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-[#10183f]">{stats.reviewCount}</p>
-        <p className="mt-1 text-[12px] text-[#69739a]">{stats.reviewLabel}</p>
+        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-[#10183f]">
+          {formatReviewCount(reviewCount)}
+        </p>
+        <p className="mt-1 text-[12px] text-[#69739a]">Reviews from buyers and providers</p>
       </div>
 
       <div className="my-4 flex items-center gap-2">
-        {["AO", "CN", "DA"].map((initials) => (
-          <span key={initials} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#eaf9ef] bg-white text-[9px] font-bold text-[#10183f] shadow-sm">
-            {initials}
-          </span>
+        {reviewerAvatars.map((review) => (
+          <CommunityAvatar
+            key={review.id}
+            review={review}
+            compact
+          />
         ))}
-        <span className="flex h-9 items-center rounded-full bg-[#d8f3df] px-3 text-[10px] font-bold text-[#07863a]">
-          +2.4K
-        </span>
+        {reviewCount > reviewerAvatars.length && (
+          <span className="flex h-9 items-center rounded-full bg-[#d8f3df] px-3 text-[10px] font-bold text-[#07863a]">
+            +{formatReviewCount(reviewCount - reviewerAvatars.length)}
+          </span>
+        )}
       </div>
 
-      <p className="text-[11px] text-[#69739a]">{stats.communityLabel}</p>
+      <p className="text-[11px] text-[#69739a]">A growing community you can trust</p>
     </aside>
   );
 }
@@ -1093,7 +1106,7 @@ function CommunitySection({ isAuthenticated }) {
         {isAuthenticated ? (
           <CommunityPoints points={content.communityPoints} />
         ) : (
-          <CommunityStats stats={content.stats} />
+          <CommunityStats reviews={content.reviews} />
         )}
       </div>
 
