@@ -541,7 +541,7 @@ function ProductCatalogueCard({ product }) {
           <span className="truncate">{product.seller} · {product.location}</span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 
