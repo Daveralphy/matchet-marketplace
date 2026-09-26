@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/services/hero 2.png";
 import { getServiceCollection } from "../data/marketplaceApi";
+import { getServiceCollection } from "../data/marketplaceApi";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
