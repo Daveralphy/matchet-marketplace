@@ -952,9 +952,15 @@ function CommunityIcon({ name, size = 22 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function CommunityAvatar({ review }) {
+function CommunityAvatar({ review, compact = false }) {
   return (
-    <div className={`flex h-[118px] w-[118px] shrink-0 items-center justify-center overflow-hidden rounded-full border-[6px] border-white ${review.avatarTone} shadow-[0_4px_16px_rgba(16,24,63,0.08)] sm:h-[145px] sm:w-[145px]`}>
+    <div
+      className={[
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-full border-[5px] border-white shadow-[0_4px_16px_rgba(16,24,63,0.08)]",
+        compact ? "h-9 w-9 border-2" : "h-[118px] w-[118px] sm:h-[145px] sm:w-[145px]",
+        review.avatarTone,
+      ].join(" ")}
+    >
       {review.avatarUrl ? (
         <img
           src={review.avatarUrl}
@@ -962,7 +968,12 @@ function CommunityAvatar({ review }) {
           className="h-full w-full object-cover"
         />
       ) : (
-        <span className="text-[28px] font-bold tracking-[-0.04em] text-[#10183f] sm:text-[34px]">
+        <span
+          className={[
+            "font-bold tracking-[-0.04em] text-[#10183f]",
+            compact ? "text-[8px]" : "text-[28px] sm:text-[34px]",
+          ].join(" ")}
+        >
           {review.initials}
         </span>
       )}
@@ -970,12 +981,34 @@ function CommunityAvatar({ review }) {
   );
 }
 
-function ReviewStars({ rating }) {
+function ReviewStars({ rating, size = "normal" }) {
+  const numericRating = Math.max(0, Math.min(5, Number(rating) || 0));
+  const starClass = size === "small" ? "text-[17px]" : "text-[22px]";
+
   return (
-    <div className="flex items-center gap-1 text-[#f5b900]" aria-label={`${rating} out of 5 stars`}>
-      {Array.from({ length: 5 }, (_, index) => (
-        <span key={index} className="text-[22px] leading-none">★</span>
-      ))}
+    <div
+      className="flex items-center gap-1"
+      aria-label={`${numericRating.toFixed(1)} out of 5 stars`}
+    >
+      {Array.from({ length: 5 }, (_, index) => {
+        const fill = Math.max(0, Math.min(1, numericRating - index));
+
+        return (
+          <span
+            key={index}
+            className={`relative inline-block leading-none ${starClass} text-[#dfe4ee]`}
+            aria-hidden="true"
+          >
+            ★
+            <span
+              className="absolute inset-0 overflow-hidden text-[#f5b900]"
+              style={{ width: `${fill * 100}%` }}
+            >
+              ★
+            </span>
+          </span>
+        );
+      })}
     </div>
   );
 }
@@ -1027,11 +1060,7 @@ function CommunityStats({ reviews }) {
 
       <div className="my-4 flex items-center gap-2">
         {reviewerAvatars.map((review) => (
-          <CommunityAvatar
-            key={review.id}
-            review={review}
-            compact
-          />
+          <CommunityAvatar key={review.id} review={review} compact />
         ))}
         {reviewCount > reviewerAvatars.length && (
           <span className="flex h-9 items-center rounded-full bg-[#d8f3df] px-3 text-[10px] font-bold text-[#07863a]">
@@ -1081,28 +1110,58 @@ function CommunitySection({ isAuthenticated }) {
   };
 
   return (
-    <section className={`mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-10 lg:py-9 ${isAuthenticated ? "bg-[#f3fbf6]" : "bg-[#fbfcff]"}`}>
+    <section
+      className={[
+        "mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-8 lg:py-9",
+        isAuthenticated ? "bg-[#f3fbf6]" : "bg-[#fbfcff]",
+      ].join(" ")}
+    >
       <div className="flex items-start justify-between gap-5">
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a]">{content.eyebrow}</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+            {content.eyebrow}
+          </p>
+
           <h2 className="mt-3 text-[32px] font-bold leading-[1.02] tracking-[-0.045em] text-[#10183f] sm:text-[43px]">
-            {content.title} <span className="text-[#07863a]">{content.accent}</span>
+            {content.title}{" "}
+            <span className="text-[#07863a]">{content.accent}</span>
           </h2>
-          <p className="mt-2 text-[14px] leading-6 text-[#69739a] sm:text-[16px]">{content.subtitle}</p>
+
+          <p className="mt-2 text-[14px] leading-6 text-[#69739a] sm:text-[16px]">
+            {content.subtitle}
+          </p>
         </div>
 
         <div className="hidden shrink-0 items-center gap-2 sm:flex">
-          <button type="button" aria-label="Previous review" onClick={() => moveReview(-1)} className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f8] text-[#7782a8]">
-            ‹
+          {isAuthenticated && (
+            <span className="mr-2 text-[12px] font-medium text-[#69739a]">
+              {String(activeIndex + 1).padStart(2, "0")}/{String(content.reviews.length).padStart(2, "0")}
+            </span>
+          )}
+
+          <button
+            type="button"
+            aria-label="Previous review"
+            onClick={() => moveReview(-1)}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f8] text-[#7782a8] transition-colors hover:bg-[#e8edf3]"
+          >
+            <span className="text-[22px] leading-none">‹</span>
           </button>
-          <button type="button" aria-label="Next review" onClick={() => moveReview(1)} className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)]">
-            ›
+
+          <button
+            type="button"
+            aria-label="Next review"
+            onClick={() => moveReview(1)}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
+          >
+            <span className="text-[22px] leading-none">›</span>
           </button>
         </div>
       </div>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,2.15fr)_minmax(270px,0.9fr)]">
         <CommunityReviewCard review={review} />
+
         {isAuthenticated ? (
           <CommunityPoints points={content.communityPoints} />
         ) : (
@@ -1118,12 +1177,18 @@ function CommunitySection({ isAuthenticated }) {
               type="button"
               aria-label={`Show review ${index + 1}`}
               onClick={() => setActiveIndex(index)}
-              className={`h-2.5 w-2.5 rounded-full transition-all ${index === activeIndex ? "w-4 bg-[#07863a]" : "bg-[#d6dceb]"}`}
+              className={[
+                "h-2.5 rounded-full transition-all",
+                index === activeIndex ? "w-4 bg-[#07863a]" : "w-2.5 bg-[#d6dceb]",
+              ].join(" ")}
             />
           ))}
         </div>
 
-        <Link to="/reviews" className="text-[12px] font-semibold text-[#07863a]">
+        <Link
+          to="/reviews"
+          className="text-[12px] font-semibold text-[#07863a] transition-colors hover:text-[#056e2c]"
+        >
           {content.cta} <span className="ml-1 text-[16px]">→</span>
         </Link>
       </div>
