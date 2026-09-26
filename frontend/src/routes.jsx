@@ -10,6 +10,7 @@ import SellerSignupPageFour from "./pages/SellerSignupPage4";
 import SellerSignupPageFive from "./pages/SellerSignupPage5";
 import SellerSignupPageSix from "./pages/SellerSignupPage6";
 import SellerSignupPageSeven from "./pages/SellerSignupPage7";
+import SellerSignupPageEight from "./pages/SellerSignupPage8";
 import ProviderSignupPageOne from "./pages/ProvderSignupPage1";
 import ProviderSignupPageTwo from "./pages/ProviderSignupPage2";
 import ProviderSignupPageThree from "./pages/ProviderSignupPage3";
@@ -101,6 +102,10 @@ const router = createBrowserRouter([
   {
     path: "/register/page7",
     element: <SellerSignupPageSeven />,
+  },
+  {
+    path: "/register/page8",
+    element: <SellerSignupPageEight />,
   },
   {
     path: "/account/saved-items",
