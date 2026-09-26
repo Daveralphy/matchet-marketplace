@@ -1124,7 +1124,22 @@ function CommunitySection({ isAuthenticated }) {
     : COMMUNITY_REVIEW_SECTION.loggedOut;
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isReviewPaused, setIsReviewPaused] = useState(false);
   const review = content.reviews[activeIndex];
+
+  useEffect(() => {
+    if (content.reviews.length <= 1 || isReviewPaused) return undefined;
+
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % content.reviews.length);
+    }, 5500);
+
+    return () => window.clearInterval(timer);
+  }, [content.reviews.length, isReviewPaused]);
+
+  const selectReview = (index) => {
+    setActiveIndex(index);
+  };
 
   const moveReview = (direction) => {
     setActiveIndex((current) => {
