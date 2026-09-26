@@ -956,5 +956,95 @@
     "scheduledLabel": "Tomorrow · 10:00 AM",
     "location": "Lagos",
     "status": "Confirmed"
+  },
+  "serviceReviews": {
+    "loggedOut": {
+      "eyebrow": "WHAT PEOPLE ARE SAYING",
+      "title": "Real people.",
+      "accent": "Real experiences.",
+      "subtitle": "See how customers and service providers use Matchet to get things done.",
+      "reviews": [
+        {
+          "id": "service-review-1",
+          "type": "Customer",
+          "typeTone": "green",
+          "quote": "Finding a reliable cleaner used to take so much searching. Matchet made it easy to compare my options and book someone I felt comfortable with. The whole process was smooth and straightforward.",
+          "name": "Amara Okafor",
+          "role": "Customer",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "AO",
+          "avatarTone": "bg-[#dcefe5]"
+        },
+        {
+          "id": "service-review-2",
+          "type": "Service Provider",
+          "typeTone": "blue",
+          "quote": "Matchet has helped me reach people who are actually looking for the services I offer. I can manage my bookings, build my reputation, and grow my business. It has made it easier for me to connect with the right clients.",
+          "name": "David Adeyemi",
+          "role": "Service Provider",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "DA",
+          "avatarTone": "bg-[#dce6f6]"
+        },
+        {
+          "id": "service-review-3",
+          "type": "Customer",
+          "typeTone": "green",
+          "quote": "I needed a chef for a family event and found an amazing provider on Matchet. The communication was clear, the booking was easy, and the service exceeded my expectations. I will definitely use it again.",
+          "name": "Tomi Balogun",
+          "role": "Customer",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "TB",
+          "avatarTone": "bg-[#f2dfd5]"
+        }
+      ]
+    },
+    "loggedIn": {
+      "eyebrow": "FROM OUR COMMUNITY",
+      "title": "People like you are",
+      "accent": "getting real value.",
+      "subtitle": "Here are recent stories from customers and service providers in the Matchet community.",
+      "reviews": [
+        {
+          "id": "service-story-1",
+          "type": "Customer",
+          "typeTone": "green",
+          "quote": "I was able to find a trusted plumber, compare prices, and book within minutes. The service was excellent and the provider was very professional. Matchet made the whole experience simple and stress-free.",
+          "name": "Kunle Adebayo",
+          "role": "Customer",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "KA",
+          "avatarTone": "bg-[#dce6f6]"
+        },
+        {
+          "id": "service-story-2",
+          "type": "Service Provider",
+          "typeTone": "blue",
+          "quote": "Since joining Matchet, I have received consistent bookings and have been able to grow my business. The platform makes it easy to manage my availability, communicate with clients, and build trust through reviews.",
+          "name": "Grace Nwosu",
+          "role": "Service Provider",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "GN",
+          "avatarTone": "bg-[#dcefe5]"
+        },
+        {
+          "id": "service-story-3",
+          "type": "Customer",
+          "typeTone": "green",
+          "quote": "The booking process was simple and transparent. I loved that I could read reviews, see prices upfront, and chat with the provider. Everything felt safe and reliable. I will definitely be using Matchet again.",
+          "name": "Femi Akinyemi",
+          "role": "Customer",
+          "location": "Lagos, Nigeria",
+          "rating": 5,
+          "initials": "FA",
+          "avatarTone": "bg-[#d9e4d8]"
+        }
+      ]
+    }
   }
 }
