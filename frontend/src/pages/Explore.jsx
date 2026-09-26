@@ -4,8 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
-import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
-import { CONTINUE_ITEMS, POPULAR_NEARBY_ITEMS } from "../data/homePopularMock";
+import { getMarketplaceData } from "../data/marketplaceApi";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -447,21 +446,26 @@ function ResultsControl({ icon, children, active = false, onClick }) {
 }
 
 function ExploreResultsSection({ isAuthenticated }) {
-  const sourceItems = Array.from(
-    new Map(
-      [...FEATURED_ITEMS, ...PICKED_ITEMS, ...POPULAR_NEARBY_ITEMS, ...CONTINUE_ITEMS].map((item) => [
-        item.title,
-        item,
-      ]),
-    ).values(),
-  );
-
+  const [sourceItems, setSourceItems] = useState([]);
   const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
   const [search, setSearch] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("Lagos");
   const [sortBy, setSortBy] = useState("relevance");
   const [listView, setListView] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
+
+  useEffect(() => {
+    let active = true;
+
+    getMarketplaceData().then(({ products, services }) => {
+      if (!active) return;
+      setSourceItems([...products, ...services]);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const tabs = [
     { id: "all", label: "All", icon: "grid" },
