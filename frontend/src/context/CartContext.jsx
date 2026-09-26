@@ -62,7 +62,7 @@ export function useCart() {
 }
 
 export function parsePrice(value) {
-  return Number(String(value || "").replace(/[^d]/g, "")) || 0;
+  return Number(String(value || "").replace(/[^0-9]/g, "")) || 0;
 }
 
 export function formatNaira(value) {
