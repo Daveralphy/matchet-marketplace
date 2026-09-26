@@ -1250,7 +1250,8 @@ function CommunitySection({ isAuthenticated }) {
           {content.cta} <span className="ml-1 text-[16px]">→</span>
         </Link>
       </div>
-    </section>
+      </section>
+    </>
   );
 }
 
