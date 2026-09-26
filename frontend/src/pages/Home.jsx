@@ -7,6 +7,7 @@ import heroImage from "../assets/inspirations/homepage/hero.png";
 import { FEATURED_ITEMS, PICKED_ITEMS } from "../data/homeMarketplaceMock";
 import { CONTINUE_ITEMS, POPULAR_NEARBY_ITEMS } from "../data/homePopularMock";
 import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMock";
+import { COMMUNITY_REVIEW_SECTION } from "../data/homeCommunityMock";
 import matchMockup from "../assets/inspirations/homepage/mockup1.png";
 
 const CATEGORIES = [
@@ -917,6 +918,206 @@ function MatchingSection({ isAuthenticated, userName }) {
   );
 }
 
+
+function CommunityIcon({ name, size = 22 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.9,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  };
+
+  const paths = {
+    users: (
+      <>
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3 20a6 6 0 0 1 12 0M16 5.5a3 3 0 0 1 0 5.5M17 14a5 5 0 0 1 4 6" />
+      </>
+    ),
+    shield: (
+      <>
+        <path d="M12 3 20 6v5c0 5-3.3 8.2-8 10-4.7-1.8-8-5-8-10V6l8-3Z" />
+        <path d="m8.5 12 2.2 2.2 4.8-5" />
+      </>
+    ),
+    heart: <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />,
+    star: <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" />,
+  };
+
+  return <svg {...common}>{paths[name]}</svg>;
+}
+
+function CommunityAvatar({ review }) {
+  return (
+    <div className={`flex h-[118px] w-[118px] shrink-0 items-center justify-center overflow-hidden rounded-full border-[6px] border-white ${review.avatarTone} shadow-[0_4px_16px_rgba(16,24,63,0.08)] sm:h-[145px] sm:w-[145px]`}>
+      {review.avatarUrl ? (
+        <img
+          src={review.avatarUrl}
+          alt={review.name}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <span className="text-[28px] font-bold tracking-[-0.04em] text-[#10183f] sm:text-[34px]">
+          {review.initials}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ReviewStars({ rating }) {
+  return (
+    <div className="flex items-center gap-1 text-[#f5b900]" aria-label={`${rating} out of 5 stars`}>
+      {Array.from({ length: 5 }, (_, index) => (
+        <span key={index} className="text-[22px] leading-none">★</span>
+      ))}
+    </div>
+  );
+}
+
+function CommunityReviewCard({ review }) {
+  return (
+    <article className="flex min-h-[320px] items-center gap-7 rounded-[14px] border border-slate-100 bg-white px-6 py-7 shadow-[0_5px_18px_rgba(16,24,63,0.025)] sm:px-7 lg:px-8">
+      <CommunityAvatar review={review} />
+      <div className="min-w-0">
+        <blockquote className="max-w-[640px] text-[17px] font-medium leading-[1.38] tracking-[-0.02em] text-[#10183f] sm:text-[20px] lg:text-[22px]">
+          “{review.quote}”
+        </blockquote>
+
+        <div className="mt-6">
+          <ReviewStars rating={review.rating} />
+          <p className="mt-3 text-[14px] font-bold text-[#10183f]">{review.name}</p>
+          <p className="mt-1 text-[13px] text-[#69739a]">{review.role} · {review.location}</p>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function CommunityStats({ stats }) {
+  return (
+    <aside className="rounded-[14px] bg-[#eaf9ef] px-6 py-6">
+      <div>
+        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-[#10183f]">{stats.rating}</p>
+        <p className="mt-1 text-[12px] text-[#69739a]">{stats.ratingLabel}</p>
+        <ReviewStars rating={5} />
+        <p className="mt-1 text-[11px] text-[#69739a]">{stats.reviewBasis}</p>
+      </div>
+
+      <div className="my-4 h-px bg-[#cfe8d6]" />
+
+      <div>
+        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-[#10183f]">{stats.reviewCount}</p>
+        <p className="mt-1 text-[12px] text-[#69739a]">{stats.reviewLabel}</p>
+      </div>
+
+      <div className="my-4 flex items-center gap-2">
+        {["AO", "CN", "DA"].map((initials) => (
+          <span key={initials} className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#eaf9ef] bg-white text-[9px] font-bold text-[#10183f] shadow-sm">
+            {initials}
+          </span>
+        ))}
+        <span className="flex h-9 items-center rounded-full bg-[#d8f3df] px-3 text-[10px] font-bold text-[#07863a]">
+          +2.4K
+        </span>
+      </div>
+
+      <p className="text-[11px] text-[#69739a]">{stats.communityLabel}</p>
+    </aside>
+  );
+}
+
+function CommunityPoints({ points }) {
+  return (
+    <aside className="overflow-hidden rounded-[14px] bg-[#eaf9ef]">
+      {points.map((point) => (
+        <div key={point.title} className="flex items-center gap-3 border-b border-[#d7eee0] px-4 py-3 last:border-b-0">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d5f3dd] text-[#07863a]">
+            <CommunityIcon name={point.icon} size={20} />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[12px] font-bold text-[#10183f]">{point.title}</p>
+            <p className="mt-0.5 text-[10px] text-[#69739a]">{point.description}</p>
+          </div>
+        </div>
+      ))}
+    </aside>
+  );
+}
+
+function CommunitySection({ isAuthenticated }) {
+  const content = isAuthenticated
+    ? COMMUNITY_REVIEW_SECTION.loggedIn
+    : COMMUNITY_REVIEW_SECTION.loggedOut;
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const review = content.reviews[activeIndex];
+
+  const moveReview = (direction) => {
+    setActiveIndex((current) => {
+      const next = current + direction;
+      if (next < 0) return content.reviews.length - 1;
+      if (next >= content.reviews.length) return 0;
+      return next;
+    });
+  };
+
+  return (
+    <section className={`mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-10 lg:py-9 ${isAuthenticated ? "bg-[#f3fbf6]" : "bg-[#fbfcff]"}`}>
+      <div className="flex items-start justify-between gap-5">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a]">{content.eyebrow}</p>
+          <h2 className="mt-3 text-[32px] font-bold leading-[1.02] tracking-[-0.045em] text-[#10183f] sm:text-[43px]">
+            {content.title} <span className="text-[#07863a]">{content.accent}</span>
+          </h2>
+          <p className="mt-2 text-[14px] leading-6 text-[#69739a] sm:text-[16px]">{content.subtitle}</p>
+        </div>
+
+        <div className="hidden shrink-0 items-center gap-2 sm:flex">
+          <button type="button" aria-label="Previous review" onClick={() => moveReview(-1)} className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f8] text-[#7782a8]">
+            ‹
+          </button>
+          <button type="button" aria-label="Next review" onClick={() => moveReview(1)} className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)]">
+            ›
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,2.15fr)_minmax(270px,0.9fr)]">
+        <CommunityReviewCard review={review} />
+        {isAuthenticated ? (
+          <CommunityPoints points={content.communityPoints} />
+        ) : (
+          <CommunityStats stats={content.stats} />
+        )}
+      </div>
+
+      <div className="mt-5 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {content.reviews.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              aria-label={`Show review ${index + 1}`}
+              onClick={() => setActiveIndex(index)}
+              className={`h-2.5 w-2.5 rounded-full transition-all ${index === activeIndex ? "w-4 bg-[#07863a]" : "bg-[#d6dceb]"}`}
+            />
+          ))}
+        </div>
+
+        <Link to="/reviews" className="text-[12px] font-semibold text-[#07863a]">
+          {content.cta} <span className="ml-1 text-[16px]">→</span>
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 export default function Home({ isAuthenticated = false, userName }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
@@ -1014,6 +1215,7 @@ export default function Home({ isAuthenticated = false, userName }) {
       />
       <NearbyMarketplaceSection isAuthenticated={isAuthenticated} />
       <MatchingSection isAuthenticated={isAuthenticated} userName={userName} />
+      <CommunitySection isAuthenticated={isAuthenticated} />
     </main>
   );
 }
