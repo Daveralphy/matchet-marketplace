@@ -14,6 +14,26 @@ function Icon({ name, size = 20, strokeWidth = 1.8 }) {
     package: <><path d="m4 8 8-4 8 4v9l-8 4-8-4V8Z" /><path d="m4 8 8 4 8-4M12 12v9" /></>,
     truck: <><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z" /><circle cx="7" cy="19" r="1.7" /><circle cx="18" cy="19" r="1.7" /></>,
     store: <path d="M4 10h16M6 10v9h12v-9M5 10l2-5h10l2 5M9 14h6" />,
+    monitor: (
+      <>
+        <rect x="3" y="4" width="18" height="13" rx="1.5" />
+        <path d="M9 21h6M12 17v4" />
+      </>
+    ),
+    sofa: (
+      <>
+        <path d="M5 11V8a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v3" />
+        <path d="M4 11a2 2 0 0 0-2 2v4h20v-4a2 2 0 0 0-2-2H4Z" />
+        <path d="M4 17v3M20 17v3M7 11h10" />
+      </>
+    ),
+    bag: (
+      <>
+        <path d="M5 8h14l1 13H4L5 8Z" />
+        <path d="M9 9V6a3 3 0 0 1 6 0v3" />
+      </>
+    ),
+
     star: <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" />,
     share: <><path d="M12 16V4M7 9l5-5 5 5" /><path d="M5 14v5h14v-5" /></>,
     flag: <><path d="M5 21V4" /><path d="M5 5c5-3 7 3 14 0v9c-7 3-9-3-14 0" /></>,
@@ -28,7 +48,7 @@ function Icon({ name, size = 20, strokeWidth = 1.8 }) {
 }
 
 function ProductVisual({ product, large = false, image = null, index = 0 }) {
-  const icon = product?.icon === "bag" ? "store" : product?.icon === "home" ? "package" : "package";
+  const icon = product?.icon === "bag" ? "bag" : product?.icon === "home" ? "sofa" : "monitor";
 
   return (
     <div className={`relative flex items-center justify-center overflow-hidden rounded-[10px] ${large ? "h-[410px] sm:h-[480px]" : "h-[86px]"} ${product?.imageTone || "bg-[#f1f1ef]"}`}>
