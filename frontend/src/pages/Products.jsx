@@ -491,6 +491,15 @@ function ProductImage({ product }) {
 
 function ProductCatalogueCard({ product }) {
   const { addItem } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    addItem(product);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1600);
+  };
   const rating = Number(product.rating) || 0;
 
   return (
@@ -500,10 +509,10 @@ function ProductCatalogueCard({ product }) {
         <button
           type="button"
           aria-label={`Add ${product.title} to cart`}
-          onClick={(event) => { event.preventDefault(); event.stopPropagation(); addItem(product); }}
-          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#07863a] shadow-[0_2px_8px_rgba(16,24,63,0.1)]"
+          onClick={handleAddToCart}
+          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 ${added ? "scale-110 bg-[#eaf9ee] text-[#07863a]" : "bg-white text-[#07863a]"}`}
         >
-          <Icon name="cart" size={16} />
+          <span className={added ? "animate-[pulse_0.45s_ease-out]" : ""}><Icon name="cart" size={16} /></span>
         </button>
       </div>
 
