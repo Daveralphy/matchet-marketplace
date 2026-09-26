@@ -78,3 +78,15 @@ export async function searchMarketplace({
 
   return simulateApiResponse(items);
 }
+
+
+export async function getProviderCollection(collection = "featured") {
+  const ids = marketplaceData.providerCollections?.[collection] ?? [];
+  const providers = new Map(
+    (marketplaceData.providers ?? []).map((provider) => [provider.id, provider]),
+  );
+
+  return simulateApiResponse(
+    ids.map((id) => providers.get(id)).filter(Boolean),
+  );
+}
