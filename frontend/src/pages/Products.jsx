@@ -2,6 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
@@ -499,7 +500,7 @@ function ProductCatalogueCard({ product }) {
   const rating = Number(product.rating) || 0;
 
   return (
-    <article className="group min-w-0 rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+    <Link to={`/products/${product.id}`} className="group block min-w-0 rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
       <div className="relative">
         <ProductImage product={product} />
         <button
