@@ -98,7 +98,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
       </>
     ),
 
-    provider: (
+    sparkles: <path d="m12 3 1.4 4.6L18 9l-4.6 1.4L12 15l-1.4-4.6L6 9l4.6-1.4L12 3ZM19 14l.7 2.3L22 17l-2.3.7L19 20l-.7-2.3L16 17l2.3-.7L19 14Z" />,\n\n    provider: (
       <>
         <circle cx="12" cy="8" r="3" />
         <path d="M4 20c.9-3.5 3.5-5.5 8-5.5s7.1 2 8 5.5" />
