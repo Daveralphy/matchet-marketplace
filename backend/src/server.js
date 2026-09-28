@@ -12,8 +12,10 @@ const startServer = async () => {
   await connectDatabase();
 
   app.listen(PORT, () => {
-    console.log(`Matchet API running on port ${PORT}`);
+    console.log("Matchet API running on port " + PORT);
   });
 };
 
-startServer();
+startServer().catch((error) => {
+  console.error("Unexpected server startup error:", error);
+});
