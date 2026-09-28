@@ -2,6 +2,7 @@
 // Edited by: Raphael Daveal
 
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.routes");
@@ -23,6 +24,15 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ success: true, message: "Matchet API is running" });
 });
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message: "Matchet is temporarily unable to reach the account database. Please try again in a moment.",
+      code: "DATABASE_UNAVAILABLE",
+    });
+  }
+  next();
+}, authRoutes);
 
 module.exports = app;
