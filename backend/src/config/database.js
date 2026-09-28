@@ -3,15 +3,19 @@
 
 const mongoose = require("mongoose");
 
-const connectDatabase = async () => {
+async function connectDatabase() {
   try {
-    const connection = await mongoose.connect(process.env.MONGODB_URI);
+    const connection = await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 8000,
+    });
 
-    console.log(`MongoDB connected: ${connection.connection.host}`);
+    console.log("MongoDB connected: " + connection.connection.host);
+    return true;
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
-    process.exit(1);
+    console.error("Check that your MongoDB Atlas IP access list allows this machine and that MONGODB_URI is correct.");
+    return false;
   }
-};
+}
 
 module.exports = connectDatabase;
