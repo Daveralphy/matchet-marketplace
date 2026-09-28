@@ -142,6 +142,14 @@ function LocationSelect({
   setLocationOpen,
   locationRef,
 }) {
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const submitSearch = () => {
+    const value = query.trim();
+    if (!value) return;
+    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+  };
+
   return (
     <div ref={locationRef} className="relative min-w-0 flex-1">
       <button
@@ -217,14 +225,6 @@ function LocationSelect({
 }
 
 function SearchBar({
-  const navigate = useNavigate();
-  const [query, setQuery] = useState("");
-  const submitSearch = () => {
-    const value = query.trim();
-    if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
-  };
-
   selectedLocation,
   setSelectedLocation,
   locationOpen,
@@ -898,10 +898,9 @@ function ServiceListingCard({ service }) {
   );
 }
 
-function ServicesListingSection({
+function ServicesListingSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
- isAuthenticated }) {
   const [services, setServices] = useState([]);
   const selectedLocation = searchParams.get("location") || localStorage.getItem("matchet_location") || "";
 
@@ -915,7 +914,7 @@ function ServicesListingSection({
     return () => {
       active = false;
     };
-  }, [isAuthenticated, search]);
+  }, [isAuthenticated, search, selectedLocation]);
 
   return (
     <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
