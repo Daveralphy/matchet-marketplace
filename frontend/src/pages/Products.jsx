@@ -704,11 +704,10 @@ function ProductFilters({ products, filters, setFilters }) {
   );
 }
 
-function ProductCatalogue({
+function ProductCatalogue({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
   const initialSearch = searchParams.get("q") || "";
   const initialLocation = searchParams.get("location") || localStorage.getItem("matchet_location") || "";
- isAuthenticated }) {
   const [products, setProducts] = useState([]);
   const [view, setView] = useState("grid");
   const [sort, setSort] = useState("recommended");
