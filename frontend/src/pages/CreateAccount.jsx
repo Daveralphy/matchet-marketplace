@@ -297,7 +297,7 @@ const CreateAccount = () => {
       });
       navigate("/", { replace: true });
     } catch (error) {
-      setFormError(error.message);
+      setFormError(error.message || "We could not create your account right now. Please try again.");
       if (error.errors) {
         setErrors((previous) => ({ ...previous, ...error.errors }));
       }
@@ -416,7 +416,7 @@ const CreateAccount = () => {
                 {formError && (
                   <div
                     role="alert"
-                    className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                    className="mb-4 min-h-[46px] rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
                   >
                     {formError}
                   </div>
