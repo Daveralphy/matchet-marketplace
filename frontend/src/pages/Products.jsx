@@ -748,14 +748,17 @@ function ProductFilters({ products, filters, setFilters }) {
 
 function ProductCatalogue({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
+  const savedUiState = (() => {
+    try { return JSON.parse(sessionStorage.getItem("matchet_products_ui") || "{}"); } catch { return {}; }
+  })();
   const initialSearch = searchParams.get("q") || "";
   const initialLocation = searchParams.get("location") || localStorage.getItem("matchet_location") || "";
   const [products, setProducts] = useState([]);
-  const [view, setView] = useState("grid");
-  const [sort, setSort] = useState("recommended");
+  const [view, setView] = useState(savedUiState.view || "grid");
+  const [sort, setSort] = useState(savedUiState.sort || "recommended");
   const [location, setLocation] = useState(initialLocation);
-  const [search, setSearch] = useState(initialSearch);
-  const [filters, setFilters] = useState({
+  const [search, setSearch] = useState(initialSearch || savedUiState.search || "");
+  const [filters, setFilters] = useState(savedUiState.filters || {
     category: "",
     maxPrice: 0,
     rating: 0,
@@ -763,6 +766,10 @@ function ProductCatalogue({ isAuthenticated }) {
     availability: "",
     sellerType: "",
   });
+
+  useEffect(() => {
+    sessionStorage.setItem("matchet_products_ui", JSON.stringify({ view, sort, location, search, filters }));
+  }, [view, sort, location, search, filters]);
 
   useEffect(() => {
     let active = true;
