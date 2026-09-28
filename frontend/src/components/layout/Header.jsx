@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo/matchet_logoname.png";
 import mobileLogo from "../../assets/logo/matchet_logo.png";
 import { useCart } from "../../context/CartContext";
@@ -212,14 +212,17 @@ export default function Header({
   onLogout,
 }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { cartCount: liveCartCount } = useCart();
 
-  const [selectedLocation, setSelectedLocation] = useState(initialLocation);
+  const [selectedLocation, setSelectedLocation] = useState(() => window.localStorage.getItem("matchet_location") || initialLocation);
   const [locationOpen, setLocationOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [logoutSubmitting, setLogoutSubmitting] = useState(false);
 
   const locationRef = useRef(null);
   const profileRef = useRef(null);
@@ -236,6 +239,19 @@ export default function Header({
     setLocationOpen(false);
     setProfileOpen(false);
     setMobileMenuOpen(false);
+  };
+
+  const persistLocation = (value) => {
+    setSelectedLocation(value);
+    window.localStorage.setItem("matchet_location", value);
+  };
+
+  const submitSearch = () => {
+    const query = searchValue.trim();
+    if (!query) return;
+    navigate(`/explore?q=${encodeURIComponent(query)}&location=${encodeURIComponent(selectedLocation)}`);
+    closeOverlays();
+    setSearchOpen(false);
   };
 
   useEffect(() => {
@@ -370,7 +386,7 @@ export default function Header({
                           key={option}
                           type="button"
                           onClick={() => {
-                            setSelectedLocation(option);
+                            persistLocation(option);
                             setLocationOpen(false);
                           }}
                           className={[
@@ -433,6 +449,9 @@ export default function Header({
                     type="search"
                     value={searchValue}
                     onChange={(event) => setSearchValue(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") submitSearch();
+                    }}
                     placeholder="Search..."
                     className="min-w-0 flex-1 bg-transparent text-[11px] text-[#24305f] outline-none placeholder:text-slate-400 sm:text-[12px]"
                     aria-label="Search Matchet"
@@ -508,7 +527,7 @@ export default function Header({
                       type="button"
                       onClick={async () => {
                         closeOverlays();
-                        if (onLogout) await onLogout();
+                        setLogoutConfirmOpen(true);
                       }}
                       className="mt-1 flex w-full items-center rounded-lg px-4 py-3 text-left text-[14px] font-medium text-red-500 hover:bg-red-50"
                     >
@@ -573,7 +592,7 @@ export default function Header({
                           key={option}
                           type="button"
                           onClick={() => {
-                            setSelectedLocation(option);
+                            persistLocation(option);
                             setLocationOpen(false);
                           }}
                           className={[
@@ -636,6 +655,9 @@ export default function Header({
                     type="search"
                     value={searchValue}
                     onChange={(event) => setSearchValue(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") submitSearch();
+                    }}
                     placeholder="Search..."
                     className="min-w-0 flex-1 bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
                     aria-label="Search Matchet"
@@ -775,7 +797,13 @@ export default function Header({
                       onClick={async () => {
                         setProfileOpen(false);
                         if (onLogout) {
-                          await onLogout();
+                          setLogoutSubmitting(true);
+                          try {
+                            await onLogout();
+                          } finally {
+                            setLogoutSubmitting(false);
+                            setLogoutConfirmOpen(false);
+                          }
                         }
                       }}
                       className="flex w-full items-center gap-4 rounded-lg px-2.5 py-2.5 text-left hover:bg-red-50"
@@ -819,6 +847,23 @@ export default function Header({
           )}
         </div>
       </div>
+
+      {logoutConfirmOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071449]/35 px-4 backdrop-blur-[2px]">
+          <div role="dialog" aria-modal="true" aria-labelledby="logout-title" className="w-full max-w-[390px] rounded-2xl bg-white p-6 shadow-[0_20px_60px_rgba(16,24,63,0.2)]">
+            <h2 id="logout-title" className="text-[20px] font-semibold text-[#10183f]">Log out of Matchet?</h2>
+            <p className="mt-2 text-[14px] leading-6 text-[#69739a]">You will need to sign in again to access your account.</p>
+            <div className="mt-6 flex gap-3">
+              <button type="button" disabled={logoutSubmitting} onClick={() => setLogoutConfirmOpen(false)} className="flex h-11 flex-1 items-center justify-center rounded-lg border border-slate-200 text-[13px] font-semibold text-[#24305f] hover:bg-slate-50 disabled:opacity-60">Cancel</button>
+              <button type="button" disabled={logoutSubmitting} onClick={async () => {
+                if (!onLogout) return;
+                setLogoutSubmitting(true);
+                try { await onLogout(); } finally { setLogoutSubmitting(false); setLogoutConfirmOpen(false); }
+              }} className="flex h-11 flex-1 items-center justify-center rounded-lg bg-[#ef4b4b] text-[13px] font-semibold text-white hover:bg-[#dc3e3e] disabled:cursor-not-allowed disabled:opacity-60">{logoutSubmitting ? "Logging out..." : "Log out"}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
