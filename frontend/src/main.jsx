@@ -6,7 +6,8 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes";
 import { FormProvider } from "./context/FormContext";
-import { CartProvider } from "./context/CartContext";\nimport { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 import "./styles/globals.css";
 
 createRoot(document.getElementById("root")).render(
