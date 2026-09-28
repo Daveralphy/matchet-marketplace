@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
@@ -310,6 +310,14 @@ function LocationSelect({
 }
 
 function SearchBar({
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const submitSearch = () => {
+    const value = query.trim();
+    if (!value) return;
+    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+  };
+
   selectedLocation,
   setSelectedLocation,
   locationOpen,
@@ -323,6 +331,9 @@ function SearchBar({
 
         <input
           type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => { if (event.key === "Enter") submitSearch(); }}
           placeholder="Search for products..."
           aria-label="Search for products"
           className="min-w-0 flex-1 bg-transparent text-[11px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[12px]"
@@ -341,6 +352,7 @@ function SearchBar({
 
       <button
         type="button"
+        onClick={submitSearch}
         className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]"
       >
         Search
@@ -691,11 +703,16 @@ function ProductFilters({ products, filters, setFilters }) {
   );
 }
 
-function ProductCatalogue({ isAuthenticated }) {
+function ProductCatalogue({
+  const [searchParams] = useSearchParams();
+  const initialSearch = searchParams.get("q") || "";
+  const initialLocation = searchParams.get("location") || localStorage.getItem("matchet_location") || "";
+ isAuthenticated }) {
   const [products, setProducts] = useState([]);
   const [view, setView] = useState("grid");
   const [sort, setSort] = useState("recommended");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(initialLocation);
+  const [search, setSearch] = useState(initialSearch);
   const [filters, setFilters] = useState({
     category: "",
     maxPrice: 0,
@@ -724,11 +741,15 @@ function ProductCatalogue({ isAuthenticated }) {
     return () => { active = false; };
   }, []);
 
+  const normalizedSearch = search.trim().toLowerCase();
+
   const filtered = products.filter((product) => {
     const price = Number(String(product.price).replace(/[^\d]/g, ""));
     const rating = Number(product.rating) || 0;
 
     return (
+      (!normalizedSearch || [product.title, product.category, product.seller, product.location].join(" ").toLowerCase().includes(normalizedSearch)) &&
+      (!location || product.location === location) &&
       (!filters.category || product.category === filters.category) &&
       (!filters.maxPrice || price <= filters.maxPrice) &&
       (!filters.rating || rating >= filters.rating) &&
