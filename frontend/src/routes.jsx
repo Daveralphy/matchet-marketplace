@@ -258,7 +258,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/dashboard",
-    element: <Placeholder name="Provider Dashboard" />,
+    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Dashboard /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/provider/onboarding",
@@ -290,7 +290,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/listings",
-    element: <Placeholder name="Provider Listings" />,
+    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Listings /></MarketplaceLayout></RequireAuth>,
   },
 ]);
 
