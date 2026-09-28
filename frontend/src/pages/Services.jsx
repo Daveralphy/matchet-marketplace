@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/services/hero 2.png";
 import person1 from "../assets/inspirations/services/person1.png";
@@ -216,6 +216,14 @@ function LocationSelect({
 }
 
 function SearchBar({
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const submitSearch = () => {
+    const value = query.trim();
+    if (!value) return;
+    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+  };
+
   selectedLocation,
   setSelectedLocation,
   locationOpen,
@@ -229,6 +237,9 @@ function SearchBar({
 
         <input
           type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={(event) => { if (event.key === "Enter") submitSearch(); }}
           placeholder="Search for a service, skill, or provider..."
           aria-label="Search for a service, skill, or provider"
           className="min-w-0 flex-1 bg-transparent text-[11px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[12px]"
@@ -247,6 +258,7 @@ function SearchBar({
 
       <button
         type="button"
+        onClick={submitSearch}
         className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]"
       >
         Search
@@ -885,20 +897,23 @@ function ServiceListingCard({ service }) {
   );
 }
 
-function ServicesListingSection({ isAuthenticated }) {
+function ServicesListingSection({
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
+ isAuthenticated }) {
   const [services, setServices] = useState([]);
 
   useEffect(() => {
     let active = true;
 
     getServiceCollection(isAuthenticated ? "recommended" : "featured").then((items) => {
-      if (active) setServices(items);
+      if (active) setServices(items.filter((item) => !search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())));
     });
 
     return () => {
       active = false;
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, search]);
 
   return (
     <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
