@@ -131,7 +131,7 @@ const Login = () => {
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);\n  const navigate = useNavigate();
 
   const handleBlur = (field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -160,7 +160,7 @@ const Login = () => {
       await login({ identifier, password });
       navigate("/", { replace: true });
     } catch (error) {
-      setFormError(error.message);
+      setFormError(error.status === 401 ? "The email/username or password you entered is incorrect. Please check your details and try again." : error.message || "We could not log you in right now. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -276,7 +276,7 @@ const Login = () => {
                 {formError && (
                   <div
                     role="alert"
-                    className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                    className="mb-4 min-h-[46px] rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
                   >
                     {formError}
                   </div>
