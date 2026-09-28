@@ -511,6 +511,38 @@ export default function Header({
             )}
           </Link>
 
+          {isAuthenticated && (
+            <div className="relative shrink-0 min-[1160px]:hidden">
+              <button
+                type="button"
+                aria-label="Notifications"
+                onClick={() => {
+                  setNotificationsOpen((open) => !open);
+                  setMobileMenuOpen(false);
+                  setLocationOpen(false);
+                  setProfileOpen(false);
+                }}
+                className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] hover:bg-slate-50 sm:h-11 sm:w-11"
+              >
+                <Icon name="bell" size={22} />
+                {authNotifications.some((item) => !item.read) && <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#07983f]" />}
+              </button>
+              {notificationsOpen && (
+                <div className="absolute right-0 top-[calc(100%+8px)] z-[90] w-[300px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
+                  <div className="border-b border-slate-100 px-4 py-3"><p className="text-[13px] font-semibold text-[#071449]">Notifications</p></div>
+                  <div className="max-h-[320px] overflow-y-auto">
+                    {authNotifications.length ? authNotifications.map((item) => (
+                      <button key={item.id} type="button" onClick={markNotificationsRead} className="flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50">
+                        <Icon name={item.type === "login" ? "user" : "bell"} size={17} />
+                        <span className="min-w-0"><span className="block text-[12px] font-semibold text-[#071449]">{item.title}</span><span className="block text-[10px] leading-5 text-slate-400">{item.message}</span></span>
+                      </button>
+                    )) : <div className="px-4 py-8 text-center text-[11px] text-slate-400">No notifications yet.</div>}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <div ref={mobileMenuRef} className="relative shrink-0">
             <button
               type="button"
