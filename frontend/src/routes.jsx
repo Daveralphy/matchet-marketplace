@@ -1,7 +1,8 @@
 // Created by: Raphael Daveal
 // Edited by: Brima
 
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
@@ -37,6 +38,12 @@ function Placeholder({ name }) {
 
 function BlankPage() {
   return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
+}
+
+function RequireAuth({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return <main className="min-h-[60vh] w-full" />;
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
 const router = createBrowserRouter([
@@ -167,19 +174,19 @@ const router = createBrowserRouter([
 
   {
     path: "/profile",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/orders",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/bookings",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/settings",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/help",
@@ -203,11 +210,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/services",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/messages",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/saved-items",
@@ -215,7 +222,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/safety",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/report-problem",
