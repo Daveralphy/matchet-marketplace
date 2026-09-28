@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";\nimport { useAuth } from "../context/AuthContext";
 import loginHero from "../assets/inspirations/authentication/login1.png";
 
 function UserIcon() {
@@ -286,10 +286,23 @@ const CreateAccount = () => {
     setFormError("");
     setIsSubmitting(true);
 
-    // Placeholder for the real registration request once the backend endpoint exists.
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
-    setIsSubmitting(false);
+    try {
+      await register({
+        firstName,
+        lastName,
+        email,
+        phone: countryCode + phone,
+        password,
+      });
+      navigate("/", { replace: true });
+    } catch (error) {
+      setFormError(error.message);
+      if (error.errors) {
+        setErrors((previous) => ({ ...previous, ...error.errors }));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
