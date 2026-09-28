@@ -794,17 +794,9 @@ export default function Header({
 
                     <button
                       type="button"
-                      onClick={async () => {
+                      onClick={() => {
                         setProfileOpen(false);
-                        if (onLogout) {
-                          setLogoutSubmitting(true);
-                          try {
-                            await onLogout();
-                          } finally {
-                            setLogoutSubmitting(false);
-                            setLogoutConfirmOpen(false);
-                          }
-                        }
+                        setLogoutConfirmOpen(true);
                       }}
                       className="flex w-full items-center gap-4 rounded-lg px-2.5 py-2.5 text-left hover:bg-red-50"
                     >
