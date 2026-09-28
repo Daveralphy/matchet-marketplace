@@ -129,7 +129,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/account/saved-items",
-    element: <SavedItems />,
+    element: <RequireAuth><MarketplaceLayout><SavedItems /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/products/:id",
