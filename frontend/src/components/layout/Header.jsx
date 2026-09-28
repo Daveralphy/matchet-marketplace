@@ -6,6 +6,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo/matchet_logoname.png";
 import mobileLogo from "../../assets/logo/matchet_logo.png";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
+import { searchMarketplace } from "../../data/marketplaceApi";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
@@ -214,6 +216,7 @@ export default function Header({
   const location = useLocation();
   const navigate = useNavigate();
   const { cartCount: liveCartCount } = useCart();
+  const { logout: authLogout, notifications: authNotifications, markNotificationsRead } = useAuth();
 
   const [selectedLocation, setSelectedLocation] = useState(() => window.localStorage.getItem("matchet_location") || initialLocation);
   const [locationOpen, setLocationOpen] = useState(false);
@@ -223,6 +226,8 @@ export default function Header({
   const [searchValue, setSearchValue] = useState("");
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [logoutSubmitting, setLogoutSubmitting] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
 
   const locationRef = useRef(null);
   const profileRef = useRef(null);
@@ -246,11 +251,26 @@ export default function Header({
     window.localStorage.setItem("matchet_location", value);
   };
 
+  useEffect(() => {
+    let active = true;
+    const query = searchValue.trim();
+    if (!query) {
+      setSearchSuggestions([]);
+      return undefined;
+    }
+    const timer = window.setTimeout(async () => {
+      const results = await searchMarketplace({ query, location: selectedLocation });
+      if (active) setSearchSuggestions(results.slice(0, 6));
+    }, 120);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [searchValue, selectedLocation]);
+
   const submitSearch = () => {
     const query = searchValue.trim();
     if (!query) return;
     navigate(`/explore?q=${encodeURIComponent(query)}&location=${encodeURIComponent(selectedLocation)}`);
     closeOverlays();
+    setSearchSuggestions([]);
     setSearchOpen(false);
   };
 
@@ -692,7 +712,7 @@ export default function Header({
           >
             <Icon name="cart" size={25} />
 
-            {cartCount > 0 && (
+            {liveCartCount > 0 && (
               <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#07983f] px-1 text-[10px] font-semibold text-white">
                 {liveCartCount}
               </span>
@@ -705,17 +725,53 @@ export default function Header({
 
           {isAuthenticated ? (
             <>
-              <button
-                type="button"
-                aria-label="Notifications"
-                className="relative hidden text-[#071449] transition-colors hover:text-[#07983f] min-[1160px]:block"
-              >
-                <Icon name="bell" size={24} />
+              <div className="relative hidden min-[1160px]:block">
+                <button
+                  type="button"
+                  aria-label="Notifications"
+                  aria-expanded={notificationsOpen}
+                  onClick={() => {
+                    setNotificationsOpen((open) => !open);
+                    setProfileOpen(false);
+                    setLocationOpen(false);
+                  }}
+                  className="relative text-[#071449] transition-colors hover:text-[#07983f]"
+                >
+                  <Icon name="bell" size={24} />
+                  {authNotifications.some((item) => !item.read) && (
+                    <span className="absolute -right-0.5 top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
+                  )}
+                </button>
 
-                {unreadNotifications && (
-                  <span className="absolute -right-0.5 top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
+                {notificationsOpen && (
+                  <div className="absolute right-0 top-[calc(100%+14px)] z-[80] w-[330px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
+                    <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                      <div>
+                        <p className="text-[14px] font-semibold text-[#071449]">Notifications</p>
+                        <p className="text-[11px] text-slate-400">Recent account activity</p>
+                      </div>
+                      {authNotifications.some((item) => !item.read) && (
+                        <button type="button" onClick={markNotificationsRead} className="text-[11px] font-semibold text-[#07983f] hover:underline">Mark all read</button>
+                      )}
+                    </div>
+                    <div className="max-h-[360px] overflow-y-auto">
+                      {authNotifications.length ? authNotifications.map((item) => (
+                        <button key={item.id} type="button" onClick={markNotificationsRead} className="flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50">
+                          <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${item.type === "login" ? "bg-[#eaf2ff] text-[#2866d6]" : "bg-[#e4f9e9] text-[#07983f]"}`}>
+                            <Icon name={item.type === "login" ? "user" : "bell"} size={16} />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block text-[12px] font-semibold text-[#071449]">{item.title}</span>
+                            <span className="mt-0.5 block text-[11px] leading-5 text-slate-400">{item.message}</span>
+                          </span>
+                        </button>
+                      )) : (
+                        <div className="px-4 py-10 text-center text-[12px] text-slate-400">No notifications yet.</div>
+                      )}
+                    </div>
+                  </div>
                 )}
-              </button>
+              </div>
 
               <div className="hidden h-8 w-px bg-slate-200 min-[1160px]:block" />
 
@@ -726,6 +782,7 @@ export default function Header({
                   setProfileOpen((open) => !open);
                   setLocationOpen(false);
                   setMobileMenuOpen(false);
+                  setNotificationsOpen(false);
                 }}
                 className="relative hidden items-center gap-2.5 rounded-lg py-1 pl-1 pr-2 min-[1160px]:flex"
                 aria-expanded={profileOpen}
