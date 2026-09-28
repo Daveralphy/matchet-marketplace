@@ -214,6 +214,42 @@ const router = createBrowserRouter([
     element: <MarketplaceLayout><SavedItems /></MarketplaceLayout>,
   },
   {
+    path: "/safety",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/report-problem",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/contact",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/terms",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/privacy",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/cookies",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/sitemap",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/provider/services",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/provider-resources",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
     path: "/provider/dashboard",
     element: <Placeholder name="Provider Dashboard" />,
   },
