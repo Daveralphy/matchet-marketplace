@@ -71,8 +71,15 @@ export default function MarketplaceLayout({ children }) {
         onNotificationsRead={markNotificationsRead}
       />
 
-      <main className="flex-1">
-        {pageLoading ? <MarketplaceSkeleton /> : content}
+      <main className="relative flex-1">
+        <div className={`transition-opacity duration-300 ease-out ${pageLoading ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+          {content}
+        </div>
+        {pageLoading && (
+          <div className="absolute inset-0 z-10 bg-white">
+            <MarketplaceSkeleton />
+          </div>
+        )}
       </main>
 
       <Footer isAuthenticated={isAuthenticated} />
