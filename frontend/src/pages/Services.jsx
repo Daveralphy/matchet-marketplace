@@ -187,6 +187,7 @@ function LocationSelect({
                 aria-selected={option === selectedLocation}
                 onClick={() => {
                   setSelectedLocation(option);
+                  localStorage.setItem("matchet_location", option);
                   setLocationOpen(false);
                 }}
                 className={[
