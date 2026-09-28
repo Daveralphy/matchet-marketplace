@@ -461,7 +461,7 @@ export default function Header({
                   <Icon name="pin" size={21} />
                 </button>
 
-                <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 px-2.5 sm:h-11 sm:px-3">
+                <div className="relative flex h-10 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 px-2.5 sm:h-11 sm:px-3">
                   <Icon name="search" size={19} />
 
                   <input
@@ -477,17 +477,23 @@ export default function Header({
                     aria-label="Search Matchet"
                   />
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchValue("");
-                      setSearchOpen(false);
-                    }}
-                    className="shrink-0 text-[#24305f] hover:text-[#07983f]"
-                    aria-label="Close search"
-                  >
+                  <button type="button" onClick={() => { setSearchValue(""); setSearchOpen(false); }} className="shrink-0 text-[#24305f] hover:text-[#07983f]" aria-label="Close search">
                     <Icon name="x" size={17} />
                   </button>
+
+                  {searchSuggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[90] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(16,24,63,0.14)]">
+                      {searchSuggestions.map((item) => (
+                        <button key={item.id} type="button" onClick={() => navigate(`/${item.type === "service" ? "services" : "products"}/${item.id}`)} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-slate-50">
+                          <span className="h-9 w-9 shrink-0 rounded-lg bg-slate-100" />
+                          <span className="min-w-0">
+                            <span className="block truncate text-[12px] font-semibold text-[#071449]">{item.title}</span>
+                            <span className="block truncate text-[10px] text-slate-400">{item.category} · {item.location}</span>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </>
             )}
