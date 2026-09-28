@@ -39,6 +39,7 @@ const userSchema = new mongoose.Schema({
   },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true, maxlength: 254, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
   passwordHash: { type: String, required: true, select: false },
+  role: { type: String, enum: ["customer", "provider", "admin"], default: "customer", index: true },
   phone: { type: String, trim: true },
   avatar: { type: imageSchema },
   location: { type: locationSchema },
