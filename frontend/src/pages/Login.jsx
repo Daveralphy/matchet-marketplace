@@ -2,7 +2,8 @@
 // Edited by: Raphael Daveal
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";\nimport { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
 import loginHero from "../assets/inspirations/authentication/login1.png";
