@@ -35,6 +35,10 @@ function Placeholder({ name }) {
   return <h1>{name}</h1>;
 }
 
+function BlankPage() {
+  return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -159,6 +163,55 @@ const router = createBrowserRouter([
         <Checkout />
       </MarketplaceLayout>
     ),
+  },
+
+  {
+    path: "/profile",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/orders",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/bookings",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/settings",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/help",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/reviews",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/categories",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/how-it-works",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/provider-resources",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/provider/services",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/messages",
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+  },
+  {
+    path: "/saved-items",
+    element: <MarketplaceLayout><SavedItems /></MarketplaceLayout>,
   },
   {
     path: "/provider/dashboard",
