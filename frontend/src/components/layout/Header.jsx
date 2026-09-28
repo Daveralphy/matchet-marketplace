@@ -499,6 +499,18 @@ export default function Header({
             )}
           </div>
 
+          <Link
+            to="/cart"
+            onClick={closeOverlays}
+            aria-label="Cart"
+            className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-slate-50 sm:h-11 sm:w-11 ${cartActive ? "text-[#07983f]" : "text-[#071449]"}`}
+          >
+            <Icon name="cart" size={22} />
+            {liveCartCount > 0 && (
+              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#07983f] px-0.5 text-[9px] font-semibold text-white">{liveCartCount}</span>
+            )}
+          </Link>
+
           <div ref={mobileMenuRef} className="relative shrink-0">
             <button
               type="button"
