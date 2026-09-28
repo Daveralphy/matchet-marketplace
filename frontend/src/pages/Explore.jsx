@@ -192,9 +192,16 @@ function LocationSelect({
 }
 
 function SearchBar({
+  selectedLocation,
+  setSelectedLocation,
+  locationOpen,
+  setLocationOpen,
+  locationRef,
+}) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+
   useEffect(() => {
     let active = true;
     const value = query.trim();
@@ -205,22 +212,16 @@ function SearchBar({
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
   }, [query, selectedLocation]);
+
   const submitSearch = () => {
     if (!query.trim()) return;
     navigate(`/explore?q=${encodeURIComponent(query.trim())}&location=${encodeURIComponent(selectedLocation)}`);
   };
 
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
       <div className="relative flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
         <Icon name="search" size={20} />
-
         <input
           type="search"
           value={query}
@@ -230,7 +231,6 @@ function SearchBar({
           aria-label="Search for products, services, or providers"
           className="min-w-0 flex-1 bg-transparent text-[11px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[12px]"
         />
-
         {suggestions.length > 0 && (
           <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[80] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(16,24,63,0.14)]">
             {suggestions.map((item) => (
@@ -242,23 +242,9 @@ function SearchBar({
           </div>
         )}
       </div>
-
       <div className="h-px w-full bg-slate-100 sm:h-[34px] sm:w-px" />
-
-      <LocationSelect
-        selectedLocation={selectedLocation}
-        setSelectedLocation={setSelectedLocation}
-        locationOpen={locationOpen}
-        setLocationOpen={setLocationOpen}
-        locationRef={locationRef}
-      />
-
-      <button
-        type="button"
-        className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]"
-      >
-        Search
-      </button>
+      <LocationSelect selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} locationOpen={locationOpen} setLocationOpen={setLocationOpen} locationRef={locationRef} />
+      <button type="button" onClick={submitSearch} className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]">Search</button>
     </div>
   );
 }
