@@ -252,6 +252,18 @@ function SearchBar({
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
+  const [suggestions, setSuggestions] = useState([]);
+  useEffect(() => {
+    let active = true;
+    const value = query.trim();
+    if (!value) { setSuggestions([]); return undefined; }
+    const timer = window.setTimeout(async () => {
+      const results = await getServiceCollection("featured").then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
+      if (active) setSuggestions(results.slice(0, 6));
+    }, 120);
+    return () => { active = false; window.clearTimeout(timer); };
+  }, [query]);
+
   const submitSearch = () => {
     const value = query.trim();
     if (!value) return;
