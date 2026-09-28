@@ -23,7 +23,7 @@ function MarketplaceSkeleton() {
 }
 
 export default function MarketplaceLayout({ children }) {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, notifications, markNotificationsRead } = useAuth();
   const location = useLocation();
   const [pageLoading, setPageLoading] = useState(true);
   const userName = user?.firstName || user?.username || "Daveralphy";
@@ -67,6 +67,8 @@ export default function MarketplaceLayout({ children }) {
         isAuthenticated={isAuthenticated}
         username={userName}
         onLogout={logout}
+        notifications={notifications}
+        onNotificationsRead={markNotificationsRead}
       />
 
       <main className="flex-1">
