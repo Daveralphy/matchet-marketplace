@@ -245,6 +245,8 @@ const CreateAccount = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
   const formValues = {
     firstName,
