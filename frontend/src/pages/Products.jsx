@@ -236,6 +236,14 @@ function LocationSelect({
   setLocationOpen,
   locationRef,
 }) {
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const submitSearch = () => {
+    const value = query.trim();
+    if (!value) return;
+    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+  };
+
   return (
     <div ref={locationRef} className="relative min-w-0 flex-1">
       <button
@@ -311,14 +319,6 @@ function LocationSelect({
 }
 
 function SearchBar({
-  const navigate = useNavigate();
-  const [query, setQuery] = useState("");
-  const submitSearch = () => {
-    const value = query.trim();
-    if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
-  };
-
   selectedLocation,
   setSelectedLocation,
   locationOpen,
