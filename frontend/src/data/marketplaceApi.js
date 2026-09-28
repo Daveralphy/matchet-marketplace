@@ -18,9 +18,17 @@ function resolveItems(ids = []) {
   return ids.map((id) => byId.get(id)).filter(Boolean);
 }
 
+const responseCache = new Map();
+
 function simulateApiResponse(value) {
+  let key;
+  try { key = JSON.stringify(value); } catch { key = null; }
+  if (key && responseCache.has(key)) return Promise.resolve(responseCache.get(key));
   return new Promise((resolve) => {
-    window.setTimeout(() => resolve(value), 150);
+    window.setTimeout(() => {
+      if (key) responseCache.set(key, value);
+      resolve(value);
+    }, 180);
   });
 }
 
