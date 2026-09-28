@@ -209,6 +209,7 @@ export default function Header({
   unreadNotifications = true,
   cartCount = 0,
   initialLocation = "Lagos, Nigeria",
+  onLogout,
 }) {
   const location = useLocation();
   const { cartCount: liveCartCount } = useCart();
@@ -758,7 +759,12 @@ export default function Header({
 
                     <button
                       type="button"
-                      onClick={() => setProfileOpen(false)}
+                      onClick={async () => {
+                        setProfileOpen(false);
+                        if (onLogout) {
+                          await onLogout();
+                        }
+                      }}
                       className="flex w-full items-center gap-4 rounded-lg px-2.5 py-2.5 text-left hover:bg-red-50"
                     >
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center text-red-500">
