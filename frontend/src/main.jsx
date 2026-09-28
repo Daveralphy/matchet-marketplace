@@ -12,10 +12,12 @@ import "./styles/globals.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <FormProvider>
-      <CartProvider>
-        <RouterProvider router={router} />
-      </CartProvider>
-    </FormProvider>
+    <AuthProvider>
+      <FormProvider>
+        <CartProvider>
+          <RouterProvider router={router} />
+        </CartProvider>
+      </FormProvider>
+    </AuthProvider>
   </StrictMode>,
 );
