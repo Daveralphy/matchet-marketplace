@@ -903,12 +903,13 @@ function ServicesListingSection({
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
  isAuthenticated }) {
   const [services, setServices] = useState([]);
+  const selectedLocation = searchParams.get("location") || localStorage.getItem("matchet_location") || "";
 
   useEffect(() => {
     let active = true;
 
     getServiceCollection(isAuthenticated ? "recommended" : "featured").then((items) => {
-      if (active) setServices(items.filter((item) => !search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())));
+      if (active) setServices(items.filter((item) => (!search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())) && (!selectedLocation || item.location === selectedLocation)));
     });
 
     return () => {
