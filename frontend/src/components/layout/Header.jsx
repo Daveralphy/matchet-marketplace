@@ -479,7 +479,7 @@ export default function Header({
                   {[
                     ...MOBILE_NAV_ITEMS,
                     ...(isAuthenticated
-                      ? []
+                      ? PROFILE_ITEMS.slice(0, 5)
                       : [
                           { label: "Sign in", path: "/login" },
                           {
@@ -502,6 +502,19 @@ export default function Header({
                       {item.label}
                     </Link>
                   ))}
+
+                  {isAuthenticated && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        closeOverlays();
+                        if (onLogout) await onLogout();
+                      }}
+                      className="mt-1 flex w-full items-center rounded-lg px-4 py-3 text-left text-[14px] font-medium text-red-500 hover:bg-red-50"
+                    >
+                      Log out
+                    </button>
+                  )}
                 </nav>
               </div>
             )}
