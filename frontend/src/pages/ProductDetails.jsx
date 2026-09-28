@@ -312,7 +312,11 @@ export default function ProductDetailsPage() {
   }, [id]);
 
   if (!product) {
-    return <main className="flex min-h-[60vh] items-center justify-center text-sm text-[#69739a]">Loading product...</main>;
+    return (
+      <main className="mx-auto min-h-[60vh] max-w-[1470px] animate-pulse px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-2"><div className="h-[480px] rounded-xl bg-slate-100" /><div className="space-y-4"><div className="h-6 w-24 rounded bg-slate-100" /><div className="h-10 w-3/4 rounded bg-slate-100" /><div className="h-5 w-1/3 rounded bg-slate-100" /><div className="h-24 rounded bg-slate-100" /><div className="h-12 w-40 rounded bg-slate-100" /></div></div>
+      </main>
+    );
   }
 
   return <ProductDetail product={product} related={related} />;
