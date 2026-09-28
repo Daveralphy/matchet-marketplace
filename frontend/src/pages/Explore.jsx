@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
 import { getCategoryCollections, getMarketplaceData, getProviderCollection } from "../data/marketplaceApi";
 
@@ -666,10 +666,11 @@ function CategoriesSection({ isAuthenticated }) {
 }
 
 function ExploreResultsSection({ isAuthenticated }) {
+  const [searchParams] = useSearchParams();
   const [sourceItems, setSourceItems] = useState([]);
   const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
-  const [search, setSearch] = useState("");
-  const [selectedLocation, setSelectedLocation] = useState("Lagos");
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
+  const [selectedLocation, setSelectedLocation] = useState(() => searchParams.get("location") || "");
   const [sortBy, setSortBy] = useState("relevance");
   const [listView, setListView] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
@@ -686,6 +687,13 @@ function ExploreResultsSection({ isAuthenticated }) {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    const query = searchParams.get("q") || "";
+    const location = searchParams.get("location") || "";
+    setSearch(query);
+    setSelectedLocation(location);
+  }, [searchParams]);
 
   const tabs = [
     { id: "all", label: "All", icon: "grid" },
@@ -860,8 +868,17 @@ function ExploreResultsSection({ isAuthenticated }) {
 }
 
 export default function Explore({ isAuthenticated = false }) {
-  const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
+  const [searchParams] = useSearchParams();
+  const [selectedLocation, setSelectedLocation] = useState(() => searchParams.get("location") || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
+
+  useEffect(() => {
+    const query = searchParams.get("q") || "";
+    if (query) {
+      const event = new CustomEvent("matchet:explore-search", { detail: query });
+      window.dispatchEvent(event);
+    }
+  }, [searchParams]);
 
   const locationRef = useRef(null);
 
