@@ -905,9 +905,8 @@ export default function Header({
             <div className="mt-6 flex gap-3">
               <button type="button" disabled={logoutSubmitting} onClick={() => setLogoutConfirmOpen(false)} className="flex h-11 flex-1 items-center justify-center rounded-lg border border-slate-200 text-[13px] font-semibold text-[#24305f] hover:bg-slate-50 disabled:opacity-60">Cancel</button>
               <button type="button" disabled={logoutSubmitting} onClick={async () => {
-                if (!onLogout) return;
                 setLogoutSubmitting(true);
-                try { await onLogout(); } finally { setLogoutSubmitting(false); setLogoutConfirmOpen(false); }
+                try { await authLogout(); } finally { setLogoutSubmitting(false); setLogoutConfirmOpen(false); }
               }} className="flex h-11 flex-1 items-center justify-center rounded-lg bg-[#ef4b4b] text-[13px] font-semibold text-white hover:bg-[#dc3e3e] disabled:cursor-not-allowed disabled:opacity-60">{logoutSubmitting ? "Logging out..." : "Log out"}</button>
             </div>
           </div>
