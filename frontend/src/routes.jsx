@@ -218,11 +218,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/saved-items",
-    element: <MarketplaceLayout><SavedItems /></MarketplaceLayout>,
+    element: <RequireAuth><MarketplaceLayout><SavedItems /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/safety",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
     path: "/report-problem",
@@ -258,7 +258,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/dashboard",
-    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Dashboard /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Dashboard" /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/provider/onboarding",
@@ -290,7 +290,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/listings",
-    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Listings /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Listings" /></MarketplaceLayout></RequireAuth>,
   },
 ]);
 
