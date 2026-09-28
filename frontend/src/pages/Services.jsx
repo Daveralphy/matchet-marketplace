@@ -248,7 +248,7 @@ function SearchBar({
   };
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
-      <div className="flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
+      <div className="relative flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
         <Icon name="search" size={20} />
 
         <input
@@ -260,6 +260,17 @@ function SearchBar({
           aria-label="Search for a service, skill, or provider"
           className="min-w-0 flex-1 bg-transparent text-[11px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[12px]"
         />
+
+        {suggestions.length > 0 && (
+          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[80] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(16,24,63,0.14)]">
+            {suggestions.map((item) => (
+              <Link key={item.id} to={`/${item.type === "service" ? "services" : "products"}/${item.id}`} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-slate-50">
+                <span className="h-9 w-9 shrink-0 rounded-lg bg-slate-100" />
+                <span className="min-w-0"><span className="block truncate text-[12px] font-semibold text-[#10183f]">{item.title}</span><span className="block truncate text-[10px] text-slate-400">{item.category} · {item.location}</span></span>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="h-px w-full bg-slate-100 sm:h-[34px] sm:w-px" />
