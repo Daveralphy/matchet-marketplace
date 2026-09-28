@@ -231,6 +231,7 @@ export default function Header({
 
   const locationRef = useRef(null);
   const profileRef = useRef(null);
+  const notificationsRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
   const isActive = (path) =>
@@ -244,6 +245,7 @@ export default function Header({
     setLocationOpen(false);
     setProfileOpen(false);
     setMobileMenuOpen(false);
+    setNotificationsOpen(false);
   };
 
   const persistLocation = (value) => {
@@ -290,6 +292,14 @@ export default function Header({
         !profileRef.current.contains(event.target)
       ) {
         setProfileOpen(false);
+      }
+
+      if (
+        notificationsOpen &&
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
+        setNotificationsOpen(false);
       }
 
       if (
@@ -775,7 +785,7 @@ export default function Header({
 
           {isAuthenticated ? (
             <>
-              <div className="relative hidden min-[1160px]:block">
+              <div ref={notificationsRef} className="relative hidden min-[1160px]:block">
                 <button
                   type="button"
                   aria-label="Notifications"
