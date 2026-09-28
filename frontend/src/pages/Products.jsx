@@ -729,7 +729,7 @@ function ProductCatalogue({
     getMarketplaceData().then((data) => {
       if (!active) return;
       setProducts(data.products);
-      setLocation(data.products[0]?.location || "");
+      setLocation((current) => current || data.products[0]?.location || "");
       const prices = data.products
         .map((item) => Number(String(item.price).replace(/[^\d]/g, "")))
         .filter(Number.isFinite);
