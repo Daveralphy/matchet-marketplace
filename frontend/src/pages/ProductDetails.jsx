@@ -302,6 +302,7 @@ export default function ProductDetailsPage() {
   const [related, setRelated] = useState([]);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
     let active = true;
     Promise.all([getProductById(id), getRelatedProducts(id)]).then(([nextProduct, nextRelated]) => {
       if (!active) return;
