@@ -122,6 +122,13 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
 
     lock: <path d="M6 10h12v10H6zM8.5 10V7a3.5 3.5 0 0 1 7 0v3" />,
 
+    sparkles: (
+      <>
+        <path d="m12 3 1.4 4.1L17.5 9l-4.1 1.4L12 14.5l-1.4-4.1L6.5 9l4.1-1.4L12 3Z" />
+        <path d="m19 14 .7 2.3L22 17l-2.3.7L19 20l-.7-2.3L16 17l2.3-.7L19 14Z" />
+      </>
+    ),
+
     star: <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z" />,
 
     users: (
@@ -231,6 +238,14 @@ function SearchBar({
   setLocationOpen,
   locationRef,
 }) {
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+
+  const submitSearch = () => {
+    const value = query.trim();
+    if (!value) return;
+    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+  };
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
       <div className="flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
