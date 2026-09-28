@@ -131,7 +131,8 @@ const Login = () => {
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);\n  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const handleBlur = (field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
