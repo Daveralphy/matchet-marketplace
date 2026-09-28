@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";\nimport { useAuth } from "../context/AuthContext";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
 import loginHero from "../assets/inspirations/authentication/login1.png";
@@ -155,10 +155,14 @@ const Login = () => {
     setFormError("");
     setIsSubmitting(true);
 
-    // Placeholder for the real request once the backend login endpoint exists.
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
-    setIsSubmitting(false);
+    try {
+      await login({ identifier, password });
+      navigate("/", { replace: true });
+    } catch (error) {
+      setFormError(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
