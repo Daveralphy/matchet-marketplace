@@ -54,3 +54,7 @@ export function getProviderEarnings() {
 export function getProviderReviews() {
   return request("/api/provider/reviews");
 }
+
+export function getProviderProfile() {
+  return request("/api/provider/profile");
+}
