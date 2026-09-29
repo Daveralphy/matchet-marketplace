@@ -127,3 +127,5 @@ export function updateSellerProduct(id,payload) {
 }
 
 export function getSellerEarnings(){ return request("/api/provider/seller-earnings"); }
+
+export function getSellerReviews(){ return request("/api/provider/seller-reviews"); }
