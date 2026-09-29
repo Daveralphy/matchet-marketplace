@@ -321,3 +321,13 @@
  .provider-booking-row>div:nth-child(2),.provider-booking-row>div:nth-child(3),.provider-booking-row>.status,.provider-booking-row>strong{grid-column:1}
  .provider-booking-row>button{grid-column:2;grid-row:1/5}
 }
+
+.provider-application-hero{display:flex;align-items:flex-start;gap:15px;margin-bottom:14px}
+.provider-application-icon{width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:#fff0cc;color:#c27b00;flex-shrink:0}
+.provider-application-hero.approved{background:#effbf4}.provider-application-hero.approved .provider-application-icon{background:#dff8e9;color:#078c48}
+.provider-application-hero.rejected{background:#fff4f5}.provider-application-hero.rejected .provider-application-icon{background:#ffe2e6;color:#d52d3f}
+.provider-application-hero strong{font-size:16px}.provider-application-hero p{max-width:760px;margin:5px 0 0;color:#6872a9;font-size:11px;line-height:1.5}
+.provider-application-details{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;margin-top:14px;border:1px solid #edf0f5;border-radius:7px;overflow:hidden}
+.provider-application-details div{padding:14px;background:#fafbfe}.provider-application-details span,.provider-application-details strong{display:block}.provider-application-details span{color:#6972aa;font-size:10px}.provider-application-details strong{margin-top:4px;font-size:12px}
+.provider-application-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:15px}.provider-application-steps>div{padding:16px;border:1px solid #dfe5f0;border-radius:7px}.provider-application-steps span{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:#edf2ff;color:#2864ed;font-weight:700;font-size:11px}.provider-application-steps strong,.provider-application-steps small{display:block}.provider-application-steps strong{margin-top:9px;font-size:12px}.provider-application-steps small{margin-top:4px;color:#6972aa;font-size:10px;line-height:1.4}.provider-application-steps .done span{background:#dff8e9;color:#078c48}.provider-application-steps .current{border-color:#bfcfff;background:#f7f9ff}
+@media(max-width:760px){.provider-application-details,.provider-application-steps{grid-template-columns:1fr}}
