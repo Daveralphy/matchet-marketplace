@@ -50,3 +50,7 @@ export function getProviderServices() {
 export function getProviderEarnings() {
   return request("/api/provider/earnings");
 }
+
+export function getProviderReviews() {
+  return request("/api/provider/reviews");
+}
