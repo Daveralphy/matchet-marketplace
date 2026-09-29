@@ -1241,3 +1241,22 @@ async function getSellerEarnings(req, res) {
   } catch(error){ console.error("Seller earnings error:",error); return res.status(500).json({success:false,message:process.env.NODE_ENV==="production"?"Unable to load your earnings right now.":error.message}); }
 }
 module.exports.getSellerEarnings = getSellerEarnings;
+
+
+async function getSellerReviews(req, res) {
+  try {
+    const sellerId = req.user._id;
+    const products = await Product.find({ sellerId }).select("_id name images").lean();
+    const productIds = products.map(p => p._id);
+    if (!productIds.length) return res.json({ success:true, data:{ summary:{averageRating:0,totalReviews:0,ratingBreakdown:[5,4,3,2,1].map(r=>({rating:r,count:0,percentage:0})),positivePercentage:0,responseRate:null}, reviews:[], generatedAt:new Date().toISOString() } });
+    const productMap = new Map(products.map(p=>[String(p._id),p]));
+    const reviews = await Review.find({ productId:{ $in:productIds }, status:"published" })
+      .sort({createdAt:-1}).populate("reviewerId","firstName lastName avatar").select("reviewerId productId rating comment createdAt").lean();
+    const totalReviews=reviews.length;
+    const averageRating=totalReviews?Number((reviews.reduce((s,r)=>s+Number(r.rating||0),0)/totalReviews).toFixed(1)):0;
+    const ratingBreakdown=[5,4,3,2,1].map(r=>{const count=reviews.filter(x=>x.rating===r).length;return {rating:r,count,percentage:totalReviews?Math.round(count/totalReviews*100):0};});
+    const positive=totalReviews?Math.round((reviews.filter(r=>r.rating>=4).length/totalReviews)*100):0;
+    return res.json({success:true,data:{summary:{averageRating,totalReviews,positivePercentage:positive,responseRate:null,ratingBreakdown},reviews:reviews.map(r=>{const p=productMap.get(String(r.productId));return {id:r._id,rating:r.rating,comment:r.comment||"",createdAt:r.createdAt,customer:{id:r.reviewerId?._id||null,name:[r.reviewerId?.firstName,r.reviewerId?.lastName].filter(Boolean).join(" ")||"Customer",initials:initials(r.reviewerId),avatar:r.reviewerId?.avatar?.url||null},product:{id:r.productId,name:p?.name||"Product",image:p?.images?.find(i=>i.isPrimary)?.url||p?.images?.[0]?.url||null}};}) ,generatedAt:new Date().toISOString()}});
+  } catch(error){ console.error("Seller reviews error:",error); return res.status(500).json({success:false,message:"Unable to load your reviews right now."}); }
+}
+module.exports.getSellerReviews = getSellerReviews;
