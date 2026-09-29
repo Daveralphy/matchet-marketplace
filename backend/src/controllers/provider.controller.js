@@ -693,3 +693,93 @@ async function updateProviderSettingsPreferences(req, res) {
   }
 }
 module.exports.updateProviderSettingsPreferences = updateProviderSettingsPreferences;
+
+
+async function submitProviderOnboarding(req, res) {
+  try {
+    const providerId = req.user._id;
+    const input = req.body?.formData || req.body || {};
+
+    const businessName =
+      input.providerBusinessName ||
+      input.businessName ||
+      input.providerServiceName ||
+      [input.providerFirstName, input.providerLastName].filter(Boolean).join(" ") ||
+      "Matchet Provider";
+
+    const categories = Array.isArray(input.providerServiceCat)
+      ? input.providerServiceCat
+      : [input.providerServiceCat].filter(Boolean);
+
+    const skills = [
+      ...(typeof input.providerAreasofExpertise === "string" ? input.providerAreasofExpertise.split(",") : []),
+      ...(Array.isArray(input.providerAreasServed) ? input.providerAreasServed : []),
+    ].map((value) => String(value).trim()).filter(Boolean);
+
+    const serviceArea = {
+      city: input.providerLocation || "",
+      state: "",
+      country: input.providerCountry || "",
+    };
+
+    const provider = await ProviderProfile.findOneAndUpdate(
+      { userId: providerId },
+      {
+        $set: {
+          businessName,
+          bio: input.providerBio || "",
+          categories,
+          skills,
+          experience: input.providerYearsofExperience || "",
+          serviceArea,
+          verificationStatus: "pending",
+          status: "draft",
+          onboardingData: input,
+          applicationSubmittedAt: new Date(),
+          reviewedAt: null,
+          reviewNote: "",
+        },
+        $setOnInsert: {
+          userId: providerId,
+        },
+      },
+      { new: true, upsert: true, runValidators: true },
+    );
+
+    const userUpdates = {};
+    if (input.providerPhoneNumber) {
+      userUpdates.phone = [input.providerCountryCode, input.providerPhoneNumber].filter(Boolean).join(" ");
+    }
+    if (input.providerLocation) {
+      userUpdates.location = {
+        ...(req.user.location || {}),
+        city: input.providerLocation,
+        country: input.providerCountry || req.user.location?.country || "",
+      };
+    }
+    if (req.user.role !== "provider") userUpdates.role = "provider";
+
+    if (Object.keys(userUpdates).length) {
+      await User.findByIdAndUpdate(providerId, { $set: userUpdates });
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Your provider application has been submitted for review.",
+      data: {
+        id: provider._id,
+        status: provider.status,
+        verificationStatus: provider.verificationStatus,
+        applicationSubmittedAt: provider.applicationSubmittedAt,
+      },
+    });
+  } catch (error) {
+    console.error("Provider onboarding submission error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to submit your provider application right now.",
+    });
+  }
+}
+
+module.exports.submitProviderOnboarding = submitProviderOnboarding;
