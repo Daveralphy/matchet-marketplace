@@ -25,6 +25,7 @@ import ProviderDataPage from "./pages/ProviderDataPage";
 import ProviderMessages from "./pages/ProviderMessages";
 import ProviderServices from "./pages/ProviderServices";
 import ProviderEarnings from "./pages/ProviderEarnings";
+import ProviderReviews from "./pages/ProviderReviews";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -200,7 +201,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/reviews",
-    element: <RequireAuth><ProviderDataPage type="reviews" /></RequireAuth>,
+    element: <RequireAuth><ProviderReviews /></RequireAuth>,
   },
   {
     path: "/categories",
