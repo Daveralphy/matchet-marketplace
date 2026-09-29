@@ -34,9 +34,6 @@ import Services from "./pages/Services";
 import ForProviders from "./pages/ForProviders";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
-import ProviderLayout from "./components/layout/ProviderLayout";
-import ProviderDashboard from "./pages/ProviderDashboard";
-import ProviderSimpleScreens from "./pages/ProviderSimpleScreens";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -179,19 +176,19 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/profile",
+    path: "/provider/profile",
     element: <RequireAuth><ProviderDataPage type="profile" /></RequireAuth>,
   },
   {
     path: "/orders",
-    element: <RequireAuth><ProviderLayout><ProviderSimpleScreens type="/bookings" /></ProviderLayout></RequireAuth>,
-  },
-  {
-    path: "/bookings",
     element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
-    path: "/settings",
+    path: "/provider/bookings",
+    element: <RequireAuth><ProviderDataPage type="bookings" /></RequireAuth>,
+  },
+  {
+    path: "/provider/settings",
     element: <RequireAuth><ProviderDataPage type="settings" /></RequireAuth>,
   },
   {
@@ -199,8 +196,8 @@ const router = createBrowserRouter([
     element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
-    path: "/reviews",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    path: "/provider/reviews",
+    element: <RequireAuth><ProviderDataPage type="reviews" /></RequireAuth>,
   },
   {
     path: "/categories",
@@ -219,7 +216,7 @@ const router = createBrowserRouter([
     element: <RequireAuth><ProviderDataPage type="services" /></RequireAuth>,
   },
   {
-    path: "/messages",
+    path: "/provider/messages",
     element: <RequireAuth><ProviderDataPage type="messages" /></RequireAuth>,
   },
   {
@@ -265,6 +262,14 @@ const router = createBrowserRouter([
   {
     path: "/provider/dashboard",
     element: <RequireAuth><ProviderDashboard /></RequireAuth>,
+  },
+  {
+    path: "/provider/earnings",
+    element: <RequireAuth><ProviderDataPage type="earnings" /></RequireAuth>,
+  },
+  {
+    path: "/provider/application-status",
+    element: <RequireAuth><ProviderDataPage type="application-status" /></RequireAuth>,
   },
   {
     path: "/provider/onboarding",
