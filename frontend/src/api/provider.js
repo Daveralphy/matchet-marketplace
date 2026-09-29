@@ -46,3 +46,7 @@ export function sendProviderMessage(payload) {
 export function getProviderServices() {
   return request("/api/provider/services");
 }
+
+export function getProviderEarnings() {
+  return request("/api/provider/earnings");
+}
