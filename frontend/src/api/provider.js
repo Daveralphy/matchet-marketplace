@@ -62,3 +62,10 @@ export function getProviderProfile() {
 export function getProviderSettings() {
   return request("/api/provider/settings");
 }
+
+export function updateProviderSettingsPreferences(payload) {
+  return request("/api/provider/settings/preferences", {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
