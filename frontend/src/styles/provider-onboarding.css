@@ -627,3 +627,352 @@
     width: 100%;
   }
 }
+
+
+.provider-signup-form-page4 {
+  margin: 0 44px;
+}
+
+.provider-signup-form-page4 > form {
+  width: 100%;
+}
+
+.provider-availability-booking-card,
+.provider-service-area-card {
+  border: 1px solid #dbe2ef;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.provider-availability-booking-card {
+  display: grid;
+  grid-template-columns: 1.45fr .75fr;
+  margin-top: 18px;
+  padding: 16px 20px;
+}
+
+.provider-availability-section {
+  padding-right: 28px;
+  border-right: 1px solid #e0e5ef;
+}
+
+.provider-booking-preferences {
+  padding-left: 18px;
+}
+
+.provider-step4-section-title {
+  color: #10183f;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.provider-availability-section > p,
+.provider-booking-preferences > p,
+.provider-service-area-card > p {
+  margin: 3px 0 12px;
+  color: #737cae;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.provider-availability-days {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.provider-availability-row {
+  display: grid;
+  grid-template-columns: 118px 136px 20px 136px 22px;
+  align-items: center;
+  gap: 6px;
+  min-height: 35px;
+}
+
+.provider-day-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #10183f;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.provider-day-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.provider-custom-check {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 1px solid #bcc6dc;
+  border-radius: 3px;
+  background: #fff;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.provider-day-toggle input:checked + .provider-custom-check {
+  border-color: #07983f;
+  background: #07983f;
+}
+
+.provider-availability-row select,
+.provider-booking-preferences select,
+.provider-service-location-input input,
+.provider-service-radius-input input {
+  width: 100%;
+  height: 35px;
+  box-sizing: border-box;
+  border: 1px solid #d6deec;
+  border-radius: 6px;
+  outline: none;
+  background: #fff;
+  color: #10183f;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 0 10px;
+}
+
+.provider-availability-row select:disabled {
+  background: #f2f4f8;
+  color: #a6aec7;
+}
+
+.provider-time-separator {
+  color: #10183f;
+  text-align: center;
+  font-size: 13px;
+}
+
+.provider-add-time-button {
+  border: 0;
+  background: transparent;
+  color: #10183f;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.provider-booking-preferences label {
+  display: block;
+  margin-top: 18px;
+  color: #10183f;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.provider-booking-preferences label:first-of-type {
+  margin-top: 18px;
+}
+
+.provider-booking-preferences select {
+  margin-top: 7px;
+}
+
+.provider-service-area-card {
+  margin-top: 14px;
+  padding: 16px 20px 18px;
+}
+
+.provider-service-area-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+}
+
+.provider-service-area-option {
+  min-width: 0;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 22px 25px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  box-sizing: border-box;
+  border: 1px solid #dbe2ef;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.provider-service-area-option.is-selected {
+  border-color: #07983f;
+  box-shadow: inset 0 0 0 1px #07983f;
+}
+
+.provider-service-area-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.provider-service-area-radio {
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 1.5px solid #aeb8d0;
+  border-radius: 50%;
+  color: #07983f;
+  font-size: 11px;
+}
+
+.provider-service-area-option.is-selected .provider-service-area-radio {
+  border-color: #07983f;
+}
+
+.provider-service-area-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: #10183f;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.provider-service-area-copy strong {
+  display: block;
+  color: #10183f;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.provider-service-area-copy small {
+  display: block;
+  margin-top: 4px;
+  color: #737cae;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.provider-service-location-input,
+.provider-service-radius-input {
+  position: relative;
+}
+
+.provider-service-location-input svg,
+.provider-service-radius-input svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 17px;
+  height: 17px;
+  transform: translateY(-50%);
+  fill: none;
+  stroke: #10183f;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  z-index: 1;
+}
+
+.provider-service-location-input input {
+  padding-left: 38px;
+}
+
+.provider-location-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.provider-location-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border-radius: 15px;
+  background: #eef2f8;
+  color: #10183f;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.provider-location-tag button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #10183f;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.provider-service-radius-input input {
+  padding-right: 44px;
+}
+
+.provider-service-radius-input > span {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #737cae;
+  font-size: 11px;
+}
+
+.provider-signup-page4-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 26px;
+}
+
+@media (max-width: 1100px) {
+  .provider-signup-form-page4 {
+    margin-left: 28px;
+    margin-right: 28px;
+  }
+
+  .provider-availability-booking-card {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-availability-section {
+    padding-right: 0;
+    border-right: 0;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e0e5ef;
+  }
+
+  .provider-booking-preferences {
+    padding: 18px 0 0;
+  }
+
+  .provider-service-area-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .provider-signup-form-page4 {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .provider-availability-row {
+    grid-template-columns: 105px 1fr 16px 1fr 20px;
+  }
+
+  .provider-signup-page4-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .provider-signup-page4-actions button {
+    width: 100%;
+  }
+}
