@@ -213,7 +213,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/services",
-    element: <RequireAuth><ProviderDataPage type="bookings" /></RequireAuth>,
+    element: <RequireAuth><ProviderDataPage type="services" /></RequireAuth>,
   },
   {
     path: "/messages",
