@@ -125,3 +125,5 @@ export function createSellerProduct(payload) {
 export function updateSellerProduct(id,payload) {
   return request("/api/provider/seller-products/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(payload)});
 }
+
+export function getSellerEarnings(){ return request("/api/provider/seller-earnings"); }
