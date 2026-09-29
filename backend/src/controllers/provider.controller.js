@@ -783,3 +783,69 @@ async function submitProviderOnboarding(req, res) {
 }
 
 module.exports.submitProviderOnboarding = submitProviderOnboarding;
+
+
+async function getProviderBookings(req, res) {
+  try {
+    const providerId = req.user._id;
+    const bookings = await Booking.find({ providerId })
+      .sort({ scheduledDate: 1, scheduledTime: 1 })
+      .populate("buyerId", "firstName lastName avatar createdAt")
+      .populate("serviceId", "title description images")
+      .lean();
+
+    const now = new Date();
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    const active = bookings.filter((booking) => !["cancelled", "declined"].includes(booking.status));
+    const upcoming = active.filter((booking) => new Date(booking.scheduledDate) >= now);
+    const completed = bookings.filter((booking) => booking.status === "completed");
+    const cancelled = bookings.filter((booking) => ["cancelled", "declined"].includes(booking.status));
+
+    const inMonth = (booking) => {
+      const date = new Date(booking.scheduledDate);
+      return date >= currentMonthStart && date < nextMonthStart;
+    };
+
+    return res.json({
+      success: true,
+      data: {
+        summary: {
+          total: active.filter(inMonth).length,
+          upcoming: upcoming.filter(inMonth).length,
+          completed: completed.filter(inMonth).length,
+          cancelled: cancelled.filter(inMonth).length,
+        },
+        bookings: bookings.map((booking) => ({
+          id: booking._id,
+          scheduledDate: booking.scheduledDate,
+          scheduledTime: booking.scheduledTime,
+          status: booking.status,
+          amount: booking.priceSnapshot?.amount || 0,
+          currency: booking.priceSnapshot?.currency || "NGN",
+          notes: booking.notes || "",
+          customer: {
+            id: booking.buyerId?._id || null,
+            name: [booking.buyerId?.firstName, booking.buyerId?.lastName].filter(Boolean).join(" ") || "Customer",
+            initials: initials(booking.buyerId),
+            avatar: booking.buyerId?.avatar?.url || null,
+            memberSince: booking.buyerId?.createdAt || null,
+          },
+          service: {
+            id: booking.serviceId?._id || null,
+            title: booking.serviceId?.title || "Service",
+            description: booking.serviceId?.description || "",
+            image: booking.serviceId?.images?.find((image) => image.isPrimary)?.url || booking.serviceId?.images?.[0]?.url || null,
+          },
+        })),
+        generatedAt: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Provider bookings error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load your bookings right now." });
+  }
+}
+module.exports.getProviderBookings = getProviderBookings;
+
