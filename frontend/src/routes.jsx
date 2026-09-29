@@ -22,6 +22,7 @@ import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
 import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import ProviderDataPage from "./pages/ProviderDataPage";
+import ProviderBookings from "./pages/ProviderBookings";
 import ProviderMessages from "./pages/ProviderMessages";
 import ProviderServices from "./pages/ProviderServices";
 import ProviderEarnings from "./pages/ProviderEarnings";
@@ -191,7 +192,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/bookings",
-    element: <RequireAuth><ProviderDataPage type="bookings" /></RequireAuth>,
+    element: <RequireAuth><ProviderBookings /></RequireAuth>,
   },
   {
     path: "/provider/settings",
