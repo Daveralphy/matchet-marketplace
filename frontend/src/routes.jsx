@@ -26,6 +26,7 @@ import ProviderMessages from "./pages/ProviderMessages";
 import ProviderServices from "./pages/ProviderServices";
 import ProviderEarnings from "./pages/ProviderEarnings";
 import ProviderReviews from "./pages/ProviderReviews";
+import ProviderProfile from "./pages/ProviderProfile";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -181,7 +182,7 @@ const router = createBrowserRouter([
 
   {
     path: "/provider/profile",
-    element: <RequireAuth><ProviderDataPage type="profile" /></RequireAuth>,
+    element: <RequireAuth><ProviderProfile /></RequireAuth>,
   },
   {
     path: "/orders",
