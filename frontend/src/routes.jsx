@@ -332,7 +332,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/bookings",
-    element: <RequireAuth><ProviderDataPage type="bookings" /></RequireAuth>,
+    element: <RequireAuth><ProviderBookings /></RequireAuth>,
   },
   {
     path: "/provider/listings",
