@@ -1,9 +1,10 @@
 // Created by: Blake Ostler
 // Edited by: Raphael Daveal
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
+import { useAuth } from "../context/AuthContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -16,7 +17,35 @@ function ProviderIcon({ type }) {
 
 export default function ProviderSignupPageOne() {
   const { formData, updateField } = useForm();
+  const { user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) return;
+
+    if (!formData.providerFirstName && user.firstName) {
+      updateField("providerFirstName", user.firstName);
+    }
+    if (!formData.providerLastName && user.lastName) {
+      updateField("providerLastName", user.lastName);
+    }
+    if (!formData.providerEmail && user.email) {
+      updateField("providerEmail", user.email);
+    }
+    if (!formData.providerPhoneNumber && user.phone) {
+      updateField("providerPhoneNumber", user.phone);
+    }
+    if (!formData.providerProfileImage && user.avatar?.url) {
+      updateField("providerProfileImage", user.avatar);
+      setProfilePreview(user.avatar.url);
+    }
+    if (!formData.providerLocation && user.location) {
+      const location = [user.location.city, user.location.state, user.location.country]
+        .filter(Boolean)
+        .join(", ");
+      if (location) updateField("providerLocation", location);
+    }
+  }, [user, formData.providerFirstName, formData.providerLastName, formData.providerEmail, formData.providerPhoneNumber, formData.providerProfileImage, formData.providerLocation, updateField]);
   const [profilePreview, setProfilePreview] = useState(null);
 
   const providerTypes = [
