@@ -48,11 +48,22 @@ function formatNotificationDate(value) {
   return new Intl.DateTimeFormat("en-NG", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(date);
 }
 
-export function ProviderShell({ children }) {
+export function ProviderShell({ children, mode = "provider" }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, notifications, markNotificationsRead, logout } = useAuth();
-  const [collapsed, setCollapsed] = useState(() => localStorage.getItem("matchet_provider_sidebar_collapsed") === "true");
+  const sellerMode = mode === "seller";
+  const navigationItems = sellerMode ? [
+    { label: "Dashboard", path: "/seller/dashboard", icon: "home" },
+    { label: "Orders", path: "/seller/orders", icon: "calendar" },
+    { label: "Messages", path: "/seller/messages", icon: "message" },
+    { label: "Products", path: "/seller/products", icon: "grid" },
+    { label: "Earnings", path: "/seller/earnings", icon: "wallet" },
+    { label: "Reviews", path: "/seller/reviews", icon: "star" },
+    { label: "Profile", path: "/seller/profile", icon: "user" },
+    { label: "Settings", path: "/seller/settings", icon: "settings" },
+  ] : items;
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(sellerMode ? "matchet_seller_sidebar_collapsed" : "matchet_provider_sidebar_collapsed") === "true");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -70,7 +81,7 @@ export function ProviderShell({ children }) {
   );
 
   useEffect(() => {
-    localStorage.setItem("matchet_provider_sidebar_collapsed", String(collapsed));
+    localStorage.setItem(sellerMode ? "matchet_seller_sidebar_collapsed" : "matchet_provider_sidebar_collapsed", String(collapsed));
   }, [collapsed]);
 
   useEffect(() => {
@@ -104,13 +115,15 @@ export function ProviderShell({ children }) {
     if (event.key !== "Enter") return;
     const value = search.trim().toLowerCase();
     if (!value) return;
-    if (value.includes("message") || value.includes("chat")) navigate("/provider/messages");
+    if (value.includes("message") || value.includes("chat")) navigate(sellerMode ? "/seller/messages" : "/provider/messages");
+    else if (sellerMode && value.includes("order")) navigate("/seller/orders");
     else if (value.includes("booking")) navigate("/provider/bookings");
+    else if (value.includes("product")) navigate(sellerMode ? "/seller/products" : "/provider/services");
     else if (value.includes("service")) navigate("/provider/services");
-    else if (value.includes("earning") || value.includes("payout")) navigate("/provider/earnings");
-    else if (value.includes("review")) navigate("/provider/reviews");
-    else if (value.includes("profile")) navigate("/provider/profile");
-    else if (value.includes("setting")) navigate("/provider/settings");
+    else if (value.includes("earning") || value.includes("payout")) navigate(sellerMode ? "/seller/earnings" : "/provider/earnings");
+    else if (value.includes("review")) navigate(sellerMode ? "/seller/reviews" : "/provider/reviews");
+    else if (value.includes("profile")) navigate(sellerMode ? "/seller/profile" : "/provider/profile");
+    else if (value.includes("setting")) navigate(sellerMode ? "/seller/settings" : "/provider/settings");
   };
 
   const handleLogout = async () => {
@@ -123,7 +136,7 @@ export function ProviderShell({ children }) {
     <div className={"provider-app" + (collapsed ? " sidebar-collapsed" : "") + (mobileOpen ? " mobile-nav-open" : "")}>
       <div className="provider-mobile-overlay" onClick={() => setMobileOpen(false)} aria-hidden="true" />
 
-      <aside className="provider-sidebar" aria-label="Provider navigation">
+      <aside className="provider-sidebar" aria-label={sellerMode ? "Seller navigation" : "Provider navigation"}>
         <div className="provider-brand-row">
           <Link to="/" className="provider-brand" aria-label="Matchet home"><img src={logo} alt="Matchet" /></Link>
           <button type="button" className="provider-sidebar-toggle" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
@@ -132,7 +145,7 @@ export function ProviderShell({ children }) {
         </div>
 
         <nav>
-          {items.map((item) => (
+          {navigationItems.map((item) => (
             <Link key={item.path} to={item.path} className={location.pathname === item.path ? "active" : ""} title={collapsed ? item.label : undefined}>
               <Icon name={item.icon} />
               <span>{item.label}</span>
@@ -143,8 +156,8 @@ export function ProviderShell({ children }) {
         <div className="provider-sidebar-promo">
           <Icon name="user" size={32} />
           <strong>Grow your<br />business on Matchet</strong>
-          <p>Add new services, update your availability, and reach more customers.</p>
-          <button type="button" onClick={() => navigate("/provider/services")}>View tips&nbsp; →</button>
+          <p>Add products, manage your inventory, and reach more customers.</p>
+          <button type="button" onClick={() => navigate(sellerMode ? "/seller/products" : "/provider/services")}>{sellerMode ? "View store tips" : "View tips"}&nbsp; →</button>
         </div>
       </aside>
 
@@ -155,7 +168,7 @@ export function ProviderShell({ children }) {
 
         <div className="provider-search">
           <Icon name="search" size={20} />
-          <input value={search} onChange={(event) => setSearch(event.target.value)} onKeyDown={goToSearchResult} placeholder="Search bookings, messages, or help..." aria-label="Search provider workspace" />
+          <input value={search} onChange={(event) => setSearch(event.target.value)} onKeyDown={goToSearchResult} placeholder={sellerMode ? "Search orders, messages, or help..." : "Search bookings, messages, or help..."} aria-label="Search provider workspace" />
           {search && <button type="button" onClick={() => setSearch("")} aria-label="Clear search">×</button>}
         </div>
 
@@ -184,7 +197,7 @@ export function ProviderShell({ children }) {
           <div className="provider-account-wrap" ref={profileRef}>
             <button type="button" className="provider-account" onClick={() => { setProfileOpen((value) => !value); setNotificationsOpen(false); }} aria-expanded={profileOpen}>
               {avatar ? <img src={avatar} alt="" /> : <div className="provider-account-fallback">{initials}</div>}
-              <div><strong>{displayName}</strong><small>{user?.role === "provider" ? "Provider" : "Account"}</small></div>
+              <div><strong>{displayName}</strong><small>{sellerMode ? "Seller" : user?.role === "provider" ? "Provider" : "Account"}</small></div>
               <Icon name="chevron" size={17} />
             </button>
 
@@ -194,9 +207,9 @@ export function ProviderShell({ children }) {
                   {avatar ? <img src={avatar} alt="" /> : <div className="provider-account-fallback">{initials}</div>}
                   <div><strong>{displayName}</strong><small>{user?.email || "Provider account"}</small></div>
                 </div>
-                <button type="button" onClick={() => navigate("/provider/profile")}><Icon name="user" size={18} /> Profile</button>
-                <button type="button" onClick={() => navigate("/provider/settings")}><Icon name="settings" size={18} /> Settings</button>
-                <button type="button" onClick={() => navigate("/provider/messages")}><Icon name="message" size={18} /> Messages {unreadCount > 0 && <b>{unreadCount}</b>}</button>
+                <button type="button" onClick={() => navigate(sellerMode ? "/seller/profile" : "/provider/profile")}><Icon name="user" size={18} /> Profile</button>
+                <button type="button" onClick={() => navigate(sellerMode ? "/seller/settings" : "/provider/settings")}><Icon name="settings" size={18} /> Settings</button>
+                <button type="button" onClick={() => navigate(sellerMode ? "/seller/messages" : "/provider/messages")}><Icon name="message" size={18} /> Messages {unreadCount > 0 && <b>{unreadCount}</b>}</button>
                 <div className="provider-profile-menu-divider" />
                 <button type="button" className="danger" onClick={handleLogout}><Icon name="logout" size={18} /> Sign out</button>
               </div>
