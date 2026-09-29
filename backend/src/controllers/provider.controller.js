@@ -616,3 +616,48 @@ async function getProviderProfile(req, res) {
   }
 }
 module.exports.getProviderProfile = getProviderProfile;
+
+
+async function getProviderSettings(req, res) {
+  try {
+    const [user, provider, latestPayout] = await Promise.all([
+      User.findById(req.user._id).select("email phone isActive role preferences lastLoginAt createdAt").lean(),
+      ProviderProfile.findOne({ userId: req.user._id }).select("verificationStatus status").lean(),
+      Payout.findOne({ providerId: req.user._id }).sort({ createdAt: -1 }).select("method status").lean(),
+    ]);
+
+    if (!user) return res.status(404).json({ success: false, message: "Account not found." });
+
+    const preferences = user.preferences || {};
+
+    return res.json({
+      success: true,
+      data: {
+        account: {
+          email: user.email || null,
+          phone: user.phone || null,
+          isActive: Boolean(user.isActive),
+          role: user.role || null,
+          createdAt: user.createdAt,
+        },
+        notifications: preferences.notifications || null,
+        payments: {
+          method: latestPayout?.method || null,
+          payoutStatus: latestPayout?.status || null,
+        },
+        security: {
+          lastLoginAt: user.lastLoginAt || null,
+          identityVerification: provider?.verificationStatus || null,
+          providerStatus: provider?.status || null,
+        },
+        privacy: preferences.privacy || null,
+        platform: preferences.platform || null,
+        generatedAt: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Provider settings error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load your settings right now." });
+  }
+}
+module.exports.getProviderSettings = getProviderSettings;
