@@ -6,6 +6,7 @@ const Message = require("../models/Message");
 const ProviderProfile = require("../models/ProviderProfile");
 const StoreProfile = require("../models/StoreProfile");
 const Payout = require("../models/Payout");
+const Order = require("../models/Order");
 const User = require("../models/User");
 
 function monthBounds(date = new Date()) {
@@ -932,3 +933,85 @@ async function submitSellerOnboarding(req, res) {
 }
 
 module.exports.submitSellerOnboarding = submitSellerOnboarding;
+
+
+async function getSellerDashboard(req, res) {
+  try {
+    const sellerId = req.user._id;
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const previousMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+    const [store, products, orders, recentMessages] = await Promise.all([
+      StoreProfile.findOne({ userId: sellerId }).lean(),
+      Product.find({ sellerId }).sort({ createdAt: -1 }).lean(),
+      Order.find({ "items.sellerId": sellerId }).sort({ createdAt: -1 }).limit(100).populate("buyerId", "firstName lastName avatar createdAt").lean(),
+      Message.find({ $or: [{ senderId: sellerId }, { receiverId: sellerId }] }).sort({ createdAt: -1 }).limit(20).populate("senderId", "firstName lastName avatar").populate("receiverId", "firstName lastName avatar").lean(),
+    ]);
+
+    const sellerItems = (order) => order.items.filter((item) => String(item.sellerId) === String(sellerId));
+    const sellerAmount = (order) => sellerItems(order).reduce((sum, item) => sum + (Number(item.priceSnapshot) || 0) * (Number(item.quantity) || 0), 0);
+    const monthOrders = orders.filter((order) => order.createdAt >= monthStart && order.createdAt < nextMonthStart);
+    const previousOrders = orders.filter((order) => order.createdAt >= previousMonthStart && order.createdAt < monthStart);
+    const customerIds = new Set(monthOrders.map((order) => String(order.buyerId?._id || order.buyerId)).filter(Boolean));
+    const previousCustomerIds = new Set(previousOrders.map((order) => String(order.buyerId?._id || order.buyerId)).filter(Boolean));
+    const salesThisMonth = monthOrders.reduce((sum, order) => sum + sellerAmount(order), 0);
+    const salesPreviousMonth = previousOrders.reduce((sum, order) => sum + sellerAmount(order), 0);
+    const orderChange = previousOrders.length ? Math.round(((monthOrders.length - previousOrders.length) / previousOrders.length) * 100) : null;
+    const customerChange = previousCustomerIds.size ? Math.round(((customerIds.size - previousCustomerIds.size) / previousCustomerIds.size) * 100) : null;
+    const salesChange = salesPreviousMonth ? Math.round(((salesThisMonth - salesPreviousMonth) / salesPreviousMonth) * 100) : null;
+
+    const productIds = products.map((product) => product._id);
+    const reviews = productIds.length ? await Review.find({ productId: { $in: productIds }, status: "published" }).lean() : [];
+    const averageRating = reviews.length ? Number((reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)) : 0;
+
+    const unreadMessages = await Message.countDocuments({ receiverId: sellerId, readAt: null });
+    const applicationPending = store?.verificationStatus === "pending";
+    const applicationRejected = store?.verificationStatus === "rejected";
+
+    const recentOrders = monthOrders.slice(0, 5).map((order) => {
+      const items = sellerItems(order);
+      const first = items[0];
+      return {
+        id: order._id,
+        product: { name: first?.nameSnapshot || "Product", image: first?.imageSnapshot || null },
+        customer: { id: order.buyerId?._id || null, name: [order.buyerId?.firstName, order.buyerId?.lastName].filter(Boolean).join(" ") || "Customer", avatar: order.buyerId?.avatar?.url || null },
+        date: order.createdAt,
+        quantity: items.reduce((sum, item) => sum + item.quantity, 0),
+        status: order.orderStatus,
+        amount: sellerAmount(order),
+        currency: "NGN",
+      };
+    });
+
+    const recent = recentMessages.slice(0, 5).map((message) => {
+      const other = String(message.senderId?._id) === String(sellerId) ? message.receiverId : message.senderId;
+      return { id: message._id, customer: { name: [other?.firstName, other?.lastName].filter(Boolean).join(" ") || "Customer", initials: [other?.firstName, other?.lastName].filter(Boolean).map((v) => v[0]).join("").slice(0,2).toUpperCase(), avatar: other?.avatar?.url || null }, content: message.content || "Attachment", createdAt: message.createdAt, unread: String(message.receiverId?._id) === String(sellerId) && !message.readAt };
+    });
+
+    return res.json({
+      success: true,
+      data: {
+        store: store ? { name: store.storeName, status: store.status, verificationStatus: store.verificationStatus, applicationSubmittedAt: store.applicationSubmittedAt, reviewedAt: store.reviewedAt, reviewNote: store.reviewNote || "" } : null,
+        application: { pending: applicationPending, rejected: applicationRejected },
+        kpis: {
+          orders: { value: monthOrders.length, change: orderChange },
+          customers: { value: customerIds.size, change: customerChange },
+          sales: { value: salesThisMonth, change: salesChange, currency: "NGN" },
+          rating: { value: averageRating, reviewCount: reviews.length },
+        },
+        products: { total: products.length, active: products.filter((p) => p.status === "active").length, draft: products.filter((p) => p.status === "draft").length, outOfStock: products.filter((p) => p.status === "outOfStock").length },
+        recentOrders,
+        recentMessages: recent,
+        unreadMessages,
+        generatedAt: now.toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Seller dashboard error:", error);
+    return res.status(500).json({ success: false, message: process.env.NODE_ENV === "production" ? "Unable to load your seller dashboard right now." : error.message });
+  }
+}
+
+module.exports.getSellerDashboard = getSellerDashboard;
