@@ -1,6 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "../context/FormContext";
+import { submitProviderOnboarding } from "../api/provider";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -29,11 +30,26 @@ function EditLink({ to }) {
 export default function ProviderSignupPageSeven() {
   const { formData } = useForm();
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = originalOverflow; };
+    const handleSubmit = async () => {
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await submitProviderOnboarding(formData);
+      navigate("/provider/onboarding/success");
+    } catch (error) {
+      setSubmitError(error.message || "Unable to submit your application.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return () => { document.body.style.overflow = originalOverflow; };
   }, []);
 
   const profilePreview = useMemo(() => {
@@ -163,11 +179,13 @@ export default function ProviderSignupPageSeven() {
             </section>
           </div>
 
+          {submitError && <div className="provider-review-submit-error" role="alert">{submitError}</div>}
+
           <div className="provider-review-terms"><Icon name="info" /><span>By submitting, you agree to Matchet's <Link to="#">Provider Terms and Conditions</Link>. We will review your application and notify you once your provider profile has been approved.</span></div>
 
           <div className="provider-signup-page7-actions">
             <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding/page6")}>←&nbsp;&nbsp;Back</button>
-            <button type="button" className="provider-signup-save-continue-button" onClick={() => navigate("/provider/onboarding/success")}>Submit for review&nbsp;&nbsp;→</button>
+            <button type="button" className="provider-signup-save-continue-button" onClick={handleSubmit} disabled={submitting}>{submitting ? "Submitting..." : "Submit for review&nbsp;&nbsp;→"}</button>
           </div>
         </div>
       </section>
