@@ -750,6 +750,35 @@ async function submitProviderOnboarding(req, res) {
       { new: true, upsert: true, runValidators: true },
     );
 
+    const parsedPrice = Number(String(input.providerServicePrice || "").replace(/[^0-9.]/g, "")) || 0;
+    const pricingType = ["fixed", "startingFrom", "customQuote"].includes(input.providerServiceType)
+      ? input.providerServiceType
+      : "fixed";
+    const durationMatch = String(input.providerServiceDuration || "").match(/[0-9]+(?:\\.[0-9]+)?/);
+    const durationValue = durationMatch ? Number(durationMatch[0]) : null;
+    const durationMinutes = durationValue
+      ? /hour/i.test(String(input.providerServiceDuration)) ? Math.round(durationValue * 60) : Math.round(durationValue)
+      : null;
+
+    if (input.providerServiceName) {
+      await Service.findOneAndUpdate(
+        { providerId, title: input.providerServiceName },
+        {
+          $set: {
+            description: input.providerServiceDesc || "Service submitted during provider onboarding.",
+            category: categories[0] || "Other",
+            pricing: { type: pricingType, amount: parsedPrice, currency: "NGN" },
+            durationMinutes,
+            location: serviceArea,
+            availability: input.providerAvailability || {},
+            status: "draft",
+          },
+          $setOnInsert: { providerId, title: input.providerServiceName },
+        },
+        { upsert: true, new: true, runValidators: true },
+      );
+    }
+
     const userUpdates = {};
     if (input.providerPhoneNumber) {
       userUpdates.phone = [input.providerCountryCode, input.providerPhoneNumber].filter(Boolean).join(" ");
