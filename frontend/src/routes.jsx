@@ -21,6 +21,7 @@ import ProviderSignupPageSix from "./pages/ProviderSignupPage6";
 import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
 import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
+import ProviderDataPage from "./pages/ProviderDataPage";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -176,7 +177,7 @@ const router = createBrowserRouter([
 
   {
     path: "/profile",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><ProviderDataPage type="profile" /></RequireAuth>,
   },
   {
     path: "/orders",
@@ -188,7 +189,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/settings",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><ProviderDataPage type="settings" /></RequireAuth>,
   },
   {
     path: "/help",
@@ -212,11 +213,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/services",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><ProviderDataPage type="bookings" /></RequireAuth>,
   },
   {
     path: "/messages",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><ProviderDataPage type="messages" /></RequireAuth>,
   },
   {
     path: "/saved-items",
@@ -251,7 +252,7 @@ const router = createBrowserRouter([
     element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
-    path: "/provider/services",
+    path: "/provider/services-legacy",
     element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
@@ -297,6 +298,26 @@ const router = createBrowserRouter([
   {
     path: "/provider/application-status",
     element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Application Status" /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/provider/earnings",
+    element: <RequireAuth><ProviderDataPage type="earnings" /></RequireAuth>,
+  },
+  {
+    path: "/provider/reviews",
+    element: <RequireAuth><ProviderDataPage type="reviews" /></RequireAuth>,
+  },
+  {
+    path: "/provider/profile",
+    element: <RequireAuth><ProviderDataPage type="profile" /></RequireAuth>,
+  },
+  {
+    path: "/provider/settings",
+    element: <RequireAuth><ProviderDataPage type="settings" /></RequireAuth>,
+  },
+  {
+    path: "/provider/bookings",
+    element: <RequireAuth><ProviderDataPage type="bookings" /></RequireAuth>,
   },
   {
     path: "/provider/listings",
