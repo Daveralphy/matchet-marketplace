@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile } = require("../controllers/provider.controller");
+const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -20,3 +20,4 @@ router.post("/messages", requireAuth, sendProviderMessage);
 module.exports = router;
 
 router.get("/profile", requireAuth, getProviderProfile);
+router.get("/settings", requireAuth, getProviderSettings);
