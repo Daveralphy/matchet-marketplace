@@ -661,3 +661,35 @@ async function getProviderSettings(req, res) {
   }
 }
 module.exports.getProviderSettings = getProviderSettings;
+
+async function updateProviderSettingsPreferences(req, res) {
+  try {
+    const allowedSections = ["notifications", "privacy", "platform"];
+    const updates = req.body || {};
+    const user = await User.findById(req.user._id).select("preferences");
+    if (!user) return res.status(404).json({ success: false, message: "Account not found." });
+
+    const preferences = user.preferences && typeof user.preferences === "object" ? user.preferences : {};
+    for (const section of allowedSections) {
+      if (updates[section] && typeof updates[section] === "object" && !Array.isArray(updates[section])) {
+        preferences[section] = { ...(preferences[section] || {}), ...updates[section] };
+      }
+    }
+
+    user.preferences = preferences;
+    await user.save();
+
+    return res.json({
+      success: true,
+      data: {
+        notifications: preferences.notifications || null,
+        privacy: preferences.privacy || null,
+        platform: preferences.platform || null,
+      },
+    });
+  } catch (error) {
+    console.error("Update provider settings error:", error);
+    return res.status(500).json({ success: false, message: "Unable to save your settings right now." });
+  }
+}
+module.exports.updateProviderSettingsPreferences = updateProviderSettingsPreferences;
