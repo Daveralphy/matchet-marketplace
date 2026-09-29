@@ -91,3 +91,7 @@ export function submitProviderOnboarding(formData) {
 export function getProviderBookings() {
   return request("/api/provider/bookings");
 }
+
+export function getProviderCapabilities() {
+  return request("/api/provider/capabilities");
+}
