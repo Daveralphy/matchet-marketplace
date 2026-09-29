@@ -104,6 +104,17 @@ const storeProfileSchema = new mongoose.Schema(
       type: contactSchema,
     },
 
+    verificationStatus: {
+      type: String,
+      enum: ["pending", "verified", "rejected"],
+      default: "pending",
+      index: true,
+    },
+
+    applicationSubmittedAt: { type: Date },
+    reviewedAt: { type: Date },
+    reviewNote: { type: String, trim: true, maxlength: 1000 },
+
     status: {
       type: String,
       enum: ["draft", "active", "suspended"],
