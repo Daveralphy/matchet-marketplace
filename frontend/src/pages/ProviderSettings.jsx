@@ -135,6 +135,10 @@ export default function ProviderSettings() {
               <SettingRow icon="settings" title="Password" description="Keep your account secure" value="••••••••" action="Change" />
               <SettingRow icon="settings" title="Language" description="Choose your preferred language" value={data?.platform?.language || "Not configured"} action="Configure" />
               <SettingRow icon="user" title="Account status" description={account?.isActive ? "Your account is active" : "Your account is inactive"} value={account?.isActive ? "Active" : "Inactive"} />
+              <SettingRow icon="shield" title="Provider application" description="Current provider verification state" value={data?.application?.verificationStatus || "Not submitted"} />
+              <SettingRow icon="clock" title="Response time" description="Response time supplied during provider onboarding" value={data?.onboarding?.providerResponseTime || "Not provided"} />
+              <SettingRow icon="calendar" title="Minimum booking notice" description="Advance notice supplied during provider onboarding" value={data?.onboarding?.providerMinimumNoticeRequired || "Not provided"} />
+              <SettingRow icon="calendar" title="Maximum advance booking" description="Booking window supplied during provider onboarding" value={data?.onboarding?.providerMaximumAdvanceBooking || "Not provided"} />
               <SettingRow icon="settings" title="Delete account" description="Permanently delete your account and all associated data" action="Delete account" danger />
             </section>
             <aside className="provider-settings-side">
