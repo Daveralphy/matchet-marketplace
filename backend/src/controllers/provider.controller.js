@@ -47,11 +47,18 @@ async function getProviderDashboard(req, res) {
       ]);
 
     const serviceIds = services.map((service) => service._id);
-    const [reviews, upcomingBookings, incomingMessages] = await Promise.all([
+    const [reviews, previousReviews, upcomingBookings, incomingMessages] = await Promise.all([
       serviceIds.length
         ? Review.find({
             serviceId: { $in: serviceIds },
             status: "published",
+          }).select("rating createdAt").lean()
+        : [],
+      serviceIds.length
+        ? Review.find({
+            serviceId: { $in: serviceIds },
+            status: "published",
+            createdAt: { $gte: previous, $lt: start },
           }).select("rating").lean()
         : [],
       Booking.find({
@@ -125,6 +132,15 @@ async function getProviderDashboard(req, res) {
     const averageRating = reviews.length
       ? Number((reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1))
       : 0;
+
+    const previousAverageRating = previousReviews.length
+      ? Number((previousReviews.reduce((sum, review) => sum + review.rating, 0) / previousReviews.length).toFixed(1))
+      : null;
+
+    const ratingChange =
+      previousAverageRating === null
+        ? null
+        : Number((averageRating - previousAverageRating).toFixed(1));
 
     const recentByConversation = new Map();
     for (const message of incomingMessages) {
@@ -216,7 +232,7 @@ async function getProviderDashboard(req, res) {
           rating: {
             value: averageRating,
             reviewCount: reviews.length,
-            change: null,
+            change: ratingChange,
           },
         },
         upcomingBookings: serializedBookings,
