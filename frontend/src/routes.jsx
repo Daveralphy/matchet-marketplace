@@ -305,7 +305,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/application-status",
-    element: <RequireAuth><ProviderLayout><ProviderSimpleScreens type="/provider/application-status" /></ProviderLayout></RequireAuth>,
+    element: <RequireAuth><ProviderDashboard /></RequireAuth>,
   },
   {
     path: "/provider/earnings",
