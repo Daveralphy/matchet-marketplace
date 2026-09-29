@@ -38,9 +38,16 @@ export default function ProviderSignupPageSeven() {
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const handleSubmit = async () => {
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  const handleSubmit = async () => {
     setSubmitting(true);
     setSubmitError("");
+
     try {
       await submitProviderOnboarding(formData);
       await refreshUser();
@@ -51,9 +58,6 @@ export default function ProviderSignupPageSeven() {
       setSubmitting(false);
     }
   };
-
-  return () => { document.body.style.overflow = originalOverflow; };
-  }, []);
 
   const profilePreview = useMemo(() => {
     const file = formData.providerProfileImage;
