@@ -4,6 +4,7 @@ const Service = require("../models/Service");
 const Review = require("../models/Review");
 const Message = require("../models/Message");
 const ProviderProfile = require("../models/ProviderProfile");
+const StoreProfile = require("../models/StoreProfile");
 const Payout = require("../models/Payout");
 const User = require("../models/User");
 
@@ -882,3 +883,26 @@ async function getProviderBookings(req, res) {
 }
 module.exports.getProviderBookings = getProviderBookings;
 
+
+
+async function getProviderCapabilities(req, res) {
+  try {
+    const userId = req.user._id;
+    const [provider, store] = await Promise.all([
+      ProviderProfile.findOne({ userId }).select("status verificationStatus applicationSubmittedAt reviewedAt reviewNote").lean(),
+      StoreProfile.findOne({ userId }).select("status storeName slug").lean(),
+    ]);
+    return res.json({
+      success: true,
+      data: {
+        service: provider ? { exists: true, status: provider.status, verificationStatus: provider.verificationStatus, applicationSubmittedAt: provider.applicationSubmittedAt || null, reviewedAt: provider.reviewedAt || null, reviewNote: provider.reviewNote || "" } : { exists: false, status: "not_started", verificationStatus: null },
+        product: store ? { exists: true, status: store.status, storeName: store.storeName, slug: store.slug } : { exists: false, status: "not_started" },
+      },
+    });
+  } catch (error) {
+    console.error("Provider capability lookup error:", error);
+    return res.status(500).json({ success: false, message: "Unable to check your provider setup right now." });
+  }
+}
+
+module.exports.getProviderCapabilities = getProviderCapabilities;
