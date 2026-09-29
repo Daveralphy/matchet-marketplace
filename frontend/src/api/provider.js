@@ -41,3 +41,8 @@ export function sendProviderMessage(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+
+export function getProviderServices() {
+  return request("/api/provider/services");
+}
