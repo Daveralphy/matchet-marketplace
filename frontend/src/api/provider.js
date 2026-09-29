@@ -69,3 +69,10 @@ export function updateProviderSettingsPreferences(payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export function submitProviderOnboarding(formData) {
+  return request("/api/provider/onboarding", {
+    method: "POST",
+    body: JSON.stringify({ formData }),
+  });
+}
