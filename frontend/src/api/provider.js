@@ -70,10 +70,21 @@ export function updateProviderSettingsPreferences(payload) {
   });
 }
 
+function serializeOnboardingValue(value) {
+  if (typeof File !== "undefined" && value instanceof File) {
+    return { name: value.name, type: value.type, size: value.size, lastModified: value.lastModified };
+  }
+  if (Array.isArray(value)) return value.map(serializeOnboardingValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, serializeOnboardingValue(item)]));
+  }
+  return value;
+}
+
 export function submitProviderOnboarding(formData) {
   return request("/api/provider/onboarding", {
     method: "POST",
-    body: JSON.stringify({ formData }),
+    body: JSON.stringify({ formData: serializeOnboardingValue(formData) }),
   });
 }
 
