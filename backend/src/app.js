@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.routes");
+const providerRoutes = require("./routes/provider.routes");
 
 const app = express();
 
@@ -34,5 +35,16 @@ app.use("/api/auth", (req, res, next) => {
   }
   next();
 }, authRoutes);
+
+app.use("/api/provider", (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message: "Matchet is temporarily unable to reach the provider database. Please try again in a moment.",
+      code: "DATABASE_UNAVAILABLE",
+    });
+  }
+  next();
+}, providerRoutes);
 
 module.exports = app;
