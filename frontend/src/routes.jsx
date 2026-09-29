@@ -19,6 +19,7 @@ import ProviderSignupPageFour from "./pages/ProviderSignupPage4";
 import ProviderSignupPageFive from "./pages/ProviderSignupPage5";
 import ProviderSignupPageSix from "./pages/ProviderSignupPage6";
 import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
+import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -287,6 +288,14 @@ const router = createBrowserRouter([
   {
     path: "/provider/onboarding/page7",
     element: <ProviderSignupPageSeven />,
+  },
+  {
+    path: "/provider/onboarding/success",
+    element: <ProviderSignupPageEight />,
+  },
+  {
+    path: "/provider/application-status",
+    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Application Status" /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/provider/listings",
