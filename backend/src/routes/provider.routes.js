@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings } = require("../controllers/provider.controller");
+const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -21,3 +21,4 @@ module.exports = router;
 
 router.get("/profile", requireAuth, getProviderProfile);
 router.get("/settings", requireAuth, getProviderSettings);
+router.patch("/settings/preferences", requireAuth, updateProviderSettingsPreferences);
