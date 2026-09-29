@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { getProviderDashboard, getProviderServices, getProviderEarnings } = require("../controllers/provider.controller");
+const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -12,6 +12,7 @@ const router = express.Router();
 router.get("/dashboard", requireAuth, getProviderDashboard);
 router.get("/services", requireAuth, getProviderServices);
 router.get("/earnings", requireAuth, getProviderEarnings);
+router.get("/reviews", requireAuth, getProviderReviews);
 router.get("/messages", requireAuth, getProviderMessages);
 router.get("/messages/:conversationId", requireAuth, getProviderConversation);
 router.post("/messages", requireAuth, sendProviderMessage);
