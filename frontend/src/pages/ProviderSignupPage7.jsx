@@ -192,7 +192,7 @@ export default function ProviderSignupPageSeven() {
 
           <div className="provider-signup-page7-actions">
             <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding/page6")}>←&nbsp;&nbsp;Back</button>
-            <button type="button" className="provider-signup-save-continue-button" onClick={handleSubmit} disabled={submitting}>{submitting ? "Submitting..." : "Submit for review&nbsp;&nbsp;→"}</button>
+            <button type="button" className="provider-signup-save-continue-button" onClick={handleSubmit} disabled={submitting}>{submitting ? "Submitting..." : <>Submit for review&nbsp;&nbsp;→</>}</button>
           </div>
         </div>
       </section>
