@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities } = require("../controllers/provider.controller");
+const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, submitSellerOnboarding } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -10,6 +10,7 @@ const {
 const router = express.Router();
 
 router.post("/onboarding", requireAuth, submitProviderOnboarding);
+router.post("/seller-onboarding", requireAuth, submitSellerOnboarding);
 router.get("/capabilities", requireAuth, getProviderCapabilities);
 router.get("/dashboard", requireAuth, getProviderDashboard);
 router.get("/services", requireAuth, getProviderServices);
