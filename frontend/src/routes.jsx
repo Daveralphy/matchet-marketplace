@@ -23,6 +23,7 @@ import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import ProviderDataPage from "./pages/ProviderDataPage";
 import ProviderBookings from "./pages/ProviderBookings";
+import ProviderApplicationStatus from "./pages/ProviderApplicationStatus";
 import ProviderMessages from "./pages/ProviderMessages";
 import ProviderServices from "./pages/ProviderServices";
 import ProviderEarnings from "./pages/ProviderEarnings";
@@ -276,7 +277,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/application-status",
-    element: <RequireAuth><ProviderDataPage type="application-status" /></RequireAuth>,
+    element: <RequireAuth><ProviderApplicationStatus /></RequireAuth>,
   },
   {
     path: "/provider/onboarding",
@@ -312,7 +313,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/application-status",
-    element: <RequireAuth><ProviderDashboard /></RequireAuth>,
+    element: <RequireAuth><ProviderApplicationStatus /></RequireAuth>,
   },
   {
     path: "/provider/earnings",
