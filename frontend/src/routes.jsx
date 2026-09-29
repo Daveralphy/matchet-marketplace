@@ -24,6 +24,7 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerOrders from "./pages/SellerOrders";
 import SellerMessages from "./pages/SellerMessages";
+import SellerProducts from "./pages/SellerProducts";
 import ProviderDataPage from "./pages/ProviderDataPage";
 import ProviderBookings from "./pages/ProviderBookings";
 import ProviderApplicationStatus from "./pages/ProviderApplicationStatus";
@@ -285,6 +286,10 @@ const router = createBrowserRouter([
   {
     path: "/seller/messages",
     element: <RequireAuth><SellerMessages /></RequireAuth>,
+  },
+  {
+    path: "/seller/products",
+    element: <RequireAuth><SellerProducts /></RequireAuth>,
   },
   {
     path: "/provider/earnings",
