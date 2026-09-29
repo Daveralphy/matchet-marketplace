@@ -906,3 +906,27 @@ async function getProviderCapabilities(req, res) {
 }
 
 module.exports.getProviderCapabilities = getProviderCapabilities;
+
+
+async function submitSellerOnboarding(req, res) {
+  try {
+    const userId = req.user._id;
+    const input = req.body?.formData || req.body || {};
+    const storeName = input.businessName || [input.firstName, input.lastName].filter(Boolean).join(" ") || "Matchet Store";
+    const baseSlug = storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "matchet-store";
+    const existing = await StoreProfile.findOne({ slug: { $regex: new RegExp("^" + baseSlug + "(?:-[0-9]+)?$") }, userId: { $ne: userId } }).sort({ createdAt: -1 }).lean();
+    const slug = existing ? baseSlug + "-" + String(Date.now()).slice(-6) : baseSlug;
+    const store = await StoreProfile.findOneAndUpdate(
+      { userId },
+      { $set: { storeName, slug, description: input.businessDesc || input.sellerBio || "", location: { city: input.location || "", country: "", }, contact: { phone: [input.businessPhoneCountryCode, input.businessPhoneNumber].filter(Boolean).join(" ") || [input.countryCode, input.phoneNumber].filter(Boolean).join(" "), email: input.email || req.user.email }, verificationStatus: "pending", status: "draft", applicationSubmittedAt: new Date(), reviewedAt: null, reviewNote: "" }, $setOnInsert: { userId } },
+      { upsert: true, new: true, runValidators: true }
+    );
+    if (req.user.role !== "provider") await User.findByIdAndUpdate(userId, { $set: { role: "provider" } });
+    return res.status(201).json({ success: true, message: "Your seller application has been submitted for review.", data: { id: store._id, status: store.status, verificationStatus: store.verificationStatus, applicationSubmittedAt: store.applicationSubmittedAt } });
+  } catch (error) {
+    console.error("Seller onboarding submission error:", error);
+    return res.status(500).json({ success: false, message: "Unable to submit your seller application right now." });
+  }
+}
+
+module.exports.submitSellerOnboarding = submitSellerOnboarding;
