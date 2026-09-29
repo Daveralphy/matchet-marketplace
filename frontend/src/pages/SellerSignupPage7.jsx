@@ -3,14 +3,20 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { submitSellerOnboarding } from "../api/provider";
 import { useForm } from "../context/FormContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageSeven() {
   const { formData } = useForm();
+  const { refreshUser } = useAuth();
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const maskSensitiveData = (value) => {
     if (!value) return "";
@@ -567,10 +573,22 @@ export default function SellerSignupPageSeven() {
 
           <button
             type="button"
-            onClick={() => navigate("/register/page8")}
+            onClick={async () => {
+              setSubmitting(true);
+              setSubmitError("");
+              try {
+                await submitSellerOnboarding(formData);
+                await refreshUser();
+                navigate("/register/page8");
+              } catch (error) {
+                setSubmitError(error.message || "Unable to submit your seller application.");
+              } finally {
+                setSubmitting(false);
+              }
+            }}
             className="save-button"
           >
-            Submit for review →
+            {submitting ? "Submitting..." : "Submit for review →"}
           </button>
         </section>
       </div>
