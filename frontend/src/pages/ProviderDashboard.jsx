@@ -1,0 +1,17 @@
+import { ProviderShell, Icon } from "../components/ProviderShell";
+import providerImage from "../assets/inspirations/provider/provideronboarding.png";
+import "../styles/provider-dashboard.css";
+
+export default function ProviderDashboard(){
+ return <ProviderShell><div className="provider-page">
+  <div className="provider-heading"><div><p>Welcome back,</p><h1>Daveralphy!</h1><span>Here is what is happening with your provider account.</span></div><div className="provider-heading-quote">Monday, Sep 14, 2026<br/><strong>Great services<br/>create stronger communities.</strong><em/></div></div>
+  <section className="provider-review-banner"><div className="provider-check">✓</div><div><strong>Your provider application is under review</strong><p>Thank you for applying to become a provider on Matchet. Our team is reviewing your information and will notify you once your profile is approved.</p></div><a href="/provider/application-status">View application&nbsp; →</a></section>
+  <div className="provider-stat-grid">{[["calendar","0","Total bookings","This month"],["user","0","New customers","This month"],["wallet","₦0","Total earnings","This month"],["star","0","Average rating","No reviews yet"]].map(([i,v,l,s])=><div className="provider-stat" key={l}><div className={"provider-stat-icon "+i}><Icon name={i}/></div><strong>{v}</strong><b>{l}</b><span>{s}</span></div>)}</div>
+  <div className="provider-content-grid">
+   <section className="provider-card provider-activity"><h2>Recent activity <a>View all</a></h2>{[["▤","Application submitted","Your provider application has been received and is now under review.","Today, 10:24 AM"],["◷","Under review","Our team is reviewing your information and documents.","Today, 10:24 AM"],["✉","Confirmation email sent","We have sent a confirmation email to daveralphy@gmail.com.","Today, 10:24 AM"]].map(x=><div className="provider-activity-row" key={x[1]}><i>{x[0]}</i><div><strong>{x[1]}</strong><p>{x[2]}</p></div><time>{x[3]}</time></div>)}</section>
+   <section className="provider-card provider-status"><h2>Provider status</h2><div className="provider-status-callout"><i>◷</i><div><strong>Under review</strong><p>Your application is being reviewed by our team. This usually takes 1–3 business days.</p></div></div>{[["✓","Application submitted","Sep 14, 2026, 10:24 AM"],["◷","Under review","In progress"],["○","Approved","Pending"],["○","Go live on Matchet","Pending"]].map(x=><div className="provider-status-row" key={x[1]}><i>{x[0]}</i><span>{x[1]}</span><small>{x[2]}</small></div>)}</section>
+  </div>
+  <section className="provider-card provider-ready"><h2>Get ready for approval</h2><p>Here are a few things you can do while we review your application.</p><div className="provider-ready-grid">{[["▣","Explore resources","Learn how to get the most out of Matchet.","View guides →"],["⚑","Prepare your profile","Gather more photos or details about your services.","Update profile →"],["⚙","Set up notifications","Be the first to know when you get bookings.","Manage settings →"]].map(x=><div key={x[1]}><i>{x[0]}</i><strong>{x[1]}</strong><p>{x[2]}</p><a>{x[3]}</a></div>)}</div></section>
+  <section className="provider-card provider-help"><h2>Need help?</h2><p>Our support team is here to help. If you have any questions about your application, feel free to reach out.</p><button>♧&nbsp;&nbsp; Contact support</button></section>
+ </div></ProviderShell>
+}
