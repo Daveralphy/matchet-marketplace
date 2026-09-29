@@ -62,3 +62,301 @@
 .provider-signup-save-continue-button:hover{background:#068936}
 @media (max-width:1100px){.provider-signup-page-container{grid-template-columns:33% 67%}.provider-signup-form-header{padding-left:28px;padding-right:28px}.provider-signup-form-page1{margin-left:28px;margin-right:28px}.provider-signup-provider-types{grid-template-columns:1fr}}
 @media (max-width:820px){.provider-signup-page-container{width:100%;height:auto;min-height:100vh;margin:0;display:block;overflow:visible;border:0;border-radius:0;box-shadow:none}.provider-signup-left-section{display:none}.provider-signup-right-section{min-height:100vh;overflow:visible}.provider-signup-form-header{padding-left:18px;padding-right:18px}.provider-signup-step-header{font-size:27px}.provider-signup-form-page1{margin-left:18px;margin-right:18px}.provider-signup-form-page1 .provider-signup-form-field-group:first-child,.provider-signup-form-page1 .provider-signup-form-field-group:nth-child(2),.provider-signup-profile-location-row{grid-template-columns:1fr}.provider-signup-provider-types{grid-template-columns:1fr}.provider-signup-form-actions{flex-direction:column-reverse;align-items:stretch}.provider-signup-back-button,.provider-signup-save-continue-button{width:100%}}
+
+
+.provider-signup-form-page2 {
+  margin: 0 44px;
+}
+
+.provider-signup-form-page2 .provider-signup-form-field-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 13px 22px;
+}
+
+.provider-signup-form-page2 .provider-signup-form-field-group-name,
+.provider-signup-form-page2 .provider-signup-form-step-header-caption,
+.provider-signup-form-page2 .provider-service-description-field,
+.provider-signup-form-page2 .provider-service-type-fieldset,
+.provider-signup-form-page2 .provider-areas-served-field {
+  grid-column: 1 / -1;
+}
+
+.provider-signup-form-page2 label,
+.provider-signup-form-page2 legend {
+  display: block;
+  min-width: 0;
+  color: #10183f;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.provider-signup-form-page2 input,
+.provider-signup-form-page2 select,
+.provider-signup-form-page2 textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  border: 1px solid #d7deec;
+  border-radius: 7px;
+  outline: none;
+  background: #fff;
+  color: #10183f;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.provider-signup-form-page2 input,
+.provider-signup-form-page2 select {
+  height: 40px;
+  padding: 0 13px;
+}
+
+.provider-signup-form-page2 textarea {
+  min-height: 76px;
+  padding: 10px 13px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.provider-signup-form-page2 input::placeholder,
+.provider-signup-form-page2 textarea::placeholder {
+  color: #8c94bf;
+}
+
+.provider-signup-form-page2 input:focus,
+.provider-signup-form-page2 select:focus,
+.provider-signup-form-page2 textarea:focus {
+  border-color: #07983f;
+  box-shadow: 0 0 0 3px rgba(7, 152, 63, .08);
+}
+
+.provider-signup-form-page2 .provider-signup-form-field-group-name {
+  margin-bottom: -7px;
+}
+
+.provider-signup-form-page2 .provider-service-description-field {
+  position: relative;
+}
+
+.provider-signup-form-page2 .provider-service-description-field textarea {
+  min-height: 76px;
+}
+
+.provider-signup-service-character-count {
+  position: absolute;
+  right: 8px;
+  bottom: -17px;
+  color: #6972aa;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.provider-service-type-fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.provider-service-type-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.provider-service-type-option {
+  display: grid !important;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  min-height: 72px;
+  padding: 13px 14px;
+  box-sizing: border-box;
+  border: 1px solid #dce2ef;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.provider-service-type-option.is-selected {
+  border-color: #07983f;
+  box-shadow: inset 0 0 0 1px #07983f;
+}
+
+.provider-service-type-option input {
+  width: 20px !important;
+  height: 20px !important;
+  margin: 1px 0 0 !important;
+  accent-color: #07983f;
+}
+
+.provider-service-type-option svg {
+  width: 24px;
+  height: 24px;
+  color: #10183f;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.provider-service-type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.provider-service-type-copy strong {
+  display: block;
+  color: #10183f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.provider-service-type-copy small {
+  display: block;
+  margin-top: 5px;
+  color: #7079b0;
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+.provider-signup-form-page2 .provider-service-type-option {
+  grid-template-columns: 26px 24px minmax(0, 1fr);
+}
+
+.provider-signup-form-page2 .provider-service-type-option input {
+  grid-column: 1;
+}
+
+.provider-signup-form-page2 .provider-service-type-option .provider-service-type-icon {
+  grid-column: 2;
+}
+
+.provider-signup-form-page2 .provider-service-type-option .provider-service-type-copy {
+  grid-column: 3;
+}
+
+.provider-price-field {
+  position: relative;
+}
+
+.provider-price-input {
+  position: relative;
+}
+
+.provider-price-prefix {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(calc(-50% + 3px));
+  color: #10183f;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.provider-price-input input {
+  padding-left: 34px !important;
+}
+
+.provider-areas-served-field {
+  position: relative;
+}
+
+.provider-areas-served-field select {
+  padding-right: 38px;
+}
+
+.provider-add-another-location-button {
+  grid-column: 1 / -1;
+  width: fit-content;
+  margin: -3px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #07983f;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.provider-signup-form-page2 .provider-signup-form-actions {
+  margin-top: 22px;
+}
+
+.provider-add-another-service-button {
+  height: 47px;
+  padding: 0 22px;
+  border: 1px solid #d1d8e8;
+  border-radius: 8px;
+  background: #fff;
+  color: #10183f;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.provider-signup-page2-actions {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 28px;
+}
+
+.provider-signup-page2-actions .provider-add-another-service-button {
+  justify-self: end;
+}
+
+.provider-signup-page2-actions .provider-signup-save-continue-button {
+  min-width: 194px;
+}
+
+@media (max-width: 1100px) {
+  .provider-signup-form-page2 {
+    margin-left: 28px;
+    margin-right: 28px;
+  }
+
+  .provider-service-type-options {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-signup-page2-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .provider-signup-page2-actions .provider-add-another-service-button {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 820px) {
+  .provider-signup-form-page2 {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .provider-signup-form-page2 .provider-signup-form-field-group {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-signup-page2-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-signup-page2-actions .provider-add-another-service-button {
+    grid-column: auto;
+    grid-row: auto;
+    justify-self: stretch;
+  }
+}
