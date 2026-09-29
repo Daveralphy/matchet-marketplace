@@ -1,5 +1,6 @@
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { providerMock } from "../data/providerMock";
+import providerImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-dashboard.css";
 
 const initials=(s)=>s.split(" ").map(x=>x[0]).join("").slice(0,2);
