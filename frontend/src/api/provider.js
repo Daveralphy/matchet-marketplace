@@ -25,3 +25,19 @@ async function request(path, options = {}) {
 export function getProviderDashboard() {
   return request("/api/provider/dashboard");
 }
+
+
+export function getProviderConversations() {
+  return request("/api/provider/messages");
+}
+
+export function getProviderConversation(conversationId) {
+  return request("/api/provider/messages/" + encodeURIComponent(conversationId));
+}
+
+export function sendProviderMessage(payload) {
+  return request("/api/provider/messages", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
