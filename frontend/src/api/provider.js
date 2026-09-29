@@ -103,3 +103,14 @@ export function submitSellerOnboarding(formData) {
 export function getSellerDashboard() {
   return request("/api/provider/seller-dashboard");
 }
+
+export function getSellerOrders(params = {}) {
+  const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== ""));
+  return request("/api/provider/seller-orders?" + query.toString());
+}
+export function updateSellerOrderStatus(orderId, status) {
+  return request("/api/provider/seller-orders/" + encodeURIComponent(orderId) + "/status", {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}
