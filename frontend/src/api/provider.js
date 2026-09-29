@@ -76,3 +76,7 @@ export function submitProviderOnboarding(formData) {
     body: JSON.stringify({ formData }),
   });
 }
+
+export function getProviderBookings() {
+  return request("/api/provider/bookings");
+}
