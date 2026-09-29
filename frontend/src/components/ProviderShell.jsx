@@ -19,6 +19,9 @@ return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="c
 
 export function ProviderShell({children,title=""}){
  const location=useLocation();
+ const { user } = useAuth();
+ const displayName=[user?.firstName,user?.lastName].filter(Boolean).join(" ") || "Account";
+ const avatar=user?.avatar?.url || null;
  return <div className="provider-app">
   <aside className="provider-sidebar">
    <Link to="/" className="provider-brand"><img src={logo} alt="Matchet"/></Link>
@@ -28,7 +31,7 @@ export function ProviderShell({children,title=""}){
   <header className="provider-topbar">
    <div className="provider-search">⌕ <span>Search bookings, messages, or help...</span></div>
    <button className="provider-bell">♧<i/></button>
-   <div className="provider-account"><img src={avatar} alt="" /><div><strong>{displayName}</strong><small>{user?.role === "provider" ? "Provider" : "Account"}</small></div><span>⌄</span></div>
+   <div className="provider-account">{avatar ? <img src={avatar} alt="" /> : <div className="provider-account-fallback">{displayName.slice(0,1).toUpperCase()}</div>}<div><strong>{displayName}</strong><small>{user?.role === "provider" ? "Provider" : "Account"}</small></div><span>⌄</span></div>
   </header>
   <main className="provider-main">{children}</main>
  </div>
