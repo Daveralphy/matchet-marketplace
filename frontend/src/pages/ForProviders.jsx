@@ -28,7 +28,7 @@ export default function ForProviders() {
       if (capability === "service") {
         navigate(state.status === "active" ? "/provider/dashboard" : "/provider/application-status");
       } else {
-        navigate(state.status === "active" ? "/provider/listings" : "/register/page8");
+        navigate("/seller/dashboard");
       }
     } catch {
       navigate(capability === "product" ? "/register" : "/provider/onboarding");
