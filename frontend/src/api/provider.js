@@ -58,3 +58,7 @@ export function getProviderReviews() {
 export function getProviderProfile() {
   return request("/api/provider/profile");
 }
+
+export function getProviderSettings() {
+  return request("/api/provider/settings");
+}
