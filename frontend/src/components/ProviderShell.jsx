@@ -6,7 +6,7 @@ import providerImage from "../assets/inspirations/provider/provideronboarding.pn
 const items=[
  {label:"Dashboard",path:"/provider/dashboard",icon:"home"},
  {label:"Bookings",path:"/provider/bookings",icon:"calendar"},
- {label:"Messages",path:"/provider/messages",icon:"message",badge:3},
+ {label:"Messages",path:"/provider/messages",icon:"message"},
  {label:"Services",path:"/provider/services",icon:"grid"},
  {label:"Earnings",path:"/provider/earnings",icon:"wallet"},
  {label:"Reviews",path:"/provider/reviews",icon:"star"},
