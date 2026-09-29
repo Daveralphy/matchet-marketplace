@@ -1151,3 +1151,58 @@ async function updateSellerOrderStatus(req, res) {
 
 module.exports.getSellerOrders = getSellerOrders;
 module.exports.updateSellerOrderStatus = updateSellerOrderStatus;
+
+
+async function getSellerProducts(req, res) {
+  try {
+    const sellerId = req.user._id;
+    const { status = "all", category = "all", search = "", sort = "newest" } = req.query;
+    const products = await Product.find({ sellerId }).sort({ createdAt: -1 }).lean();
+    const orders = await Order.find({ "items.sellerId": sellerId }).lean();
+    const orderCounts = {};
+    orders.forEach((order) => order.items.filter(i => String(i.sellerId) === String(sellerId)).forEach(i => {
+      const id = String(i.productId);
+      orderCounts[id] = (orderCounts[id] || 0) + Number(i.quantity || 0);
+    }));
+    let filtered = products.filter(p => {
+      if (status !== "all" && p.status !== status) return false;
+      if (category !== "all" && p.category !== category) return false;
+      const q = String(search).trim().toLowerCase();
+      return !q || p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+    });
+    filtered.sort((a,b) => sort === "oldest" ? new Date(a.createdAt)-new Date(b.createdAt) : sort === "priceHigh" ? b.price-a.price : sort === "priceLow" ? a.price-b.price : new Date(b.createdAt)-new Date(a.createdAt));
+    const totalViews = 0;
+    const mapped = filtered.map(p => ({
+      id:p._id, name:p.name, description:p.description, category:p.category, price:p.price, inventory:p.inventory,
+      status:p.status, orders:orderCounts[String(p._id)] || 0,
+      image:p.images?.find(i=>i.isPrimary)?.url || p.images?.[0]?.url || null, createdAt:p.createdAt
+    }));
+    return res.json({success:true,data:{
+      products:mapped,
+      categories:[...new Set(products.map(p=>p.category).filter(Boolean))],
+      stats:{active:products.filter(p=>p.status==="active").length,outOfStock:products.filter(p=>p.status==="outOfStock"||p.inventory===0).length,drafts:products.filter(p=>p.status==="draft").length,total:products.length,totalOrders:Object.values(orderCounts).reduce((a,b)=>a+b,0),views:totalViews},
+      generatedAt:new Date().toISOString()
+    }});
+  } catch(error){ console.error("Seller products error:",error); return res.status(500).json({success:false,message:process.env.NODE_ENV==="production"?"Unable to load your products right now.":error.message});}
+}
+async function createSellerProduct(req,res){
+  try {
+    const {name,description,category,price,inventory=0,images=[],location,status="draft"}=req.body;
+    if(!name||!description||!category||price===undefined) return res.status(400).json({success:false,message:"Name, description, category and price are required."});
+    const product=await Product.create({sellerId:req.user._id,name,description,category,price:Number(price),inventory:Number(inventory),images,status,location});
+    return res.status(201).json({success:true,data:product});
+  } catch(error){return res.status(400).json({success:false,message:error.message});}
+}
+async function updateSellerProduct(req,res){
+  try {
+    const product=await Product.findOne({_id:req.params.productId,sellerId:req.user._id});
+    if(!product)return res.status(404).json({success:false,message:"Product not found."});
+    const allowed=["name","description","category","price","inventory","images","location","status"];
+    allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=req.body[k]});
+    await product.save();
+    return res.json({success:true,data:product});
+  } catch(error){return res.status(400).json({success:false,message:error.message});}
+}
+module.exports.getSellerProducts=getSellerProducts;
+module.exports.createSellerProduct=createSellerProduct;
+module.exports.updateSellerProduct=updateSellerProduct;
