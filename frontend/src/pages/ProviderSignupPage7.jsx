@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "../context/FormContext";
+import { useAuth } from "../context/AuthContext";
 import { submitProviderOnboarding } from "../api/provider";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
@@ -29,6 +30,7 @@ function EditLink({ to }) {
 
 export default function ProviderSignupPageSeven() {
   const { formData } = useForm();
+  const { refreshUser } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -41,6 +43,7 @@ export default function ProviderSignupPageSeven() {
     setSubmitError("");
     try {
       await submitProviderOnboarding(formData);
+      await refreshUser();
       navigate("/provider/onboarding/success");
     } catch (error) {
       setSubmitError(error.message || "Unable to submit your application.");
