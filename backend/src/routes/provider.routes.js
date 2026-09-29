@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, submitSellerOnboarding, getSellerDashboard, getSellerOrders, updateSellerOrderStatus } = require("../controllers/provider.controller");
+const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, submitSellerOnboarding, getSellerDashboard, getSellerOrders, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -15,6 +15,9 @@ router.get("/capabilities", requireAuth, getProviderCapabilities);
 router.get("/seller-dashboard", requireAuth, getSellerDashboard);
 router.get("/seller-orders", requireAuth, getSellerOrders);
 router.patch("/seller-orders/:orderId/status", requireAuth, updateSellerOrderStatus);
+router.get("/seller-products", requireAuth, getSellerProducts);
+router.post("/seller-products", requireAuth, createSellerProduct);
+router.patch("/seller-products/:productId", requireAuth, updateSellerProduct);
 router.get("/dashboard", requireAuth, getProviderDashboard);
 router.get("/services", requireAuth, getProviderServices);
 router.get("/bookings", requireAuth, getProviderBookings);
