@@ -549,3 +549,70 @@ async function getProviderReviews(req, res) {
   }
 }
 module.exports.getProviderReviews = getProviderReviews;
+
+
+async function getProviderProfile(req, res) {
+  try {
+    const user = await User.findById(req.user._id).lean();
+    const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
+    const services = await Service.find({ providerId: req.user._id })
+      .select("_id title status")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    if (!user) return res.status(404).json({ success: false, message: "Account not found." });
+
+    const profileChecks = [
+      { key: "photo", label: "Add profile photo", complete: Boolean(user.avatar?.url) },
+      { key: "bio", label: "Add a short bio", complete: Boolean(provider?.bio?.trim()) },
+      { key: "location", label: "Add location", complete: Boolean(provider?.serviceArea?.city || user.location?.city) },
+      { key: "service", label: "Add at least one service", complete: services.length > 0 },
+      { key: "identity", label: "Verify your identity", complete: provider?.verificationStatus === "verified" },
+    ];
+
+    const completedChecks = profileChecks.filter((item) => item.complete).length;
+    const completeness = Math.round((completedChecks / profileChecks.length) * 100);
+
+    return res.json({
+      success: true,
+      data: {
+        user: {
+          id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          name: [user.firstName, user.lastName].filter(Boolean).join(" "),
+          email: user.email,
+          phone: user.phone || null,
+          avatar: user.avatar?.url || null,
+          location: user.location || null,
+          memberSince: user.createdAt,
+        },
+        profile: provider
+          ? {
+              id: provider._id,
+              businessName: provider.businessName,
+              bio: provider.bio || "",
+              skills: provider.skills || [],
+              categories: provider.categories || [],
+              experience: provider.experience || "",
+              serviceArea: provider.serviceArea || null,
+              verificationStatus: provider.verificationStatus,
+              status: provider.status,
+              ratingAverage: provider.ratingAverage || 0,
+              reviewCount: provider.reviewCount || 0,
+            }
+          : null,
+        services,
+        completeness: {
+          percentage: completeness,
+          checks: profileChecks,
+        },
+        generatedAt: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Provider profile error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load your profile right now." });
+  }
+}
+module.exports.getProviderProfile = getProviderProfile;
