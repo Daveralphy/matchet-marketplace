@@ -80,7 +80,7 @@ export default function ProviderBookings() {
           <div className="provider-stat"><div className="provider-stat-icon calendar"><Icon name="calendar" /></div><strong>{summary.total}</strong><b>Total bookings</b><span>This month</span></div>
           <div className="provider-stat"><div className="provider-stat-icon calendar"><Icon name="clock" /></div><strong>{summary.upcoming}</strong><b>Upcoming</b><span>This month</span></div>
           <div className="provider-stat"><div className="provider-stat-icon user"><Icon name="shield" /></div><strong>{summary.completed}</strong><b>Completed</b><span>This month</span></div>
-          <div className="provider-stat"><div className="provider-stat-icon star"><Icon name="close" /></div><strong>{summary.cancelled}</strong><b>Cancelled</b><span>This month</span></div>
+          <div className="provider-stat"><div className="provider-stat-icon star"><Icon name="bell" /></div><strong>{summary.cancelled}</strong><b>Cancelled</b><span>This month</span></div>
         </div>
 
         <section className="provider-card provider-bookings-card">
