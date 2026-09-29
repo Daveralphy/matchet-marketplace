@@ -34,6 +34,9 @@ import Services from "./pages/Services";
 import ForProviders from "./pages/ForProviders";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import ProviderLayout from "./components/layout/ProviderLayout";
+import ProviderDashboard from "./pages/ProviderDashboard";
+import ProviderSimpleScreens from "./pages/ProviderSimpleScreens";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
@@ -181,7 +184,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/orders",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><ProviderLayout><ProviderSimpleScreens type="/bookings" /></ProviderLayout></RequireAuth>,
   },
   {
     path: "/bookings",
@@ -297,7 +300,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/application-status",
-    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Application Status" /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><ProviderLayout><ProviderSimpleScreens type="/provider/application-status" /></ProviderLayout></RequireAuth>,
   },
   {
     path: "/provider/earnings",
