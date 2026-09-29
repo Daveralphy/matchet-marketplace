@@ -1016,3 +1016,138 @@ async function getSellerDashboard(req, res) {
 }
 
 module.exports.getSellerDashboard = getSellerDashboard;
+
+
+async function getSellerOrders(req, res) {
+  try {
+    const sellerId = req.user._id;
+    const {
+      status = "all",
+      product = "all",
+      search = "",
+      sort = "newest",
+      page = 1,
+      limit = 10,
+      startDate,
+      endDate,
+    } = req.query;
+
+    const orders = await Order.find({ "items.sellerId": sellerId })
+      .sort({ createdAt: -1 })
+      .populate("buyerId", "firstName lastName email phone avatar")
+      .lean();
+
+    const normalizedSearch = String(search).trim().toLowerCase();
+    let filtered = orders.map((order) => {
+      const sellerItems = order.items.filter((item) => String(item.sellerId) === String(sellerId));
+      const amount = sellerItems.reduce((sum, item) => sum + (Number(item.priceSnapshot) || 0) * (Number(item.quantity) || 0), 0);
+      return {
+        ...order,
+        sellerItems,
+        sellerAmount: amount,
+      };
+    }).filter((order) => {
+      if (status !== "all" && order.orderStatus !== status) return false;
+      if (product !== "all" && !order.sellerItems.some((item) => String(item.productId) === String(product))) return false;
+      if (startDate && new Date(order.createdAt) < new Date(startDate)) return false;
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        if (new Date(order.createdAt) > end) return false;
+      }
+      if (!normalizedSearch) return true;
+      const customer = [order.buyerId?.firstName, order.buyerId?.lastName, order.buyerId?.email].filter(Boolean).join(" ").toLowerCase();
+      const products = order.sellerItems.map((item) => item.nameSnapshot).join(" ").toLowerCase();
+      return customer.includes(normalizedSearch) || products.includes(normalizedSearch) || String(order._id).toLowerCase().includes(normalizedSearch);
+    });
+
+    filtered.sort((a, b) => sort === "oldest"
+      ? new Date(a.createdAt) - new Date(b.createdAt)
+      : sort === "amountHigh"
+        ? b.sellerAmount - a.sellerAmount
+        : sort === "amountLow"
+          ? a.sellerAmount - b.sellerAmount
+          : new Date(b.createdAt) - new Date(a.createdAt));
+
+    const stats = {
+      all: filtered.length,
+      processing: filtered.filter((o) => o.orderStatus === "processing").length,
+      shipped: filtered.filter((o) => o.orderStatus === "shipped").length,
+      delivered: filtered.filter((o) => o.orderStatus === "delivered").length,
+      cancelled: filtered.filter((o) => o.orderStatus === "cancelled").length,
+    };
+
+    const pageNumber = Math.max(Number(page) || 1, 1);
+    const pageSize = Math.min(Math.max(Number(limit) || 10, 1), 50);
+    const total = filtered.length;
+    const start = (pageNumber - 1) * pageSize;
+    const paged = filtered.slice(start, start + pageSize);
+
+    const data = paged.map((order) => ({
+      id: order._id,
+      orderNumber: "#" + String(order._id).slice(-6).toUpperCase(),
+      items: order.sellerItems.map((item) => ({
+        productId: item.productId,
+        name: item.nameSnapshot,
+        quantity: item.quantity,
+        unitPrice: item.priceSnapshot,
+        image: item.imageSnapshot || null,
+        total: item.priceSnapshot * item.quantity,
+      })),
+      customer: {
+        id: order.buyerId?._id || null,
+        name: [order.buyerId?.firstName, order.buyerId?.lastName].filter(Boolean).join(" ") || "Customer",
+        email: order.buyerId?.email || "",
+        phone: order.buyerId?.phone || "",
+        avatar: order.buyerId?.avatar?.url || null,
+      },
+      createdAt: order.createdAt,
+      amount: order.sellerAmount,
+      status: order.orderStatus,
+      paymentStatus: order.paymentStatus,
+      paymentReference: order.paymentReference || null,
+      shippingAddress: order.shippingAddress || {},
+      canShip: ["pending", "confirmed", "processing"].includes(order.orderStatus),
+      canCancel: !["delivered", "cancelled"].includes(order.orderStatus),
+    }));
+
+    return res.json({
+      success: true,
+      data: {
+        orders: data,
+        stats,
+        products: [...new Map(orders.flatMap((order) => order.items.filter((item) => String(item.sellerId) === String(sellerId)).map((item) => [String(item.productId), { id: item.productId, name: item.nameSnapshot }])).values()],
+        pagination: { page: pageNumber, limit: pageSize, total, pages: Math.max(Math.ceil(total / pageSize), 1) },
+      },
+    });
+  } catch (error) {
+    console.error("Seller orders error:", error);
+    return res.status(500).json({ success: false, message: process.env.NODE_ENV === "production" ? "Unable to load your orders right now." : error.message });
+  }
+}
+
+async function updateSellerOrderStatus(req, res) {
+  try {
+    const sellerId = req.user._id;
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const allowed = ["processing", "shipped", "cancelled"];
+    if (!allowed.includes(status)) return res.status(400).json({ success: false, message: "Invalid order status." });
+
+    const order = await Order.findOne({ _id: orderId, "items.sellerId": sellerId });
+    if (!order) return res.status(404).json({ success: false, message: "Order not found." });
+    if (status === "cancelled" && ["delivered", "cancelled"].includes(order.orderStatus)) return res.status(400).json({ success: false, message: "This order cannot be cancelled." });
+    if (status === "shipped" && !["confirmed", "processing"].includes(order.orderStatus)) return res.status(400).json({ success: false, message: "Only confirmed or processing orders can be marked as shipped." });
+    if (status === "processing" && !["pending", "confirmed"].includes(order.orderStatus)) return res.status(400).json({ success: false, message: "This order cannot be moved to processing." });
+
+    order.orderStatus = status;
+    await order.save();
+    return res.json({ success: true, message: "Order status updated.", data: { id: order._id, status: order.orderStatus } });
+  } catch (error) {
+    console.error("Seller order status error:", error);
+    return res.status(500).json({ success: false, message: process.env.NODE_ENV === "production" ? "Unable to update the order right now." : error.message });
+  }
+}
+
+module.exports.getSellerOrders = getSellerOrders;
+module.exports.updateSellerOrderStatus = updateSellerOrderStatus;
