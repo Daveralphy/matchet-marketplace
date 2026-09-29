@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ProviderShell, Icon } from "../components/ProviderShell";
-import { getProviderSettings } from "../api/provider";
+import { getProviderSettings, updateProviderSettingsPreferences } from "../api/provider";
 import "../styles/provider-dashboard.css";
 
 const tabs = [
@@ -51,6 +51,8 @@ export default function ProviderSettings() {
   const [localNotifications, setLocalNotifications] = useState({});
   const [localPrivacy, setLocalPrivacy] = useState({});
   const [localPlatform, setLocalPlatform] = useState({});
+  const [savingKey, setSavingKey] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -71,6 +73,24 @@ export default function ProviderSettings() {
       });
     return () => { active = false; };
   }, []);
+
+  const updatePreference = async (section, key) => {
+    const setters = { notifications: setLocalNotifications, privacy: setLocalPrivacy, platform: setLocalPlatform };
+    const current = section === "notifications" ? localNotifications : section === "privacy" ? localPrivacy : localPlatform;
+    const next = { ...current, [key]: !current[key] };
+    setters[section](next);
+    setSavingKey(section + ":" + key);
+    setSaveMessage("");
+    try {
+      await updateProviderSettingsPreferences({ [section]: { [key]: next[key] } });
+      setSaveMessage("Preference saved.");
+    } catch (requestError) {
+      setters[section](current);
+      setSaveMessage(requestError.message || "Unable to save this preference.");
+    } finally {
+      setSavingKey("");
+    }
+  };
 
   const account = data?.account;
   const payments = data?.payments;
@@ -95,6 +115,8 @@ export default function ProviderSettings() {
         </div>
 
         {error && <div className="provider-message-error">{error}</div>}
+
+        {saveMessage && <div className="provider-settings-save-message">{saveMessage}</div>}
 
         <div className="provider-settings-tabs">
           {tabs.map((tab) => (
@@ -126,7 +148,7 @@ export default function ProviderSettings() {
           <section className="provider-card provider-settings-card">
             <div className="provider-settings-card-heading"><h2>Notification preferences</h2><p>Control how Matchet keeps you informed about your provider activity.</p></div>
             {notificationEntries.length ? notificationEntries.map(([key, value]) => (
-              <ToggleRow key={key} label={key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase())} description="Preference saved on your account" enabled={Boolean(value)} onChange={() => setLocalNotifications((current) => ({ ...current, [key]: !current[key] }))} />
+              <ToggleRow key={key} label={key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase())} description="Preference saved on your account" enabled={Boolean(value)} onChange={() => updatePreference("notifications", key)} />
             )) : <EmptyState title="No notification preferences configured" description="Your notification preferences will appear here once they are saved to your account." />}
           </section>
         )}
@@ -157,7 +179,7 @@ export default function ProviderSettings() {
           <section className="provider-card provider-settings-card">
             <div className="provider-settings-card-heading"><h2>Privacy</h2><p>Control privacy preferences stored with your Matchet account.</p></div>
             {privacyEntries.length ? privacyEntries.map(([key, value]) => (
-              <ToggleRow key={key} label={key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase())} description="Preference saved on your account" enabled={Boolean(value)} onChange={() => setLocalPrivacy((current) => ({ ...current, [key]: !current[key] }))} />
+              <ToggleRow key={key} label={key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase())} description="Preference saved on your account" enabled={Boolean(value)} onChange={() => updatePreference("privacy", key)} />
             )) : <EmptyState title="No privacy preferences configured" description="Privacy controls will appear here when they are available for your account." />}
           </section>
         )}
