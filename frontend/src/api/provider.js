@@ -99,3 +99,7 @@ export function getProviderCapabilities() {
 export function submitSellerOnboarding(formData) {
   return request("/api/provider/seller-onboarding", { method: "POST", body: JSON.stringify({ formData: serializeOnboardingValue(formData) }) });
 }
+
+export function getSellerDashboard() {
+  return request("/api/provider/seller-dashboard");
+}
