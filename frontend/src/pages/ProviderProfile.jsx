@@ -25,6 +25,7 @@ export default function ProviderProfile() {
   const user = data?.user;
   const profile = data?.profile;
   const services = data?.services || [];
+  const onboarding = profile?.onboarding || {};
   const categories = profile?.categories || [];
   const skills = profile?.skills || [];
   const location = profile?.serviceArea
@@ -74,9 +75,9 @@ export default function ProviderProfile() {
               <p className="provider-long-copy">{profile?.bio || "No bio has been added yet."}</p>
               <div className="provider-profile-details">
                 <div><Icon name="location" /><span><strong>Location</strong><small>{location || "Not added"}</small></span></div>
-                <div><Icon name="clock" /><span><strong>Response time</strong><small>{profile?.responseTime || "Not added"}</small></span></div>
+                <div><Icon name="clock" /><span><strong>Response time</strong><small>{onboarding.providerResponseTime || "Not added"}</small></span></div>
                 <div><Icon name="message" /><span><strong>Languages</strong><small>{user?.preferences?.languages?.join(", ") || "Not added"}</small></span></div>
-                <div><Icon name="map" /><span><strong>Service areas</strong><small>{profile?.serviceArea ? [profile.serviceArea.city, profile.serviceArea.state, profile.serviceArea.country].filter(Boolean).join(", ") : "Not added"}</small></span></div>
+                <div><Icon name="map" /><span><strong>Service areas</strong><small>{onboarding.providerServiceAreaSpecificLocations?.length ? onboarding.providerServiceAreaSpecificLocations.join(", ") : profile?.serviceArea ? [profile.serviceArea.city, profile.serviceArea.state, profile.serviceArea.country].filter(Boolean).join(", ") : "Not added"}</small></span></div>
                 <div><Icon name="calendar" /><span><strong>Member since</strong><small>{formatMemberSince(user?.memberSince)}</small></span></div>
                 <div><Icon name="shield" /><span><strong>Identity verification</strong><small>{profile?.verificationStatus || "Not verified"}</small></span></div>
               </div>
