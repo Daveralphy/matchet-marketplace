@@ -600,6 +600,10 @@ async function getProviderProfile(req, res) {
               status: provider.status,
               ratingAverage: provider.ratingAverage || 0,
               reviewCount: provider.reviewCount || 0,
+              onboarding: provider.onboardingData || {},
+              applicationSubmittedAt: provider.applicationSubmittedAt || null,
+              reviewedAt: provider.reviewedAt || null,
+              reviewNote: provider.reviewNote || "",
             }
           : null,
         services,
@@ -622,7 +626,7 @@ async function getProviderSettings(req, res) {
   try {
     const [user, provider, latestPayout] = await Promise.all([
       User.findById(req.user._id).select("email phone isActive role preferences lastLoginAt createdAt").lean(),
-      ProviderProfile.findOne({ userId: req.user._id }).select("verificationStatus status").lean(),
+      ProviderProfile.findOne({ userId: req.user._id }).select("verificationStatus status onboardingData applicationSubmittedAt reviewedAt reviewNote").lean(),
       Payout.findOne({ providerId: req.user._id }).sort({ createdAt: -1 }).select("method status").lean(),
     ]);
 
