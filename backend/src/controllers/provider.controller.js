@@ -252,3 +252,92 @@ async function getProviderDashboard(req, res) {
 }
 
 module.exports = { getProviderDashboard };
+
+async function getProviderServices(req, res) {
+  try {
+    const providerId = req.user._id;
+    const now = new Date();
+    const last30Start = new Date(now);
+    last30Start.setDate(last30Start.getDate() - 30);
+    const previous30Start = new Date(last30Start);
+    previous30Start.setDate(previous30Start.getDate() - 30);
+
+    const [services, currentBookings, previousBookings] = await Promise.all([
+      Service.find({ providerId })
+        .sort({ createdAt: -1 })
+        .lean(),
+      Booking.find({
+        providerId,
+        scheduledDate: { $gte: last30Start, $lte: now },
+        status: { $nin: ["cancelled", "declined"] },
+      })
+        .select("serviceId")
+        .lean(),
+      Booking.find({
+        providerId,
+        scheduledDate: { $gte: previous30Start, $lt: last30Start },
+        status: { $nin: ["cancelled", "declined"] },
+      })
+        .select("serviceId")
+        .lean(),
+    ]);
+
+    const bookingCounts = new Map();
+    for (const booking of currentBookings) {
+      const id = booking.serviceId?.toString();
+      if (id) bookingCounts.set(id, (bookingCounts.get(id) || 0) + 1);
+    }
+
+    const previousBookingTotal = previousBookings.length;
+    const currentBookingTotal = currentBookings.length;
+    const bookingGrowth =
+      previousBookingTotal === 0
+        ? currentBookingTotal > 0 ? null : 0
+        : Math.round(((currentBookingTotal - previousBookingTotal) / previousBookingTotal) * 100);
+
+    const activeServices = services.filter((service) => service.status === "active").length;
+    const pausedServices = services.filter((service) => service.status === "paused").length;
+    const totalViews = services.reduce((sum, service) => sum + Number(service.viewCount || 0), 0);
+
+    return res.json({
+      success: true,
+      data: {
+        summary: {
+          activeServices,
+          pausedServices,
+          totalViews,
+          totalBookings: currentBookingTotal,
+          bookingGrowth,
+        },
+        services: services.map((service) => ({
+          id: service._id,
+          title: service.title,
+          description: service.description,
+          category: service.category,
+          price: service.pricing?.amount ?? null,
+          currency: service.pricing?.currency || null,
+          pricingType: service.pricing?.type || null,
+          durationMinutes: service.durationMinutes || null,
+          status: service.status,
+          bookingsLast30Days: bookingCounts.get(service._id.toString()) || 0,
+          views: Number(service.viewCount || 0),
+          image:
+            service.images?.find((image) => image.isPrimary)?.url ||
+            service.images?.[0]?.url ||
+            null,
+          createdAt: service.createdAt,
+          updatedAt: service.updatedAt,
+        })),
+        generatedAt: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Provider services error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load your services right now.",
+    });
+  }
+}
+
+module.exports.getProviderServices = getProviderServices;
