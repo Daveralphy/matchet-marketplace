@@ -22,6 +22,7 @@ import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
 import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import ProviderDataPage from "./pages/ProviderDataPage";
+import ProviderMessages from "./pages/ProviderMessages";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -217,7 +218,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/messages",
-    element: <RequireAuth><ProviderDataPage type="messages" /></RequireAuth>,
+    element: <RequireAuth><ProviderMessages /></RequireAuth>,
   },
   {
     path: "/saved-items",
