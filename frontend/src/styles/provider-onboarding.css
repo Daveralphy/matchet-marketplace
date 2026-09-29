@@ -976,3 +976,367 @@
     width: 100%;
   }
 }
+
+
+html, body, #root {
+  min-height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+.provider-signup-page-container {
+  height: calc(100vh - 26px);
+  max-height: calc(100vh - 26px);
+  min-height: 0;
+}
+
+.provider-signup-left-section {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  align-self: stretch;
+}
+
+.provider-signup-side-banner {
+  position: absolute;
+  inset: 0;
+}
+
+.provider-signup-right-section {
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.provider-signup-form-page5 {
+  margin: 0 44px;
+}
+
+.provider-verification-card,
+.provider-selfie-card {
+  box-sizing: border-box;
+  border: 1px solid #dbe2ef;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.provider-verification-card {
+  display: grid;
+  grid-template-columns: 1.5fr .72fr;
+  gap: 20px;
+  padding: 16px 20px;
+}
+
+.provider-verification-document h3,
+.provider-verification-tips h3,
+.provider-selfie-card h3 {
+  margin: 0;
+  color: #10183f;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -.03em;
+}
+
+.provider-verification-document > p,
+.provider-selfie-card > div > p {
+  margin: 4px 0 13px;
+  color: #737cae;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.provider-verification-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.provider-verification-fields label {
+  display: block;
+  color: #10183f;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.provider-verification-fields input,
+.provider-verification-fields select {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  padding: 0 12px;
+  border: 1px solid #d7deec;
+  border-radius: 7px;
+  outline: none;
+  background: #fff;
+  color: #10183f;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.provider-verification-upload-label {
+  margin: 17px 0 7px !important;
+  color: #10183f !important;
+  font-size: 12px !important;
+  font-weight: 600;
+}
+
+.provider-verification-upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.provider-verification-upload-box {
+  position: relative;
+  min-height: 124px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  border: 1.5px dashed #cbd3e5;
+  border-radius: 7px;
+  background: #fbfcff;
+  color: #10183f;
+  cursor: pointer;
+  text-align: center;
+}
+
+.provider-verification-upload-box > svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 7px;
+  fill: none;
+  stroke: #10183f;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.provider-verification-upload-box > strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.provider-verification-upload-box > span {
+  margin-top: 6px;
+  color: #737cae;
+  font-size: 10px;
+}
+
+.provider-verification-file-preview {
+  width: 100%;
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.provider-verification-file-preview img {
+  max-width: 100%;
+  max-height: 105px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.provider-verification-pdf-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+
+.provider-verification-pdf-preview span {
+  color: #07983f;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.provider-verification-pdf-preview small {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #737cae;
+  font-size: 10px;
+}
+
+.provider-verification-remove {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #10183f;
+  box-shadow: 0 1px 5px rgba(16,24,63,.2);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.provider-verification-tips {
+  padding: 18px;
+  border-radius: 7px;
+  background: #f2f9f5;
+}
+
+.provider-verification-tips ul,
+.provider-selfie-tips ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 13px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.provider-verification-tips li,
+.provider-selfie-tips li {
+  display: grid;
+  grid-template-columns: 19px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  color: #7079b0;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.provider-verification-check {
+  width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #07983f;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.provider-selfie-card {
+  margin-top: 14px;
+  padding: 16px 20px 18px;
+}
+
+.provider-selfie-content {
+  display: grid;
+  grid-template-columns: .75fr 1.25fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.provider-selfie-content .provider-verification-upload-box {
+  min-height: 143px;
+}
+
+.provider-selfie-tips {
+  min-height: 143px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 145px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 7px;
+  background: #f4f7fb;
+}
+
+.provider-selfie-illustration {
+  width: 135px;
+  height: 105px;
+  fill: none;
+  stroke: #10183f;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.provider-selfie-tips ul {
+  margin-top: 9px;
+  gap: 8px;
+}
+
+.provider-signup-page5-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 26px;
+}
+
+@media (max-width: 1100px) {
+  .provider-signup-form-page5 {
+    margin-left: 28px;
+    margin-right: 28px;
+  }
+
+  .provider-verification-card {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-verification-tips {
+    margin-top: 2px;
+  }
+}
+
+@media (max-width: 820px) {
+  body {
+    overflow: auto;
+  }
+
+  .provider-signup-page-container {
+    width: calc(100% - 20px);
+    height: auto;
+    max-height: none;
+    min-height: calc(100vh - 20px);
+    display: block;
+    overflow: visible;
+  }
+
+  .provider-signup-left-section {
+    display: none;
+  }
+
+  .provider-signup-right-section {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .provider-signup-form-page5 {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .provider-verification-fields,
+  .provider-verification-upload-grid,
+  .provider-selfie-content {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-selfie-tips {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-selfie-illustration {
+    justify-self: center;
+  }
+
+  .provider-signup-page5-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .provider-signup-page5-actions button {
+    width: 100%;
+  }
+}
