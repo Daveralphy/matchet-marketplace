@@ -114,3 +114,14 @@ export function updateSellerOrderStatus(orderId, status) {
     body: JSON.stringify({ status }),
   });
 }
+
+export function getSellerProducts(params = {}) {
+  const query = new URLSearchParams(Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!==""));
+  return request("/api/provider/seller-products?" + query.toString());
+}
+export function createSellerProduct(payload) {
+  return request("/api/provider/seller-products",{method:"POST",body:JSON.stringify(payload)});
+}
+export function updateSellerProduct(id,payload) {
+  return request("/api/provider/seller-products/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(payload)});
+}
