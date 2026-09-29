@@ -4,6 +4,7 @@ const Service = require("../models/Service");
 const Review = require("../models/Review");
 const Message = require("../models/Message");
 const ProviderProfile = require("../models/ProviderProfile");
+const Payout = require("../models/Payout");
 const User = require("../models/User");
 
 function monthBounds(date = new Date()) {
@@ -252,6 +253,138 @@ async function getProviderDashboard(req, res) {
 }
 
 module.exports = { getProviderDashboard };
+
+async function getProviderEarnings(req, res) {
+  try {
+    const providerId = req.user._id;
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const startOfPreviousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const startOfSixMonths = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+    const [completedBookings, pendingBookings, payouts, services] = await Promise.all([
+      Booking.find({ providerId, status: "completed" })
+        .select("priceSnapshot serviceId scheduledDate createdAt")
+        .populate("serviceId", "title category")
+        .sort({ scheduledDate: -1 })
+        .lean(),
+      Booking.find({
+        providerId,
+        status: { $in: ["pending", "confirmed", "inProgress"] },
+      })
+        .select("priceSnapshot scheduledDate")
+        .lean(),
+      Payout.find({ providerId }).sort({ createdAt: -1 }).limit(100).lean(),
+      Service.find({ providerId }).select("title category").lean(),
+    ]);
+
+    const totalEarnings = completedBookings.reduce(
+      (sum, booking) => sum + Number(booking.priceSnapshot?.amount || 0), 0
+    );
+
+    const thisMonth = completedBookings
+      .filter((booking) => booking.scheduledDate >= startOfMonth && booking.scheduledDate < startOfNextMonth)
+      .reduce((sum, booking) => sum + Number(booking.priceSnapshot?.amount || 0), 0);
+
+    const previousMonth = completedBookings
+      .filter((booking) => booking.scheduledDate >= startOfPreviousMonth && booking.scheduledDate < startOfMonth)
+      .reduce((sum, booking) => sum + Number(booking.priceSnapshot?.amount || 0), 0);
+
+    const monthChange = previousMonth === 0 ? null : Math.round(((thisMonth - previousMonth) / previousMonth) * 100);
+
+    const pendingPayout = payouts
+      .filter((payout) => payout.status === "pending" || payout.status === "processing")
+      .reduce((sum, payout) => sum + Number(payout.amount || 0), 0);
+
+    const totalPaidOut = payouts
+      .filter((payout) => payout.status === "completed")
+      .reduce((sum, payout) => sum + Number(payout.amount || 0), 0);
+
+    const monthlyMap = new Map();
+    for (let i = 0; i < 6; i += 1) {
+      const date = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+      monthlyMap.set(
+        date.toISOString().slice(0, 7),
+        { month: date.toLocaleString("en-US", { month: "short", year: "numeric" }), amount: 0 }
+      );
+    }
+
+    for (const booking of completedBookings) {
+      const key = new Date(booking.scheduledDate).toISOString().slice(0, 7);
+      if (monthlyMap.has(key)) monthlyMap.get(key).amount += Number(booking.priceSnapshot?.amount || 0);
+    }
+
+    const categoryMap = new Map();
+    for (const booking of completedBookings) {
+      const category = booking.serviceId?.category || "Other";
+      categoryMap.set(category, (categoryMap.get(category) || 0) + Number(booking.priceSnapshot?.amount || 0));
+    }
+
+    const categoryTotal = [...categoryMap.values()].reduce((sum, value) => sum + value, 0);
+    const breakdown = [...categoryMap.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([category, amount]) => ({
+        category,
+        amount,
+        percentage: categoryTotal ? Math.round((amount / categoryTotal) * 100) : 0,
+      }));
+
+    const transactions = [
+      ...payouts.map((payout) => ({
+        id: payout._id,
+        type: "payout",
+        date: payout.paidAt || payout.createdAt,
+        description: payout.method?.bankName
+          ? "Payout to " + payout.method.bankName + " (•••• " + (payout.method.accountLast4 || "----") + ")"
+          : "Payout",
+        amount: payout.amount,
+        currency: payout.currency,
+        status: payout.status,
+      })),
+      ...completedBookings.map((booking) => ({
+        id: booking._id,
+        type: "booking",
+        date: booking.scheduledDate || booking.createdAt,
+        description: booking.serviceId?.title || "Service booking",
+        amount: booking.priceSnapshot?.amount || 0,
+        currency: booking.priceSnapshot?.currency || "NGN",
+        status: "completed",
+      })),
+    ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 20);
+
+    return res.json({
+      success: true,
+      data: {
+        summary: {
+          totalEarnings,
+          thisMonth,
+          monthChange,
+          pendingPayout,
+          pendingPayoutBookings: pendingBookings.length,
+          totalPaidOut,
+          payoutCount: payouts.filter((payout) => payout.status === "completed").length,
+          currency: completedBookings[0]?.priceSnapshot?.currency || "NGN",
+        },
+        monthly: [...monthlyMap.values()],
+        breakdown,
+        transactions,
+        payoutMethod: payouts[0]?.method || null,
+        serviceCount: services.length,
+        generatedAt: new Date().toISOString(),
+        startOfSixMonths,
+      },
+    });
+  } catch (error) {
+    console.error("Provider earnings error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load your earnings right now.",
+    });
+  }
+}
+module.exports.getProviderEarnings = getProviderEarnings;
+
 
 async function getProviderServices(req, res) {
   try {
