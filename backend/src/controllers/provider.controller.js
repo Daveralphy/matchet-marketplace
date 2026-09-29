@@ -474,3 +474,78 @@ async function getProviderServices(req, res) {
 }
 
 module.exports.getProviderServices = getProviderServices;
+
+
+async function getProviderReviews(req, res) {
+  try {
+    const providerId = req.user._id;
+    const services = await Service.find({ providerId }).select("_id title").lean();
+    const serviceIds = services.map((service) => service._id);
+    const serviceMap = new Map(services.map((service) => [service._id.toString(), service]));
+
+    if (!serviceIds.length) {
+      return res.json({
+        success: true,
+        data: {
+          summary: { averageRating: 0, totalReviews: 0, commentedReviews: 0, ratingBreakdown: [5,4,3,2,1].map((rating) => ({ rating, count: 0, percentage: 0 })) },
+          reviews: [],
+          generatedAt: new Date().toISOString(),
+        },
+      });
+    }
+
+    const reviews = await Review.find({ serviceId: { $in: serviceIds }, status: "published" })
+      .sort({ createdAt: -1 })
+      .populate("reviewerId", "firstName lastName avatar")
+      .select("reviewerId serviceId rating comment createdAt")
+      .lean();
+
+    const totalReviews = reviews.length;
+    const averageRating = totalReviews
+      ? Number((reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / totalReviews).toFixed(1))
+      : 0;
+
+    const ratingBreakdown = [5, 4, 3, 2, 1].map((rating) => {
+      const count = reviews.filter((review) => review.rating === rating).length;
+      return { rating, count, percentage: totalReviews ? Math.round((count / totalReviews) * 100) : 0 };
+    });
+
+    const serviceQuality = totalReviews
+      ? Number((reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / totalReviews).toFixed(1))
+      : 0;
+
+    return res.json({
+      success: true,
+      data: {
+        summary: {
+          averageRating,
+          totalReviews,
+          commentedReviews: reviews.filter((review) => Boolean(review.comment?.trim())).length,
+          serviceQuality,
+          ratingBreakdown,
+        },
+        reviews: reviews.map((review) => ({
+          id: review._id,
+          rating: review.rating,
+          comment: review.comment || "",
+          createdAt: review.createdAt,
+          customer: {
+            id: review.reviewerId?._id || null,
+            name: [review.reviewerId?.firstName, review.reviewerId?.lastName].filter(Boolean).join(" ") || "Customer",
+            initials: initials(review.reviewerId),
+            avatar: review.reviewerId?.avatar?.url || null,
+          },
+          service: {
+            id: review.serviceId,
+            title: serviceMap.get(review.serviceId.toString())?.title || "Service",
+          },
+        })),
+        generatedAt: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Provider reviews error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load your reviews right now." });
+  }
+}
+module.exports.getProviderReviews = getProviderReviews;
