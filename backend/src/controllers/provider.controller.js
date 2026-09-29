@@ -769,7 +769,7 @@ async function submitProviderOnboarding(req, res) {
             description: input.providerServiceDesc || "Service submitted during provider onboarding.",
             category: categories[0] || "Other",
             pricing: { type: pricingType, amount: parsedPrice, currency: "NGN" },
-            durationMinutes,
+            ...(durationMinutes ? { durationMinutes } : {}),
             location: serviceArea,
             availability: input.providerAvailability || {},
             status: "draft",
@@ -811,7 +811,9 @@ async function submitProviderOnboarding(req, res) {
     console.error("Provider onboarding submission error:", error);
     return res.status(500).json({
       success: false,
-      message: "Unable to submit your provider application right now.",
+      message: process.env.NODE_ENV === "production"
+        ? "Unable to submit your provider application right now."
+        : (error.message || "Unable to submit your provider application right now."),
     });
   }
 }
