@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
 const Service = require("../models/Service");
+const Product = require("../models/Product");
 const Review = require("../models/Review");
 const Message = require("../models/Message");
 const ProviderProfile = require("../models/ProviderProfile");
