@@ -1181,7 +1181,7 @@ async function createSellerProduct(req,res){
   try {
     const {name,description,shortDescription="",category,price,inventory=0,images=[],location,status="draft",details={}}=req.body;
     if(!name||!description||!category||price===undefined) return res.status(400).json({success:false,message:"Name, description, category and price are required."});
-    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,status,location,details});
+    const {sku}=req.body; const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,status,location,details,sku});
     return res.status(201).json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
