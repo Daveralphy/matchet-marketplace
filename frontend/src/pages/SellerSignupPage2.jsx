@@ -502,17 +502,15 @@ export default function SellerSignupPageTwo() {
 
               <label htmlFor="businessAddress">
                 Business address *
-                <select
-                  id="businessAddress"
-                  name="businessAddress"
-                  value={formData.businessAddress}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="???dropdown to find???">
-                    ???dropdown to find???
-                  </option>
-                </select>
+                <input
+                    type="text"
+                    id="businessAddress"
+                    name="businessAddress"
+                    placeholder="Enter your full business address"
+                    value={formData.businessAddress}
+                    onChange={handleChange}
+                    required
+                  />
               </label>
 
               <fieldset className="business-phone-fieldset">
