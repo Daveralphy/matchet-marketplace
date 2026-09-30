@@ -120,7 +120,7 @@ export function FormProvider({ children }) {
   const clearForm = useCallback(() => {
     const currentFlow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
     try { const all = loadStoredForms(); delete all[currentFlow]; sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(all)); } catch {}
-    setFormData((prev) => ({ ...prev }));
+    setFormData((prev) => { const next = { ...prev }; const isService = currentFlow === "service"; Object.keys(next).forEach((key) => { if (isService ? key.startsWith("provider") : !key.startsWith("provider")) next[key] = Array.isArray(next[key]) ? [] : key === "providerProfileImage" ? null : key === "providerAvailability" ? { monday:{enabled:false,startTime:"",endTime:""},tuesday:{enabled:false,startTime:"",endTime:""},wednesday:{enabled:false,startTime:"",endTime:""},thursday:{enabled:false,startTime:"",endTime:""},friday:{enabled:false,startTime:"",endTime:""},saturday:{enabled:false,startTime:"",endTime:""},sunday:{enabled:false,startTime:"",endTime:""} } : ""; }); return next; });
   }, []);
 
   // Function to update a single field's value
