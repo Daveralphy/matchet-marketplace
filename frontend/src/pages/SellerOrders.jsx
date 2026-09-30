@@ -58,10 +58,10 @@ export default function SellerOrders() {
             <select value={sort} onChange={e=>setSort(e.target.value)}><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="amountHigh">Highest amount</option><option value="amountLow">Lowest amount</option></select>
           </div>
           <div className="order-table-wrap"><table><thead><tr><th><input type="checkbox" /></th><th>Order</th><th>Product(s)</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody>{orders.map(order => <tr key={order.id} className={selected?.id===order.id ? "selected":""} onClick={()=>setSelected(order)}>
+          <tbody>{orders.map(order => <tr key={order.id} className={selected?.id===order.id ? "selected":""} onClick={()=>setSelected(order)} onDoubleClick={()=>window.location.href="/seller/orders/"+order.id}>
             <td onClick={e=>e.stopPropagation()}><input type="checkbox"/></td><td><strong>{order.orderNumber}</strong><small>{order.items.reduce((n,i)=>n+i.quantity,0)} item{order.items.reduce((n,i)=>n+i.quantity,0)===1?"":"s"}</small></td>
             <td><div className="table-products">{order.items.slice(0,2).map((item,i)=><span key={item.productId || i}><img src={item.image||""} alt="" /><b>{item.name}</b></span>)}</div></td>
-            <td>{order.customer.name}</td><td>{fmtDate(order.createdAt)}</td><td><strong>{money(order.amount)}</strong></td><td><span className={"order-pill " + order.status}>{statusName(order.status)}</span></td><td><button className="dots" onClick={e=>{e.stopPropagation();setSelected(order)}}>⋮</button></td>
+            <td>{order.customer.name}</td><td>{fmtDate(order.createdAt)}</td><td><strong>{money(order.amount)}</strong></td><td><span className={"order-pill " + order.status}>{statusName(order.status)}</span></td><td><button className="dots" onClick={e=>{e.stopPropagation();window.location.href="/seller/orders/"+order.id}}>⋮</button></td>
           </tr>)}</tbody></table></div>
           <div className="order-footer"><span>Showing {orders.length} of {data?.pagination?.total || 0} orders</span><div><button>‹</button><button className="page-active">1</button><button>2</button><button>›</button></div></div>
         </section>
