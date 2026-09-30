@@ -3,11 +3,13 @@
 
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
+import { useEffect, useState } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageThree() {
   const { formData, updateField, mergeFormData } = useForm();
+  const [productPreviews, setProductPreviews] = useState([]);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -34,7 +36,9 @@ export default function SellerSignupPageThree() {
     if (valid.length !== files.length) {
       alert("Only PNG, JPG, or WebP images up to 5MB each are allowed.");
     }
-    updateField("productImages", valid.slice(0, 5));
+    const selected = valid.slice(0, 5);
+    updateField("productImages", selected);
+    setProductPreviews(selected.map((file) => URL.createObjectURL(file)));
     e.target.value = "";
   };
 
@@ -513,11 +517,14 @@ export default function SellerSignupPageThree() {
                   />
                 </label>
 
-                <div className="seller-signup-product-thumb">Basket</div>
-
-                <div className="seller-signup-product-thumb">Basket</div>
-
-                <div className="seller-signup-product-thumb">Basket</div>
+                {(productPreviews.length ? productPreviews : (formData.productImages || []).filter((image) => image?.url).map((image) => image.url)).map((src, index) => (
+                  <div className="seller-signup-product-thumb" key={src + index}>
+                    <img src={src} alt={`Product preview ${index + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} />
+                  </div>
+                ))}
+                {Array.from({ length: Math.max(0, 3 - (productPreviews.length || (formData.productImages || []).filter((image) => image?.url).length)) }).map((_, index) => (
+                  <div className="seller-signup-product-thumb" key={`placeholder-${index}`}>Basket</div>
+                ))}
 
                 <button
                   type="button"
