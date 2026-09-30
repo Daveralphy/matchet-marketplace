@@ -1,7 +1,7 @@
 // Got help from Google Gemini. I typed everything myself and did not provide any code to the chat. Everything was a generic example and I adapted to this project.
 // Consider modifying form field names to match names from database schema
 
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useCallback } from "react";
 
 // Create the context
 const FormContext = createContext();
@@ -15,7 +15,8 @@ function loadStoredForms() {
 
 export function FormProvider({ children }) {
   const stored = loadStoredForms();
-  const [formData, setFormData] = useState({
+  const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+  const [formData, setFormData] = useState(() => {
     // Initialize from fields here
     firstName: "",
     lastName: "",
@@ -107,13 +108,7 @@ export function FormProvider({ children }) {
     providerBvn: "",
     providerTin: "",
   });
-
-  // Restore the selected onboarding flow without mixing seller and service fields.
-  const activeFlow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
-  const storedFlow = stored[activeFlow];
-  if (storedFlow) {
-    Object.assign(formData, storedFlow);
-  }
+  if (stored[flow]) Object.assign(formData, stored[flow]);
 
   // Function to update a single field's value
   const updateField = (name, value) => {
