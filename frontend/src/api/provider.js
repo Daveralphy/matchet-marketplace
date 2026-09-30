@@ -132,3 +132,7 @@ export function getSellerReviews(){ return request("/api/provider/seller-reviews
 
 export function getSellerProfile(){return request("/api/provider/seller-profile");}
 export function updateSellerProfile(payload){return request("/api/provider/seller-profile",{method:"PATCH",body:JSON.stringify(payload)});}
+
+export function getSellerSettings(){return request("/api/provider/seller-settings");}
+export function updateSellerSettingsPreferences(payload){return request("/api/provider/seller-settings/preferences",{method:"PATCH",body:JSON.stringify(payload)});}
+export function updateSellerSettingsStore(payload){return request("/api/provider/seller-settings/store",{method:"PATCH",body:JSON.stringify(payload)});}
