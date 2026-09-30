@@ -129,3 +129,6 @@ export function updateSellerProduct(id,payload) {
 export function getSellerEarnings(){ return request("/api/provider/seller-earnings"); }
 
 export function getSellerReviews(){ return request("/api/provider/seller-reviews"); }
+
+export function getSellerProfile(){return request("/api/provider/seller-profile");}
+export function updateSellerProfile(payload){return request("/api/provider/seller-profile",{method:"PATCH",body:JSON.stringify(payload)});}
