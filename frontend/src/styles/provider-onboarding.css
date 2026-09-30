@@ -978,13 +978,6 @@
 }
 
 
-html, body, #root {
-  min-height: 100%;
-}
-
-body {
-  overflow: hidden;
-}
 
 .provider-signup-page-container {
   height: calc(100vh - 26px);
