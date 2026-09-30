@@ -135,7 +135,7 @@ export function getProviderBookings() {
 }
 
 export function getProviderCapabilities() {
-  return request("/api/provider/capabilities");
+  return request("/api/provider/capabilities", { cache: false });
 }
 
 export function submitSellerOnboarding(formData) {
