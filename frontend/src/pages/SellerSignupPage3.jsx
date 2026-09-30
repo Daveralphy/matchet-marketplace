@@ -24,6 +24,20 @@ export default function SellerSignupPageThree() {
     updateField(e.target.name, selectedValues);
   };
 
+  const handleProductImages = (e) => {
+    const files = Array.from(e.target.files || []);
+    const valid = files.filter((file) => {
+      if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) return false;
+      if (file.size > 5 * 1024 * 1024) return false;
+      return true;
+    });
+    if (valid.length !== files.length) {
+      alert("Only PNG, JPG, or WebP images up to 5MB each are allowed.");
+    }
+    updateField("productImages", valid.slice(0, 5));
+    e.target.value = "";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -489,6 +503,7 @@ export default function SellerSignupPageThree() {
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     multiple
+                    onChange={handleProductImages}
                   />
                 </label>
 
