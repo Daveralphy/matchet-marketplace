@@ -1064,7 +1064,12 @@ async function submitSellerOnboarding(req, res) {
     });
   } catch (error) {
     console.error("Seller onboarding submission error:", error);
-    return res.status(500).json({ success: false, message: "Unable to submit your seller application right now." });
+    return res.status(500).json({
+      success: false,
+      message: process.env.NODE_ENV === "production"
+        ? "Unable to save your seller onboarding progress right now."
+        : (error?.message || "Unable to save your seller onboarding progress right now."),
+    });
   }
 }
 
