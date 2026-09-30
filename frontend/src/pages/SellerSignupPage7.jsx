@@ -556,7 +556,7 @@ export default function SellerSignupPageSeven() {
             </table>
           </div>
 
-          <p className="importantText">
+          {submitError && <div role="alert" style={{ margin: "0 0 18px", padding: "12px 14px", border: "1px solid #ffcaca", borderRadius: "8px", background: "#fff1f1", color: "#bd2222", fontSize: "12px" }}>{submitError}</div>}\n\n          <p className="importantText">
             By submitting, you agree to Matchet's{" "}
             <Link to="#">Seller Terms and Conditions</Link>. We will review your
             information and notify you once your seller profile has been
