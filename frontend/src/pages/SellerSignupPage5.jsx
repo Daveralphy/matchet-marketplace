@@ -15,6 +15,23 @@ export default function SellerSignupPageFive() {
     updateField(name, value);
   };
 
+  const handleIdentityFile = (field, maxTypes) => (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!maxTypes.includes(file.type)) {
+      alert("Please upload a supported file type.");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File is too large. Maximum size allowed is 5MB.");
+      e.target.value = "";
+      return;
+    }
+    updateField(field, file);
+    e.target.value = "";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -493,10 +510,7 @@ export default function SellerSignupPageFive() {
 
                   <span>JPG, PNG or PDF. Max 5MB.</span>
 
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,application/pdf"
-                  />
+                  <input type="file" accept="image/png,image/jpeg,application/pdf" onChange={handleIdentityFile("idImageFront", ["image/png", "image/jpeg", "application/pdf"])} />
                 </label>
 
                 <label className="seller-signup-upload">
@@ -506,10 +520,7 @@ export default function SellerSignupPageFive() {
 
                   <span>JPG, PNG or PDF. Max 5MB.</span>
 
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,application/pdf"
-                  />
+                  <input type="file" accept="image/png,image/jpeg,application/pdf" onChange={handleIdentityFile("idImageBack", ["image/png", "image/jpeg", "application/pdf"])} />
                 </label>
 
                 <div className="seller-signup-tips">
@@ -549,10 +560,7 @@ export default function SellerSignupPageFive() {
 
                   <span>JPG or PNG. Max 5MB.</span>
 
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg"
-                  />
+                  <input type="file" accept="image/png,image/jpeg" onChange={handleIdentityFile("selfieImage", ["image/png", "image/jpeg"])} />
                 </label>
 
                 <div className="seller-signup-tips">
