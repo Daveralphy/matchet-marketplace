@@ -61,6 +61,7 @@ export function AuthProvider({ children }) {
   const register = useCallback(async (details) => {
     const response = await registerRequest(details);
     setUser(response.user);
+    sessionStorage.setItem("matchet_cache_user", response.user.id || response.user.email || "account");
     loadNotifications(response.user);
     addNotification(response.user, { type: "welcome", title: "Welcome to Matchet", message: "Your account is ready. Start exploring products and services." });
     return response.user;
