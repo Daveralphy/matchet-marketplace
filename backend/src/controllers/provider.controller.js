@@ -705,6 +705,7 @@ module.exports.updateProviderSettingsPreferences = updateProviderSettingsPrefere
 async function submitProviderOnboarding(req, res) {
   try {
     const providerId = req.user._id;
+    const isDraft = Boolean(req.body?.draft);
     const input = req.body?.formData || req.body || {};
 
     const businessName =
@@ -907,13 +908,21 @@ async function getProviderCapabilities(req, res) {
     const userId = req.user._id;
     const [provider, store] = await Promise.all([
       ProviderProfile.findOne({ userId }).select("status verificationStatus applicationSubmittedAt reviewedAt reviewNote").lean(),
-      StoreProfile.findOne({ userId }).select("status storeName slug").lean(),
+      StoreProfile.findOne({ userId }).select("status storeName slug verificationStatus applicationSubmittedAt onboardingData").lean(),
     ]);
     return res.json({
       success: true,
       data: {
         service: provider ? { exists: true, status: provider.status, verificationStatus: provider.verificationStatus, applicationSubmittedAt: provider.applicationSubmittedAt || null, reviewedAt: provider.reviewedAt || null, reviewNote: provider.reviewNote || "" } : { exists: false, status: "not_started", verificationStatus: null },
-        product: store ? { exists: true, status: store.status, storeName: store.storeName, slug: store.slug } : { exists: false, status: "not_started" },
+        product: store ? {
+          exists: true,
+          status: store.status,
+          storeName: store.storeName,
+          slug: store.slug,
+          verificationStatus: store.verificationStatus || null,
+          applicationSubmittedAt: store.applicationSubmittedAt || null,
+          onboardingStatus: store.onboardingData?.onboardingStatus || (store.applicationSubmittedAt ? "submitted" : "in_progress"),
+        } : { exists: false, status: "not_started" },
       },
     });
   } catch (error) {
@@ -923,6 +932,32 @@ async function getProviderCapabilities(req, res) {
 }
 
 module.exports.getProviderCapabilities = getProviderCapabilities;
+
+
+async function getSellerOnboardingDraft(req, res) {
+  try {
+    const store = await StoreProfile.findOne({ userId: req.user._id }).lean();
+    if (!store) {
+      return res.json({ success: true, data: { exists: false, formData: null } });
+    }
+    return res.json({
+      success: true,
+      data: {
+        exists: true,
+        status: store.status,
+        verificationStatus: store.verificationStatus,
+        applicationSubmittedAt: store.applicationSubmittedAt || null,
+        onboardingStatus: store.onboardingData?.onboardingStatus || (store.applicationSubmittedAt ? "submitted" : "in_progress"),
+        formData: store.onboardingData || {},
+      },
+    });
+  } catch (error) {
+    console.error("Seller onboarding draft lookup error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load your seller onboarding progress right now." });
+  }
+}
+
+module.exports.getSellerOnboardingDraft = getSellerOnboardingDraft;
 
 
 async function submitSellerOnboarding(req, res) {
@@ -985,13 +1020,13 @@ async function submitSellerOnboarding(req, res) {
             bvn: input.bvn || "",
             tin: input.tin || "",
           },
-          onboardingData: input,
+          onboardingData: { ...input, onboardingStatus: isDraft ? "in_progress" : "submitted" },
           logo: input.businessLogo?.url ? { url: input.businessLogo.url, publicId: input.businessLogo.publicId || "" } : undefined,
-          verificationStatus: "pending",
+          verificationStatus: isDraft ? "pending" : "pending",
           status: "draft",
-          applicationSubmittedAt: new Date(),
-          reviewedAt: null,
-          reviewNote: "",
+          applicationSubmittedAt: isDraft ? null : new Date(),
+          reviewedAt: isDraft ? undefined : null,
+          reviewNote: isDraft ? undefined : "",
         },
         $setOnInsert: { userId },
       },
@@ -1004,7 +1039,7 @@ async function submitSellerOnboarding(req, res) {
       email: input.email || req.user.email,
       phone: [input.countryCode, input.phoneNumber].filter(Boolean).join(" ") || req.user.phone || "",
       location: normalizedLocation,
-      "capabilities.seller": true,
+      ...(isDraft ? {} : { "capabilities.seller": true }),
     };
     if (input.profileImage?.url) {
       userUpdates.avatar = {
@@ -1013,7 +1048,18 @@ async function submitSellerOnboarding(req, res) {
       };
     }
     await User.findByIdAndUpdate(userId, { $set: userUpdates });
-    return res.status(201).json({ success: true, message: "Your seller application has been submitted for review.", data: { id: store._id, status: store.status, verificationStatus: store.verificationStatus, applicationSubmittedAt: store.applicationSubmittedAt } });
+    return res.status(201).json({
+      success: true,
+      message: isDraft ? "Your seller onboarding progress has been saved." : "Your seller application has been submitted for review.",
+      data: {
+        id: store._id,
+        status: store.status,
+        verificationStatus: store.verificationStatus,
+        applicationSubmittedAt: store.applicationSubmittedAt,
+        onboardingStatus: store.onboardingData?.onboardingStatus || null,
+        formData: store.onboardingData || {},
+      },
+    });
   } catch (error) {
     console.error("Seller onboarding submission error:", error);
     return res.status(500).json({ success: false, message: "Unable to submit your seller application right now." });
@@ -1021,6 +1067,7 @@ async function submitSellerOnboarding(req, res) {
 }
 
 module.exports.submitSellerOnboarding = submitSellerOnboarding;
+module.exports.getSellerOnboardingDraft = getSellerOnboardingDraft;
 
 
 async function getSellerSettings(req,res){try{const [user,store]=await Promise.all([User.findById(req.user._id).select("email phone isActive role preferences createdAt lastLoginAt").lean(),StoreProfile.findOne({userId:req.user._id}).lean()]);if(!user)return res.status(404).json({success:false,message:"Account not found."});const p=user.preferences||{};return res.json({success:true,data:{account:{email:user.email||"",phone:user.phone||"",isActive:Boolean(user.isActive),role:user.role||"",createdAt:user.createdAt},notifications:p.notifications||{email:true,sms:false,marketing:true},payments:{method:store?.payoutDetails||{},verificationStatus:store?.verificationStatus||null},store:{name:store?.storeName||"",category:store?.category||"",description:store?.description||"",status:store?.status||"not_started",verificationStatus:store?.verificationStatus||null},shipping:store?.shippingPolicies||{},privacy:p.privacy||{profileVisible:true,dataSharing:false},platform:{...(p.platform||{}),dashboardView:"Seller dashboard",theme:"Light",language:"English"},security:{lastLoginAt:user.lastLoginAt||null}}})}catch(error){console.error("Seller settings error:",error);return res.status(500).json({success:false,message:"Unable to load your seller settings right now."})}}
