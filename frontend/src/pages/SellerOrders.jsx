@@ -16,10 +16,13 @@ export default function SellerOrders() {
   const [sort, setSort] = useState("newest");
   const [selected, setSelected] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [loading, setLoading] = useState(true);
   const load = async () => {
+    setLoading(true);
     const res = await getSellerOrders({ status: tab, search, product, sort, limit: 50 });
     setData(res.data);
     if (selected) setSelected(res.data.orders.find((o) => o.id === selected.id) || null);
+    setLoading(false);
   };
   useEffect(() => { load().catch(console.error); }, [tab, search, product, sort]);
   const changeStatus = async (status) => {
@@ -48,7 +51,7 @@ export default function SellerOrders() {
         )}
       </div>
 
-      <div className="orders-content">
+      <div className="orders-content">{loading ? <section className="orders-table-card seller-orders-skeleton"><div/><div/><div/><div/><div/><div/></section> : <>
         <section className="orders-table-card">
           <div className="order-tabs">{[["all","All orders"],["processing","Processing"],["shipped","Shipped"],["delivered","Delivered"],["cancelled","Cancelled"]].map(([key,label]) => <button className={tab===key ? "active":""} onClick={() => setTab(key)} key={key}>{label}{key!=="all" && <em>({stats[key] || 0})</em>}</button>)}</div>
           <div className="order-filters">
@@ -74,7 +77,7 @@ export default function SellerOrders() {
             <dl><dt><Icon name="calendar"/> Order number</dt><dd>{selected.orderNumber}</dd><dt><Icon name="user"/> Customer</dt><dd>{selected.customer.name}</dd><dt><Icon name="calendar"/> Date & time</dt><dd>{fmtDate(selected.createdAt)}</dd><dt><Icon name="eye"/> Shipping address</dt><dd>{[selected.shippingAddress.addressLine1,selected.shippingAddress.addressLine2,selected.shippingAddress.city,selected.shippingAddress.state,selected.shippingAddress.country].filter(Boolean).join(", ") || "Not provided"}</dd><dt><Icon name="wallet"/> Payment method</dt><dd>{selected.paymentReference || "Payment confirmed"}<span className="paid">{selected.paymentStatus === "paid" ? "Paid" : selected.paymentStatus}</span></dd></dl>
             <div className="detail-actions">{selected.canShip && <button className="ship" disabled={busy} onClick={()=>changeStatus("shipped")}><Icon name="calendar" size={17}/> Mark as shipped</button>}{selected.status !== "delivered" && selected.status !== "cancelled" && <button className="update" disabled={busy} onClick={()=>changeStatus(selected.status==="processing"?"shipped":"processing")}><Icon name="settings" size={17}/> Update status <span>⌄</span></button>}{selected.canCancel && <button className="cancel" disabled={busy} onClick={()=>changeStatus("cancelled")}>⊗ &nbsp;Cancel order</button>}</div>
           </div>}
-        </aside>
+        </aside></>}
       </div>
     </div>
   </ProviderShell>;
