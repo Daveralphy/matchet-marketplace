@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
@@ -134,6 +134,7 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleBlur = (field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -160,7 +161,16 @@ const Login = () => {
 
     try {
       await login({ identifier, password });
-      navigate("/", { replace: true });
+      const params = new URLSearchParams(location.search);
+      const returnTo = params.get("returnTo");
+      const intent = sessionStorage.getItem("matchet_provider_intent");
+      if (returnTo === "/for-providers" && intent) {
+        sessionStorage.removeItem("matchet_provider_intent");
+        sessionStorage.setItem("matchet_onboarding_flow", intent === "product" ? "seller" : "service");
+        navigate("/for-providers", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       setFormError(error.status === 401 ? "The email/username or password you entered is incorrect. Please check your details and try again." : error.message || "We could not log you in right now. Please try again.");
     } finally {
