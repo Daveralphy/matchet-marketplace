@@ -172,6 +172,9 @@ export function getProviderCapabilities() {
 export async function submitSellerOnboarding(formData) {
   const next = { ...formData };
 
+  if (formData.profileImage instanceof File) {
+    next.profileImage = await uploadFiles(formData.profileImage, "matchet/profiles").then(([file]) => file);
+  }
   if (formData.businessLogo instanceof File) {
     next.businessLogo = await uploadFiles(formData.businessLogo, "matchet/stores").then(([file]) => file);
   }
