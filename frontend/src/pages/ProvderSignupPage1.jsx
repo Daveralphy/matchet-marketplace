@@ -3,7 +3,6 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
 import { getProviderCapabilities } from "../api/provider";
 import { useAuth } from "../context/AuthContext";
