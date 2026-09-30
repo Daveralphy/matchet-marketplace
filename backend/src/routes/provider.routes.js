@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, submitSellerOnboarding, getSellerDashboard, getSellerOrders, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
+const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -14,6 +14,8 @@ router.post("/seller-onboarding", requireAuth, submitSellerOnboarding);
 router.get("/capabilities", requireAuth, getProviderCapabilities);
 router.get("/seller-dashboard", requireAuth, getSellerDashboard);
 router.get("/seller-orders", requireAuth, getSellerOrders);
+router.get("/seller-orders/:orderId", requireAuth, getSellerOrderDetail);
+router.patch("/seller-orders/:orderId/note", requireAuth, addSellerOrderNote);
 router.patch("/seller-orders/:orderId/status", requireAuth, updateSellerOrderStatus);
 router.get("/seller-products", requireAuth, getSellerProducts);
 router.get("/seller-earnings", requireAuth, getSellerEarnings);
