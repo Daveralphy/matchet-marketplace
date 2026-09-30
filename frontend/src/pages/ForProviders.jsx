@@ -1,7 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProviderCapabilities } from "../api/provider";
@@ -12,7 +12,7 @@ export default function ForProviders() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState("");
 
-  const handleProviderChoice = async (capability) => {
+  const handleProviderChoice = useCallback(async (capability) => {
     if (!isAuthenticated) {
       sessionStorage.setItem("matchet_provider_intent", capability);
       sessionStorage.setItem("matchet_onboarding_flow", capability === "product" ? "seller" : "service");
