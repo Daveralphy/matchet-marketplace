@@ -4,6 +4,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useForm } from "../context/FormContext.jsx";
+import { useAuth } from "../context/AuthContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 import { getProviderCapabilities } from "../api/provider";
