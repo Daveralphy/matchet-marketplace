@@ -43,14 +43,6 @@ export default function ProviderSignupPageSix() {
   const { formData, updateField } = useForm();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
-
   const accountName = useMemo(() => {
     const firstName = formData.providerFirstName?.trim() || "";
     const lastName = formData.providerLastName?.trim() || "";
