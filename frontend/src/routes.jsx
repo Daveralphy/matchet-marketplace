@@ -30,6 +30,7 @@ import SellerReviews from "./pages/SellerReviews";
 import SellerProfile from "./pages/SellerProfile";
 import SellerSettings from "./pages/SellerSettings";
 import SellerProductForm from "./pages/SellerProductForm";
+import PublicSellerStore from "./pages/PublicSellerStore";
 import ProviderDataPage from "./pages/ProviderDataPage";
 import ProviderBookings from "./pages/ProviderBookings";
 import ProviderApplicationStatus from "./pages/ProviderApplicationStatus";
@@ -315,6 +316,10 @@ const router = createBrowserRouter([
   {
     path: "/seller/profile",
     element: <RequireAuth><SellerProfile /></RequireAuth>,
+  },
+  {
+    path: "/store/:slug",
+    element: <PublicSellerStore />,
   },
   {
     path: "/seller/settings",
