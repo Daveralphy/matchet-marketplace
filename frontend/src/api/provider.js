@@ -1,6 +1,48 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+const CACHE_PREFIX = "matchet_provider_cache:";
+const CACHE_TTL = 5 * 60 * 1000;
+const memoryCache = new Map();
+
+function cacheUserKey() {
+  return sessionStorage.getItem("matchet_cache_user") || "anonymous";
+}
+function cacheKey(path) {
+  return CACHE_PREFIX + cacheUserKey() + ":" + path;
+}
+function readCache(path) {
+  const key = cacheKey(path);
+  const memory = memoryCache.get(key);
+  if (memory && Date.now() - memory.time < CACHE_TTL) return memory.data;
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(key) || "null");
+    if (saved && Date.now() - saved.time < CACHE_TTL) {
+      memoryCache.set(key, saved);
+      return saved.data;
+    }
+  } catch {}
+  return null;
+}
+function writeCache(path, data) {
+  const entry = { time: Date.now(), data };
+  const key = cacheKey(path);
+  memoryCache.set(key, entry);
+  try { sessionStorage.setItem(key, JSON.stringify(entry)); } catch {}
+}
+export function clearProviderCache() {
+  for (const key of memoryCache.keys()) memoryCache.delete(key);
+  try {
+    Object.keys(sessionStorage).filter((key) => key.startsWith(CACHE_PREFIX)).forEach((key) => sessionStorage.removeItem(key));
+  } catch {}
+}
 async function request(path, options = {}) {
+  const method = (options.method || "GET").toUpperCase();
+  const useCache = method === "GET" && options.cache !== false;
+  if (useCache) {
+    const cached = readCache(path);
+    if (cached !== null) return cached;
+  }
+
   const response = await fetch(API_BASE_URL + path, {
     credentials: "include",
     headers: {
@@ -11,7 +53,6 @@ async function request(path, options = {}) {
   });
 
   const payload = await response.json().catch(() => ({}));
-
   if (!response.ok) {
     const error = new Error(payload.message || "Something went wrong.");
     error.status = response.status;
@@ -19,9 +60,10 @@ async function request(path, options = {}) {
     throw error;
   }
 
+  if (useCache) writeCache(path, payload);
+  else clearProviderCache();
   return payload;
 }
-
 export function getProviderDashboard() {
   return request("/api/provider/dashboard");
 }
