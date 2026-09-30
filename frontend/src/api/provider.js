@@ -137,6 +137,12 @@ export async function submitProviderOnboarding(formData) {
     const uploaded = files.length ? await uploadFiles(files, "matchet/portfolio") : [];
     next.providerPortfolioMedia = [...existing, ...uploaded];
   }
+  if (Array.isArray(formData.providerServiceImages)) {
+    const files = formData.providerServiceImages.filter((item) => item instanceof File);
+    const existing = formData.providerServiceImages.filter((item) => !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/services") : [];
+    next.providerServiceImages = [...existing, ...uploaded];
+  }
 
   const verificationFiles = [
     ["providerIdImageFront", "matchet/verification"],
