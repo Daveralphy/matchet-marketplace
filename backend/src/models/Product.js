@@ -31,6 +31,7 @@ const productSchema = new mongoose.Schema({
   category: { type: String, required: true, trim: true, index: true },
   price: { type: Number, required: true, min: 0 },
   images: { type: [imageSchema], default: [] },
+  sku: { type: String, trim: true, uppercase: true, maxlength: 100 },
   inventory: { type: Number, required: true, min: 0, default: 0 },
   location: { type: locationSchema },
   status: { type: String, enum: ["draft", "active", "outOfStock", "archived"], default: "draft", index: true },
