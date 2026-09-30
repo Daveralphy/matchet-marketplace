@@ -7,10 +7,10 @@ import { useForm } from "../context/FormContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
-import { getProviderCapabilities } from "../api/provider";
+import { getProviderCapabilities, getSellerOnboardingDraft, saveSellerOnboardingDraft } from "../api/provider";
 
 export default function SellerSignupPageOne() {
-  const { formData, updateField, setOnboardingFlow, clearForm } = useForm();
+  const { formData, updateField, mergeFormData, setOnboardingFlow, clearForm } = useForm();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -33,10 +33,15 @@ export default function SellerSignupPageOne() {
       if (user.avatar?.url) updateField("profileImage", user.avatar);
     }
 
-    getProviderCapabilities().then((response) => {
-      const state = response?.data?.product;
-      if (state?.exists) navigate("/seller/dashboard", { replace: true });
+    getSellerOnboardingDraft().then((response) => {
+      const draft = response?.data;
+      if (draft?.formData) mergeFormData(draft.formData);
+      if (draft?.onboardingStatus === "submitted") {
+        navigate("/seller/dashboard", { replace: true });
+      }
     }).catch(() => {});
+
+    getProviderCapabilities().catch(() => {});
   }, [setOnboardingFlow, navigate, user?.id]);
 
   useEffect(() => {
@@ -57,14 +62,20 @@ export default function SellerSignupPageOne() {
     updateField(name, value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
       return;
     }
 
-    navigate("/register/page2");
+    try {
+      const response = await saveSellerOnboardingDraft(formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
+      navigate("/register/page2");
+    } catch (error) {
+      alert(error.message || "Unable to save your progress. Please try again.");
+    }
   };
 
   return (
