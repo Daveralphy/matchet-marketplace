@@ -23,6 +23,7 @@ import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerOrders from "./pages/SellerOrders";
+import SellerOrderDetail from "./pages/SellerOrderDetail";
 import SellerMessages from "./pages/SellerMessages";
 import SellerProducts from "./pages/SellerProducts";
 import SellerEarnings from "./pages/SellerEarnings";
@@ -288,6 +289,10 @@ const router = createBrowserRouter([
   {
     path: "/seller/orders",
     element: <RequireAuth><SellerOrders /></RequireAuth>,
+  },
+  {
+    path: "/seller/orders/:orderId",
+    element: <RequireAuth><SellerOrderDetail /></RequireAuth>,
   },
   {
     path: "/seller/messages",
