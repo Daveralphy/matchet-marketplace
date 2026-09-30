@@ -921,7 +921,7 @@ async function getProviderCapabilities(req, res) {
           slug: store.slug,
           verificationStatus: store.verificationStatus || null,
           applicationSubmittedAt: store.applicationSubmittedAt || null,
-          onboardingStatus: store.onboardingData?.onboardingStatus || (store.applicationSubmittedAt ? "submitted" : "in_progress"),
+          onboardingStatus: store.onboardingStatus || (store.applicationSubmittedAt ? "submitted" : "in_progress"),
         } : { exists: false, status: "not_started" },
       },
     });
@@ -947,7 +947,7 @@ async function getSellerOnboardingDraft(req, res) {
         status: store.status,
         verificationStatus: store.verificationStatus,
         applicationSubmittedAt: store.applicationSubmittedAt || null,
-        onboardingStatus: store.onboardingData?.onboardingStatus || (store.applicationSubmittedAt ? "submitted" : "in_progress"),
+        onboardingStatus: store.onboardingStatus || (store.applicationSubmittedAt ? "submitted" : "in_progress"),
         formData: store.onboardingData || {},
       },
     });
@@ -1020,7 +1020,8 @@ async function submitSellerOnboarding(req, res) {
             bvn: input.bvn || "",
             tin: input.tin || "",
           },
-          onboardingData: { ...input, onboardingStatus: isDraft ? "in_progress" : "submitted" },
+          onboardingData: input,
+          onboardingStatus: isDraft ? "in_progress" : "submitted",
           logo: input.businessLogo?.url ? { url: input.businessLogo.url, publicId: input.businessLogo.publicId || "" } : undefined,
           verificationStatus: isDraft ? "pending" : "pending",
           status: "draft",
@@ -1056,7 +1057,7 @@ async function submitSellerOnboarding(req, res) {
         status: store.status,
         verificationStatus: store.verificationStatus,
         applicationSubmittedAt: store.applicationSubmittedAt,
-        onboardingStatus: store.onboardingData?.onboardingStatus || null,
+        onboardingStatus: store.onboardingStatus || null,
         formData: store.onboardingData || {},
       },
     });
