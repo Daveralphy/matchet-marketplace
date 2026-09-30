@@ -11,25 +11,16 @@ export default function MarketplaceLayout({ children }) {
     const key = `matchet_scroll:${window.location.pathname}${window.location.search}`;
     const restore = () => {
       const saved = sessionStorage.getItem(key);
-      if (saved) {
-        window.scrollTo({ top: Number(saved), behavior: "auto" });
-      }
+      if (saved) window.scrollTo({ top: Number(saved), behavior: "auto" });
     };
-
     requestAnimationFrame(restore);
-
-    const save = () => {
-      sessionStorage.setItem(key, String(window.scrollY));
-    };
-
+    const save = () => sessionStorage.setItem(key, String(window.scrollY));
     window.addEventListener("scroll", save, { passive: true });
-
     return () => {
       save();
       window.removeEventListener("scroll", save);
     };
   }, [window.location.pathname, window.location.search]);
-
   const { isAuthenticated, user, logout } = useAuth();
   const userName = user?.firstName || user?.username || "Daveralphy";
 
