@@ -963,6 +963,7 @@ module.exports.getSellerOnboardingDraft = getSellerOnboardingDraft;
 async function submitSellerOnboarding(req, res) {
   try {
     const userId = req.user._id;
+    const isDraft = Boolean(req.body?.draft);
     const input = req.body?.formData || req.body || {};
     const storeName = input.businessName || [input.firstName, input.lastName].filter(Boolean).join(" ") || "Matchet Store";
     const baseSlug = storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "matchet-store";
