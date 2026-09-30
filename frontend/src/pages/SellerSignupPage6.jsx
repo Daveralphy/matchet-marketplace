@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
-import { useForm } from "../context/FormContext";
+import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
@@ -15,14 +15,20 @@ export default function SellerSignupPageSix() {
     updateField(name, value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
       return;
     }
 
-    navigate("/register/page7");
+    try {
+      const response = await saveSellerOnboardingDraft(formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
+      navigate("/register/page6");
+    } catch (error) {
+      alert(error.message || "Unable to save your progress. Please try again.");
+    }
   };
 
   return (
