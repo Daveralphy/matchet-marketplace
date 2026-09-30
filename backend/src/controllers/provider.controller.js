@@ -753,6 +753,17 @@ async function submitProviderOnboarding(req, res) {
       { new: true, upsert: true, runValidators: true },
     );
 
+    if (input.providerProfileImage?.url) {
+      await User.findByIdAndUpdate(providerId, {
+        $set: {
+          avatar: {
+            url: input.providerProfileImage.url,
+            publicId: input.providerProfileImage.publicId || "",
+          },
+        },
+      });
+    }
+
     const parsedPrice = Number(String(input.providerServicePrice || "").replace(/[^0-9.]/g, "")) || 0;
     const pricingType = ["fixed", "startingFrom", "customQuote"].includes(input.providerServiceType)
       ? input.providerServiceType
@@ -774,6 +785,7 @@ async function submitProviderOnboarding(req, res) {
             ...(durationMinutes ? { durationMinutes } : {}),
             location: serviceArea,
             availability: input.providerAvailability || {},
+            images: Array.isArray(input.providerServiceImages) ? input.providerServiceImages : [],
             status: "draft",
           },
           $setOnInsert: { providerId, title: input.providerServiceName },
@@ -925,14 +937,14 @@ async function submitSellerOnboarding(req, res) {
     if (hasInitialProduct) {
       await Product.findOneAndUpdate(
         { sellerId: userId, "details.onboardingSource": "seller-onboarding" },
-        { $set: { name: productName, description: input.productDesc || productName, shortDescription: input.productDesc || "", category: input.productCat || input.businessCat || "Other", price: Number(input.productPrice) || 0, inventory: Number(input.productStock) || 0, sku: input.productSku || undefined, status: "draft", details: { onboardingSource: "seller-onboarding", condition: input.productCondition || "New", tags: input.productTags || [] } } },
+        { $set: { name: productName, description: input.productDesc || productName, shortDescription: input.productDesc || "", category: input.productCat || input.businessCat || "Other", price: Number(input.productPrice) || 0, inventory: Number(input.productStock) || 0, sku: input.productSku || undefined, images: Array.isArray(input.productImages) ? input.productImages : [], status: "draft", details: { onboardingSource: "seller-onboarding", condition: input.productCondition || "New", tags: input.productTags || [] } } },
         { upsert: true, new: true, runValidators: true }
       );
     }
 
     const store = await StoreProfile.findOneAndUpdate(
       { userId },
-      { $set: { storeName, slug, description: input.businessDesc || input.sellerBio || "", location: { city: input.location || "", country: "", }, contact: { phone: [input.businessPhoneCountryCode, input.businessPhoneNumber].filter(Boolean).join(" ") || [input.countryCode, input.phoneNumber].filter(Boolean).join(" "), email: input.email || req.user.email }, category: input.businessCategory || input.category || "", languages: input.languages || [], businessDetails: input.businessDetails || {}, shippingPolicies: input.shippingPolicies || {}, socialLinks: input.socialLinks || {}, payoutDetails: input.payoutDetails || input.bankDetails || {}, onboardingData: input, verificationStatus: "pending", status: "draft", applicationSubmittedAt: new Date(), reviewedAt: null, reviewNote: "" }, $setOnInsert: { userId } },
+      { $set: { storeName, slug, description: input.businessDesc || input.sellerBio || "", location: { city: input.location || "", country: "", }, contact: { phone: [input.businessPhoneCountryCode, input.businessPhoneNumber].filter(Boolean).join(" ") || [input.countryCode, input.phoneNumber].filter(Boolean).join(" "), email: input.email || req.user.email }, category: input.businessCategory || input.category || "", languages: input.languages || [], businessDetails: input.businessDetails || {}, shippingPolicies: input.shippingPolicies || {}, socialLinks: input.socialLinks || {}, payoutDetails: input.payoutDetails || input.bankDetails || {}, onboardingData: input, logo: input.businessLogo?.url ? { url: input.businessLogo.url, publicId: input.businessLogo.publicId || "" } : undefined, verificationStatus: "pending", status: "draft", applicationSubmittedAt: new Date(), reviewedAt: null, reviewNote: "" }, $setOnInsert: { userId } },
       { upsert: true, new: true, runValidators: true }
     );
     if (req.user.role !== "provider") await User.findByIdAndUpdate(userId, { $set: { role: "provider" } });
