@@ -14,9 +14,12 @@ export default function ForProviders() {
 
   const handleProviderChoice = async (capability) => {
     if (!isAuthenticated) {
-      navigate(capability === "product" ? "/register" : "/provider/onboarding");
+      sessionStorage.setItem("matchet_provider_intent", capability);
+      sessionStorage.setItem("matchet_onboarding_flow", capability === "product" ? "seller" : "service");
+      navigate("/login?returnTo=" + encodeURIComponent("/for-providers"));
       return;
     }
+    sessionStorage.setItem("matchet_onboarding_flow", capability === "product" ? "seller" : "service");
     setLoading(capability);
     try {
       const response = await getProviderCapabilities();
@@ -26,7 +29,10 @@ export default function ForProviders() {
         return;
       }
       if (capability === "service") {
-        navigate(state.status === "active" ? "/provider/dashboard" : "/provider/application-status");
+        if (state.status === "active" || state.verificationStatus === "verified") navigate("/provider/dashboard");
+        else if (state.verificationStatus === "rejected") navigate("/provider/application-status");
+        else if (state.applicationSubmittedAt) navigate("/provider/application-status");
+        else navigate("/provider/onboarding");
       } else {
         navigate("/seller/dashboard");
       }
