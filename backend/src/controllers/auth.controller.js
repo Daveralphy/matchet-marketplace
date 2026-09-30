@@ -16,6 +16,10 @@ function serializeUser(user) {
     location: user.location || null,
     preferences: user.preferences || {},
     role: user.role,
+    capabilities: {
+      seller: Boolean(user.capabilities?.seller),
+      provider: Boolean(user.capabilities?.provider || user.role === "provider"),
+    },
     isActive: user.isActive,
     createdAt: user.createdAt,
   };
