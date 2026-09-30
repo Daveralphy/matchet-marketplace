@@ -35,15 +35,6 @@ export default function ProviderSignupPageSeven() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
-
   const handleSubmit = async () => {
     setSubmitting(true);
     setSubmitError("");
