@@ -3,11 +3,13 @@
 
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
+import { useState } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageFive() {
   const { formData, updateField, mergeFormData } = useForm();
+  const [identityPreviews, setIdentityPreviews] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -512,7 +514,8 @@ export default function SellerSignupPageFive() {
                 <label className="seller-signup-upload">
                   <span className="seller-signup-upload-icon">↑</span>
 
-                  <strong>Upload front of ID</strong>
+                  {identityPreviews.idImageFront && <img src={identityPreviews.idImageFront} alt="ID front preview" style={{ width: 70, height: 46, objectFit: "cover", borderRadius: 6 }} />}
+                  <strong>{identityPreviews.idImageFront ? "ID front selected" : "Upload front of ID"}</strong>
 
                   <span>JPG, PNG or PDF. Max 5MB.</span>
 
@@ -522,7 +525,8 @@ export default function SellerSignupPageFive() {
                 <label className="seller-signup-upload">
                   <span className="seller-signup-upload-icon">↑</span>
 
-                  <strong>Upload back of ID</strong>
+                  {identityPreviews.idImageBack && <img src={identityPreviews.idImageBack} alt="ID back preview" style={{ width: 70, height: 46, objectFit: "cover", borderRadius: 6 }} />}
+                  <strong>{identityPreviews.idImageBack ? "ID back selected" : "Upload back of ID"}</strong>
 
                   <span>JPG, PNG or PDF. Max 5MB.</span>
 
@@ -562,7 +566,8 @@ export default function SellerSignupPageFive() {
                 <label className="seller-signup-upload">
                   <span className="seller-signup-upload-icon">↑</span>
 
-                  <strong>Upload a selfie</strong>
+                  {identityPreviews.selfieImage && <img src={identityPreviews.selfieImage} alt="Selfie preview" style={{ width: 58, height: 58, objectFit: "cover", borderRadius: "50%" }} />}
+                  <strong>{identityPreviews.selfieImage ? "Selfie selected" : "Upload a selfie"}</strong>
 
                   <span>JPG or PNG. Max 5MB.</span>
 
