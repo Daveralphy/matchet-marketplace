@@ -14,29 +14,29 @@ export async function uploadFiles(files, folder) {
   const selected = (Array.isArray(files) ? files : [files]).filter((file) => file instanceof File);
   if (!selected.length) return [];
 
-  const encoded = await Promise.all(
-    selected.map(async (file) => ({
-      name: file.name,
-      folder,
-      dataUrl: await fileToDataUrl(file),
-    })),
-  );
+  const uploaded = [];
+  for (const file of selected) {
+    const dataUrl = await fileToDataUrl(file);
+    const response = await fetch(`${API_BASE_URL}/api/uploads`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        files: [{ name: file.name, folder, dataUrl }],
+      }),
+    });
 
-  const response = await fetch(`${API_BASE_URL}/api/uploads`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ files: encoded }),
-  });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      const error = new Error(payload.message || "Unable to upload your file.");
+      error.status = response.status;
+      throw error;
+    }
 
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(payload.message || "Unable to upload your file.");
-    error.status = response.status;
-    throw error;
+    uploaded.push(...(payload.files || []));
   }
 
-  return payload.files || [];
+  return uploaded;
 }
 
 export async function uploadFile(file, folder) {
