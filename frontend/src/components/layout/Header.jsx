@@ -6,8 +6,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo/matchet_logoname.png";
 import mobileLogo from "../../assets/logo/matchet_logo.png";
 import { useCart } from "../../context/CartContext";
-import { useAuth } from "../../context/AuthContext";
-import { searchMarketplace } from "../../data/marketplaceApi";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
@@ -215,19 +213,9 @@ export default function Header({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-
   const { cartCount: liveCartCount } = useCart();
 
-  const {
-    logout: authLogout,
-    notifications: authNotifications,
-    markNotificationsRead,
-  } = useAuth();
-
-  const [selectedLocation, setSelectedLocation] = useState(
-    () =>
-      window.localStorage.getItem("matchet_location") || initialLocation
-  );
+  const [selectedLocation, setSelectedLocation] = useState(() => window.localStorage.getItem("matchet_location") || initialLocation);
   const [locationOpen, setLocationOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -235,12 +223,9 @@ export default function Header({
   const [searchValue, setSearchValue] = useState("");
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [logoutSubmitting, setLogoutSubmitting] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [searchSuggestions, setSearchSuggestions] = useState([]);
 
   const locationRef = useRef(null);
   const profileRef = useRef(null);
-  const notificationsRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
   const isActive = (path) =>
@@ -254,7 +239,6 @@ export default function Header({
     setLocationOpen(false);
     setProfileOpen(false);
     setMobileMenuOpen(false);
-    setNotificationsOpen(false);
   };
 
   const persistLocation = (value) => {
@@ -262,72 +246,20 @@ export default function Header({
     window.localStorage.setItem("matchet_location", value);
   };
 
-  useEffect(() => {
-    let active = true;
-
-    const query = searchValue.trim();
-
-    if (!query) {
-      setSearchSuggestions([]);
-      return undefined;
-    }
-
-    const timer = window.setTimeout(async () => {
-      const results = await searchMarketplace({
-        query,
-        location: selectedLocation,
-      });
-
-      if (active) {
-        setSearchSuggestions(results.slice(0, 6));
-      }
-    }, 120);
-
-    return () => {
-      active = false;
-      window.clearTimeout(timer);
-    };
-  }, [searchValue, selectedLocation]);
-
   const submitSearch = () => {
     const query = searchValue.trim();
-
     if (!query) return;
-
-    navigate(
-      `/explore?q=${encodeURIComponent(
-        query
-      )}&location=${encodeURIComponent(selectedLocation)}`
-    );
-
+    navigate(`/explore?q=${encodeURIComponent(query)}&location=${encodeURIComponent(selectedLocation)}`);
     closeOverlays();
-    setSearchSuggestions([]);
     setSearchOpen(false);
   };
 
   useEffect(() => {
-    const handleViewportResize = () => {
-      setProfileOpen(false);
-      setNotificationsOpen(false);
-      setLocationOpen(false);
-      setMobileMenuOpen(false);
-    };
-
-    window.addEventListener("resize", handleViewportResize);
-
-    return () => {
-      window.removeEventListener("resize", handleViewportResize);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleOutsidePointerDown = (event) => {
-      const target = event.target;
-
+    const handleOutsideClick = (event) => {
       if (
         locationOpen &&
         locationRef.current &&
-        !locationRef.current.contains(target)
+        !locationRef.current.contains(event.target)
       ) {
         setLocationOpen(false);
       }
@@ -335,50 +267,26 @@ export default function Header({
       if (
         profileOpen &&
         profileRef.current &&
-        !profileRef.current.contains(target)
+        !profileRef.current.contains(event.target)
       ) {
         setProfileOpen(false);
       }
 
       if (
-        notificationsOpen &&
-        notificationsRef.current &&
-        !notificationsRef.current.contains(target)
-      ) {
-        setNotificationsOpen(false);
-      }
-
-      if (
         mobileMenuOpen &&
         mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(target)
+        !mobileMenuRef.current.contains(event.target)
       ) {
         setMobileMenuOpen(false);
       }
     };
 
-    document.addEventListener(
-      "pointerdown",
-      handleOutsidePointerDown
-    );
+    document.addEventListener("mousedown", handleOutsideClick);
 
     return () => {
-      document.removeEventListener(
-        "pointerdown",
-        handleOutsidePointerDown
-      );
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [
-    locationOpen,
-    profileOpen,
-    notificationsOpen,
-    mobileMenuOpen,
-  ]);
-
-  const handleProfileNavigation = (path) => {
-    setProfileOpen(false);
-    navigate(path);
-  };
+  }, [locationOpen, profileOpen, mobileMenuOpen]);
 
   return (
     <header className="relative z-50 w-full px-4 py-4 sm:px-6 lg:px-8">
@@ -533,16 +441,14 @@ export default function Header({
                   <Icon name="pin" size={21} />
                 </button>
 
-                <div className="relative flex h-10 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 px-2.5 sm:h-11 sm:px-3">
+                <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 px-2.5 sm:h-11 sm:px-3">
                   <Icon name="search" size={19} />
 
                   <input
                     autoFocus
                     type="search"
                     value={searchValue}
-                    onChange={(event) =>
-                      setSearchValue(event.target.value)
-                    }
+                    onChange={(event) => setSearchValue(event.target.value)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") submitSearch();
                     }}
@@ -562,126 +468,10 @@ export default function Header({
                   >
                     <Icon name="x" size={17} />
                   </button>
-
-                  {searchSuggestions.length > 0 && (
-                    <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[90] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(16,24,63,0.14)]">
-                      {searchSuggestions.map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() =>
-                            navigate(
-                              `/${
-                                item.type === "service"
-                                  ? "services"
-                                  : "products"
-                              }/${item.id}`
-                            )
-                          }
-                          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-slate-50"
-                        >
-                          <span className="h-9 w-9 shrink-0 rounded-lg bg-slate-100" />
-
-                          <span className="min-w-0">
-                            <span className="block truncate text-[12px] font-semibold text-[#071449]">
-                              {item.title}
-                            </span>
-
-                            <span className="block truncate text-[10px] text-slate-400">
-                              {item.category} · {item.location}
-                            </span>
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </>
             )}
           </div>
-
-          <Link
-            to="/cart"
-            onClick={closeOverlays}
-            aria-label="Cart"
-            className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-slate-50 sm:h-11 sm:w-11 ${
-              cartActive ? "text-[#07983f]" : "text-[#071449]"
-            }`}
-          >
-            <Icon name="cart" size={22} />
-
-            {liveCartCount > 0 && (
-              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#07983f] px-0.5 text-[9px] font-semibold text-white">
-                {liveCartCount}
-              </span>
-            )}
-          </Link>
-
-          {isAuthenticated && (
-            <div className="relative shrink-0 min-[1160px]:hidden">
-              <button
-                type="button"
-                aria-label="Notifications"
-                onClick={() => {
-                  setNotificationsOpen((open) => !open);
-                  setMobileMenuOpen(false);
-                  setLocationOpen(false);
-                  setProfileOpen(false);
-                }}
-                className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] hover:bg-slate-50 sm:h-11 sm:w-11"
-              >
-                <Icon name="bell" size={22} />
-
-                {authNotifications.some((item) => !item.read) && (
-                  <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#07983f]" />
-                )}
-              </button>
-
-              {notificationsOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-[90] w-[300px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
-                  <div className="border-b border-slate-100 px-4 py-3">
-                    <p className="text-[13px] font-semibold text-[#071449]">
-                      Notifications
-                    </p>
-                  </div>
-
-                  <div className="max-h-[320px] overflow-y-auto">
-                    {authNotifications.length ? (
-                      authNotifications.map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={markNotificationsRead}
-                          className="flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50"
-                        >
-                          <Icon
-                            name={
-                              item.type === "login" ? "user" : "bell"
-                            }
-                            size={17}
-                          />
-
-                          <span className="min-w-0">
-                            <span className="block text-[12px] font-semibold text-[#071449]">
-                              {item.title}
-                            </span>
-
-                            <span className="block text-[10px] leading-5 text-slate-400">
-                              {item.message}
-                            </span>
-                          </span>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="px-4 py-8 text-center text-[11px] text-slate-400">
-                        No notifications yet.
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
 
           <div ref={mobileMenuRef} className="relative shrink-0">
             <button
@@ -690,7 +480,6 @@ export default function Header({
                 setMobileMenuOpen((open) => !open);
                 setLocationOpen(false);
                 setProfileOpen(false);
-                setNotificationsOpen(false);
               }}
               className="flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] sm:h-11 sm:w-11"
               aria-label={
@@ -705,10 +494,7 @@ export default function Header({
 
             {mobileMenuOpen && (
               <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-max min-w-[185px] rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_35px_rgba(16,24,63,0.13)]">
-                <nav
-                  className="space-y-1"
-                  aria-label="Mobile navigation"
-                >
+                <nav className="space-y-1" aria-label="Mobile navigation">
                   {[
                     ...MOBILE_NAV_ITEMS,
                     ...(isAuthenticated
@@ -739,7 +525,7 @@ export default function Header({
                   {isAuthenticated && (
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={async () => {
                         closeOverlays();
                         setLogoutConfirmOpen(true);
                       }}
@@ -768,7 +554,6 @@ export default function Header({
                       setLocationOpen((open) => !open);
                       setProfileOpen(false);
                       setMobileMenuOpen(false);
-                      setNotificationsOpen(false);
                     }}
                     className={[
                       "flex h-11 w-full min-w-0 items-center gap-2 rounded-lg border px-2.5 text-[clamp(11px,0.9vw,13px)] font-medium transition-colors",
@@ -840,7 +625,6 @@ export default function Header({
                     setLocationOpen(false);
                     setProfileOpen(false);
                     setMobileMenuOpen(false);
-                    setNotificationsOpen(false);
                   }}
                   className="flex h-11 w-11 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f]"
                   aria-label="Open search"
@@ -870,9 +654,7 @@ export default function Header({
                     autoFocus
                     type="search"
                     value={searchValue}
-                    onChange={(event) =>
-                      setSearchValue(event.target.value)
-                    }
+                    onChange={(event) => setSearchValue(event.target.value)}
                     onKeyDown={(event) => {
                       if (event.key === "Enter") submitSearch();
                     }}
@@ -899,235 +681,142 @@ export default function Header({
 
           <div className="hidden h-8 w-px bg-slate-200 min-[1160px]:block" />
 
-          {/* Desktop cart and notification controls share identical
-              dimensions and flex centering for consistent alignment. */}
           <Link
             to="/cart"
             onClick={closeOverlays}
             className={[
-              "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#071449] transition-colors hover:text-[#07983f]",
+              "relative flex shrink-0 text-[#071449] transition-colors hover:text-[#07983f]",
               cartActive ? "text-[#07983f]" : "",
             ].join(" ")}
             aria-label="Cart"
           >
             <Icon name="cart" size={25} />
 
-            {liveCartCount > 0 && (
+            {cartCount > 0 && (
               <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#07983f] px-1 text-[10px] font-semibold text-white">
                 {liveCartCount}
               </span>
             )}
 
             {cartActive && (
-              <span className="absolute -bottom-3 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#07983f]" />
+              <span className="absolute -bottom-3 left-0 right-0 mx-auto h-[2px] w-5 rounded-full bg-[#07983f]" />
             )}
           </Link>
 
           {isAuthenticated ? (
             <>
-              <div
-                ref={notificationsRef}
-                className="relative hidden min-[1160px]:block"
+              <button
+                type="button"
+                aria-label="Notifications"
+                className="relative hidden text-[#071449] transition-colors hover:text-[#07983f] min-[1160px]:block"
               >
-                <button
-                  type="button"
-                  aria-label="Notifications"
-                  aria-expanded={notificationsOpen}
-                  onClick={() => {
-                    setNotificationsOpen((open) => !open);
-                    setProfileOpen(false);
-                    setLocationOpen(false);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] transition-colors hover:text-[#07983f]"
-                >
-                  <Icon name="bell" size={24} />
+                <Icon name="bell" size={24} />
 
-                  {authNotifications.some((item) => !item.read) && (
-                    <span className="absolute right-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
-                  )}
-                </button>
-
-                {notificationsOpen && (
-                  <div className="absolute right-0 top-[calc(100%+14px)] z-[80] w-[330px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
-                    <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-                      <div>
-                        <p className="text-[14px] font-semibold text-[#071449]">
-                          Notifications
-                        </p>
-
-                        <p className="text-[11px] text-slate-400">
-                          Recent account activity
-                        </p>
-                      </div>
-
-                      {authNotifications.some(
-                        (item) => !item.read
-                      ) && (
-                        <button
-                          type="button"
-                          onClick={markNotificationsRead}
-                          className="text-[11px] font-semibold text-[#07983f] hover:underline"
-                        >
-                          Mark all read
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="max-h-[360px] overflow-y-auto">
-                      {authNotifications.length ? (
-                        authNotifications.map((item) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={markNotificationsRead}
-                            className="flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50"
-                          >
-                            <span
-                              className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                                item.type === "login"
-                                  ? "bg-[#eaf2ff] text-[#2866d6]"
-                                  : "bg-[#e4f9e9] text-[#07983f]"
-                              }`}
-                            >
-                              <Icon
-                                name={
-                                  item.type === "login"
-                                    ? "user"
-                                    : "bell"
-                                }
-                                size={16}
-                              />
-                            </span>
-
-                            <span className="min-w-0">
-                              <span className="block text-[12px] font-semibold text-[#071449]">
-                                {item.title}
-                              </span>
-
-                              <span className="mt-0.5 block text-[11px] leading-5 text-slate-400">
-                                {item.message}
-                              </span>
-                            </span>
-                          </button>
-                        ))
-                      ) : (
-                        <div className="px-4 py-10 text-center text-[12px] text-slate-400">
-                          No notifications yet.
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                {unreadNotifications && (
+                  <span className="absolute -right-0.5 top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
                 )}
-              </div>
+              </button>
 
               <div className="hidden h-8 w-px bg-slate-200 min-[1160px]:block" />
 
-              <div
+              <button
                 ref={profileRef}
-                className="relative hidden min-[1160px]:block"
+                type="button"
+                onClick={() => {
+                  setProfileOpen((open) => !open);
+                  setLocationOpen(false);
+                  setMobileMenuOpen(false);
+                }}
+                className="relative hidden items-center gap-2.5 rounded-lg py-1 pl-1 pr-2 min-[1160px]:flex"
+                aria-expanded={profileOpen}
+                aria-label="Open account menu"
               >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setProfileOpen((open) => !open);
-                    setLocationOpen(false);
-                    setMobileMenuOpen(false);
-                    setNotificationsOpen(false);
-                  }}
-                  className="relative flex items-center gap-2.5 rounded-lg py-1 pl-1 pr-2"
-                  aria-expanded={profileOpen}
-                  aria-label="Open account menu"
-                >
-                  <span className="relative flex h-10 w-10 overflow-hidden rounded-full bg-slate-100">
-                    {avatarSrc ? (
-                      <img
-                        src={avatarSrc}
-                        alt=""
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <span className="flex h-full w-full items-center justify-center text-[#24305f]">
-                        <Icon name="user" size={21} />
-                      </span>
-                    )}
-                  </span>
-
-                  {unreadNotifications && (
-                    <span className="absolute left-[36px] top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
+                <span className="relative flex h-10 w-10 overflow-hidden rounded-full bg-slate-100">
+                  {avatarSrc ? (
+                    <img
+                      src={avatarSrc}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center text-[#24305f]">
+                      <Icon name="user" size={21} />
+                    </span>
                   )}
+                </span>
 
-                  <span className="max-w-[100px] truncate text-[13px] font-semibold text-[#24305f]">
-                    {username}
-                  </span>
-
-                  <Icon
-                    name={profileOpen ? "chevronUp" : "chevronDown"}
-                    size={16}
-                  />
-                </button>
-
-                {profileOpen && (
-                  <div className="absolute right-0 top-[calc(100%+8px)] z-[90] w-[290px] overflow-hidden rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_35px_rgba(16,24,63,0.13)]">
-                    <div className="space-y-1">
-                      {PROFILE_ITEMS.map((item, index) => (
-                        <div key={item.path}>
-                          {index === 4 && (
-                            <div className="my-2 h-px bg-slate-200" />
-                          )}
-
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleProfileNavigation(item.path)
-                            }
-                            className="flex w-full items-center gap-4 rounded-lg px-2.5 py-2.5 text-left hover:bg-slate-50"
-                          >
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[#071449]">
-                              <Icon name={item.icon} size={23} />
-                            </span>
-
-                            <span className="min-w-0">
-                              <span className="block text-[14px] font-medium text-[#071449]">
-                                {item.label}
-                              </span>
-
-                              <span className="block text-[11px] text-slate-400">
-                                {item.description}
-                              </span>
-                            </span>
-                          </button>
-                        </div>
-                      ))}
-
-                      <div className="my-2 h-px bg-slate-200" />
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setProfileOpen(false);
-                          setLogoutConfirmOpen(true);
-                        }}
-                        className="flex w-full items-center gap-4 rounded-lg px-2.5 py-2.5 text-left hover:bg-red-50"
-                      >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center text-red-500">
-                          <Icon name="logout" size={23} />
-                        </span>
-
-                        <span>
-                          <span className="block text-[14px] font-medium text-red-500">
-                            Log out
-                          </span>
-
-                          <span className="block text-[11px] text-slate-400">
-                            Sign out of your account
-                          </span>
-                        </span>
-                      </button>
-                    </div>
-                  </div>
+                {unreadNotifications && (
+                  <span className="absolute left-[36px] top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
                 )}
-              </div>
+
+                <span className="max-w-[100px] truncate text-[13px] font-semibold text-[#24305f]">
+                  {username}
+                </span>
+
+                <Icon
+                  name={profileOpen ? "chevronUp" : "chevronDown"}
+                  size={16}
+                />
+              </button>
+
+              {profileOpen && (
+                <div className="absolute right-6 top-[calc(100%-2px)] w-[290px] overflow-hidden rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_35px_rgba(16,24,63,0.13)]">
+                  <div className="space-y-1">
+                    {PROFILE_ITEMS.map((item, index) => (
+                      <div key={item.path}>
+                        {index === 4 && (
+                          <div className="my-2 h-px bg-slate-200" />
+                        )}
+
+                        <Link
+                          to={item.path}
+                          onClick={() => setProfileOpen(false)}
+                          className="flex items-center gap-4 rounded-lg px-2.5 py-2.5 hover:bg-slate-50"
+                        >
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[#071449]">
+                            <Icon name={item.icon} size={23} />
+                          </span>
+
+                          <span className="min-w-0">
+                            <span className="block text-[14px] font-medium text-[#071449]">
+                              {item.label}
+                            </span>
+
+                            <span className="block text-[11px] text-slate-400">
+                              {item.description}
+                            </span>
+                          </span>
+                        </Link>
+                      </div>
+                    ))}
+
+                    <div className="my-2 h-px bg-slate-200" />
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfileOpen(false);
+                        setLogoutConfirmOpen(true);
+                      }}
+                      className="flex w-full items-center gap-4 rounded-lg px-2.5 py-2.5 text-left hover:bg-red-50"
+                    >
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center text-red-500">
+                        <Icon name="logout" size={23} />
+                      </span>
+
+                      <span>
+                        <span className="block text-[14px] font-medium text-red-500">
+                          Log out
+                        </span>
+
+                        <span className="block text-[11px] text-slate-400">
+                          Sign out of your account
+                        </span>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <>
@@ -1153,52 +842,16 @@ export default function Header({
 
       {logoutConfirmOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071449]/35 px-4 backdrop-blur-[2px]">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="logout-title"
-            className="w-full max-w-[390px] rounded-2xl bg-white p-6 shadow-[0_20px_60px_rgba(16,24,63,0.2)]"
-          >
-            <h2
-              id="logout-title"
-              className="text-[20px] font-semibold text-[#10183f]"
-            >
-              Log out of Matchet?
-            </h2>
-
-            <p className="mt-2 text-[14px] leading-6 text-[#69739a]">
-              You will need to sign in again to access your account.
-            </p>
-
+          <div role="dialog" aria-modal="true" aria-labelledby="logout-title" className="w-full max-w-[390px] rounded-2xl bg-white p-6 shadow-[0_20px_60px_rgba(16,24,63,0.2)]">
+            <h2 id="logout-title" className="text-[20px] font-semibold text-[#10183f]">Log out of Matchet?</h2>
+            <p className="mt-2 text-[14px] leading-6 text-[#69739a]">You will need to sign in again to access your account.</p>
             <div className="mt-6 flex gap-3">
-              <button
-                type="button"
-                disabled={logoutSubmitting}
-                onClick={() => setLogoutConfirmOpen(false)}
-                className="flex h-11 flex-1 items-center justify-center rounded-lg border border-slate-200 text-[13px] font-semibold text-[#24305f] hover:bg-slate-50 disabled:opacity-60"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                disabled={logoutSubmitting}
-                onClick={async () => {
-                  setLogoutSubmitting(true);
-
-                  try {
-                    await authLogout();
-                  } finally {
-                    setLogoutSubmitting(false);
-                    setLogoutConfirmOpen(false);
-                  }
-                }}
-                className="flex h-11 flex-1 items-center justify-center rounded-lg bg-[#ef4b4b] text-[13px] font-semibold text-white hover:bg-[#dc3e3e] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {logoutSubmitting
-                  ? "Logging out..."
-                  : "Log out"}
-              </button>
+              <button type="button" disabled={logoutSubmitting} onClick={() => setLogoutConfirmOpen(false)} className="flex h-11 flex-1 items-center justify-center rounded-lg border border-slate-200 text-[13px] font-semibold text-[#24305f] hover:bg-slate-50 disabled:opacity-60">Cancel</button>
+              <button type="button" disabled={logoutSubmitting} onClick={async () => {
+                if (!onLogout) return;
+                setLogoutSubmitting(true);
+                try { await onLogout(); } finally { setLogoutSubmitting(false); setLogoutConfirmOpen(false); }
+              }} className="flex h-11 flex-1 items-center justify-center rounded-lg bg-[#ef4b4b] text-[13px] font-semibold text-white hover:bg-[#dc3e3e] disabled:cursor-not-allowed disabled:opacity-60">{logoutSubmitting ? "Logging out..." : "Log out"}</button>
             </div>
           </div>
         </div>
