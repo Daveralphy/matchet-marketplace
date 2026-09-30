@@ -7,7 +7,14 @@ import { createContext, useState, useContext } from "react";
 const FormContext = createContext();
 
 // Create a Provider component to wrap around the pages
+const FORM_STORAGE_KEY = "matchet_onboarding_forms";
+
+function loadStoredForms() {
+  try { return JSON.parse(sessionStorage.getItem(FORM_STORAGE_KEY) || "{}"); } catch { return {}; }
+}
+
 export function FormProvider({ children }) {
+  const stored = loadStoredForms();
   const [formData, setFormData] = useState({
     // Initialize from fields here
     firstName: "",
@@ -101,12 +108,24 @@ export function FormProvider({ children }) {
     providerTin: "",
   });
 
+  // Restore the selected onboarding flow without mixing seller and service fields.
+  const activeFlow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+  const storedFlow = stored[activeFlow];
+  if (storedFlow) {
+    Object.assign(formData, storedFlow);
+  }
+
   // Function to update a single field's value
   const updateField = (name, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => {
+      const next = { ...prevData, [name]: value };
+      try {
+        const all = loadStoredForms();
+        const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+        sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({ ...all, [flow]: next }));
+      } catch {}
+      return next;
+    });
   };
 
   return (
