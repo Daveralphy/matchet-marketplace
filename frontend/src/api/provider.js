@@ -169,7 +169,7 @@ export function getProviderCapabilities() {
   return request("/api/provider/capabilities", { cache: false });
 }
 
-export async function submitSellerOnboarding(formData) {
+async function prepareSellerOnboardingPayload(formData) {
   const next = { ...formData };
 
   if (formData.profileImage instanceof File) {
@@ -196,6 +196,19 @@ export async function submitSellerOnboarding(formData) {
     }
   }
 
+  return next;
+}
+
+export async function saveSellerOnboardingDraft(formData) {
+  const next = await prepareSellerOnboardingPayload(formData);
+  return request("/api/provider/seller-onboarding", {
+    method: "POST",
+    body: JSON.stringify({ formData: serializeOnboardingValue(next), draft: true }),
+  });
+}
+
+export async function submitSellerOnboarding(formData) {
+  const next = await prepareSellerOnboardingPayload(formData);
   return request("/api/provider/seller-onboarding", {
     method: "POST",
     body: JSON.stringify({ formData: serializeOnboardingValue(next) }),
