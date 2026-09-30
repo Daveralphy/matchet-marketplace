@@ -56,6 +56,14 @@ export default function ProviderSignupPageTwo() {
     setAreas((current) => [...current, ""]);
   };
 
+  const handleServiceImages = (event) => {
+    const files = Array.from(event.target.files || []);
+    const valid = files.filter((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type) && file.size <= 5 * 1024 * 1024);
+    if (valid.length !== files.length) alert("Only JPG, PNG, or WebP images up to 5MB each are allowed.");
+    updateField("providerServiceImages", valid.slice(0, 6));
+    event.target.value = "";
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!event.currentTarget.checkValidity()) {
@@ -99,6 +107,12 @@ export default function ProviderSignupPageTwo() {
               <label htmlFor="providerServiceName">
                 Service name *
                 <input type="text" id="providerServiceName" name="providerServiceName" placeholder="e.g. Home Cleaning, Makeup, Photography" value={formData.providerServiceName || ""} onChange={handleChange} required />
+              </label>
+
+              <label htmlFor="providerServiceImages">
+                Service images
+                <input id="providerServiceImages" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleServiceImages} />
+                <small>Upload up to 6 JPG, PNG, or WebP images. Max 5MB each.</small>
               </label>
 
               <div className="provider-service-description-field">
