@@ -1136,29 +1136,11 @@ async function getSellerOrders(req, res) {
   }
 }
 
-async function updateSellerOrderStatus(req, res) {
-  try {
-    const sellerId = req.user._id;
-    const { orderId } = req.params;
-    const { status } = req.body;
-    const allowed = ["processing", "shipped", "cancelled"];
-    if (!allowed.includes(status)) return res.status(400).json({ success: false, message: "Invalid order status." });
+async function getSellerOrderDetail(req,res){try{const sellerId=req.user._id;const order=await Order.findOne({_id:req.params.orderId,"items.sellerId":sellerId}).populate("buyerId","firstName lastName email phone avatar createdAt").lean();if(!order)return res.status(404).json({success:false,message:"Order not found."});const items=order.items.filter(i=>String(i.sellerId)===String(sellerId));const amount=items.reduce((a,i)=>a+Number(i.priceSnapshot||0)*Number(i.quantity||0),0);return res.json({success:true,data:{id:order._id,orderNumber:"#"+String(order._id).slice(-6).toUpperCase(),createdAt:order.createdAt,status:order.orderStatus,paymentStatus:order.paymentStatus,paymentReference:order.paymentReference||null,items:items.map(i=>({productId:i.productId,name:i.nameSnapshot,quantity:i.quantity,unitPrice:i.priceSnapshot,total:Number(i.priceSnapshot)*Number(i.quantity),image:i.imageSnapshot||null})),amount,subtotal:amount,shippingFee:Number(order.deliveryFee||0),total:amount+Number(order.deliveryFee||0),customer:{id:order.buyerId?._id,name:[order.buyerId?.firstName,order.buyerId?.lastName].filter(Boolean).join(" ")||"Customer",email:order.buyerId?.email||"",phone:order.buyerId?.phone||"",avatar:order.buyerId?.avatar?.url||null,createdAt:order.buyerId?.createdAt},shippingAddress:order.shippingAddress||{},statusHistory:order.statusHistory||[],notes:order.sellerNotes||"",canShip:["pending","confirmed","processing"].includes(order.orderStatus),canCancel:!["delivered","cancelled"].includes(order.orderStatus)}})}catch(error){console.error("Seller order detail error:",error);return res.status(500).json({success:false,message:"Unable to load this order right now."})}}
+async function addSellerOrderNote(req,res){try{const order=await Order.findOne({_id:req.params.orderId,"items.sellerId":req.user._id});if(!order)return res.status(404).json({success:false,message:"Order not found."});order.sellerNotes=String(req.body.note||"").trim();await order.save();return res.json({success:true,data:{notes:order.sellerNotes}})}catch(error){return res.status(400).json({success:false,message:error.message})}}
 
-    const order = await Order.findOne({ _id: orderId, "items.sellerId": sellerId });
-    if (!order) return res.status(404).json({ success: false, message: "Order not found." });
-    if (status === "cancelled" && ["delivered", "cancelled"].includes(order.orderStatus)) return res.status(400).json({ success: false, message: "This order cannot be cancelled." });
-    if (status === "shipped" && !["confirmed", "processing"].includes(order.orderStatus)) return res.status(400).json({ success: false, message: "Only confirmed or processing orders can be marked as shipped." });
-    if (status === "processing" && !["pending", "confirmed"].includes(order.orderStatus)) return res.status(400).json({ success: false, message: "This order cannot be moved to processing." });
-
-    order.orderStatus = status;
-    await order.save();
-    return res.json({ success: true, message: "Order status updated.", data: { id: order._id, status: order.orderStatus } });
-  } catch (error) {
-    console.error("Seller order status error:", error);
-    return res.status(500).json({ success: false, message: process.env.NODE_ENV === "production" ? "Unable to update the order right now." : error.message });
-  }
-}
-
+module.exports.getSellerOrderDetail = getSellerOrderDetail;
+module.exports.addSellerOrderNote = addSellerOrderNote;
 module.exports.getSellerOrders = getSellerOrders;
 module.exports.updateSellerOrderStatus = updateSellerOrderStatus;
 
