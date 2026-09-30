@@ -95,6 +95,13 @@ const storeProfileSchema = new mongoose.Schema(
     payoutDetails: { type: mongoose.Schema.Types.Mixed, default: {} },
     onboardingData: { type: mongoose.Schema.Types.Mixed, default: {} },
 
+    onboardingStatus: {
+      type: String,
+      enum: ["in_progress", "submitted"],
+      default: "in_progress",
+      index: true,
+    },
+
     logo: {
       type: imageSchema,
     },
