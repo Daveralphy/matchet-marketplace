@@ -1179,9 +1179,12 @@ async function getSellerProducts(req, res) {
 }
 async function createSellerProduct(req,res){
   try {
-    const {name,description,shortDescription="",category,price,inventory=0,images=[],location,status="draft",details={}}=req.body;
+    const {name,description,shortDescription="",category,price,inventory=0,images=[],location,status="draft",details={},sku}=req.body;
     if(!name||!description||!category||price===undefined) return res.status(400).json({success:false,message:"Name, description, category and price are required."});
-    const {sku}=req.body; const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,status,location,details,sku});
+    const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
+    const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
+    const safeStatus=canPublish ? status : "draft";
+    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,safeStatus,status:safeStatus,location,details,sku});
     return res.status(201).json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
@@ -1190,7 +1193,10 @@ async function updateSellerProduct(req,res){
     const product=await Product.findOne({_id:req.params.productId,sellerId:req.user._id});
     if(!product)return res.status(404).json({success:false,message:"Product not found."});
     const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details"];
+    const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
+    const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=req.body[k]});
+    if (!canPublish) product.status="draft";
     await product.save();
     return res.json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
