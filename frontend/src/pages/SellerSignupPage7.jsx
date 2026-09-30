@@ -439,10 +439,20 @@ export default function SellerSignupPageSeven() {
             </p>
 
             <div className="seller-signup-review-thumbs">
-              <span>Basket</span>
-              <span>Basket</span>
-              <span>Basket</span>
-              <span>+3</span>
+              {Array.isArray(formData.productImages) && formData.productImages.length > 0
+                ? formData.productImages.slice(0, 6).map((image, imageIndex) => (
+                    image?.url ? (
+                      <img
+                        key={image.publicId || image.url || imageIndex}
+                        src={image.url}
+                        alt={`Product ${imageIndex + 1}`}
+                        style={{ width: 58, height: 58, objectFit: "cover", borderRadius: 7, border: "1px solid #e1e6f0" }}
+                      />
+                    ) : (
+                      <span key={imageIndex}>Image</span>
+                    )
+                  ))
+                : <span>No images</span>}
             </div>
           </div>
 
@@ -512,7 +522,7 @@ export default function SellerSignupPageSeven() {
                 <tr>
                   <td>Selfie</td>
                   <td className="seller-signup-verification-card-selfie-submitted">
-                    ???Indicate if selfie submitted or not???
+                    {formData.selfieImage ? "Submitted" : "Not submitted"}
                   </td>
                 </tr>
               </tbody>
