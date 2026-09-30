@@ -920,6 +920,16 @@ async function submitSellerOnboarding(req, res) {
     const baseSlug = storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "matchet-store";
     const existing = await StoreProfile.findOne({ slug: { $regex: new RegExp("^" + baseSlug + "(?:-[0-9]+)?$") }, userId: { $ne: userId } }).sort({ createdAt: -1 }).lean();
     const slug = existing ? baseSlug + "-" + String(Date.now()).slice(-6) : baseSlug;
+    const productName = input.productName || "";
+    const hasInitialProduct = Boolean(productName && input.productPrice !== undefined && input.productPrice !== "");
+    if (hasInitialProduct) {
+      await Product.findOneAndUpdate(
+        { sellerId: userId, "details.onboardingSource": "seller-onboarding" },
+        { $set: { name: productName, description: input.productDesc || productName, shortDescription: input.productDesc || "", category: input.productCat || input.businessCat || "Other", price: Number(input.productPrice) || 0, inventory: Number(input.productStock) || 0, sku: input.productSku || undefined, status: "draft", details: { onboardingSource: "seller-onboarding", condition: input.productCondition || "New", tags: input.productTags || [] } } },
+        { upsert: true, new: true, runValidators: true }
+      );
+    }
+
     const store = await StoreProfile.findOneAndUpdate(
       { userId },
       { $set: { storeName, slug, description: input.businessDesc || input.sellerBio || "", location: { city: input.location || "", country: "", }, contact: { phone: [input.businessPhoneCountryCode, input.businessPhoneNumber].filter(Boolean).join(" ") || [input.countryCode, input.phoneNumber].filter(Boolean).join(" "), email: input.email || req.user.email }, category: input.businessCategory || input.category || "", languages: input.languages || [], businessDetails: input.businessDetails || {}, shippingPolicies: input.shippingPolicies || {}, socialLinks: input.socialLinks || {}, payoutDetails: input.payoutDetails || input.bankDetails || {}, onboardingData: input, verificationStatus: "pending", status: "draft", applicationSubmittedAt: new Date(), reviewedAt: null, reviewNote: "" }, $setOnInsert: { userId } },
