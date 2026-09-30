@@ -18,7 +18,8 @@ export function FormProvider({ children }) {
   const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
   const [formData, setFormData] = useState(() => ({
     // Initialize from fields here
-    firstName: "",
+    onboardingUserId: "",
+     firstName: "",
     lastName: "",
     email: "",
     countryCode: "",
@@ -44,6 +45,7 @@ export function FormProvider({ children }) {
     productTags: [],
     productImages: [],
     businessLogo: null,
+    profileImage: null,
     idImageFront: null,
     idImageBack: null,
     selfieImage: null,
