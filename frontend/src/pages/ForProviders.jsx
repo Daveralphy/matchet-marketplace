@@ -34,7 +34,11 @@ export default function ForProviders() {
         else if (state.applicationSubmittedAt) navigate("/provider/application-status");
         else navigate("/provider/onboarding");
       } else {
-        navigate("/seller/dashboard");
+        if (state.onboardingStatus === "in_progress") {
+          navigate("/register");
+        } else {
+          navigate("/seller/dashboard");
+        }
       }
     } catch {
       navigate(capability === "product" ? "/register" : "/provider/onboarding");
