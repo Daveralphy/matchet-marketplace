@@ -8,6 +8,7 @@ import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader"
 
 export default function SellerSignupPageTwo() {
   const { formData, updateField, mergeFormData } = useForm();
+  const [logoPreview, setLogoPreview] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -29,6 +30,7 @@ export default function SellerSignupPageTwo() {
       return;
     }
     updateField("businessLogo", file);
+    setLogoPreview(URL.createObjectURL(file));
     e.target.value = "";
   };
 
@@ -551,9 +553,9 @@ export default function SellerSignupPageTwo() {
               </fieldset>
 
               <label className="seller-signup-upload seller-signup-business-logo">
-                <span className="seller-signup-upload-icon">↑</span>
+                {logoPreview ? <img src={logoPreview} alt="Business logo preview" style={{ width: 64, height: 64, objectFit: "contain", borderRadius: 8, border: "1px solid #e1e6f0" }} /> : <span className="seller-signup-upload-icon">↑</span>}
 
-                <strong>Upload your logo</strong>
+                <strong>{logoPreview ? "Logo selected" : "Upload your logo"}</strong>
 
                 <span>JPG, PNG or WebP. Max 5MB.</span>
 
