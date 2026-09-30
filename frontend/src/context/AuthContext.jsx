@@ -33,6 +33,7 @@ export function AuthProvider({ children }) {
     try {
       const response = await getCurrentUser();
       setUser(response.user);
+      sessionStorage.setItem("matchet_cache_user", response.user.id || response.user.email || "account");
       loadNotifications(response.user);
       return response.user;
     } catch {
@@ -51,6 +52,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (credentials) => {
     const response = await loginRequest(credentials);
     setUser(response.user);
+    sessionStorage.setItem("matchet_cache_user", response.user.id || response.user.email || "account");
     loadNotifications(response.user);
     addNotification(response.user, { type: "login", title: "New login", message: "Your Matchet account was just signed in." });
     return response.user;
@@ -69,6 +71,8 @@ export function AuthProvider({ children }) {
       await logoutRequest();
     } finally {
       setUser(null);
+      sessionStorage.removeItem("matchet_cache_user");
+      Object.keys(sessionStorage).filter((key) => key.startsWith("matchet_provider_cache:")).forEach((key) => sessionStorage.removeItem(key));
     }
   }, []);
 
