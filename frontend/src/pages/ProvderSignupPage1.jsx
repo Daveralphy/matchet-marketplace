@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
+import { getProviderCapabilities } from "../api/provider";
 import { useAuth } from "../context/AuthContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
@@ -20,7 +21,7 @@ export default function ProviderSignupPageOne() {
   const { formData, updateField, setOnboardingFlow } = useForm();
   const { user } = useAuth();
   const navigate = useNavigate();
-  useEffect(() => { setOnboardingFlow("service"); }, [setOnboardingFlow]);
+  useEffect(() => { setOnboardingFlow("service"); getProviderCapabilities().then((response) => { const state = response?.data?.service; if (!state?.exists) return; if (state.status === "active" || state.verificationStatus === "verified") navigate("/provider/dashboard", { replace: true }); else if (state.applicationSubmittedAt || state.verificationStatus === "rejected") navigate("/provider/application-status", { replace: true }); }).catch(() => {}); }, [setOnboardingFlow, navigate]);
 
   useEffect(() => {
     if (!user) return;
