@@ -1166,7 +1166,7 @@ async function getSellerProducts(req, res) {
     const totalViews = 0;
     const mapped = filtered.map(p => ({
       id:p._id, name:p.name, description:p.description, shortDescription:p.shortDescription||"", details:p.details||{}, category:p.category, price:p.price, inventory:p.inventory,
-      status:p.status, orders:orderCounts[String(p._id)] || 0,
+      status:p.status, orders:orderCounts[String(p._id)] || 0, createdAt:p.createdAt, updatedAt:p.updatedAt,
       image:p.images?.find(i=>i.isPrimary)?.url || p.images?.[0]?.url || null, createdAt:p.createdAt
     }));
     return res.json({success:true,data:{
