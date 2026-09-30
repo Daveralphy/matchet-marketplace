@@ -36,8 +36,9 @@ export function clearProviderCache() {
   } catch {}
 }
 async function request(path, options = {}) {
-  const method = (options.method || "GET").toUpperCase();
-  const useCache = method === "GET" && options.cache !== false;
+  const { cache: cacheOption, ...fetchOptions } = options;
+  const method = (fetchOptions.method || "GET").toUpperCase();
+  const useCache = method === "GET" && cacheOption !== false;
   if (useCache) {
     const cached = readCache(path);
     if (cached !== null) return cached;
@@ -49,7 +50,7 @@ async function request(path, options = {}) {
       "Content-Type": "application/json",
       ...(options.headers || {}),
     },
-    ...options,
+    ...fetchOptions,
   });
 
   const payload = await response.json().catch(() => ({}));
