@@ -1,6 +1,6 @@
 # Matchet Marketplace Database Schema
 
-**Schema Version:** 1.1.0  
+**Schema Version:** 1.1.1  
 **Status:** Approved  
 **Last Updated:** 2026-09-30
 
