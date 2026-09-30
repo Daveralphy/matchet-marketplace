@@ -1,7 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Brima
 
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
@@ -19,6 +19,28 @@ import ProviderSignupPageFour from "./pages/ProviderSignupPage4";
 import ProviderSignupPageFive from "./pages/ProviderSignupPage5";
 import ProviderSignupPageSix from "./pages/ProviderSignupPage6";
 import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
+import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
+import ProviderDashboard from "./pages/ProviderDashboard";
+import SellerDashboard from "./pages/SellerDashboard";
+import SellerOrders from "./pages/SellerOrders";
+import SellerOrderDetail from "./pages/SellerOrderDetail";
+import SellerMessages from "./pages/SellerMessages";
+import SellerProducts from "./pages/SellerProducts";
+import SellerEarnings from "./pages/SellerEarnings";
+import SellerReviews from "./pages/SellerReviews";
+import SellerProfile from "./pages/SellerProfile";
+import SellerSettings from "./pages/SellerSettings";
+import SellerProductForm from "./pages/SellerProductForm";
+import PublicSellerStore from "./pages/PublicSellerStore";
+import ProviderDataPage from "./pages/ProviderDataPage";
+import ProviderBookings from "./pages/ProviderBookings";
+import ProviderApplicationStatus from "./pages/ProviderApplicationStatus";
+import ProviderMessages from "./pages/ProviderMessages";
+import ProviderServices from "./pages/ProviderServices";
+import ProviderEarnings from "./pages/ProviderEarnings";
+import ProviderReviews from "./pages/ProviderReviews";
+import ProviderProfile from "./pages/ProviderProfile";
+import ProviderSettings from "./pages/ProviderSettings";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -42,8 +64,11 @@ function BlankPage() {
 
 function RequireAuth({ children }) {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
   if (loading) return <main className="min-h-[60vh] w-full" />;
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  if (isAuthenticated) return children;
+  const returnTo = location.pathname + location.search;
+  return <Navigate to={"/login?returnTo=" + encodeURIComponent(returnTo)} replace />;
 }
 
 const router = createBrowserRouter([
@@ -97,35 +122,35 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <SellerSignupPageOne />,
+    element: <RequireAuth><SellerSignupPageOne /></RequireAuth>,
   },
   {
     path: "/register/page2",
-    element: <SellerSignupPageTwo />,
+    element: <RequireAuth><SellerSignupPageTwo /></RequireAuth>,
   },
   {
     path: "/register/page3",
-    element: <SellerSignupPageThree />,
+    element: <RequireAuth><SellerSignupPageThree /></RequireAuth>,
   },
   {
     path: "/register/page4",
-    element: <SellerSignupPageFour />,
+    element: <RequireAuth><SellerSignupPageFour /></RequireAuth>,
   },
   {
     path: "/register/page5",
-    element: <SellerSignupPageFive />,
+    element: <RequireAuth><SellerSignupPageFive /></RequireAuth>,
   },
   {
     path: "/register/page6",
-    element: <SellerSignupPageSix />,
+    element: <RequireAuth><SellerSignupPageSix /></RequireAuth>,
   },
   {
     path: "/register/page7",
-    element: <SellerSignupPageSeven />,
+    element: <RequireAuth><SellerSignupPageSeven /></RequireAuth>,
   },
   {
     path: "/register/page8",
-    element: <SellerSignupPageEight />,
+    element: <RequireAuth><SellerSignupPageEight /></RequireAuth>,
   },
   {
     path: "/account/saved-items",
@@ -173,28 +198,28 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/profile",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    path: "/provider/profile",
+    element: <RequireAuth><ProviderProfile /></RequireAuth>,
   },
   {
     path: "/orders",
     element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
   },
   {
-    path: "/bookings",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    path: "/provider/bookings",
+    element: <RequireAuth><ProviderBookings /></RequireAuth>,
   },
   {
-    path: "/settings",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    path: "/provider/settings",
+    element: <RequireAuth><ProviderSettings /></RequireAuth>,
   },
   {
     path: "/help",
     element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
-    path: "/reviews",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    path: "/provider/reviews",
+    element: <RequireAuth><ProviderReviews /></RequireAuth>,
   },
   {
     path: "/categories",
@@ -210,11 +235,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/services",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><ProviderServices /></RequireAuth>,
   },
   {
-    path: "/messages",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    path: "/provider/messages",
+    element: <RequireAuth><ProviderMessages /></RequireAuth>,
   },
   {
     path: "/saved-items",
@@ -249,7 +274,7 @@ const router = createBrowserRouter([
     element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
-    path: "/provider/services",
+    path: "/provider/services-legacy",
     element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
@@ -258,35 +283,119 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/dashboard",
-    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Dashboard" /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><ProviderDashboard /></RequireAuth>,
+  },
+  {
+    path: "/seller/dashboard",
+    element: <RequireAuth><SellerDashboard /> </RequireAuth>,
+  },
+  {
+    path: "/seller/orders",
+    element: <RequireAuth><SellerOrders /></RequireAuth>,
+  },
+  {
+    path: "/seller/orders/:orderId",
+    element: <RequireAuth><SellerOrderDetail /></RequireAuth>,
+  },
+  {
+    path: "/seller/messages",
+    element: <RequireAuth><SellerMessages /></RequireAuth>,
+  },
+  {
+    path: "/seller/products",
+    element: <RequireAuth><SellerProducts /></RequireAuth>,
+  },
+  {
+    path: "/seller/products/new",
+    element: <RequireAuth><SellerProductForm /></RequireAuth>,
+  },
+  {
+    path: "/seller/products/:productId/edit",
+    element: <RequireAuth><SellerProductForm /></RequireAuth>,
+  },
+  {
+    path: "/seller/earnings",
+    element: <RequireAuth><SellerEarnings /></RequireAuth>,
+  },
+  {
+    path: "/seller/reviews",
+    element: <RequireAuth><SellerReviews /></RequireAuth>,
+  },
+  {
+    path: "/seller/profile",
+    element: <RequireAuth><SellerProfile /></RequireAuth>,
+  },
+  {
+    path: "/store/:slug",
+    element: <PublicSellerStore />,
+  },
+  {
+    path: "/seller/settings",
+    element: <RequireAuth><SellerSettings /></RequireAuth>,
+  },
+  {
+    path: "/provider/earnings",
+    element: <RequireAuth><ProviderEarnings /></RequireAuth>,
+  },
+  {
+    path: "/provider/application-status",
+    element: <RequireAuth><ProviderApplicationStatus /></RequireAuth>,
   },
   {
     path: "/provider/onboarding",
-    element: <ProviderSignupPageOne />,
+    element: <RequireAuth><ProviderSignupPageOne /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page2",
-    element: <ProviderSignupPageTwo />,
+    element: <RequireAuth><ProviderSignupPageTwo /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page3",
-    element: <ProviderSignupPageThree />,
+    element: <RequireAuth><ProviderSignupPageThree /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page4",
-    element: <ProviderSignupPageFour />,
+    element: <RequireAuth><ProviderSignupPageFour /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page5",
-    element: <ProviderSignupPageFive />,
+    element: <RequireAuth><ProviderSignupPageFive /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page6",
-    element: <ProviderSignupPageSix />,
+    element: <RequireAuth><ProviderSignupPageSix /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page7",
-    element: <ProviderSignupPageSeven />,
+    element: <RequireAuth><ProviderSignupPageSeven /></RequireAuth>,
+  },
+  {
+    path: "/provider/onboarding/success",
+    element: <RequireAuth><ProviderSignupPageEight /></RequireAuth>,
+  },
+  {
+    path: "/provider/application-status",
+    element: <RequireAuth><ProviderApplicationStatus /></RequireAuth>,
+  },
+  {
+    path: "/provider/earnings",
+    element: <RequireAuth><ProviderDataPage type="earnings" /></RequireAuth>,
+  },
+  {
+    path: "/provider/reviews",
+    element: <RequireAuth><ProviderDataPage type="reviews" /></RequireAuth>,
+  },
+  {
+    path: "/provider/profile",
+    element: <RequireAuth><ProviderDataPage type="profile" /></RequireAuth>,
+  },
+  {
+    path: "/provider/settings",
+    element: <RequireAuth><ProviderDataPage type="settings" /></RequireAuth>,
+  },
+  {
+    path: "/provider/bookings",
+    element: <RequireAuth><ProviderBookings /></RequireAuth>,
   },
   {
     path: "/provider/listings",

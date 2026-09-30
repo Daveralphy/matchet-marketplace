@@ -2,13 +2,16 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useForm } from "../context/FormContext.jsx";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
+import { getProviderCapabilities } from "../api/provider";
 
 export default function SellerSignupPageOne() {
-  const { formData, updateField } = useForm();
+  const { formData, updateField, setOnboardingFlow } = useForm();
   const navigate = useNavigate();
+  useEffect(() => { setOnboardingFlow("seller"); getProviderCapabilities().then((response) => { const state = response?.data?.product; if (state?.exists) navigate("/seller/dashboard", { replace: true }); }).catch(() => {}); }, [setOnboardingFlow, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,10 +1,56 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { getProviderCapabilities } from "../api/provider";
 import heroImage from "../assets/inspirations/for provider/hero.png";
 
 export default function ForProviders() {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState("");
+
+  const handleProviderChoice = useCallback(async (capability) => {
+    if (!isAuthenticated) {
+      sessionStorage.setItem("matchet_provider_intent", capability);
+      sessionStorage.setItem("matchet_onboarding_flow", capability === "product" ? "seller" : "service");
+      navigate("/login?returnTo=" + encodeURIComponent("/for-providers"));
+      return;
+    }
+    sessionStorage.setItem("matchet_onboarding_flow", capability === "product" ? "seller" : "service");
+    setLoading(capability);
+    try {
+      const response = await getProviderCapabilities();
+      const state = response?.data?.[capability];
+      if (!state?.exists) {
+        navigate(capability === "product" ? "/register" : "/provider/onboarding");
+        return;
+      }
+      if (capability === "service") {
+        if (state.status === "active" || state.verificationStatus === "verified") navigate("/provider/dashboard");
+        else if (state.verificationStatus === "rejected") navigate("/provider/application-status");
+        else if (state.applicationSubmittedAt) navigate("/provider/application-status");
+        else navigate("/provider/onboarding");
+      } else {
+        navigate("/seller/dashboard");
+      }
+    } catch {
+      navigate(capability === "product" ? "/register" : "/provider/onboarding");
+    } finally {
+      setLoading("");
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const intent = sessionStorage.getItem("matchet_provider_intent");
+    if (!intent) return;
+    sessionStorage.removeItem("matchet_provider_intent");
+    handleProviderChoice(intent);
+  }, [isAuthenticated, handleProviderChoice]);
+
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
       <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-white shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
@@ -29,25 +75,15 @@ export default function ForProviders() {
             </p>
 
             <div className="mt-7 flex w-full max-w-[625px] flex-col gap-3 sm:flex-row sm:gap-5">
-              <Link
-                to="/register"
-                className="flex h-[58px] flex-1 items-center justify-center gap-4 rounded-[11px] bg-[#07983f] px-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#068936] sm:text-[16px]"
-              >
-                <span>Sell products</span>
-                <span aria-hidden="true" className="text-[26px] font-normal leading-none">
-                  →
-                </span>
-              </Link>
+              <button type="button" onClick={() => handleProviderChoice("product")} disabled={Boolean(loading)} className="flex h-[58px] flex-1 items-center justify-center gap-4 rounded-[11px] bg-[#07983f] px-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#068936] disabled:cursor-wait disabled:opacity-70 sm:text-[16px]">
+                <span>{loading === "product" ? "Checking..." : "Sell products"}</span>
+                <span aria-hidden="true" className="text-[26px] font-normal leading-none">→</span>
+              </button>
 
-              <Link
-                to="/provider/onboarding"
-                className="flex h-[58px] flex-1 items-center justify-center gap-4 rounded-[11px] border-2 border-[#b7b9df] bg-white px-6 text-[15px] font-semibold text-[#10183f] transition-colors hover:bg-[#f8f8fc] sm:text-[16px]"
-              >
-                <span>Offer services</span>
-                <span aria-hidden="true" className="text-[26px] font-normal leading-none">
-                  →
-                </span>
-              </Link>
+              <button type="button" onClick={() => handleProviderChoice("service")} disabled={Boolean(loading)} className="flex h-[58px] flex-1 items-center justify-center gap-4 rounded-[11px] border-2 border-[#b7b9df] bg-white px-6 text-[15px] font-semibold text-[#10183f] transition-colors hover:bg-[#f8f8fc] disabled:cursor-wait disabled:opacity-70 sm:text-[16px]">
+                <span>{loading === "service" ? "Checking..." : "Offer services"}</span>
+                <span aria-hidden="true" className="text-[26px] font-normal leading-none">→</span>
+              </button>
             </div>
           </div>
 

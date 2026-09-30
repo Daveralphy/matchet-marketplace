@@ -140,7 +140,7 @@ export default function SellerSignupPageEight() {
 
           <div className="seller-signup-submission-actions">
             <Link
-              to="/provider/dashboard"
+              to="/seller/dashboard"
               className="seller-signup-dashboard-button"
             >
               Go to dashboard

@@ -3,14 +3,20 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { submitSellerOnboarding } from "../api/provider";
 import { useForm } from "../context/FormContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageSeven() {
-  const { formData } = useForm();
+  const { formData, clearForm } = useForm();
+  const { refreshUser } = useAuth();
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const maskSensitiveData = (value) => {
     if (!value) return "";
@@ -550,7 +556,7 @@ export default function SellerSignupPageSeven() {
             </table>
           </div>
 
-          <p className="importantText">
+          {submitError && <div role="alert" style={{ margin: "0 0 18px", padding: "12px 14px", border: "1px solid #ffcaca", borderRadius: "8px", background: "#fff1f1", color: "#bd2222", fontSize: "12px" }}>{submitError}</div>}\n\n          <p className="importantText">
             By submitting, you agree to Matchet's{" "}
             <Link to="#">Seller Terms and Conditions</Link>. We will review your
             information and notify you once your seller profile has been
@@ -567,10 +573,23 @@ export default function SellerSignupPageSeven() {
 
           <button
             type="button"
-            onClick={() => navigate("/register/page8")}
+            onClick={async () => {
+              setSubmitting(true);
+              setSubmitError("");
+              try {
+                await submitSellerOnboarding(formData);
+                await refreshUser();
+                clearForm();
+                navigate("/register/page8");
+              } catch (error) {
+                setSubmitError(error.message || "Unable to submit your seller application.");
+              } finally {
+                setSubmitting(false);
+              }
+            }}
             className="save-button"
           >
-            Submit for review →
+            {submitting ? "Submitting..." : "Submit for review →"}
           </button>
         </section>
       </div>

@@ -24,6 +24,8 @@ const addressSchema = new mongoose.Schema({
   postalCode: { type: String, trim: true },
 }, { _id: false });
 
+const orderStatusHistorySchema = new mongoose.Schema({ status: { type: String, required: true }, note: { type: String, trim: true }, at: { type: Date, default: Date.now } }, { _id: false });
+
 const orderSchema = new mongoose.Schema({
   buyerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
   items: { type: [orderItemSchema], required: true, validate: { validator: (value) => value.length > 0, message: "An order must contain at least one item." } },
@@ -34,6 +36,8 @@ const orderSchema = new mongoose.Schema({
   orderStatus: { type: String, enum: ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"], default: "pending", index: true },
   shippingAddress: { type: addressSchema, required: true },
   paymentReference: { type: String, trim: true, index: true, sparse: true },
+  statusHistory: { type: [orderStatusHistorySchema], default: [] },
+  sellerNotes: { type: String, trim: true, default: "" },
 }, { timestamps: true });
 
 orderSchema.index({ buyerId: 1, createdAt: -1 });

@@ -1,551 +1,261 @@
-// Created by:  Blake Ostler
-// Edited by:  Blake Ostler
-
-//TODO:  Need "tips for successful verification" image from Raphael
-//TODO:  Need "tips for a good selfie" image from Raphael
-//TODO:  Styling
-
-// Got help from Google Gemini on the file upload fields. I typed the code myself.
-
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
+import "../styles/provider-onboarding.css";
+
+function UploadIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M8 8l4-4 4 4M5 15v4h14v-4" /></svg>;
+}
+
+function CheckIcon() {
+  return <span className="provider-verification-check">✓</span>;
+}
+
+function SelfieIllustration() {
+  return (
+    <svg className="provider-selfie-illustration" viewBox="0 0 150 110" aria-hidden="true">
+      <circle cx="63" cy="36" r="18" />
+      <path d="M36 96c3-22 13-34 27-34s24 12 27 34M90 58l20-13v43H90M99 55l12-9" />
+      <rect x="94" y="41" width="28" height="50" rx="5" />
+      <circle cx="108" cy="84" r="2" />
+    </svg>
+  );
+}
 
 export default function ProviderSignupPageFive() {
   const { formData, updateField } = useForm();
   const navigate = useNavigate();
 
-  // A generic change handler
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    updateField(name, value);
-  };
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
-  const MAX_SIZE_MB = 5;
-  const MAX_FILE_SIZE = MAX_SIZE_MB * 1024 * 1024;
-  const MAX_FILE_SIZE_ALERT = `File is too large. Maximum size allowed is ${MAX_SIZE_MB}MB.`;
+  const maxFileSize = 5 * 1024 * 1024;
 
-  const handleFrontIdChange = (e) => {
-    const file = e.target.files[0];
+  const validateAndStoreFile = (event, field, acceptedTypes) => {
+    const file = event.target.files?.[0];
     if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      alert(MAX_FILE_SIZE_ALERT);
-      e.target.value = "";
+    if (!acceptedTypes.includes(file.type)) {
+      alert("Please upload a supported file type.");
+      event.target.value = "";
       return;
     }
-    updateField("providerIdImageFront", file);
-    e.target.value = "";
-  };
-
-  const handleFrontIdDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      alert(MAX_FILE_SIZE_ALERT);
+    if (file.size > maxFileSize) {
+      alert("File is too large. Maximum size allowed is 5MB.");
+      event.target.value = "";
       return;
     }
-    updateField("providerIdImageFront", file);
+    updateField(field, file);
+    event.target.value = "";
   };
 
-  const handleRemoveFrontId = () => {
-    updateField("providerIdImageFront", null);
-  };
-
-  const handleBackIdChange = (e) => {
-    const file = e.target.files[0];
+  const handleDrop = (event, field, acceptedTypes) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files?.[0];
     if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      alert(MAX_FILE_SIZE_ALERT);
-      e.target.value = "";
+    if (!acceptedTypes.includes(file.type)) {
+      alert("Please upload a supported file type.");
       return;
     }
-    updateField("providerIdImageBack", file);
-    e.target.value = "";
-  };
-
-  const handleBackIdDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      alert(MAX_FILE_SIZE_ALERT);
+    if (file.size > maxFileSize) {
+      alert("File is too large. Maximum size allowed is 5MB.");
       return;
     }
-    updateField("providerIdImageBack", file);
+    updateField(field, file);
   };
 
-  const handleRemoveBackId = () => {
-    updateField("providerIdImageBack", null);
-  };
+  const filePreview = useMemo(() => ({
+    front: formData.providerIdImageFront ? URL.createObjectURL(formData.providerIdImageFront) : null,
+    back: formData.providerIdImageBack ? URL.createObjectURL(formData.providerIdImageBack) : null,
+    selfie: formData.providerSelfieImage ? URL.createObjectURL(formData.providerSelfieImage) : null,
+  }), [formData.providerIdImageFront, formData.providerIdImageBack, formData.providerSelfieImage]);
 
-  const handleSelfieChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      alert(MAX_FILE_SIZE_ALERT);
-      e.target.value = "";
-      return;
-    }
-    updateField("providerSelfieImage", file);
-    e.target.value = "";
-  };
+  useEffect(() => {
+    return () => Object.values(filePreview).forEach((url) => url && URL.revokeObjectURL(url));
+  }, [filePreview]);
 
-  const handleSelfieDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      alert(MAX_FILE_SIZE_ALERT);
-      return;
-    }
-    updateField("providerSelfieImage", file);
-  };
+  const renderUploadBox = ({ field, inputId, title, accept, types, preview, file }) => (
+    <label
+      className="provider-verification-upload-box"
+      htmlFor={inputId}
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={(event) => handleDrop(event, field, types)}
+    >
+      {!file ? (
+        <>
+          <UploadIcon />
+          <strong>{title}</strong>
+          <span>JPG, PNG or PDF. Max 5MB.</span>
+        </>
+      ) : (
+        <div className="provider-verification-file-preview">
+          {file.type === "application/pdf" ? (
+            <div className="provider-verification-pdf-preview">
+              <span>PDF</span>
+              <small>{file.name}</small>
+            </div>
+          ) : (
+            <img src={preview} alt={title} />
+          )}
+          <button
+            type="button"
+            className="provider-verification-remove"
+            onClick={(event) => {
+              event.preventDefault();
+              updateField(field, null);
+            }}
+            aria-label={`Remove ${title}`}
+          >
+            ×
+          </button>
+        </div>
+      )}
+      <input
+        id={inputId}
+        type="file"
+        accept={accept}
+        hidden
+        onChange={(event) => validateAndStoreFile(event, field, types)}
+      />
+    </label>
+  );
 
-  const handleRemoveSelfie = () => {
-    updateField("providerSelfieImage", null);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  //Validation
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!e.target.checkValidity()) {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!event.currentTarget.checkValidity()) {
+      event.currentTarget.reportValidity();
       return;
     }
     navigate("/provider/onboarding/page6");
   };
 
+  const tips = [
+    "Use a valid, government-issued ID (National ID, Driver's License, or International Passport).",
+    "Make sure the photo is clear and well-lit.",
+    "All information should be visible and readable.",
+    "Do not edit or crop out any part of the document.",
+    "The name on your ID should match your account details.",
+  ];
+
+  const selfieTips = [
+    "Be in a well-lit area.",
+    "Make sure your face is clearly visible.",
+    "Do not wear sunglasses or a face covering.",
+    "Look directly at the camera.",
+  ];
+
   return (
     <div className="provider-signup-page-container provider-signup-page5">
       <section className="provider-signup-left-section">
         <div className="provider-signup-side-banner provider-signup-side-banner-page5">
-          <img src={sideImage} alt="Provider sign-up decoration" />
+          <img src={sideImage} alt="A safer marketplace for everyone" />
         </div>
       </section>
+
       <section className="provider-signup-right-section">
         <ProviderSignupFormHeader step={5} />
-        <h2 className="provider-signup-step-header">Verify your identity</h2>
-        <p className="provider-signup-form-step-header-caption">
-          Help us confirm your identity so we can help keep Matchet safe and
-          trustworthy.
-        </p>
-        <form className="provider-signup-form-page5" onSubmit={handleSubmit}>
-          <div className="provider-signup-form-field-group">
-            <div className="provider-signup-form-id-left-side">
-              <p className="provider-signup-form-field-group-name">
-                Identity document
-              </p>
-              <p className="provider-signup-form-field-group-name-caption">
-                Upload a valid government-issued ID
-              </p>
 
-              <label htmlFor="providerIdType">
-                ID Type *
-                <select
-                  id="providerIdType"
-                  name="providerIdType"
-                  value={formData.providerIdType}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Select ID type
-                  </option>
-                  <option value="Driver License">Driver License</option>
-                  <option value="National ID Card">National ID Card</option>
-                  <option value="Passport">Passport</option>
-                </select>
-              </label>
+        <div className="provider-signup-form-page5">
+          <h2 className="provider-signup-step-header">Verify your identity</h2>
+          <p className="provider-signup-form-step-header-caption">
+            Help us confirm your identity so we can keep Matchet safe and trustworthy.
+          </p>
 
-              <label htmlFor="providerIdNumber">
-                ID number *
-                <input
-                  type="password"
-                  id="providerIdNumber"
-                  name="providerIdNumber"
-                  placeholder="Enter your ID number"
-                  value={formData.providerIdNumber}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
+          <form onSubmit={handleSubmit} noValidate>
+            <section className="provider-verification-card">
+              <div className="provider-verification-document">
+                <h3>Identity document</h3>
+                <p>Upload a valid government-issued ID.</p>
 
-              <p>Upload clear photos of your ID *</p>
+                <div className="provider-verification-fields">
+                  <label htmlFor="providerIdType">
+                    Select ID type *
+                    <select id="providerIdType" name="providerIdType" value={formData.providerIdType || ""} onChange={(event) => updateField("providerIdType", event.target.value)} required>
+                      <option value="" disabled>Select ID type</option>
+                      <option value="National ID Card">National ID Card</option>
+                      <option value="Driver License">Driver's License</option>
+                      <option value="Passport">International Passport</option>
+                    </select>
+                  </label>
 
-              {/* FRONT OF ID */}
-              <div style={{ marginBottom: "25px" }}>
-                <label
-                  htmlFor="providerIdImageFront"
-                  onDragOver={handleDragOver}
-                  onDrop={handleFrontIdDrop}
-                  style={{
-                    border: "2px dashed #ccc",
-                    padding: "20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minHeight: "140px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    backgroundColor: "#fafafa",
-                    position: "relative",
-                  }}
-                >
-                  {!formData.providerIdImageFront ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        textAlign: "center",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontWeight: "600",
-                          color: "#333",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        Upload front of ID
-                      </span>
+                  <label htmlFor="providerIdNumber">
+                    ID number *
+                    <input id="providerIdNumber" name="providerIdNumber" type="text" placeholder="Enter your ID number" value={formData.providerIdNumber || ""} onChange={(event) => updateField("providerIdNumber", event.target.value)} required />
+                  </label>
+                </div>
 
-                      <span style={{ color: "#665", fontSize: "13px" }}>
-                        JPG, PNG or PDF. Max 5MB.
-                      </span>
-                    </div>
-                  ) : (
-                    <div
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {formData.providerIdImageFront.type ===
-                      "application/pdf" ? (
-                        <div style={{ textAlign: "center" }}>
-                          <span style={{ fontSize: "28px" }}>📄</span>
-                          <p
-                            style={{
-                              fontSize: "13px",
-                              color: "#333",
-                              margin: "4px 0 0 0",
-                              wordBreak: "break-all",
-                            }}
-                          >
-                            {formData.providerIdImageFront.name}
-                          </p>
-                        </div>
-                      ) : (
-                        <img
-                          src={URL.createObjectURL(
-                            formData.providerIdImageFront,
-                          )}
-                          alt="Front ID preview"
-                          style={{
-                            maxWidth: "100%",
-                            maxHeight: "110px",
-                            objectFit: "contain",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      )}
-                      <button
-                        type="button"
-                        onClick={handleRemoveFrontId}
-                        style={{
-                          position: "absolute",
-                          top: "8px",
-                          right: "8px",
-                          background: "#ff4d4d",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: "24px",
-                          height: "24px",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                        }}
-                        title="Remove file"
-                      >
-                        x
-                      </button>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    id="providerIdImageFront"
-                    name="providerIdImageFront"
-                    accept="image/jpeg, image/jpg, image/png, application/pdf"
-                    onChange={handleFrontIdChange}
-                    style={{ display: "none" }}
-                  />
-                </label>
+                <p className="provider-verification-upload-label">Upload clear photos of your ID *</p>
+                <div className="provider-verification-upload-grid">
+                  {renderUploadBox({
+                    field: "providerIdImageFront",
+                    inputId: "providerIdImageFront",
+                    title: "Upload front of ID",
+                    accept: "image/jpeg,image/png,application/pdf",
+                    types: ["image/jpeg", "image/png", "application/pdf"],
+                    preview: filePreview.front,
+                    file: formData.providerIdImageFront,
+                  })}
+                  {renderUploadBox({
+                    field: "providerIdImageBack",
+                    inputId: "providerIdImageBack",
+                    title: "Upload back of ID",
+                    accept: "image/jpeg,image/png,application/pdf",
+                    types: ["image/jpeg", "image/png", "application/pdf"],
+                    preview: filePreview.back,
+                    file: formData.providerIdImageBack,
+                  })}
+                </div>
               </div>
-              {/* BACK OF ID */}
+
+              <aside className="provider-verification-tips">
+                <h3>Tips for a successful verification</h3>
+                <ul>
+                  {tips.map((tip) => <li key={tip}><CheckIcon /><span>{tip}</span></li>)}
+                </ul>
+              </aside>
+            </section>
+
+            <section className="provider-selfie-card">
               <div>
-                <label
-                  htmlFor="providerIdImageBack"
-                  onDragOver={handleDragOver}
-                  onDrop={handleBackIdDrop}
-                  style={{
-                    border: "2px dashed #ccc",
-                    padding: "20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minHeight: "140px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    backgroundColor: "#fafafa",
-                    position: "relative",
-                  }}
-                >
-                  {!formData.providerIdImageBack ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        textAlign: "center",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontWeight: "600",
-                          color: "#333",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        Upload back of ID
-                      </span>
+                <h3>Selfie verification</h3>
+                <p>Take a clear selfie so we can match it with your ID.</p>
+              </div>
 
-                      <span style={{ color: "#665", fontSize: "13px" }}>
-                        JPG, PNG or PDF. Max 5MB.
-                      </span>
-                    </div>
-                  ) : (
-                    <div
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {formData.providerIdImageBack.type ===
-                      "application/pdf" ? (
-                        <div style={{ textAlign: "center" }}>
-                          <span style={{ fontSize: "28px" }}>📄</span>
-                          <p
-                            style={{
-                              fontSize: "13px",
-                              color: "#333",
-                              margin: "4px 0 0 0",
-                              wordBreak: "break-all",
-                            }}
-                          >
-                            {formData.providerIdImageBack.name}
-                          </p>
-                        </div>
-                      ) : (
-                        <img
-                          src={URL.createObjectURL(
-                            formData.providerIdImageBack,
-                          )}
-                          alt="Back ID preview"
-                          style={{
-                            maxWidth: "100%",
-                            maxHeight: "110px",
-                            objectFit: "contain",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      )}
-                      <button
-                        type="button"
-                        onClick={handleRemoveBackId}
-                        style={{
-                          position: "absolute",
-                          top: "8px",
-                          right: "8px",
-                          background: "#ff4d4d",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: "24px",
-                          height: "24px",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                        }}
-                        title="Remove file"
-                      >
-                        x
-                      </button>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    id="providerIdImageBack"
-                    name="providerIdImageBack"
-                    accept="image/jpeg, image/jpg, image/png, application/pdf"
-                    onChange={handleBackIdChange}
-                    style={{ display: "none" }}
-                  />
-                </label>
+              <div className="provider-selfie-content">
+                {renderUploadBox({
+                  field: "providerSelfieImage",
+                  inputId: "providerSelfieImage",
+                  title: "Upload a selfie",
+                  accept: "image/jpeg,image/png",
+                  types: ["image/jpeg", "image/png"],
+                  preview: filePreview.selfie,
+                  file: formData.providerSelfieImage,
+                })}
+
+                <aside className="provider-selfie-tips">
+                  <SelfieIllustration />
+                  <div>
+                    <h3>Tips for a good selfie</h3>
+                    <ul>
+                      {selfieTips.map((tip) => <li key={tip}><CheckIcon /><span>{tip}</span></li>)}
+                    </ul>
+                  </div>
+                </aside>
               </div>
-              <div className="provider-signup-form-id-right-side">
-                <p>???Insert tips for successful verification image???</p>
-              </div>
+            </section>
+
+            <div className="provider-signup-page5-actions">
+              <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding/page4")}>←&nbsp;&nbsp;Back</button>
+              <button type="submit" className="provider-signup-save-continue-button">Save &amp; continue&nbsp;&nbsp;→</button>
             </div>
-          </div>
-
-          <div className="provider-signup-form-field-group">
-            <p className="provider-signup-form-field-group-name">
-              Selfie verification
-            </p>
-            <p className="provider-signup-form-field-group-name-caption">
-              Take a clear selfie so we can match it with your ID
-            </p>
-            {/* SELFIE */}
-            <div className="provider-signup-form-selfie-image-container">
-              <div
-                className="provider-signup-form-selfie-left-side"
-                style={{ marginBottom: "25px" }}
-              >
-                <label
-                  htmlFor="providerSelfieImage"
-                  onDragOver={handleDragOver}
-                  onDrop={handleSelfieDrop}
-                  style={{
-                    border: "2px dashed #ccc",
-                    padding: "20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    minHeight: "140px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    backgroundColor: "#fafafa",
-                    position: "relative",
-                  }}
-                >
-                  {!formData.providerSelfieImage ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        textAlign: "center",
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontWeight: "600",
-                          color: "#333",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        Upload a selfie
-                      </span>
-                      <span style={{ color: "#665", fontSize: "13px" }}>
-                        JPG or PNG. Max 5MB.
-                      </span>
-                    </div>
-                  ) : (
-                    <div
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <img
-                        src={URL.createObjectURL(formData.providerSelfieImage)}
-                        alt="Selfie preview"
-                        style={{
-                          maxWidth: "100%",
-                          maxHeight: "110px",
-                          objectFit: "contain",
-                          borderRadius: "4px",
-                        }}
-                      />
-
-                      <button
-                        type="button"
-                        onClick={handleRemoveSelfie}
-                        style={{
-                          position: "absolute",
-                          top: "8px",
-                          right: "8px",
-                          background: "#ff4d4d",
-                          color: "white",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: "24px",
-                          height: "24px",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-                        }}
-                        title="Remove file"
-                      >
-                        x
-                      </button>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    id="providerSelfieImage"
-                    name="providerSelfieImage"
-                    accept="image/jpeg, image/jpg, image/png"
-                    onChange={handleSelfieChange}
-                    style={{ display: "none" }}
-                  />
-                </label>
-              </div>
-              <div className="provider-signup-form-selfie-right-side">
-                ???Insert tips for a good selfie image???
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => navigate("/provider/onboarding/page4")}
-            className="back-button"
-          >
-            ← Back
-          </button>
-          <button className="save-continue-button" type="submit">
-            Save & continue
-          </button>
-        </form>
+          </form>
+        </div>
       </section>
     </div>
   );
