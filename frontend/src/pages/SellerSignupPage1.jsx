@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react-router-dom";
+import { useEffect } from "react";
 import { useForm } from "../context/FormContext.jsx";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
