@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "../context/FormContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
@@ -14,6 +14,7 @@ export default function SellerSignupPageOne() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [photoPreview, setPhotoPreview] = useState(null);
+  const photoSelectionRef = useRef(false);
 
   useEffect(() => {
     setOnboardingFlow("seller");
@@ -45,6 +46,7 @@ export default function SellerSignupPageOne() {
   }, [setOnboardingFlow, navigate, user?.id]);
 
   useEffect(() => {
+    if (photoSelectionRef.current) return;
     const image = formData.profileImage;
     if (!image) { setPhotoPreview(null); return; }
     if (typeof image === "string") { setPhotoPreview(image); return; }
@@ -635,6 +637,7 @@ export default function SellerSignupPageOne() {
                         e.target.value = "";
                         return;
                       }
+                      photoSelectionRef.current = true;
                       updateField("profileImage", file);
                       setPhotoPreview((previousUrl) => {
                         if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
