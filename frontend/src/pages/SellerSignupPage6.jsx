@@ -7,7 +7,7 @@ import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageSix() {
-  const { formData, updateField } = useForm();
+  const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,7 +25,7 @@ export default function SellerSignupPageSix() {
     try {
       const response = await saveSellerOnboardingDraft(formData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/register/page6");
+      navigate("/register/page7");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
     }
