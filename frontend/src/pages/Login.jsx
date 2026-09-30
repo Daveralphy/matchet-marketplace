@@ -164,10 +164,12 @@ const Login = () => {
       const params = new URLSearchParams(location.search);
       const returnTo = params.get("returnTo");
       const intent = sessionStorage.getItem("matchet_provider_intent");
-      if (returnTo === "/for-providers" && intent) {
+      if (intent && returnTo === "/for-providers") {
         sessionStorage.removeItem("matchet_provider_intent");
         sessionStorage.setItem("matchet_onboarding_flow", intent === "product" ? "seller" : "service");
         navigate("/for-providers", { replace: true });
+      } else if (returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")) {
+        navigate(returnTo, { replace: true });
       } else {
         navigate("/", { replace: true });
       }
