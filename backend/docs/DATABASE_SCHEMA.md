@@ -1,8 +1,8 @@
 # Matchet Marketplace Database Schema
 
-**Schema Version:** 1.0.0  
+**Schema Version:** 1.1.0  
 **Status:** Approved  
-**Last Updated:** 2026-09-14
+**Last Updated:** 2026-09-30
 
 ## 1. Purpose
 
@@ -72,7 +72,7 @@ The User collection is the single source of truth for account identity and authe
 | `email` | String | Yes | Yes | Lowercase account email |
 | `passwordHash` | String | Yes | No | Never expose through API |
 | `phone` | String | No | No | Optional |
-| `avatar` | Object | No | No | Cloudinary image reference |
+| `avatar` | Object | No | No | Cloudinary image reference |\n| `capabilities` | Object | Yes | No | Marketplace capabilities for seller/provider profiles |
 | `location` | Object | No | No | User location |
 | `preferences` | Object | No | No | User preferences |
 | `isActive` | Boolean | Yes | No | Defaults to true |
