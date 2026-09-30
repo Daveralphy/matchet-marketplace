@@ -1,3 +1,4 @@
+import { uploadFiles } from "./uploads";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const CACHE_PREFIX = "matchet_provider_cache:";
@@ -124,10 +125,33 @@ function serializeOnboardingValue(value) {
   return value;
 }
 
-export function submitProviderOnboarding(formData) {
+export async function submitProviderOnboarding(formData) {
+  const next = { ...formData };
+
+  if (formData.providerProfileImage instanceof File) {
+    next.providerProfileImage = await uploadFiles(formData.providerProfileImage, "matchet/profiles").then(([file]) => file);
+  }
+  if (Array.isArray(formData.providerPortfolioMedia)) {
+    const files = formData.providerPortfolioMedia.filter((item) => item instanceof File);
+    const existing = formData.providerPortfolioMedia.filter((item) => !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/portfolio") : [];
+    next.providerPortfolioMedia = [...existing, ...uploaded];
+  }
+
+  const verificationFiles = [
+    ["providerIdImageFront", "matchet/verification"],
+    ["providerIdImageBack", "matchet/verification"],
+    ["providerSelfieImage", "matchet/verification"],
+  ];
+  for (const [field, folder] of verificationFiles) {
+    if (formData[field] instanceof File) {
+      next[field] = await uploadFiles(formData[field], folder).then(([file]) => file);
+    }
+  }
+
   return request("/api/provider/onboarding", {
     method: "POST",
-    body: JSON.stringify({ formData: serializeOnboardingValue(formData) }),
+    body: JSON.stringify({ formData: serializeOnboardingValue(next) }),
   });
 }
 
@@ -139,8 +163,34 @@ export function getProviderCapabilities() {
   return request("/api/provider/capabilities", { cache: false });
 }
 
-export function submitSellerOnboarding(formData) {
-  return request("/api/provider/seller-onboarding", { method: "POST", body: JSON.stringify({ formData: serializeOnboardingValue(formData) }) });
+export async function submitSellerOnboarding(formData) {
+  const next = { ...formData };
+
+  if (formData.businessLogo instanceof File) {
+    next.businessLogo = await uploadFiles(formData.businessLogo, "matchet/stores").then(([file]) => file);
+  }
+  if (Array.isArray(formData.productImages)) {
+    const files = formData.productImages.filter((item) => item instanceof File);
+    const existing = formData.productImages.filter((item) => !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/products") : [];
+    next.productImages = [...existing, ...uploaded];
+  }
+
+  const verificationFiles = [
+    ["idImageFront", "matchet/verification"],
+    ["idImageBack", "matchet/verification"],
+    ["selfieImage", "matchet/verification"],
+  ];
+  for (const [field, folder] of verificationFiles) {
+    if (formData[field] instanceof File) {
+      next[field] = await uploadFiles(formData[field], folder).then(([file]) => file);
+    }
+  }
+
+  return request("/api/provider/seller-onboarding", {
+    method: "POST",
+    body: JSON.stringify({ formData: serializeOnboardingValue(next) }),
+  });
 }
 
 export function getSellerDashboard() {
@@ -162,11 +212,25 @@ export function getSellerProducts(params = {}) {
   const query = new URLSearchParams(Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!==""));
   return request("/api/provider/seller-products?" + query.toString());
 }
-export function createSellerProduct(payload) {
-  return request("/api/provider/seller-products",{method:"POST",body:JSON.stringify(payload)});
+export async function createSellerProduct(payload) {
+  const next = { ...payload };
+  if (Array.isArray(payload.images)) {
+    const files = payload.images.filter((item) => item instanceof File);
+    const existing = payload.images.filter((item) => !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/products") : [];
+    next.images = [...existing, ...uploaded];
+  }
+  return request("/api/provider/seller-products",{method:"POST",body:JSON.stringify(next)});
 }
-export function updateSellerProduct(id,payload) {
-  return request("/api/provider/seller-products/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(payload)});
+export async function updateSellerProduct(id,payload) {
+  const next = { ...payload };
+  if (Array.isArray(payload.images)) {
+    const files = payload.images.filter((item) => item instanceof File);
+    const existing = payload.images.filter((item) => !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/products") : [];
+    next.images = [...existing, ...uploaded];
+  }
+  return request("/api/provider/seller-products/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(next)});
 }
 
 export function getSellerEarnings(){ return request("/api/provider/seller-earnings"); }
