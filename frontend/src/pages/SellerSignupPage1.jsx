@@ -18,7 +18,7 @@ export default function SellerSignupPageOne() {
     setOnboardingFlow("seller");
     if (!user?.id) return;
 
-    if (formData.onboardingUserId && formData.onboardingUserId !== user.id) {
+    if (!formData.onboardingUserId || formData.onboardingUserId !== user.id) {
       clearForm();
       updateField("onboardingUserId", user.id);
       updateField("firstName", user.firstName || "");
@@ -30,19 +30,6 @@ export default function SellerSignupPageOne() {
       updateField("phoneNumber", code ? phone.slice(code.length).trim() : phone);
       if (user.location?.city) updateField("location", user.location.city.toLowerCase() === "lagos" ? "lagos-nigeria" : user.location.city);
       if (user.avatar?.url) updateField("profileImage", user.avatar);
-    } else if (!formData.onboardingUserId) {
-      updateField("onboardingUserId", user.id);
-      if (!formData.firstName) updateField("firstName", user.firstName || "");
-      if (!formData.lastName) updateField("lastName", user.lastName || "");
-      if (!formData.email) updateField("email", user.email || "");
-      if (!formData.phoneNumber && user.phone) {
-        const phone = String(user.phone).trim();
-        const code = phone.startsWith("+234") ? "+234" : phone.startsWith("+44") ? "+44" : phone.startsWith("+1") ? "+1" : "";
-        updateField("countryCode", formData.countryCode || code);
-        updateField("phoneNumber", code ? phone.slice(code.length).trim() : phone);
-      }
-      if (!formData.location && user.location?.city) updateField("location", user.location.city.toLowerCase() === "lagos" ? "lagos-nigeria" : user.location.city);
-      if (!formData.profileImage && user.avatar?.url) updateField("profileImage", user.avatar);
     }
 
     getProviderCapabilities().then((response) => {
