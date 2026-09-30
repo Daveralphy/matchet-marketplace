@@ -138,3 +138,6 @@ export function updateSellerSettingsPreferences(payload){return request("/api/pr
 export function updateSellerSettingsStore(payload){return request("/api/provider/seller-settings/store",{method:"PATCH",body:JSON.stringify(payload)});}
 
 export function getPublicSellerStore(slug){return request("/api/provider/store/"+encodeURIComponent(slug));}
+
+export function getSellerOrderDetail(id){return request("/api/provider/seller-orders/"+encodeURIComponent(id));}
+export function updateSellerOrderNote(id,note){return request("/api/provider/seller-orders/"+encodeURIComponent(id)+"/note",{method:"PATCH",body:JSON.stringify({note})});}
