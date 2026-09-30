@@ -87,6 +87,13 @@ const storeProfileSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    category: { type: String, trim: true },
+    languages: { type: [String], default: [] },
+    socialLinks: { type: mongoose.Schema.Types.Mixed, default: {} },
+    businessDetails: { type: mongoose.Schema.Types.Mixed, default: {} },
+    shippingPolicies: { type: mongoose.Schema.Types.Mixed, default: {} },
+    payoutDetails: { type: mongoose.Schema.Types.Mixed, default: {} },
+    onboardingData: { type: mongoose.Schema.Types.Mixed, default: {} },
 
     logo: {
       type: imageSchema,
