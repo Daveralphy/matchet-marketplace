@@ -943,12 +943,76 @@ async function submitSellerOnboarding(req, res) {
       );
     }
 
+    const normalizedLocation = String(input.location || "").toLowerCase() === "lagos-nigeria"
+      ? { city: "Lagos", state: "Lagos", country: "Nigeria" }
+      : { city: input.location || "", state: input.businessState || "", country: input.businessCountry || "" };
+
     const store = await StoreProfile.findOneAndUpdate(
       { userId },
-      { $set: { storeName, slug, description: input.businessDesc || input.sellerBio || "", location: { city: input.location || "", country: "", }, contact: { phone: [input.businessPhoneCountryCode, input.businessPhoneNumber].filter(Boolean).join(" ") || [input.countryCode, input.phoneNumber].filter(Boolean).join(" "), email: input.email || req.user.email }, category: input.businessCategory || input.category || "", languages: input.languages || [], businessDetails: input.businessDetails || {}, shippingPolicies: input.shippingPolicies || {}, socialLinks: input.socialLinks || {}, payoutDetails: input.payoutDetails || input.bankDetails || {}, onboardingData: input, logo: input.businessLogo?.url ? { url: input.businessLogo.url, publicId: input.businessLogo.publicId || "" } : undefined, verificationStatus: "pending", status: "draft", applicationSubmittedAt: new Date(), reviewedAt: null, reviewNote: "" }, $setOnInsert: { userId } },
-      { upsert: true, new: true, runValidators: true }
+      {
+        $set: {
+          storeName,
+          slug,
+          description: input.businessDesc || input.sellerBio || "",
+          location: normalizedLocation,
+          contact: {
+            phone: [input.businessPhoneCountryCode, input.businessPhoneNumber].filter(Boolean).join(" ") || [input.countryCode, input.phoneNumber].filter(Boolean).join(" "),
+            email: input.email || req.user.email,
+          },
+          category: input.businessCat || input.businessCategory || input.category || "",
+          languages: input.languages || [],
+          businessDetails: {
+            ...(input.businessDetails || {}),
+            sellerType: input.sellerType || "",
+            registrationNumber: input.businessReg || "",
+            address: input.businessAddress || "",
+            description: input.businessDesc || "",
+          },
+          shippingPolicies: input.shippingPolicies || {
+            option: input.shippingOptions || "",
+            regions: input.shippingRegions || "",
+            fee: input.shippingFee || "",
+            feeAmount: input.shippingFeeAmount || "",
+            processingTime: input.processingTime || "",
+            notes: input.shippingNotes || "",
+          },
+          socialLinks: input.socialLinks || {},
+          payoutDetails: input.payoutDetails || input.bankDetails || {
+            bankName: input.bankName || "",
+            accountNumber: input.accountNumber || "",
+            accountName: input.accountName || "",
+            accountType: input.accountType || "",
+            bvn: input.bvn || "",
+            tin: input.tin || "",
+          },
+          onboardingData: input,
+          logo: input.businessLogo?.url ? { url: input.businessLogo.url, publicId: input.businessLogo.publicId || "" } : undefined,
+          verificationStatus: "pending",
+          status: "draft",
+          applicationSubmittedAt: new Date(),
+          reviewedAt: null,
+          reviewNote: "",
+        },
+        $setOnInsert: { userId },
+      },
+      { upsert: true, new: true, runValidators: true },
     );
-    await User.findByIdAndUpdate(userId, { $set: { "capabilities.seller": true } });
+
+    const userUpdates = {
+      firstName: input.firstName || req.user.firstName,
+      lastName: input.lastName || req.user.lastName,
+      email: input.email || req.user.email,
+      phone: [input.countryCode, input.phoneNumber].filter(Boolean).join(" ") || req.user.phone || "",
+      location: normalizedLocation,
+      "capabilities.seller": true,
+    };
+    if (input.profileImage?.url) {
+      userUpdates.avatar = {
+        url: input.profileImage.url,
+        publicId: input.profileImage.publicId || "",
+      };
+    }
+    await User.findByIdAndUpdate(userId, { $set: userUpdates });
     return res.status(201).json({ success: true, message: "Your seller application has been submitted for review.", data: { id: store._id, status: store.status, verificationStatus: store.verificationStatus, applicationSubmittedAt: store.applicationSubmittedAt } });
   } catch (error) {
     console.error("Seller onboarding submission error:", error);
