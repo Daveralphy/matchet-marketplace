@@ -981,7 +981,11 @@ async function submitSellerOnboarding(req, res) {
 
     const normalizedLocation = String(input.location || "").toLowerCase() === "lagos-nigeria"
       ? { city: "Lagos", state: "Lagos", country: "Nigeria" }
-      : { city: input.location || "", state: input.businessState || "", country: input.businessCountry || "" };
+      : {
+          city: input.location || "",
+          state: input.businessState || "",
+          country: input.businessCountry || "",
+        };
 
     const store = await StoreProfile.findOneAndUpdate(
       { userId },
