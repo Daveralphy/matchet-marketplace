@@ -78,6 +78,7 @@ export function FormProvider({ children }) {
     providerServicePrice: "",
     providerServiceDuration: "",
     providerServiceNumberOfPeople: "",
+    providerServiceImages: [],
     providerAreasServed: "",
     providerYearsofExperience: "",
     providerAreasofExpertise: "",
