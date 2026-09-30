@@ -199,6 +199,10 @@ async function prepareSellerOnboardingPayload(formData) {
   return next;
 }
 
+export function getSellerOnboardingDraft() {
+  return request("/api/provider/seller-onboarding/draft");
+}
+
 export async function saveSellerOnboardingDraft(formData) {
   const next = await prepareSellerOnboardingPayload(formData);
   return request("/api/provider/seller-onboarding", {
