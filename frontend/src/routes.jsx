@@ -1,7 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Brima
 
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
@@ -64,8 +64,11 @@ function BlankPage() {
 
 function RequireAuth({ children }) {
   const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
   if (loading) return <main className="min-h-[60vh] w-full" />;
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  if (isAuthenticated) return children;
+  const returnTo = location.pathname + location.search;
+  return <Navigate to={"/login?returnTo=" + encodeURIComponent(returnTo)} replace />;
 }
 
 const router = createBrowserRouter([
