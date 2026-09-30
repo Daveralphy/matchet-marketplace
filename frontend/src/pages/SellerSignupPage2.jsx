@@ -7,7 +7,7 @@ import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageTwo() {
-  const { formData, updateField } = useForm();
+  const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
