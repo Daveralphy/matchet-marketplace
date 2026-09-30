@@ -29,7 +29,7 @@ function EditLink({ to }) {
 }
 
 export default function ProviderSignupPageSeven() {
-  const { formData } = useForm();
+  const { formData, clearForm } = useForm();
   const { refreshUser } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
@@ -51,6 +51,7 @@ export default function ProviderSignupPageSeven() {
     try {
       await submitProviderOnboarding(formData);
       await refreshUser();
+      clearForm();
       navigate("/provider/onboarding/success");
     } catch (error) {
       setSubmitError(error.message || "Unable to submit your application.");
@@ -124,7 +125,7 @@ export default function ProviderSignupPageSeven() {
       <section className="provider-signup-right-section">
         <ProviderSignupFormHeader step={7} />
 
-        <div className="provider-signup-form-page7">
+        <div className="provider-signup-form-page7">{submitError && <div className="provider-message-error" role="alert">{submitError}</div>}
           <h2 className="provider-signup-step-header">Review and submit</h2>
           <p className="provider-signup-form-step-header-caption">Please review your information below. You can go back and make changes if needed.</p>
 
