@@ -29,6 +29,7 @@ import SellerEarnings from "./pages/SellerEarnings";
 import SellerReviews from "./pages/SellerReviews";
 import SellerProfile from "./pages/SellerProfile";
 import SellerSettings from "./pages/SellerSettings";
+import SellerProductForm from "./pages/SellerProductForm";
 import ProviderDataPage from "./pages/ProviderDataPage";
 import ProviderBookings from "./pages/ProviderBookings";
 import ProviderApplicationStatus from "./pages/ProviderApplicationStatus";
@@ -294,6 +295,14 @@ const router = createBrowserRouter([
   {
     path: "/seller/products",
     element: <RequireAuth><SellerProducts /></RequireAuth>,
+  },
+  {
+    path: "/seller/products/new",
+    element: <RequireAuth><SellerProductForm /></RequireAuth>,
+  },
+  {
+    path: "/seller/products/:productId/edit",
+    element: <RequireAuth><SellerProductForm /></RequireAuth>,
   },
   {
     path: "/seller/earnings",
