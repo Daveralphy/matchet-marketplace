@@ -15,6 +15,23 @@ export default function SellerSignupPageTwo() {
     updateField(name, value);
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      alert("Please upload a PNG, JPG, or WebP image.");
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File is too large. Maximum size allowed is 5MB.");
+      e.target.value = "";
+      return;
+    }
+    updateField("businessLogo", file);
+    e.target.value = "";
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -539,6 +556,7 @@ export default function SellerSignupPageTwo() {
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
+                  onChange={handleFileChange}
                 />
               </label>
 
