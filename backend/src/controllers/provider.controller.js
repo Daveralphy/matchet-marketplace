@@ -1184,7 +1184,7 @@ async function createSellerProduct(req,res){
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     const safeStatus=canPublish ? status : "draft";
-    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,safeStatus,status:safeStatus,location,details,sku});
+    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,status:safeStatus,location,details,sku});
     return res.status(201).json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
