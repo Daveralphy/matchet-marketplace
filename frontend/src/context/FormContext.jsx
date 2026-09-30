@@ -16,7 +16,7 @@ function loadStoredForms() {
 export function FormProvider({ children }) {
   const stored = loadStoredForms();
   const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
-  const [formData, setFormData] = useState(() => {
+  const [formData, setFormData] = useState(() => ({
     // Initialize from fields here
     firstName: "",
     lastName: "",
@@ -107,8 +107,21 @@ export function FormProvider({ children }) {
     providerAccountType: "",
     providerBvn: "",
     providerTin: "",
-  });
+  }));
   if (stored[flow]) Object.assign(formData, stored[flow]);
+
+  const setOnboardingFlow = useCallback((nextFlow) => {
+    const safeFlow = nextFlow === "service" ? "service" : "seller";
+    sessionStorage.setItem("matchet_onboarding_flow", safeFlow);
+    const saved = loadStoredForms()[safeFlow];
+    setFormData((prev) => saved ? { ...prev, ...saved } : prev);
+  }, []);
+
+  const clearForm = useCallback(() => {
+    const currentFlow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+    try { const all = loadStoredForms(); delete all[currentFlow]; sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(all)); } catch {}
+    setFormData((prev) => ({ ...prev }));
+  }, []);
 
   // Function to update a single field's value
   const updateField = (name, value) => {
@@ -124,7 +137,7 @@ export function FormProvider({ children }) {
   };
 
   return (
-    <FormContext.Provider value={{ formData, updateField }}>
+    <FormContext.Provider value={{ formData, updateField, setOnboardingFlow, clearForm }}>
       {children}
     </FormContext.Provider>
   );
