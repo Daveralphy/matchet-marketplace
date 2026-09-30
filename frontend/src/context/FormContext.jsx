@@ -144,8 +144,21 @@ export function FormProvider({ children }) {
     });
   };
 
+  const mergeFormData = useCallback((values) => {
+    if (!values || typeof values !== "object") return;
+    setFormData((prevData) => {
+      const next = { ...prevData, ...values };
+      try {
+        const all = loadStoredForms();
+        const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+        sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({ ...all, [flow]: next }));
+      } catch {}
+      return next;
+    });
+  }, []);
+
   return (
-    <FormContext.Provider value={{ formData, updateField, setOnboardingFlow, clearForm }}>
+    <FormContext.Provider value={{ formData, updateField, mergeFormData, setOnboardingFlow, clearForm }}>
       {children}
     </FormContext.Provider>
   );
