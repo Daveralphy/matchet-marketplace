@@ -27,6 +27,7 @@ import SellerMessages from "./pages/SellerMessages";
 import SellerProducts from "./pages/SellerProducts";
 import SellerEarnings from "./pages/SellerEarnings";
 import SellerReviews from "./pages/SellerReviews";
+import SellerProfile from "./pages/SellerProfile";
 import ProviderDataPage from "./pages/ProviderDataPage";
 import ProviderBookings from "./pages/ProviderBookings";
 import ProviderApplicationStatus from "./pages/ProviderApplicationStatus";
@@ -300,6 +301,10 @@ const router = createBrowserRouter([
   {
     path: "/seller/reviews",
     element: <RequireAuth><SellerReviews /></RequireAuth>,
+  },
+  {
+    path: "/seller/profile",
+    element: <RequireAuth><SellerProfile /></RequireAuth>,
   },
   {
     path: "/provider/earnings",
