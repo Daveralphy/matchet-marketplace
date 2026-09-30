@@ -147,13 +147,14 @@ Fields:
 - `businessDetails`: Object, seller onboarding and business information
 - `shippingPolicies`: Object, seller shipping information
 - `payoutDetails`: Object, seller payout information
-- `onboardingData`: Object, original seller onboarding submission
+- `onboardingData`: Object, latest seller onboarding draft/submission data
+- `onboardingStatus`: `in_progress | submitted`, tracks whether seller onboarding is still being completed or has been submitted for review
 - `verificationStatus`: `pending | verified | rejected`, default `pending`
 - `applicationSubmittedAt`, `reviewedAt`: Date, optional
 - `reviewNote`: String, optional
 - `createdAt`, `updatedAt`: timestamps
 
-Seller approval sets `User.capabilities.seller = true`. Seller and provider capabilities are independent, so one User may have both.
+Saving seller onboarding progress keeps `StoreProfile.status = draft`, `onboardingStatus = in_progress`, and does not grant the seller capability. Final submission changes `onboardingStatus` to `submitted`; seller approval sets `User.capabilities.seller = true`. Seller and provider capabilities are independent, so one User may have both.
 
 ## 7. Product
 
