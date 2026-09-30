@@ -19,10 +19,13 @@ export default function SellerOrders() {
   const [loading, setLoading] = useState(true);
   const load = async () => {
     setLoading(true);
-    const res = await getSellerOrders({ status: tab, search, product, sort, limit: 50 });
-    setData(res.data);
-    if (selected) setSelected(res.data.orders.find((o) => o.id === selected.id) || null);
-    setLoading(false);
+    try {
+      const res = await getSellerOrders({ status: tab, search, product, sort, limit: 50 });
+      setData(res.data);
+      if (selected) setSelected(res.data.orders.find((o) => o.id === selected.id) || null);
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => { load().catch(console.error); }, [tab, search, product, sort]);
   const changeStatus = async (status) => {
