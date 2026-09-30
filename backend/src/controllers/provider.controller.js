@@ -805,6 +805,7 @@ async function submitProviderOnboarding(req, res) {
         country: input.providerCountry || req.user.location?.country || "",
       };
     }
+    userUpdates["capabilities.provider"] = true;
     if (req.user.role !== "provider") userUpdates.role = "provider";
 
     if (Object.keys(userUpdates).length) {
@@ -947,7 +948,7 @@ async function submitSellerOnboarding(req, res) {
       { $set: { storeName, slug, description: input.businessDesc || input.sellerBio || "", location: { city: input.location || "", country: "", }, contact: { phone: [input.businessPhoneCountryCode, input.businessPhoneNumber].filter(Boolean).join(" ") || [input.countryCode, input.phoneNumber].filter(Boolean).join(" "), email: input.email || req.user.email }, category: input.businessCategory || input.category || "", languages: input.languages || [], businessDetails: input.businessDetails || {}, shippingPolicies: input.shippingPolicies || {}, socialLinks: input.socialLinks || {}, payoutDetails: input.payoutDetails || input.bankDetails || {}, onboardingData: input, logo: input.businessLogo?.url ? { url: input.businessLogo.url, publicId: input.businessLogo.publicId || "" } : undefined, verificationStatus: "pending", status: "draft", applicationSubmittedAt: new Date(), reviewedAt: null, reviewNote: "" }, $setOnInsert: { userId } },
       { upsert: true, new: true, runValidators: true }
     );
-    if (req.user.role !== "provider") await User.findByIdAndUpdate(userId, { $set: { role: "provider" } });
+    await User.findByIdAndUpdate(userId, { $set: { "capabilities.seller": true } });
     return res.status(201).json({ success: true, message: "Your seller application has been submitted for review.", data: { id: store._id, status: store.status, verificationStatus: store.verificationStatus, applicationSubmittedAt: store.applicationSubmittedAt } });
   } catch (error) {
     console.error("Seller onboarding submission error:", error);
