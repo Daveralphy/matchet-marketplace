@@ -1182,7 +1182,7 @@ async function getSellerProducts(req, res) {
     filtered.sort((a,b) => sort === "oldest" ? new Date(a.createdAt)-new Date(b.createdAt) : sort === "priceHigh" ? b.price-a.price : sort === "priceLow" ? a.price-b.price : new Date(b.createdAt)-new Date(a.createdAt));
     const totalViews = 0;
     const mapped = filtered.map(p => ({
-      id:p._id, name:p.name, description:p.description, category:p.category, price:p.price, inventory:p.inventory,
+      id:p._id, name:p.name, description:p.description, shortDescription:p.shortDescription||"", details:p.details||{}, category:p.category, price:p.price, inventory:p.inventory,
       status:p.status, orders:orderCounts[String(p._id)] || 0,
       image:p.images?.find(i=>i.isPrimary)?.url || p.images?.[0]?.url || null, createdAt:p.createdAt
     }));
@@ -1196,9 +1196,9 @@ async function getSellerProducts(req, res) {
 }
 async function createSellerProduct(req,res){
   try {
-    const {name,description,category,price,inventory=0,images=[],location,status="draft"}=req.body;
+    const {name,description,shortDescription="",category,price,inventory=0,images=[],location,status="draft",details={}}=req.body;
     if(!name||!description||!category||price===undefined) return res.status(400).json({success:false,message:"Name, description, category and price are required."});
-    const product=await Product.create({sellerId:req.user._id,name,description,category,price:Number(price),inventory:Number(inventory),images,status,location});
+    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,status,location,details});
     return res.status(201).json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
@@ -1206,7 +1206,7 @@ async function updateSellerProduct(req,res){
   try {
     const product=await Product.findOne({_id:req.params.productId,sellerId:req.user._id});
     if(!product)return res.status(404).json({success:false,message:"Product not found."});
-    const allowed=["name","description","category","price","inventory","images","location","status"];
+    const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details"];
     allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=req.body[k]});
     await product.save();
     return res.json({success:true,data:product});
