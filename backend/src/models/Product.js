@@ -26,6 +26,8 @@ const productSchema = new mongoose.Schema({
   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
   name: { type: String, required: true, trim: true, maxlength: 200 },
   description: { type: String, required: true, trim: true, maxlength: 5000 },
+  shortDescription: { type: String, trim: true, maxlength: 200, default: "" },
+  details: { type: mongoose.Schema.Types.Mixed, default: {} },
   category: { type: String, required: true, trim: true, index: true },
   price: { type: Number, required: true, min: 0 },
   images: { type: [imageSchema], default: [] },
