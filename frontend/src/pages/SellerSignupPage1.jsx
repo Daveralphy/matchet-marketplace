@@ -636,6 +636,10 @@ export default function SellerSignupPageOne() {
                         return;
                       }
                       updateField("profileImage", file);
+                      setPhotoPreview((previousUrl) => {
+                        if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
+                        return URL.createObjectURL(file);
+                      });
                       e.target.value = "";
                     }}
                   />
