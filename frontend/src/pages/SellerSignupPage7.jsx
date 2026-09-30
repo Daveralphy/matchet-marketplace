@@ -12,7 +12,7 @@ import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageSeven() {
-  const { formData } = useForm();
+  const { formData, clearForm } = useForm();
   const { refreshUser } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
@@ -579,6 +579,7 @@ export default function SellerSignupPageSeven() {
               try {
                 await submitSellerOnboarding(formData);
                 await refreshUser();
+                clearForm();
                 navigate("/register/page8");
               } catch (error) {
                 setSubmitError(error.message || "Unable to submit your seller application.");
