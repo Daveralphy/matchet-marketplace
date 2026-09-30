@@ -119,35 +119,35 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <SellerSignupPageOne />,
+    element: <RequireAuth><SellerSignupPageOne /></RequireAuth>,
   },
   {
     path: "/register/page2",
-    element: <SellerSignupPageTwo />,
+    element: <RequireAuth><SellerSignupPageTwo /></RequireAuth>,
   },
   {
     path: "/register/page3",
-    element: <SellerSignupPageThree />,
+    element: <RequireAuth><SellerSignupPageThree /></RequireAuth>,
   },
   {
     path: "/register/page4",
-    element: <SellerSignupPageFour />,
+    element: <RequireAuth><SellerSignupPageFour /></RequireAuth>,
   },
   {
     path: "/register/page5",
-    element: <SellerSignupPageFive />,
+    element: <RequireAuth><SellerSignupPageFive /></RequireAuth>,
   },
   {
     path: "/register/page6",
-    element: <SellerSignupPageSix />,
+    element: <RequireAuth><SellerSignupPageSix /></RequireAuth>,
   },
   {
     path: "/register/page7",
-    element: <SellerSignupPageSeven />,
+    element: <RequireAuth><SellerSignupPageSeven /></RequireAuth>,
   },
   {
     path: "/register/page8",
-    element: <SellerSignupPageEight />,
+    element: <RequireAuth><SellerSignupPageEight /></RequireAuth>,
   },
   {
     path: "/account/saved-items",
@@ -340,35 +340,35 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/onboarding",
-    element: <ProviderSignupPageOne />,
+    element: <RequireAuth><ProviderSignupPageOne /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page2",
-    element: <ProviderSignupPageTwo />,
+    element: <RequireAuth><ProviderSignupPageTwo /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page3",
-    element: <ProviderSignupPageThree />,
+    element: <RequireAuth><ProviderSignupPageThree /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page4",
-    element: <ProviderSignupPageFour />,
+    element: <RequireAuth><ProviderSignupPageFour /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page5",
-    element: <ProviderSignupPageFive />,
+    element: <RequireAuth><ProviderSignupPageFive /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page6",
-    element: <ProviderSignupPageSix />,
+    element: <RequireAuth><ProviderSignupPageSix /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/page7",
-    element: <ProviderSignupPageSeven />,
+    element: <RequireAuth><ProviderSignupPageSeven /></RequireAuth>,
   },
   {
     path: "/provider/onboarding/success",
-    element: <ProviderSignupPageEight />,
+    element: <RequireAuth><ProviderSignupPageEight /></RequireAuth>,
   },
   {
     path: "/provider/application-status",
