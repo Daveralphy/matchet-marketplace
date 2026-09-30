@@ -528,6 +528,10 @@ Controllers translate HTTP requests into service calls. Routes define endpoint p
 
 ## Schema Version History
 
+### 1.1.0 - 2026-09-30
+
+Added explicit User seller/provider capability fields, clarified independent seller/provider capability persistence, documented seller onboarding/business/shipping/payout data, and documented Product listing metadata.
+
 ### 1.0.0 - 2026-09-14
 
 Initial approved Matchet Marketplace database schema covering User, ProviderProfile, StoreProfile, Product, Service, Order, Booking, Message, Review, Notification, SavedItem, and Cart.
