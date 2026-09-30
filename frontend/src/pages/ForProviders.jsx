@@ -41,7 +41,15 @@ export default function ForProviders() {
     } finally {
       setLoading("");
     }
-  };
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const intent = sessionStorage.getItem("matchet_provider_intent");
+    if (!intent) return;
+    sessionStorage.removeItem("matchet_provider_intent");
+    handleProviderChoice(intent);
+  }, [isAuthenticated, handleProviderChoice]);
 
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
