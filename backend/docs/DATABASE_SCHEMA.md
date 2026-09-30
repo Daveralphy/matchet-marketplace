@@ -72,13 +72,18 @@ The User collection is the single source of truth for account identity and authe
 | `email` | String | Yes | Yes | Lowercase account email |
 | `passwordHash` | String | Yes | No | Never expose through API |
 | `phone` | String | No | No | Optional |
-| `avatar` | Object | No | No | Cloudinary image reference |\n| `capabilities` | Object | Yes | No | Marketplace capabilities for seller/provider profiles |
+| `avatar` | Object | No | No | Cloudinary image reference |
+| `capabilities` | Object | Yes | No | Marketplace capabilities for seller/provider profiles |
 | `location` | Object | No | No | User location |
 | `preferences` | Object | No | No | User preferences |
 | `isActive` | Boolean | Yes | No | Defaults to true |
 | `lastLoginAt` | Date | No | No | Last successful login |
 | `createdAt` | Date | Yes | No | Timestamp |
 | `updatedAt` | Date | Yes | No | Timestamp |
+
+Capabilities:
+- `capabilities.seller`: Boolean, default false
+- `capabilities.provider`: Boolean, default false
 
 ### Username rules
 
@@ -139,7 +144,16 @@ Fields:
 - `status`: `draft | active | suspended`, default `draft`
 - `ratingAverage`: Number, default 0, range 0 to 5
 - `reviewCount`: Number, default 0
+- `businessDetails`: Object, seller onboarding and business information
+- `shippingPolicies`: Object, seller shipping information
+- `payoutDetails`: Object, seller payout information
+- `onboardingData`: Object, original seller onboarding submission
+- `verificationStatus`: `pending | verified | rejected`, default `pending`
+- `applicationSubmittedAt`, `reviewedAt`: Date, optional
+- `reviewNote`: String, optional
 - `createdAt`, `updatedAt`: timestamps
+
+Seller approval sets `User.capabilities.seller = true`. Seller and provider capabilities are independent, so one User may have both.
 
 ## 7. Product
 
@@ -156,6 +170,9 @@ Fields:
 - `description`: String, required
 - `category`: String, required
 - `price`: Number, required
+- `shortDescription`: String, optional
+- `details`: Object, optional, for condition, brand, material, weight, dimensions, color, tags, and onboarding metadata
+- `sku`: String, optional
 - `images`: array of image objects
 - `inventory`: Number, required
 - `location`: Object, optional
