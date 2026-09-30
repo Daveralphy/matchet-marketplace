@@ -28,14 +28,6 @@ export default function ProviderSignupPageFive() {
   const { formData, updateField } = useForm();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
-
   const maxFileSize = 5 * 1024 * 1024;
 
   const validateAndStoreFile = (event, field, acceptedTypes) => {
