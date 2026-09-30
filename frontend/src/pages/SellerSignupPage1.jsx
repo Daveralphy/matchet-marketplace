@@ -2,16 +2,67 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "../context/FormContext.jsx";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 import { getProviderCapabilities } from "../api/provider";
 
 export default function SellerSignupPageOne() {
-  const { formData, updateField, setOnboardingFlow } = useForm();
+  const { formData, updateField, setOnboardingFlow, clearForm } = useForm();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  useEffect(() => { setOnboardingFlow("seller"); getProviderCapabilities().then((response) => { const state = response?.data?.product; if (state?.exists) navigate("/seller/dashboard", { replace: true }); }).catch(() => {}); }, [setOnboardingFlow, navigate]);
+  const [photoPreview, setPhotoPreview] = useState(null);
+
+  useEffect(() => {
+    setOnboardingFlow("seller");
+    if (!user?.id) return;
+
+    if (formData.onboardingUserId && formData.onboardingUserId !== user.id) {
+      clearForm();
+      updateField("onboardingUserId", user.id);
+      updateField("firstName", user.firstName || "");
+      updateField("lastName", user.lastName || "");
+      updateField("email", user.email || "");
+      const phone = String(user.phone || "").trim();
+      const code = phone.startsWith("+234") ? "+234" : phone.startsWith("+44") ? "+44" : phone.startsWith("+1") ? "+1" : "";
+      updateField("countryCode", code);
+      updateField("phoneNumber", code ? phone.slice(code.length).trim() : phone);
+      if (user.location?.city) updateField("location", user.location.city.toLowerCase() === "lagos" ? "lagos-nigeria" : user.location.city);
+      if (user.avatar?.url) updateField("profileImage", user.avatar);
+    } else if (!formData.onboardingUserId) {
+      updateField("onboardingUserId", user.id);
+      if (!formData.firstName) updateField("firstName", user.firstName || "");
+      if (!formData.lastName) updateField("lastName", user.lastName || "");
+      if (!formData.email) updateField("email", user.email || "");
+      if (!formData.phoneNumber && user.phone) {
+        const phone = String(user.phone).trim();
+        const code = phone.startsWith("+234") ? "+234" : phone.startsWith("+44") ? "+44" : phone.startsWith("+1") ? "+1" : "";
+        updateField("countryCode", formData.countryCode || code);
+        updateField("phoneNumber", code ? phone.slice(code.length).trim() : phone);
+      }
+      if (!formData.location && user.location?.city) updateField("location", user.location.city.toLowerCase() === "lagos" ? "lagos-nigeria" : user.location.city);
+      if (!formData.profileImage && user.avatar?.url) updateField("profileImage", user.avatar);
+    }
+
+    getProviderCapabilities().then((response) => {
+      const state = response?.data?.product;
+      if (state?.exists) navigate("/seller/dashboard", { replace: true });
+    }).catch(() => {});
+  }, [setOnboardingFlow, navigate, user?.id]);
+
+  useEffect(() => {
+    const image = formData.profileImage;
+    if (!image) { setPhotoPreview(null); return; }
+    if (typeof image === "string") { setPhotoPreview(image); return; }
+    if (image.url) { setPhotoPreview(image.url); return; }
+    if (typeof File !== "undefined" && image instanceof File) {
+      const url = URL.createObjectURL(image);
+      setPhotoPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setPhotoPreview(null);
+  }, [formData.profileImage]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -568,7 +619,7 @@ export default function SellerSignupPageOne() {
                 </span>
 
                 <label className="seller-signup-avatar-upload">
-                  <span className="seller-signup-avatar-circle">M</span>
+                  <span className="seller-signup-avatar-circle">{photoPreview ? <img src={photoPreview} alt="Seller profile preview" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} /> : (formData.firstName?.[0] || "M")}</span>
 
                   <span className="seller-signup-change-photo">
                     ↑ Change photo
@@ -577,6 +628,17 @@ export default function SellerSignupPageOne() {
                   <input
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
+                        alert("Please choose a JPG, PNG, or WebP image up to 5MB.");
+                        e.target.value = "";
+                        return;
+                      }
+                      updateField("profileImage", file);
+                      e.target.value = "";
+                    }}
                   />
                 </label>
 
