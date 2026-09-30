@@ -1136,7 +1136,7 @@ async function getSellerOrders(req, res) {
       data: {
         orders: data,
         stats,
-        products: [...new Map(orders.flatMap((order) => order.items.filter((item) => String(item.sellerId) === String(sellerId)).map((item) => [String(item.productId), { id: item.productId, name: item.nameSnapshot }])).values()],
+        products: [...new Map(orders.flatMap((order) => order.items.filter((item) => String(item.sellerId) === String(sellerId)).map((item) => [String(item.productId), { id: item.productId, name: item.nameSnapshot }]))).values()],
         pagination: { page: pageNumber, limit: pageSize, total, pages: Math.max(Math.ceil(total / pageSize), 1) },
       },
     });
