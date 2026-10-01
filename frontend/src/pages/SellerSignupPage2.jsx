@@ -1,8 +1,10 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
+import { saveSellerOnboardingDraft } from "../api/provider";
+import { useForm } from "../context/FormContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
