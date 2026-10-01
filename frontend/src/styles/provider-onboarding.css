@@ -2126,3 +2126,205 @@
     width: 100%;
   }
 }
+
+
+/* Responsive consistency overrides: provider onboarding
+   Gives medium-width screens a clean transition before mobile. */
+@media (max-width: 1050px) {
+  .provider-signup-page-container {
+    grid-template-columns: 32% 68% !important;
+  }
+
+  .provider-signup-form-header {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+
+  .provider-signup-form-page1,
+  .provider-signup-form-page2,
+  .provider-signup-form-page3,
+  .provider-signup-form-page4,
+  .provider-signup-form-page5,
+  .provider-signup-form-page6,
+  .provider-signup-form-page7,
+  .provider-signup-form-page8 {
+    margin-left: 24px !important;
+    margin-right: 24px !important;
+  }
+
+  .provider-signup-form-page1 .provider-signup-form-field-group:first-child,
+  .provider-signup-form-page1 .provider-signup-form-field-group:nth-child(2),
+  .provider-signup-form-page2 .provider-signup-form-field-group,
+  .provider-signup-form-page3 .provider-signup-form-field-group,
+  .provider-signup-form-page4 .provider-signup-form-field-group,
+  .provider-signup-form-page5 .provider-signup-form-field-group,
+  .provider-signup-form-page6 .provider-signup-form-field-group {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .provider-signup-provider-types,
+  .provider-service-type-options,
+  .provider-service-area-options {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .provider-signup-certification-row,
+  .provider-portfolio-section {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .provider-signup-identity-upload-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .provider-signup-page-container {
+    grid-template-columns: 30% 70% !important;
+  }
+
+  .provider-signup-form-header {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .provider-signup-form-page1,
+  .provider-signup-form-page2,
+  .provider-signup-form-page3,
+  .provider-signup-form-page4,
+  .provider-signup-form-page5,
+  .provider-signup-form-page6,
+  .provider-signup-form-page7,
+  .provider-signup-form-page8 {
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+  }
+
+  .provider-signup-form-page1 .provider-signup-form-field-group:first-child,
+  .provider-signup-form-page1 .provider-signup-form-field-group:nth-child(2),
+  .provider-signup-form-page2 .provider-signup-form-field-group,
+  .provider-signup-form-page3 .provider-signup-form-field-group,
+  .provider-signup-form-page4 .provider-signup-form-field-group,
+  .provider-signup-form-page5 .provider-signup-form-field-group,
+  .provider-signup-form-page6 .provider-signup-form-field-group {
+    grid-template-columns: 1fr !important;
+  }
+
+  .provider-signup-provider-types,
+  .provider-service-type-options,
+  .provider-service-area-options {
+    grid-template-columns: 1fr !important;
+  }
+
+  .provider-signup-certification-row,
+  .provider-portfolio-section,
+  .provider-signup-identity-upload-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .provider-signup-profile-location-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .provider-signup-page2-actions,
+  .provider-signup-page3-actions,
+  .provider-signup-page4-actions,
+  .provider-signup-page5-actions,
+  .provider-signup-page6-actions,
+  .provider-signup-page7-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  .provider-signup-page2-actions .provider-add-another-service-button {
+    grid-column: auto !important;
+    grid-row: auto !important;
+    justify-self: stretch !important;
+  }
+
+  .provider-review-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .provider-signup-page-container {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .provider-signup-left-section {
+    display: none !important;
+  }
+
+  .provider-signup-right-section {
+    min-height: 100vh !important;
+    overflow: visible !important;
+  }
+
+  .provider-signup-form-header {
+    padding: 20px 18px 0 !important;
+  }
+
+  .provider-signup-step-header {
+    font-size: 27px !important;
+  }
+
+  .provider-signup-form-page1,
+  .provider-signup-form-page2,
+  .provider-signup-form-page3,
+  .provider-signup-form-page4,
+  .provider-signup-form-page5,
+  .provider-signup-form-page6,
+  .provider-signup-form-page7,
+  .provider-signup-form-page8 {
+    margin-left: 18px !important;
+    margin-right: 18px !important;
+  }
+
+  .provider-signup-form-actions,
+  .provider-signup-page2-actions,
+  .provider-signup-page3-actions,
+  .provider-signup-page4-actions,
+  .provider-signup-page5-actions,
+  .provider-signup-page6-actions,
+  .provider-signup-page7-actions {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .provider-signup-back-button,
+  .provider-signup-save-continue-button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .provider-review-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .provider-signup-form-page1,
+  .provider-signup-form-page2,
+  .provider-signup-form-page3,
+  .provider-signup-form-page4,
+  .provider-signup-form-page5,
+  .provider-signup-form-page6,
+  .provider-signup-form-page7,
+  .provider-signup-form-page8 {
+    margin-left: 14px !important;
+    margin-right: 14px !important;
+  }
+
+  .provider-signup-step-header {
+    font-size: 25px !important;
+  }
+}
