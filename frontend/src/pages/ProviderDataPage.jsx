@@ -1,16 +1,59 @@
+import { useEffect, useState } from "react";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { providerMock } from "../data/providerMock";
+import { getServiceCollection } from "../data/marketplaceApi";
 import providerImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-dashboard.css";
 
 const initials=(s)=>s.split(" ").map(x=>x[0]).join("").slice(0,2);
 function Avatar({name}){return <div className="provider-avatar">{initials(name)}</div>}
 function Card({children,className=""}){return <section className={"provider-card "+className}>{children}</section>}
+function ProviderServicesPage(){
+ const [services,setServices]=useState([]);
+ const [loading,setLoading]=useState(true);
+ const [error,setError]=useState("");
+ useEffect(()=>{
+   let active=true;
+   getServiceCollection()
+     .then(items=>{if(active)setServices(items);})
+     .catch(err=>{if(active)setError(err.message||"Unable to load services.");})
+     .finally(()=>{if(active)setLoading(false);});
+   return()=>{active=false;};
+ },[]);
+ const activeCount=services.filter(service=>service.status==="active").length;
+ const pausedCount=services.filter(service=>service.status==="paused").length;
+ return <ProviderShell><div className="provider-page">
+   <div className="provider-heading"><div><h1>Services</h1><span>Manage your services, set prices, and showcase what you offer.</span></div><button className="provider-blue-button">＋ Add a new service</button></div>
+   <div className="provider-stat-grid">
+     {[
+       ["grid",String(activeCount),"Active services","From backend"],
+       ["grid",String(pausedCount),"Paused services","From backend"],
+       ["grid",String(services.length),"Total services","From backend"],
+       ["calendar","0","Total bookings","Bookings API"],
+     ].map(x=><div className="provider-stat" key={x[2]}><div className="provider-stat-icon calendar"><Icon name={x[0]}/></div><strong>{x[1]}</strong><b>{x[2]}</b><span>{x[3]}</span></div>)}
+   </div>
+   <div className="provider-table-card">
+     <div className="provider-table-tools">Services from your live marketplace data <button>All statuses⌄</button><button>Sort by: Newest⌄</button></div>
+     {error&&<div className="provider-empty-state">{error}</div>}
+     {loading?<div className="provider-empty-state">Loading services...</div>:!error&&!services.length?<div className="provider-empty-state">No services found yet.</div>:
+       <div className="provider-table">{services.map(service=><div className="provider-service-row" key={service.id}>
+         <div className="provider-service-thumb" style={service.image?{backgroundImage:`url("${service.image}")`,backgroundSize:"cover",backgroundPosition:"center"}:undefined}/>
+         <div><strong>{service.title}</strong><small>{service.description||"No description provided."}</small></div>
+         <span>{service.category||"Uncategorized"}</span>
+         <b>{service.price||"Custom quote"}</b>
+         <span>{service.pricing?.type==="customQuote"?"Quote":"Available"}</span>
+         <b className={"status "+String(service.status||"draft").toLowerCase()}>{service.status||"draft"}</b>
+         <span>{service.reviews||0}</span>
+         <button>Edit</button>
+       </div>)}</div>}
+   </div>
+ </div></ProviderShell>;
+}
 
 export default function ProviderDataPage({type}){
  const title={bookings:"Bookings",earnings:"Earnings",messages:"Messages",profile:"Profile",reviews:"Reviews",services:"Services",settings:"Settings"}[type];
  if(type==="bookings") return <ProviderShell><div className="provider-page"><div className="provider-heading"><div><h1>Bookings</h1><span>Manage your bookings, view details, and keep track of your schedule.</span></div><button className="provider-blue-button">＋ Add availability</button></div><div className="provider-tabs">All bookings&nbsp;&nbsp;&nbsp; Upcoming&nbsp;&nbsp;&nbsp; Completed&nbsp;&nbsp;&nbsp; Cancelled</div><div className="provider-stat-grid">{[["calendar","12","Total bookings","This month"],["calendar","5","Upcoming","This month"],["calendar","6","Completed","This month"],["calendar","1","Cancelled","This month"]].map(x=><div className="provider-stat" key={x[2]}><div className="provider-stat-icon calendar"><Icon name="calendar"/></div><strong>{x[1]}</strong><b>{x[2]}</b><span>{x[3]}</span></div>)}</div><div className="provider-table-card"><div className="provider-table-tools">⌕&nbsp; Search bookings by customer, service, or location... <button>All statuses⌄</button></div><div className="provider-table">{providerMock.bookings.map(x=><div className="provider-table-row" key={x[0]}><Avatar name={x[0]}/><strong>{x[0]}</strong><span>{x[2]}</span><span>{x[3]}<small>{x[4]}</small></span><span>{x[5]}</span><b className={"status "+x[6].toLowerCase()}>{x[6]}</b><strong>{x[7]}</strong><span>›</span></div>)}</div></div></div></ProviderShell>;
- if(type==="services") return <ProviderShell><div className="provider-page"><div className="provider-heading"><div><h1>Services</h1><span>Manage your services, set prices, and showcase what you offer.</span></div><button className="provider-blue-button">＋ Add a new service</button></div><div className="provider-stat-grid">{[["grid","5","Active services",""],["grid","1","Paused service",""],["grid","1,248","Total views","Last 30 days"],["calendar","36","Total bookings","Last 30 days"]].map(x=><div className="provider-stat" key={x[2]}><div className="provider-stat-icon calendar"><Icon name={x[0]}/></div><strong>{x[1]}</strong><b>{x[2]}</b><span>{x[3]}</span></div>)}</div><div className="provider-table-card"><div className="provider-table-tools">⌕&nbsp; Search services... <button>All statuses⌄</button><button>Sort by: Newest⌄</button></div><div className="provider-table">{providerMock.services.map(x=><div className="provider-service-row" key={x[0]}><div className="provider-service-thumb"/><div><strong>{x[0]}</strong><small>{x[1]}</small></div><span>{x[2]}</span><b>{x[3]}</b><span>{x[4]}</span><b className={"status "+x[5].toLowerCase()}>{x[5]}</b><span>{x[6]}</span><button>Edit</button></div>)}</div></div></div></ProviderShell>;
+ if(type==="services") return <ProviderServicesPage/>;
  if(type==="messages") return <ProviderShell><div className="provider-page"><div className="provider-heading"><div><h1>Messages</h1><span>Chat with your customers, manage inquiries, and keep track of your conversations.</span></div></div><div className="provider-message-layout"><Card className="provider-conversations"><div className="provider-table-tools">⌕&nbsp; Search messages...</div>{providerMock.messages.map(x=><div className="provider-conversation" key={x[0]}><Avatar name={x[0]}/><div><strong>{x[0]}</strong><p>{x[2]}</p></div><small>{x[3]}</small></div>)}</Card><Card className="provider-chat"><div className="provider-chat-head"><Avatar name="Sarah Johnson"/><div><strong>Sarah Johnson</strong><small>Customer since Aug 2026</small></div><button>View booking</button></div><div className="provider-chat-body"><div className="incoming">Hi, is next week still available for a deep cleaning service at my apartment in Victoria Island?</div><div className="outgoing">Hello Sarah, yes next week is still available. What date and time works best for you?</div><div className="incoming">Great! I am looking at either Tuesday or Wednesday morning. Do you have availability on Tuesday at 10 AM?</div><div className="outgoing">Yes, Tuesday at 10 AM is available. I have tentatively held the slot for you. Shall I go ahead and confirm the booking?</div><div className="incoming">Yes please. Also, can you confirm the total cost for a 2-bedroom apartment?</div></div><div className="provider-chat-input">Type a message... <button>Send</button></div></Card></div></div></ProviderShell>;
  if(type==="reviews") return <ProviderShell><div className="provider-page"><div className="provider-heading"><div><h1>Reviews</h1><span>See what your customers are saying and track your ratings.</span></div></div><div className="provider-stat-grid">{[["star","4.8","Average rating","From 24 reviews"],["user","24","Total reviews","All time"],["user","96%","Would book again","Based on customer feedback"],["star","4.9","Service quality","Average score"]].map(x=><div className="provider-stat" key={x[2]}><div className="provider-stat-icon star"><Icon name={x[0]}/></div><strong>{x[1]}</strong><b>{x[2]}</b><span>{x[3]}</span></div>)}</div><Card className="provider-reviews-list"><h2>All reviews</h2>{providerMock.reviews.map(x=><div className="provider-review-row" key={x[0]}><Avatar name={x[0]}/><div><strong>{x[0]}</strong><small>{x[2]}</small></div><b>★★★★★</b><div><strong>{x[3]}</strong><p>{x[4]}</p></div><span>Service</span></div>)}</Card></div></ProviderShell>;
  if(type==="earnings") return <ProviderShell><div className="provider-page"><div className="provider-heading"><div><h1>Earnings</h1><span>Track your income, view payouts, and manage your payment details.</span></div><button className="provider-blue-button">▣ Manage payout method</button></div><div className="provider-stat-grid">{[["wallet","₦245,000","Total earnings","All time"],["calendar","₦68,000","This month","vs. last month"],["calendar","₦35,000","Pending payout","1 booking"],["wallet","₦210,000","Total paid out","8 payouts"]].map(x=><div className="provider-stat" key={x[2]}><div className="provider-stat-icon wallet"><Icon name={x[0]}/></div><strong>{x[1]}</strong><b>{x[2]}</b><span>{x[3]}</span></div>)}</div><div className="provider-card provider-chart"><h2>Earnings overview</h2><p>Your earnings for the last 6 months.</p><div className="provider-bars">{[28,45,52,61,73,68].map((n,i)=><div key={n}><i style={{height:n*2.1+"px"}}/><span>₦{n}K</span><small>{["Apr 2026","May 2026","Jun 2026","Jul 2026","Aug 2026","Sep 2026"][i]}</small></div>)}</div></div></div></ProviderShell>;
