@@ -1502,3 +1502,226 @@
     width: 100%;
   }
 }
+
+
+/* Responsive consistency overrides: seller onboarding
+   Keeps all steps usable on medium-width screens before switching to mobile. */
+@media (max-width: 1050px) {
+  .seller-signup-page-container {
+    grid-template-columns: 32% 68% !important;
+  }
+
+  .seller-signup-form-header,
+  .seller-signup-step-header,
+  .seller-signup-form-step-header-caption {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+
+  .seller-signup-form-page1,
+  .seller-signup-form-page2,
+  .seller-signup-form-page3,
+  .seller-signup-form-page4,
+  .seller-signup-form-page5,
+  .seller-signup-form-page6,
+  .seller-signup-page7 .seller-signup-verification-card,
+  .seller-signup-page7 > .importantText {
+    margin-left: 24px !important;
+    margin-right: 24px !important;
+  }
+
+  .seller-signup-form-page1 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page1 .seller-signup-form-field-group:nth-child(2),
+  .seller-signup-form-page2 .seller-signup-form-field-group,
+  .seller-signup-form-page3 .seller-signup-form-field-group,
+  .seller-signup-form-page4 .seller-signup-form-field-group,
+  .seller-signup-form-page5 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page5 .seller-signup-form-field-group:nth-of-type(2),
+  .seller-signup-form-page6 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page6 .seller-signup-form-field-group:nth-of-type(2) {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .seller-signup-product-images {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .seller-signup-product-upload {
+    grid-column: 1 / -1 !important;
+  }
+
+  .seller-signup-identity-upload-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .seller-signup-selfie-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .seller-signup-page-container {
+    grid-template-columns: 30% 70% !important;
+  }
+
+  .seller-signup-form-header,
+  .seller-signup-step-header,
+  .seller-signup-form-step-header-caption {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .seller-signup-form-page1,
+  .seller-signup-form-page2,
+  .seller-signup-form-page3,
+  .seller-signup-form-page4,
+  .seller-signup-form-page5,
+  .seller-signup-form-page6,
+  .seller-signup-page7 > .importantText {
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+  }
+
+  .seller-signup-form-page1 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page1 .seller-signup-form-field-group:nth-child(2),
+  .seller-signup-form-page2 .seller-signup-form-field-group,
+  .seller-signup-form-page3 .seller-signup-form-field-group,
+  .seller-signup-form-page4 .seller-signup-form-field-group,
+  .seller-signup-form-page5 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page5 .seller-signup-form-field-group:nth-of-type(2),
+  .seller-signup-form-page6 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page6 .seller-signup-form-field-group:nth-of-type(2) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .seller-signup-product-images,
+  .seller-signup-identity-upload-grid,
+  .seller-signup-selfie-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .seller-signup-product-upload {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .seller-signup-page-container {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .seller-signup-left-section {
+    display: none !important;
+  }
+
+  .seller-signup-right-section {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+  }
+
+  .seller-signup-form-header {
+    padding: 20px 18px 0 !important;
+  }
+
+  .seller-signup-step-header {
+    margin-left: 18px !important;
+    margin-right: 18px !important;
+    font-size: 27px !important;
+  }
+
+  .seller-signup-form-step-header-caption {
+    margin-left: 18px !important;
+    margin-right: 18px !important;
+  }
+
+  .seller-signup-form-page1,
+  .seller-signup-form-page2,
+  .seller-signup-form-page3,
+  .seller-signup-form-page4,
+  .seller-signup-form-page5,
+  .seller-signup-form-page6 {
+    margin-left: 18px !important;
+    margin-right: 18px !important;
+  }
+
+  .seller-signup-form-page1 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page1 .seller-signup-form-field-group:nth-child(2),
+  .seller-signup-form-page2 .seller-signup-form-field-group,
+  .seller-signup-form-page3 .seller-signup-form-field-group,
+  .seller-signup-form-page4 .seller-signup-form-field-group,
+  .seller-signup-form-page5 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page5 .seller-signup-form-field-group:nth-of-type(2),
+  .seller-signup-form-page6 .seller-signup-form-field-group:first-child,
+  .seller-signup-form-page6 .seller-signup-form-field-group:nth-of-type(2) {
+    grid-template-columns: 1fr !important;
+  }
+
+  .seller-signup-product-images,
+  .seller-signup-identity-upload-grid,
+  .seller-signup-selfie-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .seller-signup-product-upload {
+    grid-column: auto !important;
+  }
+
+  .seller-signup-page7 .seller-signup-verification-card {
+    width: auto !important;
+    display: block !important;
+    margin-left: 18px !important;
+    margin-right: 18px !important;
+  }
+
+  .seller-signup-form-page1 .save-continue-button,
+  .seller-signup-form-page2 .save-continue-button,
+  .seller-signup-form-page3 .save-continue-button,
+  .seller-signup-form-page4 .save-continue-button,
+  .seller-signup-form-page5 .save-continue-button,
+  .seller-signup-form-page6 .save-continue-button,
+  .seller-signup-page7 .save-button {
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .seller-signup-form-page2 .back-button,
+  .seller-signup-form-page3 .back-button,
+  .seller-signup-form-page4 .back-button,
+  .seller-signup-form-page5 .back-button,
+  .seller-signup-form-page6 .back-button {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .seller-signup-form-page1,
+  .seller-signup-form-page2,
+  .seller-signup-form-page3,
+  .seller-signup-form-page4,
+  .seller-signup-form-page5,
+  .seller-signup-form-page6 {
+    margin-left: 14px !important;
+    margin-right: 14px !important;
+  }
+
+  .seller-signup-step-header,
+  .seller-signup-form-step-header-caption {
+    margin-left: 14px !important;
+    margin-right: 14px !important;
+  }
+
+  .seller-signup-form-field-group {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+}
