@@ -41,7 +41,7 @@ const banks = [
 ];
 
 export default function ProviderSignupPageSix() {
-  const { formData, updateField } = useForm();
+  const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
 
   const accountName = useMemo(() => {
@@ -57,7 +57,8 @@ export default function ProviderSignupPageSix() {
       return;
     }
     try {
-      await saveProviderOnboardingDraft(formData);
+      const response = await saveProviderOnboardingDraft(formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page7");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
