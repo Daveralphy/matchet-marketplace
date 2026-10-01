@@ -45,7 +45,8 @@ export default function SellerSignupPageFive() {
       e.target.value = "";
       return;
     }
-    updateField(field, file);\n    setIdentityPreviews((previous) => ({ ...previous, [field]: URL.createObjectURL(file) }));
+    updateField(field, file);
+    setIdentityPreviews((previous) => ({ ...previous, [field]: URL.createObjectURL(file) }));
     e.target.value = "";
   };
 
