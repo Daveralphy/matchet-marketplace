@@ -114,7 +114,7 @@ export default function ProviderSignupPageTwo() {
     }
     const nextFormData = { ...formData, providerAreasServed: areas.filter(Boolean) };
     try {
-      const response = await saveProviderOnboardingDraft(nextFormData);
+      const response = const response = await saveProviderOnboardingDraft(nextFormData);\n      if (response?.data?.formData) mergeFormData(response.data.formData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page3");
     } catch (error) {
