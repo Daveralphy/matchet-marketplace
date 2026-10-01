@@ -570,7 +570,7 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, viewPath 
           <p className="text-[13px] font-semibold text-[#10183f]">Nothing to show here yet</p>
           <p className="mt-1 text-[11px] text-[#69739a]">Products and services will appear here when sellers and providers publish active listings.</p>
         </div>
-      )
+       )}
     </section>
   );
 }
