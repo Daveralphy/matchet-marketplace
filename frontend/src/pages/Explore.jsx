@@ -512,7 +512,7 @@ function ProvidersSection({ isAuthenticated }) {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {providers.map((provider) => <ProviderCard key={provider.id} provider={provider} />)}
+        {providers.length ? providers.map((provider) => <ProviderCard key={provider.id} provider={provider} />) : <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-10 text-center text-[11px] text-[#69739a]">No service providers with active services are available yet.</div>}
       </div>
     </section>
   );
@@ -860,9 +860,14 @@ function ExploreResultsSection({ isAuthenticated }) {
       </div>
 
       <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"}>
-        {visibleItems.map((item) => (
+        {visibleItems.length ? visibleItems.map((item) => (
           <ExploreProductCard key={item.title} item={item} listView={listView} />
-        ))}
+        )) : (
+          <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-14 text-center">
+            <p className="text-[13px] font-semibold text-[#10183f]">Nothing matches your search</p>
+            <p className="mt-1 text-[11px] text-[#69739a]">There are no active products or services matching the current filters.</p>
+          </div>
+        )}
       </div>
 
       {visibleItems.length === 0 && (
