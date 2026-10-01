@@ -25,7 +25,7 @@ function ServiceAreaIcon({ type }) {
 }
 
 export default function ProviderSignupPageFour() {
-  const { formData, updateField } = useForm();
+  const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
   const [locationInput, setLocationInput] = useState("");
 
@@ -80,7 +80,8 @@ export default function ProviderSignupPageFour() {
       return;
     }
     try {
-      await saveProviderOnboardingDraft(formData);
+      const response = await saveProviderOnboardingDraft(formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page5");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
