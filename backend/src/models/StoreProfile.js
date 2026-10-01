@@ -38,12 +38,15 @@ const locationSchema = new mongoose.Schema(
       },
       coordinates: {
         type: [Number],
+        validate: {
+          validator: (value) => value === undefined || value.length === 2,
+          message: "Coordinates must contain longitude and latitude.",
+        },
       },
     },
   },
   { _id: false },
 );
-
 const contactSchema = new mongoose.Schema(
   {
     phone: {
