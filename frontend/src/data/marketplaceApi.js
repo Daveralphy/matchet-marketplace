@@ -1,9 +1,5 @@
 import { getMarketplaceProducts, getMarketplaceServices, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
-
-const staticContent = {
-  // Category and presentation content is intentionally separate from marketplace records.
-  // Products and services themselves always come from the backend API.
-};
+import { marketplaceContent } from "./marketplaceContent";
 
 async function loadMarketplace() {
   const [products, services] = await Promise.all([
@@ -135,7 +131,7 @@ export async function getProviderCollection() {
 }
 
 export async function getCategoryCollections() {
-  return {
+  return marketplaceContent.categories || {
     featured: [
       { id: "electronics", name: "Electronics", icon: "bag", tone: "green" },
       { id: "fashion", name: "Fashion", icon: "shirt", tone: "red" },
@@ -167,7 +163,7 @@ export async function getServiceCollection() {
 }
 
 export async function getServiceCategoryCollections() {
-  return {
+  return marketplaceContent.serviceCategories || {
     featured: [
       { id: "home-services", label: "Home Services", description: "Cleaning, plumbing, electrical and more.", icon: "home", tone: "green" },
       { id: "repairs-maintenance", label: "Repairs & Maintenance", description: "Phone, appliance, electronics and more.", icon: "tools", tone: "blue" },
@@ -195,27 +191,17 @@ export async function getServiceCategoryCollections() {
 
 export async function getServiceExperience() {
   return {
-    experience: {
-      loggedOut: { eyebrow: "HOW SERVICES WORK", title: "Getting help should be simple.", subtitle: "Find the right provider, book with confidence, and get the job done.", steps: [] },
-      loggedIn: { eyebrow: "YOUR SERVICE JOURNEY", title: "From match to completed service.", subtitle: "Everything you need to find, book, and manage a service in one place.", steps: [] },
-      reassurance: [],
-    },
-    upcomingBooking: null,
+    experience: marketplaceContent.serviceExperience || { loggedOut: {}, loggedIn: {}, reassurance: [] },
+    upcomingBooking: marketplaceContent.upcomingBooking || null,
   };
 }
 
 export async function getServiceReviews() {
-  return {
-    loggedOut: { eyebrow: "WHAT PEOPLE ARE SAYING", title: "Real people.", accent: "Real experiences.", subtitle: "See how customers and service providers use Matchet to get things done.", reviews: [] },
-    loggedIn: { eyebrow: "FROM OUR COMMUNITY", title: "People like you are", accent: "getting real value.", subtitle: "Recent stories from customers and service providers in the Matchet community.", reviews: [] },
-  };
+  return marketplaceContent.serviceReviews || { loggedOut: { reviews: [] }, loggedIn: { reviews: [] } };
 }
 
 export async function getProductExperience() {
-  return {
-    loggedOut: { eyebrow: "HOW SHOPPING WORKS", title: "From order to", accent: "doorstep.", subtitle: "A simple way to buy from trusted sellers and keep track of your order every step of the way.", steps: [] },
-    loggedIn: { eyebrow: "HOW SHOPPING WORKS", title: "From order to", accent: "doorstep.", subtitle: "A simple way to buy from trusted sellers and keep track of your order every step of the way.", steps: [] },
-  };
+  return marketplaceContent.productExperience || { loggedOut: { steps: [] }, loggedIn: { steps: [] } };
 }
 
 export async function getProductById(id) {
