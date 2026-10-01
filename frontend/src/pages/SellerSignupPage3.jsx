@@ -11,6 +11,17 @@ import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader"
 export default function SellerSignupPageThree() {
   const { formData, updateField, mergeFormData } = useForm();
   const [productPreviews, setProductPreviews] = useState(() => Array(5).fill(null));
+
+  useEffect(() => {
+    const images = Array.isArray(formData.productImages) ? formData.productImages : [];
+    setProductPreviews((previous) => {
+      const next = Array(5).fill(null);
+      images.slice(0, 5).forEach((image, index) => {
+        next[index] = image?.url || (typeof image === "string" ? image : previous[index] || null);
+      });
+      return next;
+    });
+  }, [formData.productImages]);
   const navigate = useNavigate();
 
   useEffect(() => {
