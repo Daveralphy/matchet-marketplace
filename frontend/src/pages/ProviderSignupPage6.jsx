@@ -57,8 +57,8 @@ export default function ProviderSignupPageSix() {
       return;
     }
     try {
-      const response = const response = await saveProviderOnboardingDraft(formData);\n      if (response?.data?.formData) mergeFormData(response.data.formData);
-      if (response?.data?.formData) mergeFormData(response.data.formData);
+      const response = await saveProviderOnboardingDraft(formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page7");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
