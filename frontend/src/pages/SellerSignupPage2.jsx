@@ -1,7 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";
 import { useForm } from "../context/FormContext";
@@ -12,6 +12,28 @@ export default function SellerSignupPageTwo() {
   const { formData, updateField, mergeFormData } = useForm();
   const [logoPreview, setLogoPreview] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const image = formData.businessLogo;
+    if (!image) {
+      setLogoPreview(null);
+      return;
+    }
+    if (typeof image === "string") {
+      setLogoPreview(image);
+      return;
+    }
+    if (image.url) {
+      setLogoPreview(image.url);
+      return;
+    }
+    if (typeof File !== "undefined" && image instanceof File) {
+      const url = URL.createObjectURL(image);
+      setLogoPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setLogoPreview(null);
+  }, [formData.businessLogo]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
