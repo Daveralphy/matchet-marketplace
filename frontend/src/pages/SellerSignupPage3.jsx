@@ -29,19 +29,32 @@ export default function SellerSignupPageThree() {
 
   useEffect(() => {
     const entries = Array.isArray(formData.productImages) ? formData.productImages : [];
-    const urls = entries.map((image) => {
-      if (image instanceof File) return URL.createObjectURL(image);
-      return image?.url || null;
+
+    setProductPreviews((previous) => {
+      const next = entries.map((image, index) => {
+        if (image instanceof File) {
+          return previous[index] || URL.createObjectURL(image);
+        }
+        return image?.url || null;
+      });
+
+      previous.forEach((url, index) => {
+        if (url?.startsWith("blob:") && url !== next[index]) {
+          URL.revokeObjectURL(url);
+        }
+      });
+
+      return next;
     });
+  }, [formData.productImages]);
 
-    setProductPreviews(urls);
-
+  useEffect(() => {
     return () => {
-      urls.forEach((url) => {
+      productPreviews.forEach((url) => {
         if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
       });
     };
-  }, [formData.productImages]);
+  }, [productPreviews]);
 
   const handleProductImage = (index, file) => {
     if (!file) return;
@@ -56,12 +69,38 @@ export default function SellerSignupPageThree() {
       return;
     }
 
+    const previewUrl = URL.createObjectURL(file);
+
+    setProductPreviews((previous) => {
+      const next = [...previous];
+      const previousUrl = next[index];
+
+      if (previousUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(previousUrl);
+      }
+
+      next[index] = previewUrl;
+      return next;
+    });
+
     const images = Array.isArray(formData.productImages) ? [...formData.productImages] : [];
     images[index] = file;
     updateField("productImages", images.slice(0, 5));
   };
 
   const removeProductImage = (index) => {
+    setProductPreviews((previous) => {
+      const next = [...previous];
+      const removedUrl = next[index];
+
+      if (removedUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(removedUrl);
+      }
+
+      next.splice(index, 1);
+      return next;
+    });
+
     const images = Array.isArray(formData.productImages) ? [...formData.productImages] : [];
     images.splice(index, 1);
     updateField("productImages", images);
