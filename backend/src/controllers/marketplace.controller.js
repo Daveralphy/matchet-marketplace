@@ -3,6 +3,7 @@ const Product = require("../models/Product");
 const Service = require("../models/Service");
 const ProviderProfile = require("../models/ProviderProfile");
 const StoreProfile = require("../models/StoreProfile");
+const Review = require("../models/Review");
 
 const clean = (value) => String(value ?? "").trim();
 
@@ -47,10 +48,14 @@ function productResponse(product) {
     status: product.status,
     location: locationLabel(product.location || store.location),
     seller: store.storeName || [seller.firstName, seller.lastName].filter(Boolean).join(" ") || seller.username || "Seller",
+    sellerVerified: store.verificationStatus === "verified",
+    sellerType: store.category || "Seller",
     sellerId: seller._id?.toString?.() || product.sellerId?.toString?.(),
     storeId: store._id?.toString?.() || null,
     image: primaryImage(product.images),
     images: product.images || [],
+    reviews: Number(product.reviewCount || 0),
+    rating: Number(product.ratingAverage || 0),
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
   };
@@ -77,29 +82,83 @@ function serviceResponse(service) {
     status: service.status,
     location: locationLabel(service.location || profile.serviceArea),
     seller: profile.businessName || [provider.firstName, provider.lastName].filter(Boolean).join(" ") || provider.username || "Provider",
+    sellerVerified: profile.verificationStatus === "verified",
+    providerVerified: profile.verificationStatus === "verified",
     providerId: provider._id?.toString?.() || service.providerId?.toString?.(),
     providerProfileId: profile._id?.toString?.() || null,
     image: primaryImage(service.images),
     images: service.images || [],
+    reviews: Number(service.reviewCount || 0),
+    rating: Number(service.ratingAverage || 0),
     createdAt: service.createdAt,
     updatedAt: service.updatedAt,
   };
 }
 
+async function attachProductMarketplaceData(products) {
+  if (!products.length) return products;
+  const sellerIds = [...new Set(products.map((product) => String(product.sellerId?._id || product.sellerId)).filter(Boolean))];
+  const stores = await StoreProfile.find({ userId: { $in: sellerIds } })
+    .select("userId storeName location category verificationStatus")
+    .lean();
+  const storeByUser = new Map(stores.map((store) => [String(store.userId), store]));
+  const reviewRows = await Review.find({ productId: { $in: products.map((product) => product._id) }, status: "published" })
+    .select("productId rating")
+    .lean();
+  const stats = new Map();
+  reviewRows.forEach((review) => {
+    const key = String(review.productId);
+    const current = stats.get(key) || { sum: 0, count: 0 };
+    current.sum += Number(review.rating || 0);
+    current.count += 1;
+    stats.set(key, current);
+  });
+  return products.map((product) => {
+    const store = storeByUser.get(String(product.sellerId?._id || product.sellerId));
+    const review = stats.get(String(product._id)) || { sum: 0, count: 0 };
+    return { ...product, storeProfile: store, reviewCount: review.count, ratingAverage: review.count ? Number((review.sum / review.count).toFixed(1)) : 0 };
+  });
+}
+
+async function attachServiceMarketplaceData(services) {
+  if (!services.length) return services;
+  const providerIds = [...new Set(services.map((service) => String(service.providerId?._id || service.providerId)).filter(Boolean))];
+  const profiles = await ProviderProfile.find({ userId: { $in: providerIds } })
+    .select("userId businessName serviceArea verificationStatus")
+    .lean();
+  const profileByUser = new Map(profiles.map((profile) => [String(profile.userId), profile]));
+  const reviewRows = await Review.find({ serviceId: { $in: services.map((service) => service._id) }, status: "published" })
+    .select("serviceId rating")
+    .lean();
+  const stats = new Map();
+  reviewRows.forEach((review) => {
+    const key = String(review.serviceId);
+    const current = stats.get(key) || { sum: 0, count: 0 };
+    current.sum += Number(review.rating || 0);
+    current.count += 1;
+    stats.set(key, current);
+  });
+  return services.map((service) => {
+    const profile = profileByUser.get(String(service.providerId?._id || service.providerId));
+    const review = stats.get(String(service._id)) || { sum: 0, count: 0 };
+    return { ...service, providerProfile: profile, reviewCount: review.count, ratingAverage: review.count ? Number((review.sum / review.count).toFixed(1)) : 0 };
+  });
+}
+
 async function findProducts(query = {}) {
-  return Product.find(query)
+  const products = await Product.find(query)
     .populate({ path: "sellerId", select: "firstName lastName username" })
-    .populate({ path: "storeProfile", select: "storeName location" })
     .sort({ createdAt: -1 })
     .lean();
+  return attachProductMarketplaceData(products);
 }
 
 async function findServices(query = {}) {
-  return Service.find(query)
+  const services = await Service.find(query)
     .populate({ path: "providerId", select: "firstName lastName username" })
-    .populate({ path: "providerProfile", select: "businessName serviceArea" })
     .sort({ createdAt: -1 })
     .lean();
+  return attachServiceMarketplaceData(services);
 }
 
 async function getProducts(req, res) {
@@ -120,10 +179,8 @@ async function getProductById(req, res) {
       return res.status(404).json({ success: false, message: "Product not found." });
     }
 
-    const product = await Product.findOne({ _id: req.params.id, status: "active" })
-      .populate({ path: "sellerId", select: "firstName lastName username" })
-      .populate({ path: "storeProfile", select: "storeName location" })
-      .lean();
+    const products = await findProducts({ _id: req.params.id, status: "active" });
+    const product = products[0];
 
     if (!product) return res.status(404).json({ success: false, message: "Product not found." });
 
@@ -152,10 +209,8 @@ async function getServiceById(req, res) {
       return res.status(404).json({ success: false, message: "Service not found." });
     }
 
-    const service = await Service.findOne({ _id: req.params.id, status: "active" })
-      .populate({ path: "providerId", select: "firstName lastName username" })
-      .populate({ path: "providerProfile", select: "businessName serviceArea" })
-      .lean();
+    const services = await findServices({ _id: req.params.id, status: "active" });
+    const service = services[0];
 
     if (!service) return res.status(404).json({ success: false, message: "Service not found." });
 
