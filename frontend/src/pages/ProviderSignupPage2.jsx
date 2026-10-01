@@ -16,7 +16,7 @@ function ServiceTypeIcon({ type }) {
 }
 
 export default function ProviderSignupPageTwo() {
-  const { formData, updateField } = useForm();
+  const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
   const [areas, setAreas] = useState(
     formData.providerAreasServed ? [formData.providerAreasServed] : [""],
@@ -73,7 +73,8 @@ export default function ProviderSignupPageTwo() {
     }
     const nextFormData = { ...formData, providerAreasServed: areas.filter(Boolean) };
     try {
-      await saveProviderOnboardingDraft(nextFormData);
+      const response = await saveProviderOnboardingDraft(nextFormData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page3");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
