@@ -180,9 +180,11 @@ async function prepareSellerOnboardingPayload(formData) {
   }
   if (Array.isArray(formData.productImages)) {
     const files = formData.productImages.filter((item) => item instanceof File);
-    const existing = formData.productImages.filter((item) => !(item instanceof File));
+    const existing = formData.productImages.filter(
+      (item) => item && typeof item === "object" && item.url && item.publicId,
+    );
     const uploaded = files.length ? await uploadFiles(files, "matchet/products") : [];
-    next.productImages = [...existing, ...uploaded];
+    next.productImages = [...existing, ...uploaded].slice(0, 5);
   }
 
   const verificationFiles = [
