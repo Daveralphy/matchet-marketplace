@@ -1037,8 +1037,17 @@ async function submitSellerOnboarding(req, res) {
           reviewedAt: isDraft ? undefined : null,
           reviewNote: isDraft ? undefined : "",
         },
-        $setOnInsert: { userId },
       },
+      $setOnInsert: { userId },
+    };
+
+    if (!normalizedLocation.coordinates) {
+      storeUpdate.$unset = { "location.coordinates": 1 };
+    }
+
+    const store = await StoreProfile.findOneAndUpdate(
+      { userId },
+      storeUpdate,
       { upsert: true, new: true, runValidators: true },
     );
 
