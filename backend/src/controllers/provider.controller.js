@@ -821,6 +821,8 @@ async function submitProviderOnboarding(req, res) {
         status: provider.status,
         verificationStatus: provider.verificationStatus,
         applicationSubmittedAt: provider.applicationSubmittedAt,
+        onboardingStatus: isDraft ? "in_progress" : "submitted",
+        formData: provider.onboardingData || {},
       },
     });
   } catch (error) {
