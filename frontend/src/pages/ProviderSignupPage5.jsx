@@ -135,7 +135,7 @@ export default function ProviderSignupPageFive() {
       return;
     }
     try {
-      const response = const response = await saveProviderOnboardingDraft(formData);\n      if (response?.data?.formData) mergeFormData(response.data.formData);
+      const response = await saveProviderOnboardingDraft(formData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page6");
     } catch (error) {
