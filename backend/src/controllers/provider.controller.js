@@ -935,6 +935,30 @@ async function getProviderCapabilities(req, res) {
 
 module.exports.getProviderCapabilities = getProviderCapabilities;
 
+async function getProviderOnboardingDraft(req, res) {
+  try {
+    const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
+    if (!provider) {
+      return res.json({ success: true, data: { exists: false, formData: null } });
+    }
+    return res.json({
+      success: true,
+      data: {
+        exists: true,
+        status: provider.status,
+        verificationStatus: provider.verificationStatus,
+        applicationSubmittedAt: provider.applicationSubmittedAt || null,
+        formData: provider.onboardingData || {},
+      },
+    });
+  } catch (error) {
+    console.error("Provider onboarding draft lookup error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load your provider onboarding progress right now." });
+  }
+}
+
+module.exports.getProviderOnboardingDraft = getProviderOnboardingDraft;
+
 
 async function getSellerOnboardingDraft(req, res) {
   try {
