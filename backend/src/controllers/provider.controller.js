@@ -1066,7 +1066,13 @@ async function submitSellerOnboarding(req, res) {
         publicId: input.profileImage.publicId || "",
       };
     }
-    await User.findByIdAndUpdate(userId, { $set: userUpdates });
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: userUpdates,
+        $unset: { "location.coordinates": 1 },
+      },
+    );
     return res.status(201).json({
       success: true,
       message: isDraft ? "Your seller onboarding progress has been saved." : "Your seller application has been submitted for review.",
