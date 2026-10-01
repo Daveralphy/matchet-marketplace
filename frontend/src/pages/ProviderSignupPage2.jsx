@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
+import { saveProviderOnboardingDraft } from "../api/provider";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -64,14 +65,19 @@ export default function ProviderSignupPageTwo() {
     event.target.value = "";
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!event.currentTarget.checkValidity()) {
       event.currentTarget.reportValidity();
       return;
     }
-    updateField("providerAreasServed", areas.filter(Boolean));
-    navigate("/provider/onboarding/page3");
+    const nextFormData = { ...formData, providerAreasServed: areas.filter(Boolean) };
+    try {
+      await saveProviderOnboardingDraft(nextFormData);
+      navigate("/provider/onboarding/page3");
+    } catch (error) {
+      alert(error.message || "Unable to save your progress. Please try again.");
+    }
   };
 
   return (
