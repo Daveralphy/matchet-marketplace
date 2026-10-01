@@ -60,9 +60,14 @@ export default function ProviderSignupPageTwo() {
 
   useEffect(() => {
     const images = Array.isArray(formData.providerServiceImages) ? formData.providerServiceImages : [];
-    const urls = images.slice(0, 6).map((image) => image?.url || null);
-    setServicePreviews((previous) => previous.map((url, index) => url || urls[index] || null));
-  }, []);
+    setServicePreviews((previous) => {
+      const next = Array(6).fill(null);
+      images.slice(0, 6).forEach((image, index) => {
+        next[index] = image?.url || (typeof image === "string" ? image : previous[index] || null);
+      });
+      return next;
+    });
+  }, [formData.providerServiceImages]);
 
   const handleServiceImage = (index, file) => {
     if (!file) return;
@@ -114,7 +119,7 @@ export default function ProviderSignupPageTwo() {
     }
     const nextFormData = { ...formData, providerAreasServed: areas.filter(Boolean) };
     try {
-      const response = const response = await saveProviderOnboardingDraft(nextFormData);\n      if (response?.data?.formData) mergeFormData(response.data.formData);
+      const response = await saveProviderOnboardingDraft(nextFormData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page3");
     } catch (error) {
