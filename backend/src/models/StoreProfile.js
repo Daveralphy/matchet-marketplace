@@ -31,19 +31,6 @@ const locationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    coordinates: {
-      type: {
-        type: String,
-        enum: ["Point"],
-      },
-      coordinates: {
-        type: [Number],
-        validate: {
-          validator: (value) => value === undefined || value.length === 2,
-          message: "Coordinates must contain longitude and latitude.",
-        },
-      },
-    },
   },
   { _id: false },
 );
@@ -157,6 +144,5 @@ const storeProfileSchema = new mongoose.Schema(
   },
 );
 
-storeProfileSchema.index({ "location.coordinates": "2dsphere" });
 
 module.exports = mongoose.model("StoreProfile", storeProfileSchema);
