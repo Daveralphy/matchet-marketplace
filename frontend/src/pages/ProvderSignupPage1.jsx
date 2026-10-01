@@ -17,7 +17,7 @@ function ProviderIcon({ type }) {
 }
 
 export default function ProviderSignupPageOne() {
-  const { formData, updateField, setOnboardingFlow } = useForm();
+  const { formData, updateField, mergeFormData, setOnboardingFlow } = useForm();
   const { user } = useAuth();
   const navigate = useNavigate();
   useEffect(() => { setOnboardingFlow("service"); getProviderCapabilities().then((response) => { const state = response?.data?.service; if (!state?.exists) return; if (state.status === "active" || state.verificationStatus === "verified") navigate("/provider/dashboard", { replace: true }); else if (state.applicationSubmittedAt || state.verificationStatus === "rejected") navigate("/provider/application-status", { replace: true }); }).catch(() => {}); }, [setOnboardingFlow, navigate]);
@@ -81,7 +81,8 @@ export default function ProviderSignupPageOne() {
       return;
     }
     try {
-      await saveProviderOnboardingDraft(formData);
+      const response = await saveProviderOnboardingDraft(formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page2");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
