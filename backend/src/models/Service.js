@@ -36,6 +36,8 @@ const serviceSchema = new mongoose.Schema({
   description: { type: String, required: true, trim: true, maxlength: 5000 },
   category: { type: String, required: true, trim: true, index: true },
   pricing: { type: pricingSchema, required: true },
+  durationMinutes: { type: Number, min: 1 },
+  viewCount: { type: Number, min: 0, default: 0 },
   images: { type: [imageSchema], default: [] },
   location: { type: locationSchema },
   availability: { type: availabilitySchema },

@@ -1,16 +1,25 @@
 // Got help from Google Gemini. I typed everything myself and did not provide any code to the chat. Everything was a generic example and I adapted to this project.
 // Consider modifying form field names to match names from database schema
 
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useCallback } from "react";
 
 // Create the context
 const FormContext = createContext();
 
 // Create a Provider component to wrap around the pages
+const FORM_STORAGE_KEY = "matchet_onboarding_forms";
+
+function loadStoredForms() {
+  try { return JSON.parse(sessionStorage.getItem(FORM_STORAGE_KEY) || "{}"); } catch { return {}; }
+}
+
 export function FormProvider({ children }) {
-  const [formData, setFormData] = useState({
+  const stored = loadStoredForms();
+  const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+  const [formData, setFormData] = useState(() => ({
     // Initialize from fields here
-    firstName: "",
+    onboardingUserId: "",
+     firstName: "",
     lastName: "",
     email: "",
     countryCode: "",
@@ -34,6 +43,12 @@ export function FormProvider({ children }) {
     productCondition: "",
     productSku: "",
     productTags: [],
+    productImages: [],
+    businessLogo: null,
+    profileImage: null,
+    idImageFront: null,
+    idImageBack: null,
+    selfieImage: null,
     shippingOptions: "",
     shippingRegions: "",
     shippingFee: "",
@@ -48,18 +63,102 @@ export function FormProvider({ children }) {
     accountType: "",
     bvn: "",
     tin: "",
-  });
+    // Initialize provider fields here
+    providerFirstName: "",
+    providerLastName: "",
+    providerEmail: "",
+    providerCountryCode: "",
+    providerPhoneNumber: "",
+    providerType: "",
+    providerProfileImage: null,
+    providerLocation: "",
+    providerBio: "",
+    providerServiceCat: "",
+    providerServiceName: "",
+    providerServiceDesc: "",
+    providerServiceType: "",
+    providerServicePrice: "",
+    providerServiceDuration: "",
+    providerServiceNumberOfPeople: "",
+    providerServiceImages: [],
+    providerAreasServed: "",
+    providerYearsofExperience: "",
+    providerAreasofExpertise: "",
+    providerCertification: "",
+    providerCertificationIssuingOrg: "",
+    providerCertificationYearObtained: "",
+    providerPortfolioMedia: [],
+    providerPortfolioLink: "",
+    providerAvailability: {
+      monday: { enabled: false, startTime: "", endTime: "" },
+      tuesday: { enabled: false, startTime: "", endTime: "" },
+      wednesday: { enabled: false, startTime: "", endTime: "" },
+      thursday: { enabled: false, startTime: "", endTime: "" },
+      friday: { enabled: false, startTime: "", endTime: "" },
+      saturday: { enabled: false, startTime: "", endTime: "" },
+      sunday: { enabled: false, startTime: "", endTime: "" },
+    },
+    providerMinimumNoticeRequired: "",
+    providerMaximumAdvanceBooking: "",
+    providerResponseTime: "",
+    providerServiceArea: "",
+    providerServiceAreaSpecificLocations: [],
+    providerServiceAreaRadius: "",
+    providerIdType: "",
+    providerIdNumber: "",
+    providerIdImageFront: null,
+    providerIdImageBack: null,
+    providerSelfieImage: null,
+    providerBankName: "",
+    providerAccountNumber: "",
+    providerAccountName: "",
+    providerAccountType: "",
+    providerBvn: "",
+    providerTin: "",
+  }));
+  if (stored[flow]) Object.assign(formData, stored[flow]);
+
+  const setOnboardingFlow = useCallback((nextFlow) => {
+    const safeFlow = nextFlow === "service" ? "service" : "seller";
+    sessionStorage.setItem("matchet_onboarding_flow", safeFlow);
+    const saved = loadStoredForms()[safeFlow];
+    setFormData((prev) => saved ? { ...prev, ...saved } : prev);
+  }, []);
+
+  const clearForm = useCallback(() => {
+    const currentFlow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+    try { const all = loadStoredForms(); delete all[currentFlow]; sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(all)); } catch {}
+    setFormData((prev) => { const next = { ...prev }; const isService = currentFlow === "service"; Object.keys(next).forEach((key) => { if (isService ? key.startsWith("provider") : !key.startsWith("provider")) next[key] = Array.isArray(next[key]) ? [] : key === "providerProfileImage" ? null : key === "providerAvailability" ? { monday:{enabled:false,startTime:"",endTime:""},tuesday:{enabled:false,startTime:"",endTime:""},wednesday:{enabled:false,startTime:"",endTime:""},thursday:{enabled:false,startTime:"",endTime:""},friday:{enabled:false,startTime:"",endTime:""},saturday:{enabled:false,startTime:"",endTime:""},sunday:{enabled:false,startTime:"",endTime:""} } : ""; }); return next; });
+  }, []);
 
   // Function to update a single field's value
   const updateField = (name, value) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => {
+      const next = { ...prevData, [name]: value };
+      try {
+        const all = loadStoredForms();
+        const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+        sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({ ...all, [flow]: next }));
+      } catch {}
+      return next;
+    });
   };
 
+  const mergeFormData = useCallback((values) => {
+    if (!values || typeof values !== "object") return;
+    setFormData((prevData) => {
+      const next = { ...prevData, ...values };
+      try {
+        const all = loadStoredForms();
+        const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+        sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({ ...all, [flow]: next }));
+      } catch {}
+      return next;
+    });
+  }, []);
+
   return (
-    <FormContext.Provider value={{ formData, updateField }}>
+    <FormContext.Provider value={{ formData, updateField, mergeFormData, setOnboardingFlow, clearForm }}>
       {children}
     </FormContext.Provider>
   );

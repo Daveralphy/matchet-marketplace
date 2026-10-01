@@ -10,18 +10,23 @@ const imageSchema = new mongoose.Schema({
   publicId: { type: String, trim: true },
 }, { _id: false });
 
-const locationSchema = new mongoose.Schema({
-  city: { type: String, trim: true },
-  state: { type: String, trim: true },
-  country: { type: String, trim: true },
-  coordinates: {
-    type: { type: String, enum: ["Point"] },
-    coordinates: {
-      type: [Number],
-      validate: { validator: (value) => value.length === 2, message: "Coordinates must contain longitude and latitude." },
+const locationSchema = new mongoose.Schema(
+  {
+    city: {
+      type: String,
+      trim: true,
+    },
+    state: {
+      type: String,
+      trim: true,
+    },
+    country: {
+      type: String,
+      trim: true,
     },
   },
-}, { _id: false });
+  { _id: false },
+);
 
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true, trim: true, maxlength: 100 },
@@ -39,6 +44,13 @@ const userSchema = new mongoose.Schema({
   },
   email: { type: String, required: true, unique: true, lowercase: true, trim: true, maxlength: 254, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
   passwordHash: { type: String, required: true, select: false },
+  // `role` remains the platform-level authorization role. Seller/provider
+  // are capabilities because one account can have both marketplace profiles.
+  role: { type: String, enum: ["customer", "provider", "admin"], default: "customer", index: true },
+  capabilities: {
+    seller: { type: Boolean, default: false },
+    provider: { type: Boolean, default: false },
+  },
   phone: { type: String, trim: true },
   avatar: { type: imageSchema },
   location: { type: locationSchema },
@@ -47,7 +59,6 @@ const userSchema = new mongoose.Schema({
   lastLoginAt: { type: Date },
 }, { timestamps: true });
 
-userSchema.index({ "location.coordinates": "2dsphere" });
 
 userSchema.set("toJSON", {
   transform(_doc, ret) {

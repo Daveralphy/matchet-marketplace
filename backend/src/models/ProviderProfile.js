@@ -37,6 +37,10 @@ const providerProfileSchema = new mongoose.Schema({
   },
   ratingAverage: { type: Number, default: 0, min: 0, max: 5 },
   reviewCount: { type: Number, default: 0, min: 0 },
+  onboardingData: { type: mongoose.Schema.Types.Mixed, default: {} },
+  applicationSubmittedAt: { type: Date },
+  reviewedAt: { type: Date },
+  reviewNote: { type: String, trim: true, maxlength: 1000 },
 }, { timestamps: true });
 
 module.exports = mongoose.model("ProviderProfile", providerProfileSchema);

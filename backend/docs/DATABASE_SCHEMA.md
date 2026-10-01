@@ -1,8 +1,8 @@
 # Matchet Marketplace Database Schema
 
-**Schema Version:** 1.0.0  
+**Schema Version:** 1.1.1  
 **Status:** Approved  
-**Last Updated:** 2026-09-14
+**Last Updated:** 2026-09-30
 
 ## 1. Purpose
 
@@ -73,12 +73,17 @@ The User collection is the single source of truth for account identity and authe
 | `passwordHash` | String | Yes | No | Never expose through API |
 | `phone` | String | No | No | Optional |
 | `avatar` | Object | No | No | Cloudinary image reference |
+| `capabilities` | Object | Yes | No | Marketplace capabilities for seller/provider profiles |
 | `location` | Object | No | No | User location |
 | `preferences` | Object | No | No | User preferences |
 | `isActive` | Boolean | Yes | No | Defaults to true |
 | `lastLoginAt` | Date | No | No | Last successful login |
 | `createdAt` | Date | Yes | No | Timestamp |
 | `updatedAt` | Date | Yes | No | Timestamp |
+
+Capabilities:
+- `capabilities.seller`: Boolean, default false
+- `capabilities.provider`: Boolean, default false
 
 ### Username rules
 
@@ -139,7 +144,17 @@ Fields:
 - `status`: `draft | active | suspended`, default `draft`
 - `ratingAverage`: Number, default 0, range 0 to 5
 - `reviewCount`: Number, default 0
+- `businessDetails`: Object, seller onboarding and business information
+- `shippingPolicies`: Object, seller shipping information
+- `payoutDetails`: Object, seller payout information
+- `onboardingData`: Object, latest seller onboarding draft/submission data
+- `onboardingStatus`: `in_progress | submitted`, tracks whether seller onboarding is still being completed or has been submitted for review
+- `verificationStatus`: `pending | verified | rejected`, default `pending`
+- `applicationSubmittedAt`, `reviewedAt`: Date, optional
+- `reviewNote`: String, optional
 - `createdAt`, `updatedAt`: timestamps
+
+Saving seller onboarding progress keeps `StoreProfile.status = draft`, `onboardingStatus = in_progress`, and does not grant the seller capability. Final submission changes `onboardingStatus` to `submitted`; seller approval sets `User.capabilities.seller = true`. Seller and provider capabilities are independent, so one User may have both.
 
 ## 7. Product
 
@@ -156,6 +171,9 @@ Fields:
 - `description`: String, required
 - `category`: String, required
 - `price`: Number, required
+- `shortDescription`: String, optional
+- `details`: Object, optional, for condition, brand, material, weight, dimensions, color, tags, and onboarding metadata
+- `sku`: String, optional
 - `images`: array of image objects
 - `inventory`: Number, required
 - `location`: Object, optional
@@ -510,6 +528,10 @@ Controllers translate HTTP requests into service calls. Routes define endpoint p
 - [ ] Pull request explains data impact and migration requirements.
 
 ## Schema Version History
+
+### 1.1.0 - 2026-09-30
+
+Added explicit User seller/provider capability fields, clarified independent seller/provider capability persistence, documented seller onboarding/business/shipping/payout data, and documented Product listing metadata.
 
 ### 1.0.0 - 2026-09-14
 

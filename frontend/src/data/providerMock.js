@@ -1,0 +1,43 @@
+export const providerMock = {
+  user: {
+    name: "Daveralphy Eferire",
+    firstName: "Daveralphy",
+    role: "Provider",
+    email: "daveralphy@gmail.com",
+    phone: "+234 703 258 0065",
+    location: "Lagos, Nigeria",
+  },
+  bookings: [
+    ["Sarah Johnson","SJ","Home Deep Cleaning","Tue, Sep 16, 2026","10:00 AM – 1:00 PM","Victoria Island, Lagos","Confirmed","₦25,000"],
+    ["Tunde Adebayo","TA","Office Cleaning (Weekly)","Thu, Sep 18, 2026","9:00 AM – 12:00 PM","Lekki Phase 1, Lagos","Upcoming","₦30,000"],
+    ["Michelle Grant","MG","Move-in Cleaning","Sat, Sep 20, 2026","2:00 PM – 5:00 PM","Ikeja, Lagos","Upcoming","₦35,000"],
+    ["Emeka Okoro","EO","Deep Cleaning","Mon, Sep 22, 2026","9:00 AM – 12:00 PM","Yaba, Lagos","Pending","₦25,000"],
+    ["Adaora Obi","AO","Home Cleaning (Recurring)","Wed, Sep 23, 2026","10:00 AM – 12:00 PM","Ikoyi, Lagos","Confirmed","₦20,000"],
+    ["Charles Collins","CC","Post-event Cleaning","Sat, Sep 26, 2026","1:00 PM – 4:00 PM","Lekki, Lagos","Confirmed","₦40,000"],
+  ],
+  services: [
+    ["Home Deep Cleaning","Comprehensive cleaning for a 3-bedroom apartment","Home Cleaning","₦25,000","2 hours","Active","12"],
+    ["Office Cleaning (Weekly)","Regular cleaning for small and medium offices","Office Cleaning","₦30,000","3 hours","Active","8"],
+    ["Move-in Cleaning","Thorough cleaning for new move-ins","Home Cleaning","₦35,000","4 hours","Active","6"],
+    ["Post-event Cleaning","Cleaning after parties and events","Event Cleaning","₦40,000","3 hours","Paused","4"],
+    ["Apartment Regular Cleaning","Weekly or bi-weekly cleaning service","Home Cleaning","₦20,000","2 hours","Active","5"],
+    ["Sofa & Upholstery Cleaning","Deep cleaning for sofas, carpets, and fabrics","Specialty Cleaning","₦18,000","1.5 hours","Active","3"],
+  ],
+  messages: [
+    ["Sarah Johnson","SJ","Hi, is next week still available for a deep cleaning service at my apartment in Victoria Island?","10:24 AM"],
+    ["Tunde Adebayo","TA","Thanks for the great service yesterday!","Yesterday"],
+    ["Michelle Grant","MG","Can you provide a quote for a 3-bedroom...","Sep 12"],
+    ["Emeka Okoro","EO","Perfect, I’ll confirm the booking now.","Sep 11"],
+    ["Adaora Obi","AO","Do you offer post-event cleaning services?","Sep 10"],
+    ["Charles Collins","CC","What products do you use for office cleaning?","Sep 9"],
+    ["Brian Jacobs","BJ","Can we reschedule to Friday?","Sep 8"],
+    ["Lisa Mensah","LM","Thank you! The service was excellent.","Sep 7"],
+  ],
+  reviews: [
+    ["Sarah Johnson","SJ","Sep 16, 2026","Excellent service","Very professional and thorough. My apartment looks amazing! Will definitely book again.","5"],
+    ["Tunde Adebayo","TA","Sep 12, 2026","Great experience","Prompt, detailed, and reliable. Communication was smooth throughout the process.","5"],
+    ["Michelle Grant","MG","Sep 8, 2026","Highly recommend","Did an amazing job with our move-in cleaning. Everything was spotless and on time.","5"],
+    ["Emeka Okoro","EO","Sep 5, 2026","Very good","Great service overall. A little delay but the quality of work was still excellent.","4"],
+    ["Adaora Obi","AO","Aug 28, 2026","Amazing work","Professional, friendly, and paid attention to every detail. I’m very satisfied!","5"],
+  ],
+};

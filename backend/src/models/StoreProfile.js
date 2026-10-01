@@ -31,19 +31,9 @@ const locationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    coordinates: {
-      type: {
-        type: String,
-        enum: ["Point"],
-      },
-      coordinates: {
-        type: [Number],
-      },
-    },
   },
   { _id: false },
 );
-
 const contactSchema = new mongoose.Schema(
   {
     phone: {
@@ -87,6 +77,20 @@ const storeProfileSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    category: { type: String, trim: true },
+    languages: { type: [String], default: [] },
+    socialLinks: { type: mongoose.Schema.Types.Mixed, default: {} },
+    businessDetails: { type: mongoose.Schema.Types.Mixed, default: {} },
+    shippingPolicies: { type: mongoose.Schema.Types.Mixed, default: {} },
+    payoutDetails: { type: mongoose.Schema.Types.Mixed, default: {} },
+    onboardingData: { type: mongoose.Schema.Types.Mixed, default: {} },
+
+    onboardingStatus: {
+      type: String,
+      enum: ["in_progress", "submitted"],
+      default: "in_progress",
+      index: true,
+    },
 
     logo: {
       type: imageSchema,
@@ -103,6 +107,17 @@ const storeProfileSchema = new mongoose.Schema(
     contact: {
       type: contactSchema,
     },
+
+    verificationStatus: {
+      type: String,
+      enum: ["pending", "verified", "rejected"],
+      default: "pending",
+      index: true,
+    },
+
+    applicationSubmittedAt: { type: Date },
+    reviewedAt: { type: Date },
+    reviewNote: { type: String, trim: true, maxlength: 1000 },
 
     status: {
       type: String,
@@ -129,6 +144,5 @@ const storeProfileSchema = new mongoose.Schema(
   },
 );
 
-storeProfileSchema.index({ "location.coordinates": "2dsphere" });
 
 module.exports = mongoose.model("StoreProfile", storeProfileSchema);

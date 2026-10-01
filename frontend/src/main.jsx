@@ -6,12 +6,18 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes";
 import { FormProvider } from "./context/FormContext";
+import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 import "./styles/globals.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <FormProvider>
-      <RouterProvider router={router} />
-    </FormProvider>
+    <AuthProvider>
+      <FormProvider>
+        <CartProvider>
+          <RouterProvider router={router} />
+        </CartProvider>
+      </FormProvider>
+    </AuthProvider>
   </StrictMode>,
 );
