@@ -63,11 +63,20 @@ export default function ProviderSignupPageFive() {
     updateField(field, file);
   };
 
-  const filePreview = useMemo(() => ({
-    front: formData.providerIdImageFront ? URL.createObjectURL(formData.providerIdImageFront) : null,
-    back: formData.providerIdImageBack ? URL.createObjectURL(formData.providerIdImageBack) : null,
-    selfie: formData.providerSelfieImage ? URL.createObjectURL(formData.providerSelfieImage) : null,
-  }), [formData.providerIdImageFront, formData.providerIdImageBack, formData.providerSelfieImage]);
+  const filePreview = useMemo(() => {
+    const createPreview = (value) => {
+      if (!value) return null;
+      if (typeof value === "string") return value;
+      if (value.url) return value.url;
+      if (typeof File !== "undefined" && value instanceof File) return URL.createObjectURL(value);
+      return null;
+    };
+    return {
+      front: createPreview(formData.providerIdImageFront),
+      back: createPreview(formData.providerIdImageBack),
+      selfie: createPreview(formData.providerSelfieImage),
+    };
+  }, [formData.providerIdImageFront, formData.providerIdImageBack, formData.providerSelfieImage]);
 
   useEffect(() => {
     return () => Object.values(filePreview).forEach((url) => url && URL.revokeObjectURL(url));
