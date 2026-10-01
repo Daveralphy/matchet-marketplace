@@ -2,7 +2,8 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
-import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
+import { saveSellerOnboardingDraft } from "../api/provider";
+import { useForm } from "../context/FormContext";
 import { useEffect, useState } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
@@ -26,20 +27,44 @@ export default function SellerSignupPageThree() {
     updateField(e.target.name, selectedValues);
   };
 
-  const handleProductImages = (e) => {
-    const files = Array.from(e.target.files || []);
-    const valid = files.filter((file) => {
-      if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) return false;
-      if (file.size > 5 * 1024 * 1024) return false;
-      return true;
+  useEffect(() => {
+    const entries = Array.isArray(formData.productImages) ? formData.productImages : [];
+    const urls = entries.map((image) => {
+      if (image instanceof File) return URL.createObjectURL(image);
+      return image?.url || null;
     });
-    if (valid.length !== files.length) {
-      alert("Only PNG, JPG, or WebP images up to 5MB each are allowed.");
+
+    setProductPreviews(urls);
+
+    return () => {
+      urls.forEach((url) => {
+        if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
+      });
+    };
+  }, [formData.productImages]);
+
+  const handleProductImage = (index, file) => {
+    if (!file) return;
+
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      alert("Only PNG, JPG, or WebP images are allowed.");
+      return;
     }
-    const selected = valid.slice(0, 5);
-    updateField("productImages", selected);
-    setProductPreviews(selected.map((file) => URL.createObjectURL(file)));
-    e.target.value = "";
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Each product image must be 5MB or smaller.");
+      return;
+    }
+
+    const images = Array.isArray(formData.productImages) ? [...formData.productImages] : [];
+    images[index] = file;
+    updateField("productImages", images.slice(0, 5));
+  };
+
+  const removeProductImage = (index) => {
+    const images = Array.isArray(formData.productImages) ? [...formData.productImages] : [];
+    images.splice(index, 1);
+    updateField("productImages", images);
   };
 
   const handleSubmit = async (e) => {
@@ -213,26 +238,37 @@ export default function SellerSignupPageThree() {
         /* Product images */
         .seller-signup-product-images {
           display: grid;
-          grid-template-columns: minmax(0, 1.8fr) repeat(3, minmax(75px, 1fr)) 70px;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
           gap: 9px;
           margin-bottom: 16px;
         }
 
-        .seller-signup-product-upload {
+        .seller-signup-product-slot {
+          position: relative;
           min-width: 0;
-          min-height: 92px;
+          min-height: 120px;
+        }
+
+        .seller-signup-product-upload,
+        .seller-signup-product-thumb {
+          width: 100%;
+          min-height: 120px;
           box-sizing: border-box;
-          margin-bottom: 0 !important;
-          padding: 12px;
-          display: grid !important;
-          grid-template-columns: 34px minmax(0, 1fr);
-          grid-template-rows: auto auto;
-          column-gap: 10px;
-          align-items: center;
-          border: 1px dashed #cfd7e8;
           border-radius: 8px;
+        }
+
+        .seller-signup-product-upload {
+          margin: 0 !important;
+          padding: 10px;
+          display: flex !important;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          border: 1px dashed #cfd7e8;
           background: #fbfcfe;
           cursor: pointer;
+          text-align: center;
         }
 
         .seller-signup-product-upload input {
@@ -244,7 +280,6 @@ export default function SellerSignupPageThree() {
           height: 34px;
           display: grid;
           place-items: center;
-          grid-row: 1 / 3;
           border-radius: 7px;
           background: #eef7f1;
           color: #07983f;
@@ -253,56 +288,55 @@ export default function SellerSignupPageThree() {
         }
 
         .seller-signup-product-upload strong {
-          align-self: end;
           color: #10183f;
-          font-size: 11px;
+          font-size: 10px;
           line-height: 1.2;
         }
 
         .seller-signup-product-upload > span:last-of-type {
-          align-self: start;
           color: #8991b8;
-          font-size: 9px;
+          font-size: 8px;
           line-height: 1.3;
         }
 
         .seller-signup-product-thumb {
-          min-width: 0;
-          min-height: 92px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-sizing: border-box;
+          position: relative;
+          overflow: hidden;
           border: 1px solid #dce2ef;
-          border-radius: 8px;
           background: #f5f7fa;
-          color: #8991b8;
-          font-size: 10px;
-          font-weight: 600;
         }
 
-        .seller-signup-add-image {
-          min-height: 92px;
-          padding: 8px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 3px;
-          border: 1px solid #d7deec;
+        .seller-signup-product-thumb img {
+          width: 100%;
+          height: 100%;
+          min-height: 120px;
+          display: block;
+          object-fit: cover;
           border-radius: 8px;
-          background: #ffffff;
-          color: #10183f;
+        }
+
+        .seller-signup-remove-image {
+          position: absolute;
+          top: 6px;
+          right: 6px;
+          width: 25px;
+          height: 25px;
+          display: grid;
+          place-items: center;
+          padding: 0;
+          border: 1px solid rgba(255, 255, 255, 0.8);
+          border-radius: 50%;
+          background: rgba(16, 24, 63, 0.86);
+          color: #ffffff;
           font-family: inherit;
-          font-size: 20px;
+          font-size: 16px;
           line-height: 1;
           cursor: pointer;
+          z-index: 2;
         }
 
-        .seller-signup-add-image span {
-          color: #6670ad;
-          font-size: 9px;
-          line-height: 1.2;
+        .seller-signup-remove-image:hover {
+          background: #10183f;
         }
 
         /* Tags multi-select */
@@ -394,7 +428,7 @@ export default function SellerSignupPageThree() {
           }
 
           .seller-signup-product-images {
-            grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(60px, 1fr)) 60px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
           }
         }
 
@@ -441,16 +475,10 @@ export default function SellerSignupPageThree() {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
 
-          .seller-signup-product-upload {
-            grid-column: 1 / -1;
-          }
-
-          .seller-signup-add-image {
-            min-height: 75px;
-          }
-
-          .seller-signup-product-thumb {
-            min-height: 75px;
+          .seller-signup-product-upload,
+          .seller-signup-product-thumb,
+          .seller-signup-product-thumb img {
+            min-height: 110px;
           }
 
           .seller-signup-form-page3 > .back-button,
@@ -501,38 +529,40 @@ export default function SellerSignupPageThree() {
               </p>
 
               <div className="seller-signup-product-images">
-                <label className="seller-signup-product-upload">
-                  <span className="seller-signup-upload-icon">↑</span>
+                {Array.from({ length: 5 }).map((_, index) => {
+                  const image = formData.productImages?.[index];
+                  const preview = productPreviews[index];
 
-                  <strong>Upload images</strong>
-
-                  <span>JPG, PNG or WebP. Max 5MB each</span>
-
-                  <input
-                    id="productImages"
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp"
-                    multiple
-                    onChange={handleProductImages}
-                  />
-                </label>
-
-                {(productPreviews.length ? productPreviews : (formData.productImages || []).filter((image) => image?.url).map((image) => image.url)).map((src, index) => (
-                  <div className="seller-signup-product-thumb" key={src + index}>
-                    <img src={src} alt={`Product preview ${index + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} />
-                  </div>
-                ))}
-                {Array.from({ length: Math.max(0, 3 - (productPreviews.length || (formData.productImages || []).filter((image) => image?.url).length)) }).map((_, index) => (
-                  <div className="seller-signup-product-thumb" key={`placeholder-${index}`}>Basket</div>
-                ))}
-
-                <button
-                  type="button"
-                  className="seller-signup-add-image"
-                >
-                  +
-                  <span>Add more</span>
-                </button>
+                  return (
+                    <div className="seller-signup-product-slot" key={`product-image-slot-${index}`}>
+                      {image && preview ? (
+                        <div className="seller-signup-product-thumb">
+                          <img src={preview} alt={`Product preview ${index + 1}`} />
+                          <button
+                            type="button"
+                            className="seller-signup-remove-image"
+                            onClick={() => removeProductImage(index)}
+                            aria-label={`Remove product image ${index + 1}`}
+                            title="Remove image"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="seller-signup-product-upload">
+                          <span className="seller-signup-upload-icon">↑</span>
+                          <strong>{index === 0 ? "Upload image" : "Add image"}</strong>
+                          <span>JPG, PNG or WebP</span>
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp"
+                            onChange={(event) => handleProductImage(index, event.target.files?.[0])}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
 
               <label htmlFor="productName">
