@@ -24,30 +24,6 @@ export default function SellerSignupPageThree() {
   }, [formData.productImages]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const images = Array.isArray(formData.productImages) ? formData.productImages : [];
-    const urls = images.slice(0, 5).map((image) => {
-      if (typeof image === "string") return image;
-      if (image?.url) return image.url;
-      if (typeof File !== "undefined" && image instanceof File) return URL.createObjectURL(image);
-      return null;
-    });
-
-    setProductPreviews((previous) => {
-      const next = [...previous];
-      urls.forEach((url, index) => {
-        if (url && !next[index]) next[index] = url;
-      });
-      return next;
-    });
-
-    return () => {
-      urls.forEach((url) => {
-        if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
-      });
-    };
-  }, []);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateField(name, value);
