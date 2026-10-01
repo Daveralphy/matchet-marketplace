@@ -1005,9 +1005,14 @@ function ServicesListingSection({ isAuthenticated }) {
       </div>
 
       <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {services.map((service) => (
+        {services.length ? services.map((service) => (
           <ServiceListingCard key={service.id} service={service} />
-        ))}
+        )) : (
+          <div className="col-span-full rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-14 text-center">
+            <p className="text-[13px] font-semibold text-[#10183f]">No services available yet</p>
+            <p className="mt-1 text-[11px] text-[#69739a]">Live services will appear here when a provider publishes an active service.</p>
+          </div>
+        )}
       </div>
     </section>
   );
