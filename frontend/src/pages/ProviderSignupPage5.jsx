@@ -26,7 +26,7 @@ function SelfieIllustration() {
 }
 
 export default function ProviderSignupPageFive() {
-  const { formData, updateField } = useForm();
+  const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
 
   const maxFileSize = 5 * 1024 * 1024;
@@ -126,7 +126,8 @@ export default function ProviderSignupPageFive() {
       return;
     }
     try {
-      await saveProviderOnboardingDraft(formData);
+      const response = await saveProviderOnboardingDraft(formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page6");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
