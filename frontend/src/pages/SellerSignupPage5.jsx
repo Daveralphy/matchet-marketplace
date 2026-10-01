@@ -2,30 +2,34 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
-import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
-import { useEffect, useState } from "react";
+import { saveSellerOnboardingDraft } from "../api/provider";
+import { useForm } from "../context/FormContext";
+import { useEffect, useMemo } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageFive() {
   const { formData, updateField, mergeFormData } = useForm();
-  const [identityPreviews, setIdentityPreviews] = useState({});
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const previewFor = (value) => {
+  const filePreview = useMemo(() => {
+    const createPreview = (value) => {
       if (!value) return null;
       if (typeof value === "string") return value;
       if (value.url) return value.url;
       if (typeof File !== "undefined" && value instanceof File) return URL.createObjectURL(value);
       return null;
     };
-    setIdentityPreviews({
-      idImageFront: previewFor(formData.idImageFront),
-      idImageBack: previewFor(formData.idImageBack),
-      selfieImage: previewFor(formData.selfieImage),
-    });
+    return {
+      front: createPreview(formData.idImageFront),
+      back: createPreview(formData.idImageBack),
+      selfie: createPreview(formData.selfieImage),
+    };
   }, [formData.idImageFront, formData.idImageBack, formData.selfieImage]);
+
+  useEffect(() => {
+    return () => Object.values(filePreview).forEach((url) => url && URL.revokeObjectURL(url));
+  }, [filePreview]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,7 +50,6 @@ export default function SellerSignupPageFive() {
       return;
     }
     updateField(field, file);
-    setIdentityPreviews((previous) => ({ ...previous, [field]: URL.createObjectURL(file) }));
     e.target.value = "";
   };
 
@@ -220,6 +223,7 @@ export default function SellerSignupPageFive() {
         }
 
         .seller-signup-upload {
+          position: relative;
           min-width: 0;
           min-height: 92px;
           box-sizing: border-box;
@@ -264,6 +268,71 @@ export default function SellerSignupPageFive() {
           color: #8991b8;
           font-size: 10px;
           line-height: 1.3;
+        }
+
+        .seller-signup-file-preview {
+          grid-column: 1 / -1;
+          width: 100%;
+          min-width: 0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .seller-signup-file-preview img {
+          width: 78px;
+          height: 52px;
+          flex: 0 0 auto;
+          object-fit: cover;
+          border-radius: 6px;
+          border: 1px solid #d7deec;
+          background: #f5f7fb;
+        }
+
+        .seller-signup-selfie-preview {
+          width: 58px !important;
+          height: 58px !important;
+          border-radius: 50% !important;
+        }
+
+        .seller-signup-file-selected {
+          min-width: 0;
+          overflow: hidden;
+          color: #10183f;
+          font-size: 12px;
+          font-weight: 700;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .seller-signup-pdf-preview {
+          width: 78px;
+          height: 52px;
+          flex: 0 0 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 2px;
+          border: 1px solid #d7deec;
+          border-radius: 6px;
+          background: #f5f7fb;
+          color: #10183f;
+        }
+
+        .seller-signup-pdf-preview span {
+          color: #07983f;
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .seller-signup-pdf-preview small {
+          max-width: 68px;
+          overflow: hidden;
+          color: #8991b8;
+          font-size: 8px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         /* Tips */
@@ -530,10 +599,25 @@ export default function SellerSignupPageFive() {
                 <label className="seller-signup-upload">
                   <span className="seller-signup-upload-icon">↑</span>
 
-                  {identityPreviews.idImageFront && <img src={identityPreviews.idImageFront} alt="ID front preview" style={{ width: 70, height: 46, objectFit: "cover", borderRadius: 6 }} />}
-                  <strong>{identityPreviews.idImageFront ? "ID front selected" : "Upload front of ID"}</strong>
-
-                  <span>JPG, PNG or PDF. Max 5MB.</span>
+                  {!formData.idImageFront ? (
+                    <>
+                      <span className="seller-signup-upload-icon">↑</span>
+                      <strong>Upload front of ID</strong>
+                      <span>JPG, PNG or PDF. Max 5MB.</span>
+                    </>
+                  ) : (
+                    <div className="seller-signup-file-preview">
+                      {formData.idImageFront.type === "application/pdf" ? (
+                        <div className="seller-signup-pdf-preview">
+                          <span>PDF</span>
+                          <small>{formData.idImageFront.name || "ID front document"}</small>
+                        </div>
+                      ) : (
+                        <img src={filePreview.front} alt="ID front preview" />
+                      )}
+                      <span className="seller-signup-file-selected">ID front selected</span>
+                    </div>
+                  )}
 
                   <input type="file" accept="image/png,image/jpeg,application/pdf" onChange={handleIdentityFile("idImageFront", ["image/png", "image/jpeg", "application/pdf"])} />
                 </label>
@@ -541,10 +625,25 @@ export default function SellerSignupPageFive() {
                 <label className="seller-signup-upload">
                   <span className="seller-signup-upload-icon">↑</span>
 
-                  {identityPreviews.idImageBack && <img src={identityPreviews.idImageBack} alt="ID back preview" style={{ width: 70, height: 46, objectFit: "cover", borderRadius: 6 }} />}
-                  <strong>{identityPreviews.idImageBack ? "ID back selected" : "Upload back of ID"}</strong>
-
-                  <span>JPG, PNG or PDF. Max 5MB.</span>
+                  {!formData.idImageBack ? (
+                    <>
+                      <span className="seller-signup-upload-icon">↑</span>
+                      <strong>Upload back of ID</strong>
+                      <span>JPG, PNG or PDF. Max 5MB.</span>
+                    </>
+                  ) : (
+                    <div className="seller-signup-file-preview">
+                      {formData.idImageBack.type === "application/pdf" ? (
+                        <div className="seller-signup-pdf-preview">
+                          <span>PDF</span>
+                          <small>{formData.idImageBack.name || "ID back document"}</small>
+                        </div>
+                      ) : (
+                        <img src={filePreview.back} alt="ID back preview" />
+                      )}
+                      <span className="seller-signup-file-selected">ID back selected</span>
+                    </div>
+                  )}
 
                   <input type="file" accept="image/png,image/jpeg,application/pdf" onChange={handleIdentityFile("idImageBack", ["image/png", "image/jpeg", "application/pdf"])} />
                 </label>
@@ -582,10 +681,18 @@ export default function SellerSignupPageFive() {
                 <label className="seller-signup-upload">
                   <span className="seller-signup-upload-icon">↑</span>
 
-                  {identityPreviews.selfieImage && <img src={identityPreviews.selfieImage} alt="Selfie preview" style={{ width: 58, height: 58, objectFit: "cover", borderRadius: "50%" }} />}
-                  <strong>{identityPreviews.selfieImage ? "Selfie selected" : "Upload a selfie"}</strong>
-
-                  <span>JPG or PNG. Max 5MB.</span>
+                  {!formData.selfieImage ? (
+                    <>
+                      <span className="seller-signup-upload-icon">↑</span>
+                      <strong>Upload a selfie</strong>
+                      <span>JPG or PNG. Max 5MB.</span>
+                    </>
+                  ) : (
+                    <div className="seller-signup-file-preview">
+                      <img src={filePreview.selfie} alt="Selfie preview" className="seller-signup-selfie-preview" />
+                      <span className="seller-signup-file-selected">Selfie selected</span>
+                    </div>
+                  )}
 
                   <input type="file" accept="image/png,image/jpeg" onChange={handleIdentityFile("selfieImage", ["image/png", "image/jpeg"])} />
                 </label>
