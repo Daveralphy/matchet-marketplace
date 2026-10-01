@@ -684,7 +684,7 @@ function NearbyMarketplaceSection({ isAuthenticated, items }) {
           <p className="text-[13px] font-semibold text-[#10183f]">No marketplace listings yet</p>
           <p className="mt-1 text-[11px] text-[#69739a]">Live products and services will appear here once they are active.</p>
         </div>
-      )
+      )}
     </section>
   );
 }
