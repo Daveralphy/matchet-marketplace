@@ -3,7 +3,7 @@
 
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
@@ -11,6 +11,21 @@ export default function SellerSignupPageFive() {
   const { formData, updateField, mergeFormData } = useForm();
   const [identityPreviews, setIdentityPreviews] = useState({});
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const previewFor = (value) => {
+      if (!value) return null;
+      if (typeof value === "string") return value;
+      if (value.url) return value.url;
+      if (typeof File !== "undefined" && value instanceof File) return URL.createObjectURL(value);
+      return null;
+    };
+    setIdentityPreviews({
+      idImageFront: previewFor(formData.idImageFront),
+      idImageBack: previewFor(formData.idImageBack),
+      selfieImage: previewFor(formData.selfieImage),
+    });
+  }, [formData.idImageFront, formData.idImageBack, formData.selfieImage]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +45,7 @@ export default function SellerSignupPageFive() {
       e.target.value = "";
       return;
     }
-    updateField(field, file);
+    updateField(field, file);\n    setIdentityPreviews((previous) => ({ ...previous, [field]: URL.createObjectURL(file) }));
     e.target.value = "";
   };
 
