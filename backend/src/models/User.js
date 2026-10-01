@@ -10,18 +10,23 @@ const imageSchema = new mongoose.Schema({
   publicId: { type: String, trim: true },
 }, { _id: false });
 
-const locationSchema = new mongoose.Schema({
-  city: { type: String, trim: true },
-  state: { type: String, trim: true },
-  country: { type: String, trim: true },
-  coordinates: {
-    type: { type: String, enum: ["Point"] },
-    coordinates: {
-      type: [Number],
-      validate: { validator: (value) => value.length === 2, message: "Coordinates must contain longitude and latitude." },
+const locationSchema = new mongoose.Schema(
+  {
+    city: {
+      type: String,
+      trim: true,
+    },
+    state: {
+      type: String,
+      trim: true,
+    },
+    country: {
+      type: String,
+      trim: true,
     },
   },
-}, { _id: false });
+  { _id: false },
+);
 
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true, trim: true, maxlength: 100 },
@@ -54,7 +59,6 @@ const userSchema = new mongoose.Schema({
   lastLoginAt: { type: Date },
 }, { timestamps: true });
 
-userSchema.index({ "location.coordinates": "2dsphere" });
 
 userSchema.set("toJSON", {
   transform(_doc, ret) {
