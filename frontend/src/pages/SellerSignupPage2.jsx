@@ -28,9 +28,12 @@ export default function SellerSignupPageTwo() {
       return;
     }
     if (typeof File !== "undefined" && image instanceof File) {
-      const url = URL.createObjectURL(image);
-      setLogoPreview(url);
-      return () => URL.revokeObjectURL(url);
+      const reader = new FileReader();
+      reader.onload = () => setLogoPreview(reader.result);
+      reader.readAsDataURL(image);
+      return () => {
+        reader.onload = null;
+      };
     }
     setLogoPreview(null);
   }, [formData.businessLogo]);
@@ -54,7 +57,9 @@ export default function SellerSignupPageTwo() {
       return;
     }
     updateField("businessLogo", file);
-    setLogoPreview(URL.createObjectURL(file));
+    const reader = new FileReader();
+    reader.onload = () => setLogoPreview(reader.result);
+    reader.readAsDataURL(file);
     e.target.value = "";
   };
 
