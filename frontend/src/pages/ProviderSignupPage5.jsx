@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
+import { saveProviderOnboardingDraft } from "../api/provider";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -118,13 +119,18 @@ export default function ProviderSignupPageFive() {
     </label>
   );
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!event.currentTarget.checkValidity()) {
       event.currentTarget.reportValidity();
       return;
     }
-    navigate("/provider/onboarding/page6");
+    try {
+      await saveProviderOnboardingDraft(formData);
+      navigate("/provider/onboarding/page6");
+    } catch (error) {
+      alert(error.message || "Unable to save your progress. Please try again.");
+    }
   };
 
   const tips = [
