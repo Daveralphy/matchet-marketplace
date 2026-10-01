@@ -125,27 +125,20 @@ function serializeOnboardingValue(value) {
   return value;
 }
 
-export async function saveProviderOnboardingDraft(formData) {
-  const next = { ...formData };
-
-  return request("/api/provider/onboarding", {
-    method: "POST",
-    body: JSON.stringify({ formData: serializeOnboardingValue(next), draft: true }),
-  });
-}
-
-export async function submitProviderOnboarding(formData) {
+async function prepareProviderOnboardingPayload(formData) {
   const next = { ...formData };
 
   if (formData.providerProfileImage instanceof File) {
     next.providerProfileImage = await uploadFiles(formData.providerProfileImage, "matchet/profiles").then(([file]) => file);
   }
+
   if (Array.isArray(formData.providerPortfolioMedia)) {
     const files = formData.providerPortfolioMedia.filter((item) => item instanceof File);
     const existing = formData.providerPortfolioMedia.filter((item) => !(item instanceof File));
     const uploaded = files.length ? await uploadFiles(files, "matchet/portfolio") : [];
     next.providerPortfolioMedia = [...existing, ...uploaded];
   }
+
   if (Array.isArray(formData.providerServiceImages)) {
     const files = formData.providerServiceImages.filter((item) => item instanceof File);
     const existing = formData.providerServiceImages.filter((item) => !(item instanceof File));
@@ -153,17 +146,29 @@ export async function submitProviderOnboarding(formData) {
     next.providerServiceImages = [...existing, ...uploaded];
   }
 
-  const verificationFiles = [
+  for (const [field, folder] of [
     ["providerIdImageFront", "matchet/verification"],
     ["providerIdImageBack", "matchet/verification"],
     ["providerSelfieImage", "matchet/verification"],
-  ];
-  for (const [field, folder] of verificationFiles) {
+  ]) {
     if (formData[field] instanceof File) {
       next[field] = await uploadFiles(formData[field], folder).then(([file]) => file);
     }
   }
 
+  return next;
+}
+
+export async function saveProviderOnboardingDraft(formData) {
+  const next = await prepareProviderOnboardingPayload(formData);
+  return request("/api/provider/onboarding", {
+    method: "POST",
+    body: JSON.stringify({ formData: serializeOnboardingValue(next), draft: true }),
+  });
+}
+
+export async function submitProviderOnboarding(formData) {
+  const next = await prepareProviderOnboardingPayload(formData);
   return request("/api/provider/onboarding", {
     method: "POST",
     body: JSON.stringify({ formData: serializeOnboardingValue(next) }),
