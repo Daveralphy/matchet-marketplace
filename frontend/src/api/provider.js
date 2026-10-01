@@ -179,6 +179,10 @@ export function getProviderBookings() {
   return request("/api/provider/bookings");
 }
 
+export function getProviderOnboardingDraft() {
+  return request("/api/provider/onboarding/draft", { cache: false });
+}
+
 export function getProviderCapabilities() {
   return request("/api/provider/capabilities", { cache: false });
 }
