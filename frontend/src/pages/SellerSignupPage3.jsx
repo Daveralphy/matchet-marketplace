@@ -288,15 +288,11 @@ export default function SellerSignupPageThree() {
           min-height: 120px;
         }
 
-        .seller-signup-product-upload,
-        .seller-signup-product-thumb {
+        .seller-signup-product-upload {
+          position: relative;
           width: 100%;
           min-height: 120px;
           box-sizing: border-box;
-          border-radius: 8px;
-        }
-
-        .seller-signup-product-upload {
           margin: 0 !important;
           padding: 10px;
           display: flex !important;
@@ -305,9 +301,17 @@ export default function SellerSignupPageThree() {
           justify-content: center;
           gap: 6px;
           border: 1px dashed #cfd7e8;
+          border-radius: 8px;
           background: #fbfcfe;
           cursor: pointer;
           text-align: center;
+          overflow: hidden;
+        }
+
+        .seller-signup-product-upload.selected {
+          border-style: solid;
+          border-color: #dce2ef;
+          background: #ffffff;
         }
 
         .seller-signup-product-upload input {
@@ -338,20 +342,19 @@ export default function SellerSignupPageThree() {
           line-height: 1.3;
         }
 
-        .seller-signup-product-thumb {
-          position: relative;
-          overflow: hidden;
-          border: 1px solid #dce2ef;
-          background: #f5f7fa;
-        }
-
-        .seller-signup-product-thumb img {
-          width: 100%;
-          height: 100%;
-          min-height: 120px;
-          display: block;
+        .seller-signup-product-upload .seller-signup-product-preview {
+          width: 64px;
+          height: 64px;
           object-fit: cover;
           border-radius: 8px;
+          border: 1px solid #e1e6f0;
+        }
+
+        .seller-signup-product-upload .seller-signup-change-image {
+          color: #07983f;
+          font-size: 9px;
+          font-weight: 600;
+          line-height: 1.2;
         }
 
         .seller-signup-remove-image {
@@ -574,31 +577,44 @@ export default function SellerSignupPageThree() {
 
                   return (
                     <div className="seller-signup-product-slot" key={`product-image-slot-${index}`}>
-                      {image && preview ? (
-                        <div className="seller-signup-product-thumb">
-                          <img src={preview} alt={`Product preview ${index + 1}`} />
-                          <button
-                            type="button"
-                            className="seller-signup-remove-image"
-                            onClick={() => removeProductImage(index)}
-                            aria-label={`Remove product image ${index + 1}`}
-                            title="Remove image"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ) : (
-                        <label className="seller-signup-product-upload">
-                          <span className="seller-signup-upload-icon">↑</span>
-                          <strong>{index === 0 ? "Upload image" : "Add image"}</strong>
-                          <span>JPG, PNG or WebP</span>
-                          <input
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp"
-                            onChange={(event) => handleProductImage(index, event.target.files?.[0])}
-                          />
-                        </label>
-                      )}
+                      <label className={`seller-signup-product-upload${image && preview ? " selected" : ""}`}>
+                        {image && preview ? (
+                          <>
+                            <img
+                              src={preview}
+                              alt={`Product preview ${index + 1}`}
+                              className="seller-signup-product-preview"
+                            />
+                            <strong>Image selected</strong>
+                            <span className="seller-signup-change-image">↑ Change image</span>
+                            <button
+                              type="button"
+                              className="seller-signup-remove-image"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                removeProductImage(index);
+                              }}
+                              aria-label={`Remove product image ${index + 1}`}
+                              title="Remove image"
+                            >
+                              ×
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span className="seller-signup-upload-icon">↑</span>
+                            <strong>{index === 0 ? "Upload image" : "Add image"}</strong>
+                            <span>JPG, PNG or WebP. Max 5MB.</span>
+                          </>
+                        )}
+
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          onChange={(event) => handleProductImage(index, event.target.files?.[0])}
+                        />
+                      </label>
                     </div>
                   );
                 })}
