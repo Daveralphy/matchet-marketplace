@@ -16,6 +16,9 @@ function withProductUiFields(product) {
     : [];
   return {
     ...product,
+    title: product.title || product.name || "Untitled product",
+    location: product.location || "",
+    seller: product.seller || "Seller",
     gallery,
     reviews: Number(product.reviews ?? 0),
     rating: Number(product.rating ?? 0),
@@ -41,6 +44,9 @@ function withServiceUiFields(service) {
     : [];
   return {
     ...service,
+    title: service.title || service.name || "Untitled service",
+    location: service.location || "",
+    seller: service.seller || "Provider",
     gallery,
     reviews: Number(service.reviews ?? 0),
     rating: Number(service.rating ?? 0),
