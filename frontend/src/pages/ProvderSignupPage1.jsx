@@ -66,6 +66,28 @@ export default function ProviderSignupPageOne() {
   }, [user, formData.providerFirstName, formData.providerLastName, formData.providerEmail, formData.providerPhoneNumber, formData.providerProfileImage, formData.providerLocation, updateField]);
   const [profilePreview, setProfilePreview] = useState(null);
 
+  useEffect(() => {
+    const image = formData.providerProfileImage;
+    if (!image) {
+      setProfilePreview(null);
+      return;
+    }
+    if (typeof image === "string") {
+      setProfilePreview(image);
+      return;
+    }
+    if (image.url) {
+      setProfilePreview(image.url);
+      return;
+    }
+    if (typeof File !== "undefined" && image instanceof File) {
+      const url = URL.createObjectURL(image);
+      setProfilePreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setProfilePreview(null);
+  }, [formData.providerProfileImage]);
+
   const providerTypes = [
     { value: "Individual", title: "Individual", description: "I offer services on my own" },
     { value: "Business/Company", title: "Business / Company", description: "I represent a registered business" },
