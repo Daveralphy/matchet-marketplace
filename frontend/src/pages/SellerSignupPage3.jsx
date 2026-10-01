@@ -4,13 +4,13 @@
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";
 import { useForm } from "../context/FormContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
 export default function SellerSignupPageThree() {
   const { formData, updateField, mergeFormData } = useForm();
-  const [productPreviews, setProductPreviews] = useState([]);
+  const [productPreviews, setProductPreviews] = useState(() => Array(5).fill(null));
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,45 +27,16 @@ export default function SellerSignupPageThree() {
     updateField(e.target.name, selectedValues);
   };
 
-  useEffect(() => {
-    const entries = Array.isArray(formData.productImages) ? formData.productImages : [];
-
-    setProductPreviews((previous) => {
-      const next = entries.map((image, index) => {
-        if (image instanceof File) {
-          return previous[index] || URL.createObjectURL(image);
-        }
-        return image?.url || null;
-      });
-
-      previous.forEach((url, index) => {
-        if (url?.startsWith("blob:") && url !== next[index]) {
-          URL.revokeObjectURL(url);
-        }
-      });
-
-      return next;
-    });
-  }, [formData.productImages]);
-
-  useEffect(() => {
-    return () => {
-      productPreviews.forEach((url) => {
-        if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
-      });
-    };
-  }, [productPreviews]);
-
   const handleProductImage = (index, file) => {
     if (!file) return;
 
     if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-      alert("Only PNG, JPG, or WebP images are allowed.");
+      alert("Please upload a PNG, JPG, or WebP image.");
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("Each product image must be 5MB or smaller.");
+      alert("File is too large. Maximum size allowed is 5MB.");
       return;
     }
 
@@ -83,7 +54,10 @@ export default function SellerSignupPageThree() {
       return next;
     });
 
-    const images = Array.isArray(formData.productImages) ? [...formData.productImages] : [];
+    const images = Array.isArray(formData.productImages)
+      ? [...formData.productImages]
+      : [];
+
     images[index] = file;
     updateField("productImages", images.slice(0, 5));
   };
@@ -97,11 +71,14 @@ export default function SellerSignupPageThree() {
         URL.revokeObjectURL(removedUrl);
       }
 
-      next.splice(index, 1);
+      next[index] = null;
       return next;
     });
 
-    const images = Array.isArray(formData.productImages) ? [...formData.productImages] : [];
+    const images = Array.isArray(formData.productImages)
+      ? [...formData.productImages]
+      : [];
+
     images.splice(index, 1);
     updateField("productImages", images);
   };
@@ -308,37 +285,31 @@ export default function SellerSignupPageThree() {
           overflow: hidden;
         }
 
-        .seller-signup-product-upload.selected {
-          border-style: solid;
-          border-color: #dce2ef;
-          background: #ffffff;
-        }
-
         .seller-signup-product-upload input {
           display: none;
         }
 
         .seller-signup-product-upload .seller-signup-upload-icon {
-          width: 34px;
-          height: 34px;
+          width: 38px;
+          height: 38px;
           display: grid;
           place-items: center;
           border-radius: 7px;
           background: #eef7f1;
           color: #07983f;
-          font-size: 17px;
+          font-size: 18px;
           font-weight: 700;
         }
 
         .seller-signup-product-upload strong {
           color: #10183f;
-          font-size: 10px;
+          font-size: 12px;
           line-height: 1.2;
         }
 
         .seller-signup-product-upload > span:last-of-type {
           color: #8991b8;
-          font-size: 8px;
+          font-size: 11px;
           line-height: 1.3;
         }
 
@@ -352,7 +323,7 @@ export default function SellerSignupPageThree() {
 
         .seller-signup-product-upload .seller-signup-change-image {
           color: #07983f;
-          font-size: 9px;
+          font-size: 11px;
           font-weight: 600;
           line-height: 1.2;
         }
@@ -577,7 +548,7 @@ export default function SellerSignupPageThree() {
 
                   return (
                     <div className="seller-signup-product-slot" key={`product-image-slot-${index}`}>
-                      <label className={`seller-signup-product-upload${image && preview ? " selected" : ""}`}>
+                      <label className="seller-signup-product-upload">
                         {image && preview ? (
                           <>
                             <img
@@ -612,7 +583,10 @@ export default function SellerSignupPageThree() {
                         <input
                           type="file"
                           accept="image/png,image/jpeg,image/webp"
-                          onChange={(event) => handleProductImage(index, event.target.files?.[0])}
+                          onChange={(event) => {
+                            handleProductImage(index, event.target.files?.[0]);
+                            event.target.value = "";
+                          }}
                         />
                       </label>
                     </div>
