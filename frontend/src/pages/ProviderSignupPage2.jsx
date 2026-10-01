@@ -1,7 +1,7 @@
 // Created by: Blake Ostler
 // Edited by: Raphael Daveal
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
 import { saveProviderOnboardingDraft } from "../api/provider";
@@ -21,6 +21,7 @@ export default function ProviderSignupPageTwo() {
   const [areas, setAreas] = useState(
     formData.providerAreasServed ? [formData.providerAreasServed] : [""],
   );
+  const [servicePreviews, setServicePreviews] = useState(() => Array(6).fill(null));
 
   const categories = [
     { value: "home-services", label: "Home Services" },
@@ -57,12 +58,52 @@ export default function ProviderSignupPageTwo() {
     setAreas((current) => [...current, ""]);
   };
 
-  const handleServiceImages = (event) => {
-    const files = Array.from(event.target.files || []);
-    const valid = files.filter((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type) && file.size <= 5 * 1024 * 1024);
-    if (valid.length !== files.length) alert("Only JPG, PNG, or WebP images up to 5MB each are allowed.");
-    updateField("providerServiceImages", valid.slice(0, 6));
-    event.target.value = "";
+  useEffect(() => {
+    const images = Array.isArray(formData.providerServiceImages) ? formData.providerServiceImages : [];
+    const urls = images.slice(0, 6).map((image) => image?.url || null);
+    setServicePreviews((previous) => previous.map((url, index) => url || urls[index] || null));
+  }, []);
+
+  const handleServiceImage = (index, file) => {
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      alert("Please upload a JPG, PNG, or WebP image.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File is too large. Maximum size allowed is 5MB.");
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setServicePreviews((previous) => {
+      const next = [...previous];
+      if (next[index]?.startsWith("blob:")) URL.revokeObjectURL(next[index]);
+      next[index] = previewUrl;
+      return next;
+    });
+
+    const images = Array.isArray(formData.providerServiceImages)
+      ? [...formData.providerServiceImages]
+      : [];
+    images[index] = file;
+    updateField("providerServiceImages", images.slice(0, 6));
+  };
+
+  const removeServiceImage = (index) => {
+    setServicePreviews((previous) => {
+      const next = [...previous];
+      if (next[index]?.startsWith("blob:")) URL.revokeObjectURL(next[index]);
+      next.splice(index, 1);
+      next.push(null);
+      return next;
+    });
+
+    const images = Array.isArray(formData.providerServiceImages)
+      ? [...formData.providerServiceImages]
+      : [];
+    images.splice(index, 1);
+    updateField("providerServiceImages", images);
   };
 
   const handleSubmit = async (event) => {
@@ -116,11 +157,44 @@ export default function ProviderSignupPageTwo() {
                 <input type="text" id="providerServiceName" name="providerServiceName" placeholder="e.g. Home Cleaning, Makeup, Photography" value={formData.providerServiceName || ""} onChange={handleChange} required />
               </label>
 
-              <label htmlFor="providerServiceImages">
-                Service images
-                <input id="providerServiceImages" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleServiceImages} />
+              <div>
+                <span className="provider-signup-form-field-label">Service images</span>
                 <small>Upload up to 6 JPG, PNG, or WebP images. Max 5MB each.</small>
-              </label>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 9, marginTop: 8 }}>
+                  {Array.from({ length: 6 }).map((_, index) => {
+                    const image = formData.providerServiceImages?.[index];
+                    const preview = servicePreviews[index];
+                    return (
+                      <label key={`service-image-slot-${index}`} style={{
+                        position: "relative", minHeight: 120, boxSizing: "border-box", padding: 10,
+                        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                        gap: 6, border: `1px ${image && preview ? "solid" : "dashed"} #cfd7e8`,
+                        borderRadius: 8, background: image && preview ? "#fff" : "#fbfcfe",
+                        cursor: "pointer", textAlign: "center", overflow: "hidden"
+                      }}>
+                        {image && preview ? (
+                          <>
+                            <img src={preview} alt={`Service preview ${index + 1}`} style={{ width: 64, height: 64, objectFit: "cover", borderRadius: 8, border: "1px solid #e1e6f0" }} />
+                            <strong style={{ color: "#10183f", fontSize: 10 }}>Image selected</strong>
+                            <span style={{ color: "#07983f", fontSize: 9, fontWeight: 600 }}>↑ Change image</span>
+                            <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); removeServiceImage(index); }} style={{
+                              position: "absolute", top: 6, right: 6, width: 25, height: 25, border: 0,
+                              borderRadius: "50%", background: "rgba(16,24,63,.86)", color: "#fff", cursor: "pointer", zIndex: 2
+                            }}>×</button>
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ width: 34, height: 34, display: "grid", placeItems: "center", borderRadius: 7, background: "#eef7f1", color: "#07983f", fontSize: 17, fontWeight: 700 }}>↑</span>
+                            <strong style={{ color: "#10183f", fontSize: 10 }}>{index === 0 ? "Upload image" : "Add image"}</strong>
+                            <span style={{ color: "#8991b8", fontSize: 8 }}>JPG, PNG or WebP. Max 5MB.</span>
+                          </>
+                        )}
+                        <input type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={(event) => { handleServiceImage(index, event.target.files?.[0]); event.target.value = ""; }} />
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
 
               <div className="provider-service-description-field">
                 <label htmlFor="providerServiceDesc">
