@@ -992,10 +992,8 @@ async function submitSellerOnboarding(req, res) {
       delete normalizedLocation.coordinates;
     }
 
-    const store = await StoreProfile.findOneAndUpdate(
-      { userId },
-      {
-        $set: {
+    const storeUpdate = {
+      $set: {
           storeName,
           slug,
           description: input.businessDesc || input.sellerBio || "",
