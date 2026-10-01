@@ -4,7 +4,7 @@
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";
 import { useForm } from "../context/FormContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
@@ -12,6 +12,30 @@ export default function SellerSignupPageThree() {
   const { formData, updateField, mergeFormData } = useForm();
   const [productPreviews, setProductPreviews] = useState(() => Array(5).fill(null));
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const images = Array.isArray(formData.productImages) ? formData.productImages : [];
+    const urls = images.slice(0, 5).map((image) => {
+      if (typeof image === "string") return image;
+      if (image?.url) return image.url;
+      if (typeof File !== "undefined" && image instanceof File) return URL.createObjectURL(image);
+      return null;
+    });
+
+    setProductPreviews((previous) => {
+      const next = [...previous];
+      urls.forEach((url, index) => {
+        if (url && !next[index]) next[index] = url;
+      });
+      return next;
+    });
+
+    return () => {
+      urls.forEach((url) => {
+        if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
+      });
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
