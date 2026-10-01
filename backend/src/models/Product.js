@@ -13,13 +13,6 @@ const locationSchema = new mongoose.Schema({
   city: { type: String, trim: true },
   state: { type: String, trim: true },
   country: { type: String, trim: true },
-  coordinates: {
-    type: { type: String, enum: ["Point"] },
-    coordinates: {
-      type: [Number],
-      validate: { validator: (value) => value.length === 2, message: "Coordinates must contain longitude and latitude." },
-    },
-  },
 }, { _id: false });
 
 const productSchema = new mongoose.Schema({
@@ -37,7 +30,6 @@ const productSchema = new mongoose.Schema({
   status: { type: String, enum: ["draft", "active", "outOfStock", "archived"], default: "draft", index: true },
 }, { timestamps: true });
 
-productSchema.index({ "location.coordinates": "2dsphere" });
 productSchema.index({ sellerId: 1, status: 1 });
 productSchema.index({ category: 1, status: 1 });
 
