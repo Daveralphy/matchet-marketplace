@@ -987,6 +987,11 @@ async function submitSellerOnboarding(req, res) {
           country: input.businessCountry || "",
         };
 
+    // Do not send an empty GeoJSON coordinates array to MongoDB's 2dsphere index.
+    if (!normalizedLocation.city && !normalizedLocation.state && !normalizedLocation.country) {
+      delete normalizedLocation.coordinates;
+    }
+
     const store = await StoreProfile.findOneAndUpdate(
       { userId },
       {
