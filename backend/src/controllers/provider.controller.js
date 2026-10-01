@@ -972,9 +972,38 @@ async function submitSellerOnboarding(req, res) {
     const productName = input.productName || "";
     const hasInitialProduct = Boolean(productName && input.productPrice !== undefined && input.productPrice !== "");
     if (hasInitialProduct) {
+      const productImages = (Array.isArray(input.productImages) ? input.productImages : [])
+        .filter((image) => image && image.url && image.publicId)
+        .slice(0, 5)
+        .map((image, index) => ({
+          url: image.url,
+          publicId: image.publicId,
+          isPrimary: index === 0,
+        }));
+
       await Product.findOneAndUpdate(
         { sellerId: userId, "details.onboardingSource": "seller-onboarding" },
-        { $set: { name: productName, description: input.productDesc || productName, shortDescription: input.productDesc || "", category: input.productCat || input.businessCat || "Other", price: Number(input.productPrice) || 0, inventory: Number(input.productStock) || 0, sku: input.productSku || undefined, images: Array.isArray(input.productImages) ? input.productImages : [], status: "draft", details: { onboardingSource: "seller-onboarding", condition: input.productCondition || "New", comparePrice: Number(input.productComparePrice) || 0, tags: Array.isArray(input.productTags) ? input.productTags : String(input.productTags || "").split(",").map((tag) => tag.trim()).filter(Boolean) } } },
+        {
+          $set: {
+            name: productName,
+            description: input.productDesc || productName,
+            shortDescription: String(input.productDesc || productName).slice(0, 200),
+            category: input.productCat || input.businessCat || "Other",
+            price: Number(input.productPrice) || 0,
+            inventory: Number(input.productStock) || 0,
+            sku: input.productSku || undefined,
+            images: productImages,
+            status: "draft",
+            details: {
+              onboardingSource: "seller-onboarding",
+              condition: input.productCondition || "New",
+              comparePrice: Number(input.productComparePrice) || 0,
+              tags: Array.isArray(input.productTags)
+                ? input.productTags
+                : String(input.productTags || "").split(",").map((tag) => tag.trim()).filter(Boolean),
+            },
+          },
+        },
         { upsert: true, new: true, runValidators: true }
       );
     }
