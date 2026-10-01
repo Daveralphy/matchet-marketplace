@@ -743,7 +743,7 @@ async function submitProviderOnboarding(req, res) {
           verificationStatus: "pending",
           status: "draft",
           onboardingData: input,
-          applicationSubmittedAt: new Date(),
+          applicationSubmittedAt: isDraft ? (input.applicationSubmittedAt || null) : new Date(),
           reviewedAt: null,
           reviewNote: "",
         },
@@ -806,8 +806,8 @@ async function submitProviderOnboarding(req, res) {
         country: input.providerCountry || req.user.location?.country || "",
       };
     }
-    userUpdates["capabilities.provider"] = true;
-    if (req.user.role !== "provider") userUpdates.role = "provider";
+    if (!isDraft) userUpdates["capabilities.provider"] = true;
+    if (!isDraft && req.user.role !== "provider") userUpdates.role = "provider";
 
     if (Object.keys(userUpdates).length) {
       await User.findByIdAndUpdate(providerId, { $set: userUpdates });
@@ -815,7 +815,7 @@ async function submitProviderOnboarding(req, res) {
 
     return res.status(201).json({
       success: true,
-      message: "Your provider application has been submitted for review.",
+      message: isDraft ? "Your provider onboarding progress has been saved." : "Your provider application has been submitted for review.",
       data: {
         id: provider._id,
         status: provider.status,
