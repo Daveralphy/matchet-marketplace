@@ -125,6 +125,15 @@ function serializeOnboardingValue(value) {
   return value;
 }
 
+export async function saveProviderOnboardingDraft(formData) {
+  const next = { ...formData };
+
+  return request("/api/provider/onboarding", {
+    method: "POST",
+    body: JSON.stringify({ formData: serializeOnboardingValue(next), draft: true }),
+  });
+}
+
 export async function submitProviderOnboarding(formData) {
   const next = { ...formData };
 
