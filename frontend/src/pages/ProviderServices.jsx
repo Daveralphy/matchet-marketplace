@@ -228,7 +228,6 @@ export default function ProviderServices() {
                   <span className={"status " + service.status}>{statusLabel(service.status)}</span>
                   <span>{service.bookingsLast30Days ?? 0}</span>
                   <div className="provider-service-actions">
-                    <button type="button" onClick={() => { setEditingService(service); setForm({ title: service.title || "", description: service.description || "", category: service.category || "", pricingType: service.pricingType || "fixed", price: service.price ?? "", durationMinutes: service.durationMinutes || "", images: service.images || (service.image ? [{ url: service.image, publicId: "existing" }] : []) }); setShowForm(true); }}>Edit</button>
                     <div className="provider-service-actions-menu-wrap">
                       <button type="button" aria-label={"More actions for " + service.title} onClick={() => setMenuService(menuService === service.id ? null : service.id)}>⋮</button>
                       {menuService === service.id && (
