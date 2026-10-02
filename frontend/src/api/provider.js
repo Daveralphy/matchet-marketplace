@@ -119,6 +119,10 @@ export async function updateProviderService(id, payload) {
   });
 }
 
+export function deleteProviderService(id) {
+  return request("/api/provider/services/" + encodeURIComponent(id), { method: "DELETE" });
+}
+
 export function getProviderEarnings() {
   return request("/api/provider/earnings");
 }
@@ -306,6 +310,7 @@ export async function updateSellerProduct(id,payload) {
   }
   return request("/api/provider/seller-products/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(next)});
 }
+export function deleteSellerProduct(id){return request("/api/provider/seller-products/"+encodeURIComponent(id),{method:"DELETE"});}
 
 export function getSellerEarnings(){ return request("/api/provider/seller-earnings"); }
 
