@@ -88,6 +88,48 @@ function RequireAuth({ children }) {
   return <Navigate to={"/login?returnTo=" + encodeURIComponent(returnTo)} replace />;
 }
 
+function ProviderAccessPage({ state }) {
+  const title = state === "missing" ? "Provider access is not available" : state === "rejected" ? "Provider application was not approved" : "Provider application is still being reviewed";
+  const message = state === "missing"
+    ? "This account has not completed provider onboarding, so provider dashboard pages are not available."
+    : state === "rejected"
+      ? "Your provider application is not currently approved. View the application status for the next steps."
+      : "Your provider application has not been approved yet. You can view its current status or return to the marketplace.";
+  return (
+    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
+      <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
+        <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
+        <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
+        {state === "missing" ? <a href="/provider/onboarding">Start provider onboarding</a> : <a href="/provider/application-status">View application status</a>}
+        <div style={{ marginTop: "16px" }}><a href="/">Return to marketplace</a></div>
+      </section>
+    </main>
+  );
+}
+
+function RequireProvider({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [state, setState] = useState("missing");
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getProviderProfile().then((response) => {
+      if (!active) return;
+      const profile = response?.data?.profile;
+      if (!profile) setState("missing");
+      else if (profile.status === "active" && profile.verificationStatus === "verified") setState("active");
+      else if (profile.verificationStatus === "rejected") setState("rejected");
+      else setState("pending");
+    }).catch(() => active && setState("missing")).finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [isAuthenticated, loading]);
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (state !== "active") return <ProviderAccessPage state={state} />;
+  return children;
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
