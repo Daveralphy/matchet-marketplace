@@ -79,6 +79,46 @@ function initials(user) {
     .toUpperCase();
 }
 
+async function searchProviderLocations(req, res) {
+  try {
+    const query = String(req.query?.q || "").trim();
+    if (query.length < 2) return res.json({ success: true, data: { locations: [] } });
+
+    const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
+    url.searchParams.set("name", query);
+    url.searchParams.set("count", "8");
+    url.searchParams.set("language", "en");
+    url.searchParams.set("format", "json");
+    url.searchParams.set("countryCode", "NG");
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Location service unavailable.");
+    const payload = await response.json();
+
+    const locations = (Array.isArray(payload.results) ? payload.results : [])
+      .filter((item) => Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude)))
+      .map((item) => ({
+        label: [item.name, item.admin1, item.country].filter(Boolean).join(", "),
+        city: item.name || "",
+        state: item.admin1 || "",
+        country: item.country || "Nigeria",
+        coordinates: {
+          type: "Point",
+          coordinates: [Number(item.longitude), Number(item.latitude)],
+        },
+      }));
+
+    return res.json({ success: true, data: { locations } });
+  } catch (error) {
+    console.error("Provider location search error:", error);
+    return res.status(502).json({
+      success: false,
+      message: "Unable to search locations right now.",
+      data: { locations: [] },
+    });
+  }
+}
+
 async function getProviderDashboard(req, res) {
   try {
     const providerId = req.user._id;
@@ -1879,3 +1919,5 @@ module.exports.updateSellerSettingsStore=updateSellerSettingsStore;
 module.exports.getPublicSellerStore=getPublicSellerStore;
 
 module.exports.getOnboardingProgress = getOnboardingProgress;
+
+module.exports.searchProviderLocations = searchProviderLocations;
