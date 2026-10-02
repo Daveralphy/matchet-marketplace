@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ProviderShell, Icon } from "../components/ProviderShell";
-import { createProviderService, getProviderServices, updateProviderService } from "../api/provider";
+import { createProviderService, getProviderServices, updateProviderService, deleteProviderService } from "../api/provider";
 import "../styles/provider-dashboard.css";
 
 function formatPrice(amount, currency) {
@@ -50,6 +50,7 @@ export default function ProviderServices() {
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [menuService, setMenuService] = useState(null);
 
   const pageSize = 6;
 
@@ -228,7 +229,16 @@ export default function ProviderServices() {
                   <span>{service.bookingsLast30Days ?? 0}</span>
                   <div className="provider-service-actions">
                     <button type="button" onClick={() => { setEditingService(service); setForm({ title: service.title || "", description: service.description || "", category: service.category || "", pricingType: service.pricingType || "fixed", price: service.price ?? "", durationMinutes: service.durationMinutes || "", images: service.images || (service.image ? [{ url: service.image, publicId: "existing" }] : []) }); setShowForm(true); }}>Edit</button>
-                    <button type="button" aria-label={"More actions for " + service.title}>⋮</button>
+                    <div className="provider-service-actions-menu-wrap">
+                      <button type="button" aria-label={"More actions for " + service.title} onClick={() => setMenuService(menuService === service.id ? null : service.id)}>⋮</button>
+                      {menuService === service.id && (
+                        <div className="provider-service-actions-menu">
+                          <button type="button" onClick={() => { setEditingService(service); setForm({ title: service.title || "", description: service.description || "", category: service.category || "", pricingType: service.pricingType || "fixed", price: service.price ?? "", durationMinutes: service.durationMinutes || "", images: service.images || [] }); setShowForm(true); setMenuService(null); }}>Edit service</button>
+                          <button type="button" onClick={async () => { setMenuService(null); const next = service.status === "active" ? "paused" : service.status === "paused" ? "active" : "draft"; try { const response = await updateProviderService(service.id, { status: next }); const saved = response.service; setServices(current => current.map(item => item.id === service.id ? { ...item, status: saved.status } : item)); } catch (e) { setError(e.message || "Unable to change service status."); } }}>Change status: {service.status === "active" ? "Paused" : service.status === "paused" ? "Active" : "Draft"}</button>
+                          <button type="button" className="danger" onClick={async () => { setMenuService(null); if (!window.confirm("Delete \"" + service.title + "\"? This cannot be undone.")) return; try { await deleteProviderService(service.id); setServices(current => current.filter(item => item.id !== service.id)); } catch (e) { setError(e.message || "Unable to delete service."); } }}>Delete service</button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
