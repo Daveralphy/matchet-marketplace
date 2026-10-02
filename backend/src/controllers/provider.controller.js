@@ -944,8 +944,23 @@ async function updateProviderService(req, res) {
   }
 }
 
+async function deleteProviderService(req, res) {
+  try {
+    const service = await Service.findOneAndDelete({
+      _id: req.params.serviceId,
+      providerId: req.user._id,
+    });
+    if (!service) return res.status(404).json({ success: false, message: "Service not found." });
+    return res.json({ success: true, message: "Service deleted successfully.", data: { id: service._id } });
+  } catch (error) {
+    console.error("Delete provider service error:", error);
+    return res.status(500).json({ success: false, message: "Unable to delete this service right now." });
+  }
+}
+
 module.exports.createProviderService = createProviderService;
 module.exports.updateProviderService = updateProviderService;
+module.exports.deleteProviderService = deleteProviderService;
 
 async function getProviderBookings(req, res) {
   try {
@@ -1546,9 +1561,24 @@ async function updateSellerProduct(req,res){
     return res.json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
+async function deleteSellerProduct(req, res) {
+  try {
+    const product = await Product.findOneAndDelete({
+      _id: req.params.productId,
+      sellerId: req.user._id,
+    });
+    if (!product) return res.status(404).json({ success: false, message: "Product not found." });
+    return res.json({ success: true, message: "Product deleted successfully.", data: { id: product._id } });
+  } catch (error) {
+    console.error("Delete seller product error:", error);
+    return res.status(500).json({ success: false, message: "Unable to delete this product right now." });
+  }
+}
+
 module.exports.getSellerProducts=getSellerProducts;
 module.exports.createSellerProduct=createSellerProduct;
 module.exports.updateSellerProduct=updateSellerProduct;
+module.exports.deleteSellerProduct=deleteSellerProduct;
 
 
 async function getSellerEarnings(req, res) {
