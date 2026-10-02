@@ -40,7 +40,7 @@ export default function ForProviders() {
         return;
       }
       if (capability === "service") {
-        if (state.status === "active" && state.verificationStatus === "verified") {
+        if (state.status === "active" && state.verificationStatus === "verified" && state.applicationSubmittedAt) {
           navigate("/provider/dashboard");
         } else if (state.verificationStatus === "rejected") {
           navigate("/provider/application-status");
