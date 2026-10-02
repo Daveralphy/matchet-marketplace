@@ -1,4 +1,4 @@
-import { getMarketplaceProducts, getMarketplaceServices, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
+import { getMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
 import { marketplaceContent } from "./marketplaceContent";
 
 async function loadMarketplace() {
@@ -110,30 +110,14 @@ export async function searchMarketplace({ type = "all", query = "", location = "
 }
 
 export async function getProviderCollection() {
-  const { services } = await getMarketplaceData();
-  const providers = new Map();
-  services.forEach((service) => {
-    const key = service.providerId || service.seller || service.id;
-    if (!providers.has(key)) {
-      providers.set(key, {
-        id: key,
-        name: service.seller || "Service Provider",
-        category: service.category || "Services",
-        rating: service.rating || 0,
-        reviews: service.reviews || 0,
-        location: service.location || "",
-        listings: 1,
-        initials: service.sellerInitial || String(service.seller || "P").trim().charAt(0).toUpperCase(),
-        image: service.image || "",
-        imageTone: service.imageTone || "bg-[#eef1ef]",
-        logoTone: service.avatarTone || "bg-[#e8f0f8] text-[#2682e9]",
-        sellerVerified: service.sellerVerified,
-      });
-    } else {
-      providers.get(key).listings += 1;
-    }
-  });
-  return [...providers.values()];
+  const providers = await getMarketplaceProviders();
+  return providers.map((provider) => ({
+    ...provider,
+    initials: provider.name?.trim()?.charAt(0)?.toUpperCase() || "P",
+    imageTone: provider.image ? "" : "bg-[#eef1ef]",
+    logoTone: "bg-[#e8f0f8] text-[#2682e9]",
+    sellerVerified: Boolean(provider.verified),
+  }));
 }
 
 export async function getCategoryCollections() {
