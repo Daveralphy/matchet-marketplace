@@ -747,6 +747,8 @@ function ProductFilters({ products, filters, setFilters }) {
 }
 
 function ProductCatalogue({ isAuthenticated }) {
+  const minPrice = 0;
+  const maxPrice = 1000000000;
   const [searchParams] = useSearchParams();
   const savedUiState = (() => {
     try { return JSON.parse(sessionStorage.getItem("matchet_products_ui") || "{}"); } catch { return {}; }
