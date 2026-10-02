@@ -708,6 +708,18 @@ async function submitProviderOnboarding(req, res) {
     const providerId = req.user._id;
     const isDraft = Boolean(req.body?.draft);
     const input = req.body?.formData || req.body || {};
+    if (!isDraft) {
+      const progress = getFirstIncompleteOnboardingStep(input, providerStepRequirements);
+      if (progress.step <= providerStepRequirements.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Complete all required provider onboarding steps before submitting.",
+          code: "ONBOARDING_INCOMPLETE",
+          step: progress.step,
+          missing: progress.missing,
+        });
+      }
+    }
 
     const businessName =
       input.providerBusinessName ||
@@ -1273,6 +1285,19 @@ async function submitSellerOnboarding(req, res) {
     const userId = req.user._id;
     const isDraft = Boolean(req.body?.draft);
     const input = req.body?.formData || req.body || {};
+    if (!isDraft) {
+      const progress = getFirstIncompleteOnboardingStep(input, sellerStepRequirements);
+      if (progress.step <= sellerStepRequirements.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Complete all required seller onboarding steps before submitting.",
+          code: "ONBOARDING_INCOMPLETE",
+          step: progress.step,
+          missing: progress.missing,
+        });
+      }
+    }
+
     const storeName = input.businessName || [input.firstName, input.lastName].filter(Boolean).join(" ") || "Matchet Store";
     const baseSlug = storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "matchet-store";
     const existing = await StoreProfile.findOne({ slug: { $regex: new RegExp("^" + baseSlug + "(?:-[0-9]+)?$") }, userId: { $ne: userId } }).sort({ createdAt: -1 }).lean();
