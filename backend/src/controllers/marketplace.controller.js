@@ -202,6 +202,56 @@ async function getProductById(req, res) {
   }
 }
 
+async function getProviders(req, res) {
+  try {
+    const profiles = await ProviderProfile.find({
+      status: "active",
+      verificationStatus: "verified",
+    })
+      .populate({ path: "userId", select: "firstName lastName username email avatar" })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const providerIds = profiles.map((profile) => profile.userId?._id).filter(Boolean);
+    const serviceCounts = providerIds.length
+      ? await Service.aggregate([
+          { $match: { providerId: { $in: providerIds }, status: "active" } },
+          { $group: { _id: "$providerId", count: { $sum: 1 } } },
+        ])
+      : [];
+    const countsByProvider = new Map(serviceCounts.map((row) => [String(row._id), row.count]));
+
+    return res.json({
+      success: true,
+      providers: profiles.map((profile) => {
+        const user = profile.userId || {};
+        const name = profile.businessName || [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || "Provider";
+        return {
+          id: profile._id.toString(),
+          userId: user._id?.toString?.() || null,
+          name,
+          businessName: profile.businessName || name,
+          category: profile.categories?.[0] || "Services",
+          categories: profile.categories || [],
+          bio: profile.bio || "",
+          experience: profile.experience || "",
+          location: locationLabel(profile.serviceArea),
+          rating: Number(profile.ratingAverage || 0),
+          reviews: Number(profile.reviewCount || 0),
+          listings: countsByProvider.get(String(user._id)) || 0,
+          image: user.avatar?.url || "",
+          verified: profile.verificationStatus === "verified",
+          status: profile.status,
+          createdAt: profile.createdAt,
+        };
+      }),
+    });
+  } catch (error) {
+    console.error("Get providers failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to load service providers right now." });
+  }
+}
+
 async function getServices(req, res) {
   try {
     const filter = { status: "active" };
@@ -433,6 +483,7 @@ async function createService(req, res) {
 module.exports = {
   getProducts,
   getProductById,
+  getProviders,
   getServices,
   getServiceById,
   getProviderProfile,
