@@ -1,7 +1,7 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
 const { requireActiveProvider, requireActiveSeller } = require("../middleware/providerAccess");
-const { getOnboardingProgress, getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, deleteSellerProduct, createProviderService, updateProviderService, deleteProviderService, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
+const { searchProviderLocations, getOnboardingProgress, getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, deleteSellerProduct, createProviderService, updateProviderService, deleteProviderService, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -14,6 +14,7 @@ router.post("/onboarding", requireAuth, submitProviderOnboarding);
 router.post("/seller-onboarding", requireAuth, submitSellerOnboarding);
 router.get("/seller-onboarding/draft", requireAuth, getSellerOnboardingDraft);
 router.get("/onboarding/draft", requireAuth, getProviderOnboardingDraft);
+router.get("/locations/search", requireAuth, searchProviderLocations);
 router.get("/onboarding/progress", requireAuth, getOnboardingProgress);
 router.get("/capabilities", requireAuth, getProviderCapabilities);
 router.get("/seller-dashboard", requireAuth, requireActiveSeller, getSellerDashboard);
