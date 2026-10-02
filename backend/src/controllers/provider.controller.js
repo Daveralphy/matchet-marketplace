@@ -843,7 +843,13 @@ module.exports.submitProviderOnboarding = submitProviderOnboarding;
 async function createProviderService(req, res) {
   try {
     const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
-    if (!provider || provider.status !== "active" || provider.verificationStatus !== "verified") {
+    const isApprovedProvider =
+      Boolean(provider) &&
+      (
+        (provider.status === "active" && provider.verificationStatus === "verified") ||
+        (req.user.role === "provider" && req.user.capabilities?.provider === true)
+      );
+    if (!isApprovedProvider) {
       return res.status(403).json({ success: false, message: "Your provider profile must be approved before you can create services." });
     }
 
@@ -892,7 +898,13 @@ async function createProviderService(req, res) {
 async function updateProviderService(req, res) {
   try {
     const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
-    if (!provider || provider.status !== "active" || provider.verificationStatus !== "verified") {
+    const isApprovedProvider =
+      Boolean(provider) &&
+      (
+        (provider.status === "active" && provider.verificationStatus === "verified") ||
+        (req.user.role === "provider" && req.user.capabilities?.provider === true)
+      );
+    if (!isApprovedProvider) {
       return res.status(403).json({ success: false, message: "Your provider profile must be approved before you can manage services." });
     }
 
