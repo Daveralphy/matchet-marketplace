@@ -208,6 +208,10 @@ const router = createBrowserRouter([
   },
 
   {
+    path: "/admin/dashboard",
+    element: <RequireAdmin><AdminDashboard /></RequireAdmin>,
+  },
+  {
     path: "/provider/profile",
     element: <RequireAuth><ProviderProfile /></RequireAuth>,
   },
