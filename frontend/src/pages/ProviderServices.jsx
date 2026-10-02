@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { createProviderService, getProviderServices, updateProviderService, deleteProviderService } from "../api/provider";
@@ -53,6 +54,7 @@ export default function ProviderServices() {
   const [saving, setSaving] = useState(false);
   const [menuService, setMenuService] = useState(null);
   const [menuPosition, setMenuPosition] = useState(null);
+  const pageSize = 6;
 
   const openServiceMenu = (serviceId, event) => {
     if (menuService === serviceId) {
