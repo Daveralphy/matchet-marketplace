@@ -1833,7 +1833,8 @@ async function createSellerProduct(req,res){
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     const safeStatus=canPublish ? status : "draft";
-    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,status:safeStatus,location,details,sku});
+    const safeImages = normalizeImageAssets(images, 5);
+    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images:safeImages,status:safeStatus,location,details,sku});
     return res.status(201).json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
@@ -1844,7 +1845,7 @@ async function updateSellerProduct(req,res){
     const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details"];
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
-    allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=req.body[k]});
+    allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=k==="images" ? normalizeImageAssets(req.body[k], 5) : req.body[k]});
     if (!canPublish) product.status="draft";
     await product.save();
     return res.json({success:true,data:product});
