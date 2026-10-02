@@ -40,15 +40,20 @@ export default function ForProviders() {
         return;
       }
       if (capability === "service") {
-        if (state.status === "active" || state.verificationStatus === "verified") navigate("/provider/dashboard");
-        else if (state.verificationStatus === "rejected") navigate("/provider/application-status");
-        else if (state.applicationSubmittedAt) navigate("/provider/application-status");
-        else navigate("/provider/onboarding");
-      } else {
-        if (state.onboardingStatus === "in_progress") {
-          navigate("/register");
+        if (state.status === "active" && state.verificationStatus === "verified") {
+          navigate("/provider/dashboard");
+        } else if (state.verificationStatus === "rejected") {
+          navigate("/provider/application-status");
+        } else if (state.applicationSubmittedAt) {
+          navigate("/provider/application-status");
         } else {
+          navigate("/provider/onboarding");
+        }
+      } else {
+        if (state.onboardingStatus === "submitted" && state.status === "active" && state.verificationStatus === "verified") {
           navigate("/seller/dashboard");
+        } else {
+          navigate("/register");
         }
       }
     } catch {
