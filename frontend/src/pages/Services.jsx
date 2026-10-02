@@ -880,9 +880,9 @@ function ServiceListingCard({ service }) {
   return (
     <Link to={`/services/${service.id}`} className="block overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
       <div className={`relative h-[218px] overflow-hidden ${service.imageTone || "bg-[#dfe7e2]"}`}>
-        {service.image ? (
+        {service.image || service.gallery?.[0] ? (
           <img
-            src={service.image}
+            src={service.image || service.gallery?.[0]}
             alt=""
             className="h-full w-full object-cover"
             onError={(event) => {
@@ -891,7 +891,7 @@ function ServiceListingCard({ service }) {
             }}
           />
         ) : null}
-        <div className={service.image ? "absolute inset-0 hidden items-center justify-center" : "absolute inset-0 flex items-center justify-center"}>
+        <div className={service.image || service.gallery?.[0] ? "absolute inset-0 hidden items-center justify-center" : "absolute inset-0 flex items-center justify-center"}>
             <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
               <Icon name={service.icon || (service.category === "Beauty & Care" || service.category === "Beauty & Wellness" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home")} size={42} strokeWidth={1.45} />
             </span>
