@@ -39,38 +39,50 @@ export default function SellerProducts(){
    <div className="product-tabs">{[["all","All products"],["active","Active"],["outOfStock","Out of stock"],["draft","Drafts"]].map(([k,l])=><button className={tab===k?"active":""} onClick={()=>setTab(k)} key={k}>{l}{k!=="all"&&<em>({k==="active"?stats.active:k==="outOfStock"?stats.outOfStock:stats.drafts})</em>}</button>)}</div>
    <div className="product-filters"><label><Icon name="search"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search products..." /></label><select value={category} onChange={e=>setCategory(e.target.value)}><option value="all">All categories</option>{(data?.categories||[]).map(c=><option key={c}>{c}</option>)}</select><select value={tab} onChange={e=>setTab(e.target.value)}><option value="all">All statuses</option><option value="active">Active</option><option value="outOfStock">Out of stock</option><option value="draft">Drafts</option></select><select value={sort} onChange={e=>setSort(e.target.value)}><option value="newest">Sort by: Newest</option><option value="oldest">Oldest</option><option value="priceHigh">Highest price</option><option value="priceLow">Lowest price</option></select></div>
    <div className="product-table-wrap"><table><thead><tr><th><input type="checkbox" onChange={e=>setSelected(e.target.checked?products.map(p=>p.id):[])}/></th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Orders</th><th>Actions</th></tr></thead><tbody>{products.map(p=><tr key={p.id}><td><input type="checkbox" checked={selected.includes(p.id)} onChange={e=>setSelected(v=>e.target.checked?[...v,p.id]:v.filter(x=>x!==p.id))}/></td><td><div className="product-cell">{p.image?<img src={p.image} alt=""/>:<span className="product-placeholder"><Icon name="grid"/></span>}<div><strong>{p.name}</strong><small>{p.description}</small></div></div></td><td>{p.category}</td><td><strong>{money(p.price)}</strong></td><td className={p.inventory===0?"zero":p.inventory<=5?"low":""}>{p.inventory}</td><td><span className={"product-pill "+p.status}>{statusText(p.status)}</span></td><td>{p.orders}</td><td><div className="product-actions-menu-wrap"><button type="button" className="product-dots" onClick={(event)=>openProductMenu(p.id,event)} aria-label={"More actions for "+p.name}>⋮</button></div></td></tr>)}</tbody></table></div>
-        {menuService && menuPosition && createPortal(
+        {menu && menuPosition && createPortal(
           (() => {
-            const service = services.find((item) => item.id === menuService);
-            if (!service) return null;
-            const nextStatus = service.status === "active" ? "paused" : "active";
-            const nextStatusLabel = service.status === "active" ? "Paused" : "Active";
+            const product = products.find((item) => item.id === menu);
+            if (!product) return null;
+            const nextStatus = product.status === "active" ? "draft" : "active";
+            const nextStatusLabel = product.status === "active" ? "Draft" : "Active";
             return (
-              <div className="provider-service-actions-menu provider-service-actions-menu-portal" style={{ top: menuPosition.top, left: menuPosition.left }} onMouseDown={(event) => event.stopPropagation()}>
+              <div
+                className="provider-service-actions-menu provider-service-actions-menu-portal"
+                style={{ top: menuPosition.top, left: menuPosition.left }}
+                onMouseDown={(event) => event.stopPropagation()}
+              >
                 <button type="button" onClick={() => {
-                  setEditingService(service);
-                  setForm({ title: service.title || "", description: service.description || "", category: service.category || "", pricingType: service.pricingType || "fixed", price: service.price ?? "", durationMinutes: service.durationMinutes || "", images: service.images || [] });
-                  setShowForm(true); setMenuService(null); setMenuPosition(null);
-                }}>Edit service</button>
+                  open(product);
+                  setMenu(null);
+                  setMenuPosition(null);
+                }}>
+                  Edit product
+                </button>
                 <button type="button" onClick={async () => {
-                  setMenuService(null); setMenuPosition(null);
+                  setMenu(null);
+                  setMenuPosition(null);
                   try {
-                    const response = await updateProviderService(service.id, { status: nextStatus });
-                    const saved = response.service;
-                    setServices((current) => current.map((item) => item.id === service.id ? { ...item, status: saved.status } : item));
-                    if (saved.status !== nextStatus && nextStatus === "active") {
-                      setError("This service could not be published yet. Your provider profile must be approved and verified first.");
-                    }
-                  } catch (e) { setError(e.message || "Unable to change service status."); }
-                }}>Change status: {nextStatusLabel}</button>
+                    await updateSellerProduct(product.id, { status: nextStatus });
+                    await load();
+                  } catch (e) {
+                    setError(e.message || "Unable to change product status.");
+                  }
+                }}>
+                  Change status: {nextStatusLabel}
+                </button>
                 <button type="button" className="danger" onClick={async () => {
-                  setMenuService(null); setMenuPosition(null);
-                  if (!window.confirm("Delete \"" + service.title + "\"? This cannot be undone.")) return;
+                  setMenu(null);
+                  setMenuPosition(null);
+                  if (!window.confirm("Delete \"" + product.name + "\"? This cannot be undone.")) return;
                   try {
-                    await deleteProviderService(service.id);
-                    setServices((current) => current.filter((item) => item.id !== service.id));
-                  } catch (e) { setError(e.message || "Unable to delete service."); }
-                }}>Delete service</button>
+                    await deleteSellerProduct(product.id);
+                    await load();
+                  } catch (e) {
+                    setError(e.message || "Unable to delete product.");
+                  }
+                }}>
+                  Delete product
+                </button>
               </div>
             );
           })(),
