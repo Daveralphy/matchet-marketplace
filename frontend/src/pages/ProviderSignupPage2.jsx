@@ -19,7 +19,7 @@ export default function ProviderSignupPageTwo() {
   const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
   const [areas, setAreas] = useState(
-    formData.providerAreasServed ? [formData.providerAreasServed] : [""],
+    Array.isArray(formData.providerAreasServed) ? (formData.providerAreasServed.length ? [formData.providerAreasServed[0]] : [""]) : (formData.providerAreasServed ? [formData.providerAreasServed] : [""]),
   );
   const [servicePreviews, setServicePreviews] = useState(() => Array(6).fill(null));
 
