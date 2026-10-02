@@ -88,7 +88,35 @@ export function sendProviderMessage(payload) {
 
 
 export function getProviderServices() {
-  return request("/api/provider/services");
+  return request("/api/provider/services", { cache: false });
+}
+
+export async function createProviderService(payload) {
+  const next = { ...payload };
+  if (Array.isArray(payload.images)) {
+    const files = payload.images.filter((item) => item instanceof File);
+    const existing = payload.images.filter((item) => item && !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/services") : [];
+    next.images = [...existing, ...uploaded].slice(0, 6);
+  }
+  return request("/api/provider/services", {
+    method: "POST",
+    body: JSON.stringify(next),
+  });
+}
+
+export async function updateProviderService(id, payload) {
+  const next = { ...payload };
+  if (Array.isArray(payload.images)) {
+    const files = payload.images.filter((item) => item instanceof File);
+    const existing = payload.images.filter((item) => item && !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/services") : [];
+    next.images = [...existing, ...uploaded].slice(0, 6);
+  }
+  return request("/api/provider/services/" + encodeURIComponent(id), {
+    method: "PATCH",
+    body: JSON.stringify(next),
+  });
 }
 
 export function getProviderEarnings() {
