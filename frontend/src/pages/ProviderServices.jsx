@@ -53,6 +53,12 @@ export default function ProviderServices() {
   const [menuService, setMenuService] = useState(null);
 
   const pageSize = 6;
+  useEffect(() => {
+    if (!menuService) return;
+    const close = () => setMenuService(null);
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [menuService]);
 
   const emptyForm = { title: "", description: "", category: "", pricingType: "fixed", price: "", durationMinutes: "", images: [] };
   const [form, setForm] = useState(emptyForm);
