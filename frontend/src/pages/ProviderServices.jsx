@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { createProviderService, getProviderServices, updateProviderService, deleteProviderService } from "../api/provider";
 import "../styles/provider-dashboard.css";
@@ -51,13 +52,39 @@ export default function ProviderServices() {
   const [editingService, setEditingService] = useState(null);
   const [saving, setSaving] = useState(false);
   const [menuService, setMenuService] = useState(null);
+  const [menuPosition, setMenuPosition] = useState(null);
 
-  const pageSize = 6;
+  const openServiceMenu = (serviceId, event) => {
+    if (menuService === serviceId) {
+      setMenuService(null);
+      setMenuPosition(null);
+      return;
+    }
+    const rect = event.currentTarget.getBoundingClientRect();
+    const menuWidth = 200;
+    const menuHeight = 122;
+    const gap = 6;
+    const left = Math.max(12, Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 12));
+    const top = rect.bottom + gap <= window.innerHeight - 12
+      ? rect.bottom + gap
+      : Math.max(12, rect.top - menuHeight - gap);
+    setMenuService(serviceId);
+    setMenuPosition({ top, left });
+  };
   useEffect(() => {
     if (!menuService) return;
-    const close = () => setMenuService(null);
+    const close = () => {
+      setMenuService(null);
+      setMenuPosition(null);
+    };
     document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
   }, [menuService]);
 
   const emptyForm = { title: "", description: "", category: "", pricingType: "fixed", price: "", durationMinutes: "", images: [] };
@@ -235,14 +262,7 @@ export default function ProviderServices() {
                   <span>{service.bookingsLast30Days ?? 0}</span>
                   <div className="provider-service-actions">
                     <div className="provider-service-actions-menu-wrap">
-                      <button type="button" aria-label={"More actions for " + service.title} onClick={() => setMenuService(menuService === service.id ? null : service.id)}>⋮</button>
-                      {menuService === service.id && (
-                        <div className="provider-service-actions-menu">
-                          <button type="button" onClick={() => { setEditingService(service); setForm({ title: service.title || "", description: service.description || "", category: service.category || "", pricingType: service.pricingType || "fixed", price: service.price ?? "", durationMinutes: service.durationMinutes || "", images: service.images || [] }); setShowForm(true); setMenuService(null); }}>Edit service</button>
-                          <button type="button" onClick={async () => { setMenuService(null); const next = service.status === "active" ? "paused" : service.status === "paused" ? "active" : "draft"; try { const response = await updateProviderService(service.id, { status: next }); const saved = response.service; setServices(current => current.map(item => item.id === service.id ? { ...item, status: saved.status } : item)); } catch (e) { setError(e.message || "Unable to change service status."); } }}>Change status: {service.status === "active" ? "Paused" : service.status === "paused" ? "Active" : "Draft"}</button>
-                          <button type="button" className="danger" onClick={async () => { setMenuService(null); if (!window.confirm("Delete \"" + service.title + "\"? This cannot be undone.")) return; try { await deleteProviderService(service.id); setServices(current => current.filter(item => item.id !== service.id)); } catch (e) { setError(e.message || "Unable to delete service."); } }}>Delete service</button>
-                        </div>
-                      )}
+                      <button type="button" aria-label={"More actions for " + service.title} onClick={(event) => openServiceMenu(service.id, event)}>⋮</button>
                     </div>
                   </div>
                 </div>
@@ -286,6 +306,43 @@ export default function ProviderServices() {
             </div>
           )}
         </div>
+        {menuService && menuPosition && createPortal(
+          (() => {
+            const service = services.find((item) => item.id === menuService);
+            if (!service) return null;
+            const nextStatus = service.status === "active" ? "paused" : "active";
+            const nextStatusLabel = service.status === "active" ? "Paused" : "Active";
+            return (
+              <div className="provider-service-actions-menu provider-service-actions-menu-portal" style={{ top: menuPosition.top, left: menuPosition.left }} onMouseDown={(event) => event.stopPropagation()}>
+                <button type="button" onClick={() => {
+                  setEditingService(service);
+                  setForm({ title: service.title || "", description: service.description || "", category: service.category || "", pricingType: service.pricingType || "fixed", price: service.price ?? "", durationMinutes: service.durationMinutes || "", images: service.images || [] });
+                  setShowForm(true); setMenuService(null); setMenuPosition(null);
+                }}>Edit service</button>
+                <button type="button" onClick={async () => {
+                  setMenuService(null); setMenuPosition(null);
+                  try {
+                    const response = await updateProviderService(service.id, { status: nextStatus });
+                    const saved = response.service;
+                    setServices((current) => current.map((item) => item.id === service.id ? { ...item, status: saved.status } : item));
+                    if (saved.status !== nextStatus && nextStatus === "active") {
+                      setError("This service could not be published yet. Your provider profile must be approved and verified first.");
+                    }
+                  } catch (e) { setError(e.message || "Unable to change service status."); }
+                }}>Change status: {nextStatusLabel}</button>
+                <button type="button" className="danger" onClick={async () => {
+                  setMenuService(null); setMenuPosition(null);
+                  if (!window.confirm("Delete \"" + service.title + "\"? This cannot be undone.")) return;
+                  try {
+                    await deleteProviderService(service.id);
+                    setServices((current) => current.filter((item) => item.id !== service.id));
+                  } catch (e) { setError(e.message || "Unable to delete service."); }
+                }}>Delete service</button>
+              </div>
+            );
+          })(),
+          document.body,
+        )}
         {showForm && (
           <div className="provider-service-modal-backdrop" role="presentation">
             <form className="provider-service-modal" onSubmit={async (event) => {
