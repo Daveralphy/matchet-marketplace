@@ -1108,6 +1108,165 @@ async function getSellerOnboardingDraft(req, res) {
 
 module.exports.getSellerOnboardingDraft = getSellerOnboardingDraft;
 
+const onboardingHasValue = (value) => {
+  if (typeof value === "string") return value.trim().length > 0;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (Array.isArray(value)) return value.length > 0;
+  return Boolean(value);
+};
+
+const onboardingHasFile = (value) =>
+  Boolean(value && typeof value === "object" && (value.url || value.publicId));
+
+const providerStepRequirements = [
+  (data) => [
+    ["providerFirstName", onboardingHasValue(data.providerFirstName)],
+    ["providerLastName", onboardingHasValue(data.providerLastName)],
+    ["providerEmail", onboardingHasValue(data.providerEmail)],
+    ["providerCountryCode", onboardingHasValue(data.providerCountryCode)],
+    ["providerPhoneNumber", onboardingHasValue(data.providerPhoneNumber)],
+    ["providerType", onboardingHasValue(data.providerType)],
+    ["providerLocation", onboardingHasValue(data.providerLocation)],
+    ["providerBio", onboardingHasValue(data.providerBio)],
+  ],
+  (data) => [
+    ["providerServiceCat", onboardingHasValue(data.providerServiceCat)],
+    ["providerServiceName", onboardingHasValue(data.providerServiceName)],
+    ["providerServiceDesc", onboardingHasValue(data.providerServiceDesc)],
+    ["providerServiceType", onboardingHasValue(data.providerServiceType)],
+    ["providerServicePrice", data.providerServicePrice !== undefined && data.providerServicePrice !== ""],
+    ["providerServiceDuration", onboardingHasValue(data.providerServiceDuration)],
+    ["providerAreasServed", onboardingHasValue(data.providerAreasServed)],
+    ["providerServiceImages", Array.isArray(data.providerServiceImages) && data.providerServiceImages.some(onboardingHasFile)],
+  ],
+  (data) => [
+    ["providerYearsofExperience", data.providerYearsofExperience !== undefined && data.providerYearsofExperience !== ""],
+    ["providerAreasofExpertise", onboardingHasValue(data.providerAreasofExpertise)],
+    ["providerPortfolioMedia", Array.isArray(data.providerPortfolioMedia) && data.providerPortfolioMedia.some(onboardingHasFile)],
+  ],
+  (data) => {
+    const availability = data.providerAvailability || {};
+    const hasAvailability = Object.values(availability).some((day) =>
+      day?.enabled && onboardingHasValue(day.startTime) && onboardingHasValue(day.endTime)
+    );
+    const area = data.providerServiceArea;
+    const areaComplete =
+      area === "remote" ||
+      (area === "radius" && onboardingHasValue(data.providerServiceAreaRadius)) ||
+      (area === "specificLocations" && Array.isArray(data.providerServiceAreaSpecificLocations) && data.providerServiceAreaSpecificLocations.length > 0);
+    return [
+      ["providerAvailability", hasAvailability],
+      ["providerMinimumNoticeRequired", onboardingHasValue(data.providerMinimumNoticeRequired)],
+      ["providerMaximumAdvanceBooking", onboardingHasValue(data.providerMaximumAdvanceBooking)],
+      ["providerResponseTime", onboardingHasValue(data.providerResponseTime)],
+      ["providerServiceArea", onboardingHasValue(area)],
+      ["providerServiceAreaDetails", areaComplete],
+    ];
+  },
+  (data) => [
+    ["providerIdType", onboardingHasValue(data.providerIdType)],
+    ["providerIdNumber", onboardingHasValue(data.providerIdNumber)],
+    ["providerIdImageFront", onboardingHasFile(data.providerIdImageFront)],
+    ["providerIdImageBack", onboardingHasFile(data.providerIdImageBack)],
+    ["providerSelfieImage", onboardingHasFile(data.providerSelfieImage)],
+  ],
+  (data) => [
+    ["providerBankName", onboardingHasValue(data.providerBankName)],
+    ["providerAccountNumber", onboardingHasValue(data.providerAccountNumber)],
+    ["providerAccountName", onboardingHasValue(data.providerAccountName) || onboardingHasValue([data.providerFirstName, data.providerLastName].filter(Boolean).join(" "))],
+    ["providerAccountType", onboardingHasValue(data.providerAccountType)],
+  ],
+];
+
+const sellerStepRequirements = [
+  (data) => [
+    ["firstName", onboardingHasValue(data.firstName)],
+    ["lastName", onboardingHasValue(data.lastName)],
+    ["email", onboardingHasValue(data.email)],
+    ["countryCode", onboardingHasValue(data.countryCode)],
+    ["phoneNumber", onboardingHasValue(data.phoneNumber)],
+    ["sellerType", onboardingHasValue(data.sellerType)],
+    ["location", onboardingHasValue(data.location)],
+  ],
+  (data) => [
+    ["businessName", onboardingHasValue(data.businessName)],
+    ["businessCat", onboardingHasValue(data.businessCat)],
+    ["businessDesc", onboardingHasValue(data.businessDesc)],
+    ["businessAddress", onboardingHasValue(data.businessAddress)],
+    ["businessPhoneCountryCode", onboardingHasValue(data.businessPhoneCountryCode)],
+    ["businessPhoneNumber", onboardingHasValue(data.businessPhoneNumber)],
+  ],
+  (data) => [
+    ["productName", onboardingHasValue(data.productName)],
+    ["productCat", onboardingHasValue(data.productCat)],
+    ["productPrice", data.productPrice !== undefined && data.productPrice !== ""],
+    ["productStock", data.productStock !== undefined && data.productStock !== ""],
+    ["productDesc", onboardingHasValue(data.productDesc)],
+    ["productCondition", onboardingHasValue(data.productCondition)],
+    ["productImages", Array.isArray(data.productImages) && data.productImages.some(onboardingHasFile)],
+  ],
+  (data) => [
+    ["shippingOptions", onboardingHasValue(data.shippingOptions)],
+    ["shippingRegions", onboardingHasValue(data.shippingRegions)],
+    ["shippingFee", onboardingHasValue(data.shippingFee)],
+    ["shippingFeeAmount", data.shippingFeeAmount !== undefined && data.shippingFeeAmount !== ""],
+    ["processingTime", onboardingHasValue(data.processingTime)],
+  ],
+  (data) => [
+    ["idType", onboardingHasValue(data.idType)],
+    ["idNumber", onboardingHasValue(data.idNumber)],
+    ["idImageFront", onboardingHasFile(data.idImageFront)],
+    ["idImageBack", onboardingHasFile(data.idImageBack)],
+    ["selfieImage", onboardingHasFile(data.selfieImage)],
+  ],
+  (data) => [
+    ["bankName", onboardingHasValue(data.bankName)],
+    ["accountNumber", onboardingHasValue(data.accountNumber)],
+    ["accountName", onboardingHasValue(data.accountName)],
+    ["accountType", onboardingHasValue(data.accountType)],
+  ],
+];
+
+function getFirstIncompleteOnboardingStep(formData, requirements) {
+  const data = formData || {};
+  for (let index = 0; index < requirements.length; index += 1) {
+    const missing = requirements[index](data).filter(([, complete]) => !complete).map(([field]) => field);
+    if (missing.length) return { step: index + 1, missing };
+  }
+  return { step: requirements.length + 1, missing: [] };
+}
+
+async function getOnboardingProgress(req, res) {
+  try {
+    const flow = req.query?.flow === "service" ? "service" : "seller";
+    const Model = flow === "service" ? ProviderProfile : StoreProfile;
+    const profile = await Model.findOne({ userId: req.user._id }).select("onboardingData onboardingStatus status verificationStatus applicationSubmittedAt").lean();
+    const requirements = flow === "service" ? providerStepRequirements : sellerStepRequirements;
+    const formData = profile?.onboardingData || {};
+    const progress = getFirstIncompleteOnboardingStep(formData, requirements);
+    const submitted = Boolean(profile?.applicationSubmittedAt) || profile?.onboardingStatus === "submitted";
+    return res.json({
+      success: true,
+      data: {
+        flow,
+        exists: Boolean(profile),
+        submitted,
+        currentStep: submitted ? requirements.length + 1 : Math.min(progress.step, requirements.length),
+        firstIncompleteStep: submitted ? null : Math.min(progress.step, requirements.length),
+        missing: submitted ? [] : progress.missing,
+        totalSteps: requirements.length,
+        status: profile?.status || "not_started",
+        verificationStatus: profile?.verificationStatus || null,
+      },
+    });
+  } catch (error) {
+    console.error("Onboarding progress lookup error:", error);
+    return res.status(500).json({ success: false, message: "Unable to check your onboarding progress right now." });
+  }
+}
+
+
+
 
 async function submitSellerOnboarding(req, res) {
   try {
@@ -1639,3 +1798,5 @@ module.exports.updateSellerSettingsPreferences=updateSellerSettingsPreferences;
 module.exports.updateSellerSettingsStore=updateSellerSettingsStore;
 
 module.exports.getPublicSellerStore=getPublicSellerStore;
+
+module.exports.getOnboardingProgress = getOnboardingProgress;
