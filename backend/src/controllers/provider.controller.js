@@ -843,15 +843,9 @@ module.exports.submitProviderOnboarding = submitProviderOnboarding;
 async function createProviderService(req, res) {
   try {
     const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
-    const isApprovedProvider =
-      Boolean(provider) &&
-      (
-        (provider.status === "active" && provider.verificationStatus === "verified") ||
-        (req.user.capabilities?.provider === true)
-      );
-    if (!isApprovedProvider) {
-      return res.status(403).json({ success: false, message: "Your provider profile must be approved before you can create services." });
-    }
+    const canPublish =
+      provider?.status === "active" &&
+      provider?.verificationStatus === "verified";
 
     const body = req.body || {};
     const title = String(body.title || "").trim();
@@ -883,12 +877,20 @@ async function createProviderService(req, res) {
       },
       durationMinutes: body.durationMinutes ? Number(body.durationMinutes) : undefined,
       images: Array.isArray(body.images) ? body.images.filter((image) => image?.url && image?.publicId).slice(0, 6) : [],
-      location: body.location || provider.serviceArea || undefined,
+      location: body.location || provider?.serviceArea || undefined,
       availability: body.availability || undefined,
-      status: "active",
+      status: canPublish && ["active", "paused", "draft", "archived"].includes(body.status)
+        ? body.status
+        : canPublish
+          ? "active"
+          : "draft",
     });
 
-    return res.status(201).json({ success: true, message: "Service published successfully.", service });
+    return res.status(201).json({
+      success: true,
+      message: canPublish ? "Service published successfully." : "Service saved as a draft.",
+      service,
+    });
   } catch (error) {
     console.error("Create provider service error:", error);
     return res.status(500).json({ success: false, message: "Unable to create your service right now." });
@@ -898,15 +900,9 @@ async function createProviderService(req, res) {
 async function updateProviderService(req, res) {
   try {
     const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
-    const isApprovedProvider =
-      Boolean(provider) &&
-      (
-        (provider.status === "active" && provider.verificationStatus === "verified") ||
-        req.user.capabilities?.provider === true
-      );
-    if (!isApprovedProvider) {
-      return res.status(403).json({ success: false, message: "Your provider profile must be approved before you can manage services." });
-    }
+    const canPublish =
+      provider?.status === "active" &&
+      provider?.verificationStatus === "verified";
 
     const service = await Service.findOne({ _id: req.params.serviceId, providerId: req.user._id });
     if (!service) return res.status(404).json({ success: false, message: "Service not found." });
@@ -935,7 +931,10 @@ async function updateProviderService(req, res) {
     if (Array.isArray(body.images)) service.images = body.images.filter((image) => image?.url && image?.publicId).slice(0, 6);
     if (body.location !== undefined) service.location = body.location;
     if (body.availability !== undefined) service.availability = body.availability;
-    if (body.status !== undefined && ["active", "paused", "draft", "archived"].includes(body.status)) service.status = body.status;
+    if (body.status !== undefined && ["active", "paused", "draft", "archived"].includes(body.status)) {
+      service.status = canPublish ? body.status : "draft";
+    }
+    if (!canPublish) service.status = "draft";
 
     await service.save();
     return res.json({ success: true, message: "Service updated successfully.", service });
