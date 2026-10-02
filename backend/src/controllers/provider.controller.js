@@ -10,6 +10,59 @@ const Payout = require("../models/Payout");
 const Order = require("../models/Order");
 const User = require("../models/User");
 
+function isValidImageAsset(value) {
+  return Boolean(
+    value &&
+    typeof value === "object" &&
+    typeof value.url === "string" &&
+    value.url.trim() &&
+    typeof value.publicId === "string" &&
+    value.publicId.trim(),
+  );
+}
+
+function normalizeImageAssets(value, limit = 6) {
+  if (!Array.isArray(value)) return [];
+  return value.filter(isValidImageAsset).slice(0, limit).map((image, index) => ({
+    url: image.url.trim(),
+    publicId: image.publicId.trim(),
+    isPrimary: Boolean(image.isPrimary) || index === 0,
+  }));
+}
+
+async function geocodeProviderLocation(location) {
+  const query = String(location || "").trim();
+  if (!query) return null;
+
+  const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
+  url.searchParams.set("name", query);
+  url.searchParams.set("count", "5");
+  url.searchParams.set("language", "en");
+  url.searchParams.set("format", "json");
+  url.searchParams.set("countryCode", "NG");
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const payload = await response.json();
+    const result = Array.isArray(payload.results) ? payload.results[0] : null;
+    if (!result || !Number.isFinite(Number(result.latitude)) || !Number.isFinite(Number(result.longitude))) return null;
+
+    return {
+      city: result.name || query,
+      state: result.admin1 || "",
+      country: result.country || "Nigeria",
+      coordinates: {
+        type: "Point",
+        coordinates: [Number(result.longitude), Number(result.latitude)],
+      },
+    };
+  } catch (error) {
+    console.warn("Provider location geocoding failed:", error.message);
+    return null;
+  }
+}
+
 function monthBounds(date = new Date()) {
   const start = new Date(date.getFullYear(), date.getMonth(), 1);
   const next = new Date(date.getFullYear(), date.getMonth() + 1, 1);
@@ -737,10 +790,11 @@ async function submitProviderOnboarding(req, res) {
       ...(Array.isArray(input.providerAreasServed) ? input.providerAreasServed : []),
     ].map((value) => String(value).trim()).filter(Boolean);
 
-    const serviceArea = {
+    const geocodedServiceArea = await geocodeProviderLocation(input.providerLocation);
+    const serviceArea = geocodedServiceArea || {
       city: input.providerLocation || "",
       state: "",
-      country: input.providerCountry || "",
+      country: input.providerCountry || "Nigeria",
     };
 
     const provider = await ProviderProfile.findOneAndUpdate(
@@ -799,7 +853,7 @@ async function submitProviderOnboarding(req, res) {
             ...(durationMinutes ? { durationMinutes } : {}),
             location: serviceArea,
             availability: input.providerAvailability || {},
-            images: Array.isArray(input.providerServiceImages) ? input.providerServiceImages : [],
+            images: normalizeImageAssets(input.providerServiceImages),
             status: "draft",
           },
           $setOnInsert: { providerId, title: input.providerServiceName },
