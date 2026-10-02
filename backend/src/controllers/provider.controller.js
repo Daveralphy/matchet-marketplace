@@ -847,7 +847,7 @@ async function createProviderService(req, res) {
       Boolean(provider) &&
       (
         (provider.status === "active" && provider.verificationStatus === "verified") ||
-        (req.user.role === "provider" && req.user.capabilities?.provider === true)
+        (req.user.capabilities?.provider === true)
       );
     if (!isApprovedProvider) {
       return res.status(403).json({ success: false, message: "Your provider profile must be approved before you can create services." });
