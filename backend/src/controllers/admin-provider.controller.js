@@ -24,7 +24,7 @@ async function getAdminDashboard(req, res) {
       providerApplications,
       sellerApplications,
     ] = await Promise.all([
-      User.countDocuments({ role: { $ne: "admin" } }),
+      User.countDocuments({}),
       ProviderProfile.countDocuments({ status: "active", verificationStatus: "verified" }),
       StoreProfile.countDocuments({ status: "active", verificationStatus: "verified" }),
       ProviderProfile.countDocuments({ status: "draft", verificationStatus: "pending" }),
@@ -65,10 +65,6 @@ async function getAdminDashboard(req, res) {
       category: application.category || "Seller",
     }));
 
-    const pendingApplications = [...providers, ...sellers]
-      .sort((a, b) => new Date(a.submittedAt || 0) - new Date(b.submittedAt || 0))
-      .slice(0, 8);
-
     return res.json({
       success: true,
       data: {
@@ -83,7 +79,9 @@ async function getAdminDashboard(req, res) {
           activeProducts,
           activeServices,
         },
-        pendingApplications,
+        pendingApplications: [...providers, ...sellers]
+          .sort((a, b) => new Date(a.submittedAt || 0) - new Date(b.submittedAt || 0))
+          .slice(0, 8),
       },
     });
   } catch (error) {
@@ -94,12 +92,9 @@ async function getAdminDashboard(req, res) {
 
 async function listProviderApplications(req, res) {
   try {
-    const applications = await ProviderProfile.find({
-      verificationStatus: "pending",
-      status: "draft",
-    })
+    const applications = await ProviderProfile.find({ verificationStatus: "pending", status: "draft" })
       .sort({ applicationSubmittedAt: 1, createdAt: 1 })
-      .populate("userId", "firstName lastName email phone avatar")
+      .populate("userId", "firstName lastName email phone avatar capabilities role")
       .lean();
 
     return res.json({
@@ -115,6 +110,8 @@ async function listProviderApplications(req, res) {
           email: application.userId?.email || "",
           phone: application.userId?.phone || "",
           avatar: application.userId?.avatar?.url || null,
+          role: application.userId?.role || "customer",
+          capabilities: application.userId?.capabilities || {},
         },
         businessName: application.businessName,
         categories: application.categories,
@@ -149,7 +146,7 @@ async function reviewProviderApplication(req, res) {
     await application.save();
 
     await User.findByIdAndUpdate(application.userId, {
-      $set: { role: "provider", "capabilities.provider": true },
+      $set: { "capabilities.provider": approved },
     });
 
     if (approved) {
@@ -176,7 +173,215 @@ async function reviewProviderApplication(req, res) {
   }
 }
 
-module.exports = { requireAdmin, getAdminDashboard, listProviderApplications, reviewProviderApplication, listSellerApplications, reviewSellerApplication };
+async function listSellerApplications(req, res) {
+  try {
+    const applications = await StoreProfile.find({ verificationStatus: "pending", status: "draft" })
+      .sort({ applicationSubmittedAt: 1, createdAt: 1 })
+      .populate("userId", "firstName lastName email phone avatar capabilities role")
+      .lean();
 
-async function listSellerApplications(req,res){try{const applications=await StoreProfile.find({verificationStatus:"pending",status:"draft"}).sort({applicationSubmittedAt:1,createdAt:1}).populate("userId","firstName lastName email phone avatar").lean();return res.json({success:true,data:applications.map(a=>({id:a._id,status:a.status,verificationStatus:a.verificationStatus,submittedAt:a.applicationSubmittedAt||a.createdAt,store:{name:a.storeName,email:a.userId?.email||"",phone:a.contact?.phone||a.userId?.phone||"",avatar:a.logo?.url||a.userId?.avatar?.url||null},category:a.category,description:a.description,onboardingData:a.onboardingData||{}}))})}catch(error){console.error("Admin seller applications error:",error);return res.status(500).json({success:false,message:"Unable to load seller applications."})}}
-async function reviewSellerApplication(req,res){try{const {applicationId}=req.params;const {decision,note=""}=req.body||{};if(!["approve","reject"].includes(decision))return res.status(400).json({success:false,message:"Decision must be approve or reject."});const application=await StoreProfile.findById(applicationId);if(!application)return res.status(404).json({success:false,message:"Seller application not found."});const approved=decision==="approve";application.verificationStatus=approved?"verified":"rejected";application.status=approved?"active":"draft";application.reviewedAt=new Date();application.reviewNote=String(note).trim();await application.save();await User.findByIdAndUpdate(application.userId,{$set:{"capabilities.seller":true}});if(approved)await Product.updateMany({sellerId:application.userId,status:"draft"},{$set:{status:"active"}});return res.json({success:true,message:approved?"Seller application approved.":"Seller application rejected.",data:{id:application._id,status:application.status,verificationStatus:application.verificationStatus,reviewedAt:application.reviewedAt,reviewNote:application.reviewNote}})}catch(error){console.error("Admin review seller application error:",error);return res.status(500).json({success:false,message:"Unable to review this seller application."})}}
+    return res.json({
+      success: true,
+      data: applications.map((application) => ({
+        id: application._id,
+        status: application.status,
+        verificationStatus: application.verificationStatus,
+        submittedAt: application.applicationSubmittedAt || application.createdAt,
+        store: {
+          id: application.userId?._id,
+          name: application.storeName,
+          email: application.userId?.email || "",
+          phone: application.contact?.phone || application.userId?.phone || "",
+          avatar: application.logo?.url || application.userId?.avatar?.url || null,
+          role: application.userId?.role || "customer",
+          capabilities: application.userId?.capabilities || {},
+        },
+        category: application.category,
+        description: application.description,
+        onboardingData: application.onboardingData || {},
+      })),
+    });
+  } catch (error) {
+    console.error("Admin seller applications error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load seller applications." });
+  }
+}
+
+async function reviewSellerApplication(req, res) {
+  try {
+    const { applicationId } = req.params;
+    const { decision, note = "" } = req.body || {};
+
+    if (!["approve", "reject"].includes(decision)) {
+      return res.status(400).json({ success: false, message: "Decision must be approve or reject." });
+    }
+
+    const application = await StoreProfile.findById(applicationId);
+    if (!application) return res.status(404).json({ success: false, message: "Seller application not found." });
+
+    const approved = decision === "approve";
+    application.verificationStatus = approved ? "verified" : "rejected";
+    application.status = approved ? "active" : "draft";
+    application.reviewedAt = new Date();
+    application.reviewNote = String(note).trim();
+    await application.save();
+
+    await User.findByIdAndUpdate(application.userId, {
+      $set: { "capabilities.seller": approved },
+    });
+
+    if (approved) {
+      await Product.updateMany(
+        { sellerId: application.userId, status: "draft" },
+        { $set: { status: "active" } },
+      );
+    }
+
+    return res.json({
+      success: true,
+      message: approved ? "Seller application approved." : "Seller application rejected.",
+      data: {
+        id: application._id,
+        status: application.status,
+        verificationStatus: application.verificationStatus,
+        reviewedAt: application.reviewedAt,
+        reviewNote: application.reviewNote,
+      },
+    });
+  } catch (error) {
+    console.error("Admin review seller application error:", error);
+    return res.status(500).json({ success: false, message: "Unable to review seller application." });
+  }
+}
+
+async function listUsers(req, res) {
+  try {
+    const users = await User.find({})
+      .select("firstName lastName username email role capabilities isActive phone avatar createdAt lastLoginAt")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.json({ success: true, data: users });
+  } catch (error) {
+    console.error("Admin users error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load users." });
+  }
+}
+
+async function listListings(req, res) {
+  try {
+    const [products, services] = await Promise.all([
+      Product.find({}).populate("sellerId", "firstName lastName email").sort({ createdAt: -1 }).lean(),
+      Service.find({}).populate("providerId", "firstName lastName email").sort({ createdAt: -1 }).lean(),
+    ]);
+
+    return res.json({
+      success: true,
+      data: {
+        products: products.map((product) => ({
+          id: product._id,
+          type: "product",
+          name: product.name,
+          category: product.category,
+          status: product.status,
+          price: product.price,
+          inventory: product.inventory,
+          images: product.images || [],
+          owner: product.sellerId ? {
+            id: product.sellerId._id,
+            name: [product.sellerId.firstName, product.sellerId.lastName].filter(Boolean).join(" "),
+            email: product.sellerId.email,
+          } : null,
+          createdAt: product.createdAt,
+        })),
+        services: services.map((service) => ({
+          id: service._id,
+          type: "service",
+          name: service.title,
+          category: service.category,
+          status: service.status,
+          pricing: service.pricing,
+          images: service.images || [],
+          owner: service.providerId ? {
+            id: service.providerId._id,
+            name: [service.providerId.firstName, service.providerId.lastName].filter(Boolean).join(" "),
+            email: service.providerId.email,
+          } : null,
+          createdAt: service.createdAt,
+        })),
+      },
+    });
+  } catch (error) {
+    console.error("Admin listings error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load listings." });
+  }
+}
+
+async function updateUserStatus(req, res) {
+  try {
+    const { userId } = req.params;
+    const { isActive } = req.body || {};
+    if (typeof isActive !== "boolean") {
+      return res.status(400).json({ success: false, message: "isActive must be a boolean." });
+    }
+
+    if (String(userId) === String(req.user._id) && !isActive) {
+      return res.status(400).json({ success: false, message: "You cannot deactivate your own admin account." });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $set: { isActive } },
+      { new: true, runValidators: true },
+    ).select("firstName lastName username email role capabilities isActive");
+
+    if (!user) return res.status(404).json({ success: false, message: "User not found." });
+
+    return res.json({ success: true, data: user });
+  } catch (error) {
+    console.error("Admin user status error:", error);
+    return res.status(500).json({ success: false, message: "Unable to update user status." });
+  }
+}
+
+async function updateListingStatus(req, res) {
+  try {
+    const { type, listingId } = req.params;
+    const { status } = req.body || {};
+
+    const allowed = type === "product"
+      ? ["draft", "active", "outOfStock", "archived"]
+      : ["draft", "active", "paused", "archived"];
+
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid listing status." });
+    }
+
+    const Model = type === "product" ? Product : Service;
+    const listing = await Model.findByIdAndUpdate(
+      listingId,
+      { $set: { status } },
+      { new: true, runValidators: true },
+    ).lean();
+
+    if (!listing) return res.status(404).json({ success: false, message: "Listing not found." });
+
+    return res.json({ success: true, data: listing });
+  } catch (error) {
+    console.error("Admin listing status error:", error);
+    return res.status(500).json({ success: false, message: "Unable to update listing status." });
+  }
+}
+
+module.exports = {
+  requireAdmin,
+  getAdminDashboard,
+  listProviderApplications,
+  reviewProviderApplication,
+  listSellerApplications,
+  reviewSellerApplication,
+  listUsers,
+  listListings,
+  updateUserStatus,
+  updateListingStatus,
+};
