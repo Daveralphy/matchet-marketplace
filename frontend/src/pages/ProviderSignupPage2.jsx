@@ -64,13 +64,10 @@ export default function ProviderSignupPageTwo() {
   };
 
   const handleAreaChange = (index, value) => {
-    setAreas((current) => {
-      const next = current.map((item) => getScalarSelectValue(item));
-      const safeValue = getScalarSelectValue(value);
-      next[index] = safeValue;
-      updateField("providerAreasServed", next.filter(Boolean));
-      return next;
-    });
+    const next = areas.map((item) => getScalarSelectValue(item));
+    next[index] = getScalarSelectValue(value);
+    setAreas(next);
+    updateField("providerAreasServed", next.filter(Boolean));
   };
 
   const addArea = () => {
