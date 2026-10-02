@@ -30,7 +30,11 @@ function ServiceVisual({service,large=false,image=null}) {
 }
 
 function Gallery({service}) {
-  const images=Array.isArray(service.gallery)?service.gallery.filter(Boolean):[];
+  const images=Array.isArray(service.images)
+    ? service.images.map((image) => typeof image === "string" ? image : image?.url).filter(Boolean)
+    : Array.isArray(service.gallery)
+      ? service.gallery.filter(Boolean)
+      : [];
   const [active,setActive]=useState(0);
   const current=images[active]||null;
   return <><div className="relative">
