@@ -808,7 +808,7 @@ async function submitProviderOnboarding(req, res) {
       };
     }
     if (!isDraft) userUpdates["capabilities.provider"] = true;
-    if (!isDraft && req.user.role !== "provider") userUpdates.role = "provider";
+    if (!isDraft && req.user.role !== "admin" && req.user.role !== "provider") userUpdates.role = "provider";
 
     if (Object.keys(userUpdates).length) {
       await User.findByIdAndUpdate(providerId, { $set: userUpdates });
@@ -902,7 +902,7 @@ async function updateProviderService(req, res) {
       Boolean(provider) &&
       (
         (provider.status === "active" && provider.verificationStatus === "verified") ||
-        (req.user.role === "provider" && req.user.capabilities?.provider === true)
+        req.user.capabilities?.provider === true
       );
     if (!isApprovedProvider) {
       return res.status(403).json({ success: false, message: "Your provider profile must be approved before you can manage services." });
