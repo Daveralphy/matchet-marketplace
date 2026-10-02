@@ -21,6 +21,8 @@ import ProviderSignupPageSix from "./pages/ProviderSignupPage6";
 import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
 import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminShell from "./components/AdminShell";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerOrders from "./pages/SellerOrders";
 import SellerOrderDetail from "./pages/SellerOrderDetail";
@@ -60,6 +62,15 @@ function Placeholder({ name }) {
 
 function BlankPage() {
   return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
+}
+
+function RequireAdmin({ children }) {
+  const { user, loading, isAuthenticated } = useAuth();
+  const location = useLocation();
+  if (loading) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to={"/login?returnTo=" + encodeURIComponent(location.pathname)} replace />;
+  if (user?.role !== "admin") return <Navigate to="/" replace />;
+  return children;
 }
 
 function RequireAuth({ children }) {
