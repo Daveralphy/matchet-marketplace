@@ -49,7 +49,7 @@ async function getAdminDashboard(req, res) {
       submittedAt: application.applicationSubmittedAt || application.createdAt,
       name: [application.userId?.firstName, application.userId?.lastName].filter(Boolean).join(" ") || "Unnamed user",
       email: application.userId?.email || "",
-      avatar: application.userId?.avatar?.url || null,
+      avatar: application.onboardingData?.profileImage?.url || application.onboardingData?.profileImage || application.userId?.avatar?.url || null,
       businessName: application.businessName || "Provider application",
       category: Array.isArray(application.categories) ? application.categories[0] || "Service provider" : "Service provider",
     }));
@@ -118,6 +118,7 @@ async function listProviderApplications(req, res) {
         experience: application.experience,
         serviceArea: application.serviceArea,
         onboardingData: application.onboardingData || {},
+        profileImage: application.onboardingData?.profileImage?.url || application.onboardingData?.profileImage || application.userId?.avatar?.url || null,
       })),
     });
   } catch (error) {
