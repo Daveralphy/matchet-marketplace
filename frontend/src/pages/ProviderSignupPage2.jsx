@@ -15,7 +15,7 @@ function ServiceTypeIcon({ type }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10l-3-3M17 17H7l3 3M17 7l3 3-3 3M7 17l-3-3 3-3" /></svg>;
 }
 
-const scalarValue = (value) => Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+const scalarValue = (value) => {\n  const item = Array.isArray(value) ? value[0] : value;\n  if (item == null) return "";\n  if (typeof item === "string" || typeof item === "number") return String(item);\n  if (typeof item === "object") return String(item.value ?? item.label ?? item.name ?? "");\n  return "";\n};
 
 export default function ProviderSignupPageTwo() {
   const { formData, updateField, mergeFormData } = useForm();
@@ -51,8 +51,9 @@ export default function ProviderSignupPageTwo() {
 
   const handleAreaChange = (index, value) => {
     setAreas((current) => {
-      const next = [...current];
-      next[index] = value;
+      const next = current.map((item) => scalarValue(item));
+      const safeValue = scalarValue(value);
+      next[index] = safeValue;
       updateField("providerAreasServed", next.filter(Boolean));
       return next;
     });
@@ -253,7 +254,7 @@ export default function ProviderSignupPageTwo() {
               <div className="provider-areas-served-field">
                 <label htmlFor="providerAreasServed-0">
                   Areas served *
-                  <select id="providerAreasServed-0" value={areas[0] || ""} onChange={(event) => handleAreaChange(0, event.target.value)} required>
+                  <select id="providerAreasServed-0" value={scalarValue(areas[0])} onChange={(event) => handleAreaChange(0, event.target.value)} required>
                     <option value="" disabled>Search locations (e.g. Lagos, Ikeja, Victoria Island)</option>
                     <option value="Lagos, Nigeria">Lagos, Nigeria</option>
                     <option value="Ikeja, Lagos">Ikeja, Lagos</option>
