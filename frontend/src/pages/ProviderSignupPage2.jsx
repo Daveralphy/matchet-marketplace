@@ -15,12 +15,16 @@ function ServiceTypeIcon({ type }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10l-3-3M17 17H7l3 3M17 7l3 3-3 3M7 17l-3-3 3-3" /></svg>;
 }
 
+const scalarValue = (value) => Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+
 export default function ProviderSignupPageTwo() {
   const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
-  const [areas, setAreas] = useState(
-    Array.isArray(formData.providerAreasServed) ? (formData.providerAreasServed.length ? [formData.providerAreasServed[0]] : [""]) : (formData.providerAreasServed ? [formData.providerAreasServed] : [""]),
-  );
+  const [areas, setAreas] = useState(() => {
+    const value = formData.providerAreasServed;
+    if (Array.isArray(value)) return value.length ? value.map((item) => scalarValue(item)) : [""];
+    return value ? [scalarValue(value)] : [""];
+  });
   const [servicePreviews, setServicePreviews] = useState(() => Array(6).fill(null));
 
   const categories = [
@@ -151,7 +155,7 @@ export default function ProviderSignupPageTwo() {
 
               <label htmlFor="providerServiceCat">
                 Service category *
-                <select id="providerServiceCat" name="providerServiceCat" value={formData.providerServiceCat || ""} onChange={handleChange} required>
+                <select id="providerServiceCat" name="providerServiceCat" value={scalarValue(formData.providerServiceCat)} onChange={handleChange} required>
                   <option value="" disabled>Select a category</option>
                   {categories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}
                 </select>
@@ -232,7 +236,7 @@ export default function ProviderSignupPageTwo() {
 
               <label htmlFor="providerServiceDuration">
                 Service duration *
-                <select id="providerServiceDuration" name="providerServiceDuration" value={formData.providerServiceDuration || ""} onChange={handleChange} required>
+                <select id="providerServiceDuration" name="providerServiceDuration" value={scalarValue(formData.providerServiceDuration)} onChange={handleChange} required>
                   <option value="" disabled>Select duration</option>
                   {durations.map((duration) => <option key={duration} value={duration}>{duration}</option>)}
                 </select>
@@ -240,7 +244,7 @@ export default function ProviderSignupPageTwo() {
 
               <label htmlFor="providerServiceNumberOfPeople">
                 Number of people (per session)
-                <select id="providerServiceNumberOfPeople" name="providerServiceNumberOfPeople" value={formData.providerServiceNumberOfPeople || ""} onChange={handleChange}>
+                <select id="providerServiceNumberOfPeople" name="providerServiceNumberOfPeople" value={scalarValue(formData.providerServiceNumberOfPeople)} onChange={handleChange}>
                   <option value="" disabled>Select</option>
                   {peopleOptions.map((people) => <option key={people} value={people}>{people}</option>)}
                 </select>
@@ -263,7 +267,7 @@ export default function ProviderSignupPageTwo() {
                 <div className="provider-areas-served-field" key={index}>
                   <label htmlFor={`providerAreasServed-${index + 1}`}>
                     Additional area
-                    <select id={`providerAreasServed-${index + 1}`} value={area} onChange={(event) => handleAreaChange(index + 1, event.target.value)}>
+                    <select id={`providerAreasServed-${index + 1}`} value={scalarValue(area)} onChange={(event) => handleAreaChange(index + 1, event.target.value)}>
                       <option value="">Select another location</option>
                       <option value="Lagos, Nigeria">Lagos, Nigeria</option>
                       <option value="Ikeja, Lagos">Ikeja, Lagos</option>
