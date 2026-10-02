@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { requireActiveProvider } = require("../middleware/providerAccess");
+const { requireActiveProvider, requireActiveSeller } = require("../middleware/providerAccess");
 const { getOnboardingProgress, getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, deleteSellerProduct, createProviderService, updateProviderService, deleteProviderService, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
@@ -16,14 +16,14 @@ router.get("/seller-onboarding/draft", requireAuth, getSellerOnboardingDraft);
 router.get("/onboarding/draft", requireAuth, getProviderOnboardingDraft);
 router.get("/onboarding/progress", requireAuth, getOnboardingProgress);
 router.get("/capabilities", requireAuth, getProviderCapabilities);
-router.get("/seller-dashboard", requireAuth, getSellerDashboard);
-router.get("/seller-orders", requireAuth, getSellerOrders);
-router.get("/seller-orders/:orderId", requireAuth, getSellerOrderDetail);
-router.patch("/seller-orders/:orderId/note", requireAuth, addSellerOrderNote);
-router.patch("/seller-orders/:orderId/status", requireAuth, updateSellerOrderStatus);
-router.get("/seller-products", requireAuth, getSellerProducts);
-router.get("/seller-earnings", requireAuth, getSellerEarnings);
-router.get("/seller-reviews", requireAuth, getSellerReviews);
+router.get("/seller-dashboard", requireAuth, requireActiveSeller, getSellerDashboard);
+router.get("/seller-orders", requireAuth, requireActiveSeller, getSellerOrders);
+router.get("/seller-orders/:orderId", requireAuth, requireActiveSeller, getSellerOrderDetail);
+router.patch("/seller-orders/:orderId/note", requireAuth, requireActiveSeller, addSellerOrderNote);
+router.patch("/seller-orders/:orderId/status", requireAuth, requireActiveSeller, updateSellerOrderStatus);
+router.get("/seller-products", requireAuth, requireActiveSeller, getSellerProducts);
+router.get("/seller-earnings", requireAuth, requireActiveSeller, getSellerEarnings);
+router.get("/seller-reviews", requireAuth, requireActiveSeller, getSellerReviews);
 router.post("/seller-products", requireAuth, createSellerProduct);
 router.patch("/seller-products/:productId", requireAuth, updateSellerProduct);
 router.delete("/seller-products/:productId", requireAuth, deleteSellerProduct);
