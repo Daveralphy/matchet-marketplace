@@ -8,7 +8,7 @@ import { getProviderCapabilities } from "../api/provider";
 import heroImage from "../assets/inspirations/for provider/hero.png";
 
 export default function ForProviders() {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState("");
 
@@ -41,11 +41,17 @@ export default function ForProviders() {
         }
       }
     } catch {
-      navigate(capability === "product" ? "/register" : "/provider/onboarding");
+      if (capability === "service" && (user?.role === "provider" || user?.capabilities?.provider)) {
+        navigate("/provider/dashboard");
+      } else if (capability === "product" && user?.capabilities?.seller) {
+        navigate("/seller/dashboard");
+      } else {
+        navigate(capability === "product" ? "/register" : "/provider/onboarding");
+      }
     } finally {
       setLoading("");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
