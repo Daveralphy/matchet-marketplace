@@ -830,7 +830,18 @@ async function submitProviderOnboarding(req, res) {
       ...(Array.isArray(input.providerAreasServed) ? input.providerAreasServed : []),
     ].map((value) => String(value).trim()).filter(Boolean);
 
-    const geocodedServiceArea = await geocodeProviderLocation(input.providerLocation);
+    const suppliedLocation = input.providerLocationData?.coordinates?.coordinates;
+    const suppliedCoordinates = Array.isArray(suppliedLocation) && suppliedLocation.length === 2 && suppliedLocation.every((value) => Number.isFinite(Number(value)))
+      ? { type: "Point", coordinates: [Number(suppliedLocation[0]), Number(suppliedLocation[1])] }
+      : null;
+    const geocodedServiceArea = suppliedCoordinates
+      ? {
+          city: input.providerLocationData.city || input.providerLocation || "",
+          state: input.providerLocationData.state || "",
+          country: input.providerLocationData.country || input.providerCountry || "Nigeria",
+          coordinates: suppliedCoordinates,
+        }
+      : await geocodeProviderLocation(input.providerLocation);
     const serviceArea = geocodedServiceArea || {
       city: input.providerLocation || "",
       state: "",
