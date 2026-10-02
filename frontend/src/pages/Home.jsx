@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
-import { getMarketplaceCollection } from "../data/marketplaceApi";
+import { getMarketplaceData } from "../data/marketplaceApi";
 import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMock";
 import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } from "../data/homeCommunityMock";
 import { MOBILE_APP_SECTIONS } from "../data/homeMobileAppMock";
@@ -1422,21 +1422,23 @@ export default function Home({ isAuthenticated = false, userName }) {
   useEffect(() => {
     let active = true;
 
-    Promise.all([
-      getMarketplaceCollection("featured"),
-      getMarketplaceCollection("picked"),
-      getMarketplaceCollection("popularNearby"),
-      getMarketplaceCollection("continueExploring"),
-    ]).then(([featured, picked, popularNearby, continueExploring]) => {
-      if (!active) return;
+    getMarketplaceData()
+      .then(({ products, services }) => {
+        if (!active) return;
 
-      setMarketplace({
-        featured,
-        picked,
-        popularNearby,
-        continueExploring,
+        const all = [...products, ...services];
+        const size = Math.max(4, Math.min(8, all.length));
+
+        setMarketplace({
+          featured: all.slice(0, size),
+          picked: all.slice(0, size),
+          popularNearby: all.filter((item) => item.location).slice(0, size),
+          continueExploring: all.slice(0, size),
+        });
+      })
+      .catch((error) => {
+        console.error("Homepage marketplace loading error:", error);
       });
-    });
 
     return () => {
       active = false;
