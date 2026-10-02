@@ -70,7 +70,7 @@ function ProductVisual({ product, large = false, image = null, index = 0 }) {
 
 function ProductGallery({ product }) {
   const images = Array.isArray(product.images)
-    ? product.images.filter(Boolean)
+    ? product.images.map((image) => typeof image === "string" ? image : image?.url).filter(Boolean)
     : Array.isArray(product.gallery)
       ? product.gallery.filter(Boolean)
       : [];
