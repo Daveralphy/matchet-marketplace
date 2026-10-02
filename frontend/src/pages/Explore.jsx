@@ -422,7 +422,7 @@ function ProviderCard({ provider }) {
       <div className="relative h-[150px]">
         <div className={`relative flex h-full w-full items-center justify-center ${provider.imageTone}`}>
           {provider.image ? <img src={provider.image} alt={provider.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
-          <span className={provider.image ? "hidden" : ""}><Icon name="provider" size={72} strokeWidth={1.2} /></span>
+          <span className={provider.image ? "hidden" : "text-[#10183f]/60"}><Icon name="provider" size={72} strokeWidth={1.2} /></span>
         </div>
         {provider.match && (
           <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[9px] font-semibold text-[#07863a] shadow-sm">
