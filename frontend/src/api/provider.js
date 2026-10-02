@@ -211,6 +211,10 @@ export function getProviderBookings() {
   return request("/api/provider/bookings");
 }
 
+export function getOnboardingProgress(flow) {
+  return request("/api/provider/onboarding/progress?flow=" + encodeURIComponent(flow === "service" ? "service" : "seller"), { cache: false });
+}
+
 export function getProviderOnboardingDraft() {
   return request("/api/provider/onboarding/draft", { cache: false });
 }
