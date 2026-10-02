@@ -15,7 +15,13 @@ function ServiceTypeIcon({ type }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10l-3-3M17 17H7l3 3M17 7l3 3-3 3M7 17l-3-3 3-3" /></svg>;
 }
 
-const scalarValue = (value) => {\n  const item = Array.isArray(value) ? value[0] : value;\n  if (item == null) return "";\n  if (typeof item === "string" || typeof item === "number") return String(item);\n  if (typeof item === "object") return String(item.value ?? item.label ?? item.name ?? "");\n  return "";\n};
+const scalarValue = (value) => {
+  const item = Array.isArray(value) ? value[0] : value;
+  if (item == null) return "";
+  if (typeof item === "string" || typeof item === "number") return String(item);
+  if (typeof item === "object") return String(item.value ?? item.label ?? item.name ?? "");
+  return "";
+};
 
 export default function ProviderSignupPageTwo() {
   const { formData, updateField, mergeFormData } = useForm();
