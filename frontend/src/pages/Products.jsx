@@ -644,8 +644,8 @@ function ProductFilters({ products, filters, setFilters }) {
     .map((item) => Number(String(item.price).replace(/[^\d]/g, "")))
     .filter(Number.isFinite);
 
-  const minPrice = prices.length ? Math.min(...prices) : 0;
-  const maxPrice = prices.length ? Math.max(...prices) : 0;
+  const minPrice = 0;
+  const maxPrice = 1000000000;
 
   return (
     <aside className="hidden w-[255px] shrink-0 rounded-[12px] border border-[#e7ebf0] bg-white px-5 py-4 lg:block">
@@ -677,14 +677,14 @@ function ProductFilters({ products, filters, setFilters }) {
           <input
             type="range"
             min={minPrice}
-            max={maxPrice || 1}
-            value={filters.maxPrice}
+            max={maxPrice}
+            value={Math.min(filters.maxPrice || maxPrice, maxPrice)}
             onChange={(event) => setFilters((current) => ({ ...current, maxPrice: Number(event.target.value) }))}
             className="w-full accent-[#07863a]"
           />
           <div className="mt-1 flex justify-between text-[10px] text-[#69739a]">
-            <span>₦{minPrice.toLocaleString("en-NG")}</span>
-            <span>₦{filters.maxPrice.toLocaleString("en-NG")}</span>
+            <span>₦0</span>
+            <span>₦{Number(filters.maxPrice || maxPrice).toLocaleString("en-NG")}</span>
           </div>
         </div>
       </FilterSection>
@@ -760,7 +760,7 @@ function ProductCatalogue({ isAuthenticated }) {
   const [search, setSearch] = useState(initialSearch || savedUiState.search || "");
   const [filters, setFilters] = useState(savedUiState.filters || {
     category: "",
-    maxPrice: 0,
+    maxPrice: maxPrice,
     rating: 0,
     condition: "",
     availability: "",
@@ -783,7 +783,7 @@ function ProductCatalogue({ isAuthenticated }) {
         .filter(Number.isFinite);
       setFilters((current) => ({
         ...current,
-        maxPrice: prices.length ? Math.max(...prices) : 0,
+        maxPrice: maxPrice,
       }));
     });
 
