@@ -49,7 +49,7 @@ import ProviderEarnings from "./pages/ProviderEarnings";
 import ProviderReviews from "./pages/ProviderReviews";
 import ProviderProfile from "./pages/ProviderProfile";
 import ProviderSettings from "./pages/ProviderSettings";
-import { getOnboardingProgress } from "./api/provider";
+import { getOnboardingProgress, getProviderProfile, getSellerProfile } from "./api/provider";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -156,6 +156,48 @@ function ProviderAccessPage({ state }) {
       </section>
     </main>
   );
+}
+
+function SellerAccessPage({ state }) {
+  const title = state === "missing" ? "Seller access is not available" : state === "rejected" ? "Seller application was not approved" : "Seller application is still being reviewed";
+  const message = state === "missing"
+    ? "This account does not have an approved seller profile, so seller dashboard pages are not available."
+    : state === "rejected"
+      ? "Your seller application is not currently approved."
+      : "Your seller application has not been approved yet.";
+  return (
+    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
+      <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
+        <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
+        <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
+        {state === "missing" && <a href="/register">Start seller onboarding</a>}
+        <div style={{ marginTop: "16px" }}><a href="/">Return to marketplace</a></div>
+      </section>
+    </main>
+  );
+}
+
+function RequireSeller({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [state, setState] = useState("missing");
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getSellerProfile().then((response) => {
+      if (!active) return;
+      const store = response?.data?.store;
+      if (!store) setState("missing");
+      else if (store.status === "active" && store.verificationStatus === "verified") setState("active");
+      else if (store.verificationStatus === "rejected") setState("rejected");
+      else setState("pending");
+    }).catch(() => active && setState("missing")).finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [isAuthenticated, loading]);
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (state !== "active") return <SellerAccessPage state={state} />;
+  return children;
 }
 
 function RequireProvider({ children }) {
@@ -425,11 +467,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/seller/dashboard",
-    element: <RequireAuth><SellerDashboard /> </RequireAuth>,
+    element: <RequireSeller><SellerDashboard /></RequireSeller>,
   },
   {
     path: "/seller/orders",
-    element: <RequireAuth><SellerOrders /></RequireAuth>,
+    element: <RequireSeller><SellerOrders /></RequireSeller>,
   },
   {
     path: "/seller/orders/:orderId",
@@ -437,31 +479,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/seller/messages",
-    element: <RequireAuth><SellerMessages /></RequireAuth>,
+    element: <RequireSeller><SellerMessages /></RequireSeller>,
   },
   {
     path: "/seller/products",
-    element: <RequireAuth><SellerProducts /></RequireAuth>,
+    element: <RequireSeller><SellerProducts /></RequireSeller>,
   },
   {
     path: "/seller/products/new",
-    element: <RequireAuth><SellerProductForm /></RequireAuth>,
+    element: <RequireSeller><SellerProductForm /></RequireSeller>,
   },
   {
     path: "/seller/products/:productId/edit",
-    element: <RequireAuth><SellerProductForm /></RequireAuth>,
+    element: <RequireSeller><SellerProductForm /></RequireSeller>,
   },
   {
     path: "/seller/earnings",
-    element: <RequireAuth><SellerEarnings /></RequireAuth>,
+    element: <RequireSeller><SellerEarnings /></RequireSeller>,
   },
   {
     path: "/seller/reviews",
-    element: <RequireAuth><SellerReviews /></RequireAuth>,
+    element: <RequireSeller><SellerReviews /></RequireSeller>,
   },
   {
     path: "/seller/profile",
-    element: <RequireAuth><SellerProfile /></RequireAuth>,
+    element: <RequireSeller><SellerProfile /></RequireSeller>,
   },
   {
     path: "/store/:slug",
@@ -469,7 +511,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/seller/settings",
-    element: <RequireAuth><SellerSettings /></RequireAuth>,
+    element: <RequireSeller><SellerSettings /></RequireSeller>,
   },
   {
     path: "/provider/earnings",
