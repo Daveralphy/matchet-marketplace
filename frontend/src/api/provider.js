@@ -331,3 +331,7 @@ export function getPublicSellerStore(slug){return request("/api/provider/store/"
 
 export function getSellerOrderDetail(id){return request("/api/provider/seller-orders/"+encodeURIComponent(id));}
 export function updateSellerOrderNote(id,note){return request("/api/provider/seller-orders/"+encodeURIComponent(id)+"/note",{method:"PATCH",body:JSON.stringify({note})});}
+
+export function searchProviderLocations(query) {
+  return request("/api/provider/locations/search?q=" + encodeURIComponent(query), { cache: false });
+}
