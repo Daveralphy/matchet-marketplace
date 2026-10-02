@@ -461,6 +461,7 @@ async function getProviderServices(req, res) {
             service.images?.find((image) => image.isPrimary)?.url ||
             service.images?.[0]?.url ||
             null,
+          images: service.images || [],
           createdAt: service.createdAt,
           updatedAt: service.updatedAt,
         })),
