@@ -7,6 +7,17 @@ const Review = require("../models/Review");
 
 const clean = (value) => String(value ?? "").trim();
 
+function imageUrl(image) {
+  if (typeof image === "string") return image;
+  if (!image) return "";
+  if (image.url) return image.url;
+  if (image.publicId && process.env.CLOUDINARY_CLOUD_NAME) {
+    const resourceType = image.resourceType || "image";
+    return `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/${resourceType}/upload/${image.publicId}`;
+  }
+  return "";
+}
+
 function locationLabel(location) {
   if (!location) return "";
   return [location.city, location.state, location.country].filter(Boolean).join(", ");
