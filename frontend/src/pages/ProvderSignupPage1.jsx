@@ -131,8 +131,12 @@ export default function ProviderSignupPageOne() {
       event.target.value = "";
       return;
     }
+    const previewUrl = URL.createObjectURL(file);
+    setProfilePreview((previousUrl) => {
+      if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
+      return previewUrl;
+    });
     updateField("providerProfileImage", file);
-    setProfilePreview(URL.createObjectURL(file));
     event.target.value = "";
   };
 
