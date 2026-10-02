@@ -22,7 +22,6 @@ import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
 import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import AdminShell from "./components/AdminShell";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerOrders from "./pages/SellerOrders";
 import SellerOrderDetail from "./pages/SellerOrderDetail";
