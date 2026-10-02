@@ -9,6 +9,7 @@ const {
   getProductById,
   getServices,
   getServiceById,
+  getProviders,
   getProviderProfile,
   getStoreProfile,
   upsertProviderProfile,
@@ -22,6 +23,7 @@ const router = express.Router();
 router.get("/products", getProducts);
 router.get("/products/:id", getProductById);
 router.get("/services", getServices);
+router.get("/providers", getProviders);
 router.get("/services/:id", getServiceById);
 
 router.get("/provider/profile", requireAuth, getProviderProfile);
