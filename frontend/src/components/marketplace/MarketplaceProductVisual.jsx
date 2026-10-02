@@ -15,7 +15,7 @@ function resolveImage(item) {
 
 export function MarketplaceProductVisual({ product, className = "", size = "standard" }) {
   const icon = product?.icon === "bag" ? "bag" : product?.icon === "home" ? "sofa" : "monitor";
-  const image = product?.image || resolveImage(product?.images?.[0]) || product?.gallery?.[0] || "";
+  const image = resolveImage(product?.images?.find((item) => item?.isPrimary)) || resolveImage(product?.images?.[0]) || resolveImage(product?.image) || resolveImage(product?.gallery?.[0]) || "";
   const dimensions = size === "large" || size === "standard" ? "h-[152px] w-full" : size === "checkout" ? "h-[106px] w-[106px]" : "h-[116px] w-[116px]";
 
   return (
