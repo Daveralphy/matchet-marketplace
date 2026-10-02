@@ -839,6 +839,102 @@ async function submitProviderOnboarding(req, res) {
 module.exports.submitProviderOnboarding = submitProviderOnboarding;
 
 
+async function createProviderService(req, res) {
+  try {
+    const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
+    if (!provider || provider.status !== "active" || provider.verificationStatus !== "verified") {
+      return res.status(403).json({ success: false, message: "Your provider profile must be approved before you can create services." });
+    }
+
+    const body = req.body || {};
+    const title = String(body.title || "").trim();
+    const description = String(body.description || "").trim();
+    const category = String(body.category || "").trim();
+    const pricingType = String(body.pricingType || body.pricing?.type || "fixed").trim();
+    const amount = body.price ?? body.pricing?.amount;
+    const numericAmount = amount === undefined || amount === "" ? undefined : Number(amount);
+
+    if (!title || !description || !category) {
+      return res.status(400).json({ success: false, message: "Service title, description, and category are required." });
+    }
+    if (!["fixed", "startingFrom", "customQuote"].includes(pricingType)) {
+      return res.status(400).json({ success: false, message: "Choose a valid pricing type." });
+    }
+    if (pricingType !== "customQuote" && (!Number.isFinite(numericAmount) || numericAmount < 0)) {
+      return res.status(400).json({ success: false, message: "Enter a valid service price." });
+    }
+
+    const service = await Service.create({
+      providerId: req.user._id,
+      title,
+      description,
+      category,
+      pricing: {
+        type: pricingType,
+        amount: pricingType === "customQuote" ? undefined : numericAmount,
+        currency: String(body.currency || "NGN").toUpperCase(),
+      },
+      durationMinutes: body.durationMinutes ? Number(body.durationMinutes) : undefined,
+      images: Array.isArray(body.images) ? body.images.filter((image) => image?.url && image?.publicId).slice(0, 6) : [],
+      location: body.location || provider.serviceArea || undefined,
+      availability: body.availability || undefined,
+      status: "active",
+    });
+
+    return res.status(201).json({ success: true, message: "Service published successfully.", service });
+  } catch (error) {
+    console.error("Create provider service error:", error);
+    return res.status(500).json({ success: false, message: "Unable to create your service right now." });
+  }
+}
+
+async function updateProviderService(req, res) {
+  try {
+    const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
+    if (!provider || provider.status !== "active" || provider.verificationStatus !== "verified") {
+      return res.status(403).json({ success: false, message: "Your provider profile must be approved before you can manage services." });
+    }
+
+    const service = await Service.findOne({ _id: req.params.serviceId, providerId: req.user._id });
+    if (!service) return res.status(404).json({ success: false, message: "Service not found." });
+
+    const body = req.body || {};
+    if (body.title !== undefined) service.title = String(body.title).trim();
+    if (body.description !== undefined) service.description = String(body.description).trim();
+    if (body.category !== undefined) service.category = String(body.category).trim();
+    if (body.pricingType !== undefined || body.pricing !== undefined || body.price !== undefined) {
+      const pricingType = String(body.pricingType || body.pricing?.type || service.pricing.type).trim();
+      const amount = body.price ?? body.pricing?.amount ?? service.pricing.amount;
+      const numericAmount = amount === undefined || amount === "" ? undefined : Number(amount);
+      if (!["fixed", "startingFrom", "customQuote"].includes(pricingType)) {
+        return res.status(400).json({ success: false, message: "Choose a valid pricing type." });
+      }
+      if (pricingType !== "customQuote" && (!Number.isFinite(numericAmount) || numericAmount < 0)) {
+        return res.status(400).json({ success: false, message: "Enter a valid service price." });
+      }
+      service.pricing = {
+        type: pricingType,
+        amount: pricingType === "customQuote" ? undefined : numericAmount,
+        currency: String(body.currency || service.pricing.currency || "NGN").toUpperCase(),
+      };
+    }
+    if (body.durationMinutes !== undefined) service.durationMinutes = body.durationMinutes ? Number(body.durationMinutes) : undefined;
+    if (Array.isArray(body.images)) service.images = body.images.filter((image) => image?.url && image?.publicId).slice(0, 6);
+    if (body.location !== undefined) service.location = body.location;
+    if (body.availability !== undefined) service.availability = body.availability;
+    if (body.status !== undefined && ["active", "paused", "draft", "archived"].includes(body.status)) service.status = body.status;
+
+    await service.save();
+    return res.json({ success: true, message: "Service updated successfully.", service });
+  } catch (error) {
+    console.error("Update provider service error:", error);
+    return res.status(500).json({ success: false, message: "Unable to update your service right now." });
+  }
+}
+
+module.exports.createProviderService = createProviderService;
+module.exports.updateProviderService = updateProviderService;
+
 async function getProviderBookings(req, res) {
   try {
     const providerId = req.user._id;
