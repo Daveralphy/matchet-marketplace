@@ -377,3 +377,24 @@
 .provider-service-actions-menu-wrap{position:relative;display:inline-flex}.provider-service-actions-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:100;width:200px;padding:6px;background:#fff;border:1px solid #e3e7ef;border-radius:9px;box-shadow:0 12px 28px rgba(16,24,63,.14);display:flex;flex-direction:column;gap:2px}.provider-service-actions-menu button{display:block;width:100%;height:34px;padding:0 10px;border:0;border-radius:6px;background:transparent;text-align:left;font-size:11px;color:#27305d;cursor:pointer}.provider-service-actions-menu button:hover{background:#f3f6fa}.provider-service-actions-menu button.danger{color:#d12f2f}.provider-service-actions-menu button.danger:hover{background:#fff1f1}
 /* Action menus are rendered in document.body so listing overflow cannot clip them. */
 .provider-service-actions-menu-portal{position:fixed!important;z-index:2000!important;right:auto!important;}
+
+/* Dashboard header typography stays aligned with the compact workspace UI. */
+.provider-topbar .provider-search{font-size:14px}
+.provider-topbar .provider-search input{font:400 11px Poppins;color:#10183f}
+.provider-topbar .provider-search input::placeholder{font-size:11px}
+.provider-topbar .provider-bell{font-size:18px}
+.provider-topbar .provider-account{gap:9px}
+.provider-topbar .provider-account img,.provider-topbar .provider-account-fallback{width:34px;height:34px}
+.provider-topbar .provider-account strong{font-size:11px;font-weight:600}
+.provider-topbar .provider-account small{font-size:9px}
+.provider-topbar .provider-account>span{margin-left:7px}
+.provider-topbar .provider-profile-menu-head img,.provider-topbar .provider-profile-menu-head .provider-account-fallback{width:36px;height:36px}
+.provider-topbar .provider-profile-menu>button{height:40px;font-size:10px}
+.provider-logout-modal-backdrop{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(7,20,73,.32);backdrop-filter:blur(2px)}
+.provider-logout-modal{width:min(390px,100%);padding:24px;border-radius:14px;background:#fff;box-shadow:0 20px 60px rgba(16,24,63,.2)}
+.provider-logout-modal h2{margin:0;color:#10183f;font-size:18px}
+.provider-logout-modal p{margin:8px 0 0;color:#69739a;font-size:12px;line-height:1.6}
+.provider-logout-actions{display:flex;gap:10px;margin-top:20px}
+.provider-logout-actions button{height:40px;flex:1;border:1px solid #dce3ef;border-radius:7px;background:#fff;color:#24305f;font:600 11px Poppins;cursor:pointer}
+.provider-logout-actions button.danger{border-color:#ef4b4b;background:#ef4b4b;color:#fff}
+.provider-logout-actions button:disabled{opacity:.6;cursor:not-allowed}
