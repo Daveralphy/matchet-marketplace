@@ -10,7 +10,7 @@ const clean = (value) => String(value ?? "").trim();
 function imageUrl(image) {
   if (typeof image === "string") return image;
   if (!image) return "";
-  if (image.url) return image.url;
+  if (image.url && /^https?:\/\//i.test(String(image.url))) return image.url;
   if (image.publicId && process.env.CLOUDINARY_CLOUD_NAME) {
     const resourceType = image.resourceType || "image";
     return `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/${resourceType}/upload/${image.publicId}`;
@@ -64,7 +64,7 @@ function productResponse(product) {
     sellerId: seller._id?.toString?.() || product.sellerId?.toString?.(),
     storeId: store._id?.toString?.() || null,
     image: primaryImage(product.images),
-    images: product.images || [],
+    images: (product.images || []).map((image) => ({ ...image, url: imageUrl(image) })).filter((image) => image.url),
     reviews: Number(product.reviewCount || 0),
     rating: Number(product.ratingAverage || 0),
     createdAt: product.createdAt,
@@ -98,7 +98,7 @@ function serviceResponse(service) {
     providerId: provider._id?.toString?.() || service.providerId?.toString?.(),
     providerProfileId: profile._id?.toString?.() || null,
     image: primaryImage(service.images),
-    images: service.images || [],
+    images: (service.images || []).map((image) => ({ ...image, url: imageUrl(image) })).filter((image) => image.url),
     reviews: Number(service.reviewCount || 0),
     rating: Number(service.ratingAverage || 0),
     createdAt: service.createdAt,
