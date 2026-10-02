@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
+const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, createProviderService, updateProviderService, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -26,6 +26,8 @@ router.post("/seller-products", requireAuth, createSellerProduct);
 router.patch("/seller-products/:productId", requireAuth, updateSellerProduct);
 router.get("/dashboard", requireAuth, getProviderDashboard);
 router.get("/services", requireAuth, getProviderServices);
+router.post("/services", requireAuth, createProviderService);
+router.patch("/services/:serviceId", requireAuth, updateProviderService);
 router.get("/bookings", requireAuth, getProviderBookings);
 router.get("/earnings", requireAuth, getProviderEarnings);
 router.get("/reviews", requireAuth, getProviderReviews);
