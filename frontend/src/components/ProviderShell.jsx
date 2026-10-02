@@ -132,7 +132,7 @@ export function ProviderShell({ children, mode = "provider" }) {
     setLogoutSubmitting(true);
     try {
       await logout();
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     } finally {
       setLogoutSubmitting(false);
       setLogoutConfirmOpen(false);
