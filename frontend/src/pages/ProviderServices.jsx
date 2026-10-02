@@ -263,7 +263,7 @@ export default function ProviderServices() {
                   <span>{service.bookingsLast30Days ?? 0}</span>
                   <div className="provider-service-actions">
                     <div className="provider-service-actions-menu-wrap">
-                      <button type="button" aria-label={"More actions for " + service.title} onClick={(event) => openServiceMenu(service.id, event)}>⋮</button>
+                      <button type="button" aria-label={"More actions for " + service.title} onMouseDown={(event) => { event.stopPropagation(); openServiceMenu(service.id, event); }}>⋮</button>
                     </div>
                   </div>
                 </div>
