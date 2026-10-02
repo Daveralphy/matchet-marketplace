@@ -80,6 +80,29 @@ function RequireAdmin({ children }) {
   return children;
 }
 
+function RequireOnboardingSubmitted({ flow, children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [submitted, setSubmitted] = useState(false);
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getOnboardingProgress(flow).then((response) => {
+      if (active) setSubmitted(Boolean(response?.data?.submitted));
+    }).catch(() => {
+      if (active) setSubmitted(false);
+    }).finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [flow, isAuthenticated, loading]);
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!submitted) {
+    const target = flow === "service" ? "/provider/onboarding" : "/register";
+    return <Navigate to={target} replace />;
+  }
+  return children;
+}
+
 function RequireOnboardingStep({ flow, step, children }) {
   const { isAuthenticated, loading } = useAuth();
   const [checking, setChecking] = useState(true);
@@ -237,7 +260,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/register/page8",
-    element: <RequireAuth><SellerSignupPageEight /></RequireAuth>,
+    element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
   },
   {
     path: "/account/saved-items",
@@ -486,7 +509,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/onboarding/success",
-    element: <RequireAuth><ProviderSignupPageEight /></RequireAuth>,
+    element: <RequireOnboardingSubmitted flow="service"><ProviderSignupPageEight /></RequireOnboardingSubmitted>,
   },
   {
     path: "/provider/application-status",
