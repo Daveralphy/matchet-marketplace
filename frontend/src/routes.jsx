@@ -49,6 +49,7 @@ import ProviderEarnings from "./pages/ProviderEarnings";
 import ProviderReviews from "./pages/ProviderReviews";
 import ProviderProfile from "./pages/ProviderProfile";
 import ProviderSettings from "./pages/ProviderSettings";
+import { getOnboardingProgress } from "./api/provider";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -76,6 +77,33 @@ function RequireAdmin({ children }) {
   if (loading) return <main className="min-h-[60vh] w-full" />;
   if (!isAuthenticated) return <Navigate to={"/login?returnTo=" + encodeURIComponent(location.pathname)} replace />;
   if (user?.role !== "admin") return <Navigate to="/" replace />;
+  return children;
+}
+
+function RequireOnboardingStep({ flow, step, children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [redirectStep, setRedirectStep] = useState(null);
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getOnboardingProgress(flow).then((response) => {
+      if (!active) return;
+      const data = response?.data;
+      if (data?.submitted) return;
+      const firstIncomplete = Number(data?.firstIncompleteStep || 1);
+      if (firstIncomplete < step) setRedirectStep(firstIncomplete);
+    }).catch(() => active && setRedirectStep(1)).finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [flow, step, isAuthenticated, loading]);
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (redirectStep) {
+    const target = flow === "service"
+      ? (redirectStep === 1 ? "/provider/onboarding" : "/provider/onboarding/page" + redirectStep)
+      : (redirectStep === 1 ? "/register" : "/register/page" + redirectStep);
+    return <Navigate to={target} replace />;
+  }
   return children;
 }
 
@@ -181,31 +209,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <RequireAuth><SellerSignupPageOne /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={1}><SellerSignupPageOne /></RequireOnboardingStep>,
   },
   {
     path: "/register/page2",
-    element: <RequireAuth><SellerSignupPageTwo /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={2}><SellerSignupPageTwo /></RequireOnboardingStep>,
   },
   {
     path: "/register/page3",
-    element: <RequireAuth><SellerSignupPageThree /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageThree /></RequireOnboardingStep>,
   },
   {
     path: "/register/page4",
-    element: <RequireAuth><SellerSignupPageFour /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFour /></RequireOnboardingStep>,
   },
   {
     path: "/register/page5",
-    element: <RequireAuth><SellerSignupPageFive /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/register/page6",
-    element: <RequireAuth><SellerSignupPageSix /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={6}><SellerSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/register/page7",
-    element: <RequireAuth><SellerSignupPageSeven /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={7}><SellerSignupPageSeven /></RequireOnboardingStep>,
   },
   {
     path: "/register/page8",
@@ -430,31 +458,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/onboarding",
-    element: <RequireAuth><ProviderSignupPageOne /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={1}><ProviderSignupPageOne /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page2",
-    element: <RequireAuth><ProviderSignupPageTwo /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={2}><ProviderSignupPageTwo /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page3",
-    element: <RequireAuth><ProviderSignupPageThree /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={3}><ProviderSignupPageThree /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page4",
-    element: <RequireAuth><ProviderSignupPageFour /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={4}><ProviderSignupPageFour /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page5",
-    element: <RequireAuth><ProviderSignupPageFive /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={5}><ProviderSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page6",
-    element: <RequireAuth><ProviderSignupPageSix /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={6}><ProviderSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page7",
-    element: <RequireAuth><ProviderSignupPageSeven /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={7}><ProviderSignupPageSeven /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/success",
