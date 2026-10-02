@@ -20,6 +20,17 @@ export default function ForProviders() {
       return;
     }
     sessionStorage.setItem("matchet_onboarding_flow", capability === "product" ? "seller" : "service");
+
+    if (capability === "service" && (user?.role === "provider" || user?.capabilities?.provider)) {
+      navigate("/provider/dashboard");
+      return;
+    }
+
+    if (capability === "product" && user?.capabilities?.seller) {
+      navigate("/seller/dashboard");
+      return;
+    }
+
     setLoading(capability);
     try {
       const response = await getProviderCapabilities();
