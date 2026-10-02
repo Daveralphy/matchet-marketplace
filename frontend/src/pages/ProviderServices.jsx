@@ -299,7 +299,44 @@ export default function ProviderServices() {
               <div className="provider-service-modal-grid"><label>Category<input required value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></label><label>Pricing<select value={form.pricingType} onChange={(e) => setForm({ ...form, pricingType: e.target.value })}><option value="fixed">Fixed price</option><option value="startingFrom">Starting from</option><option value="customQuote">Custom quote</option></select></label></div>
               {form.pricingType !== "customQuote" && <label>Price<input required type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></label>}
               <label>Duration in minutes<input type="number" min="1" value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} /></label>
-              <label>Service images<input type="file" accept="image/*" multiple onChange={(e) => setForm({ ...form, images: [...(form.images || []), ...Array.from(e.target.files || [])].slice(0, 6) })} /></label>
+              <label>
+                Service images
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.files || []);
+                    setForm((current) => ({
+                      ...current,
+                      images: [...(current.images || []), ...selected].slice(0, 6),
+                    }));
+                    e.target.value = "";
+                  }}
+                />
+                <small className="provider-service-image-help">Add up to 6 images. Images are securely uploaded to Cloudinary when you publish.</small>
+              </label>
+              {form.images?.length > 0 && (
+                <div className="provider-service-image-grid">
+                  {form.images.map((image, index) => {
+                    const preview = image instanceof File ? URL.createObjectURL(image) : image?.url;
+                    return (
+                      <div className="provider-service-image-preview" key={(image?.publicId || image?.url || image?.name || "image") + index}>
+                        {preview ? <img src={preview} alt={form.title || "Service preview"} /> : <Icon name="grid" size={22} />}
+                        {index === 0 && <span>Primary</span>}
+                        <button
+                          type="button"
+                          onClick={() => setForm((current) => ({
+                            ...current,
+                            images: current.images.filter((_, imageIndex) => imageIndex !== index),
+                          }))}
+                          aria-label={"Remove image " + (index + 1)}
+                        >×</button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
               <div className="provider-service-modal-actions"><button type="button" onClick={() => setShowForm(false)}>Cancel</button><button className="provider-blue-button" disabled={saving}>{saving ? "Saving..." : editingService ? "Save changes" : "Publish service"}</button></div>
             </form>
           </div>
