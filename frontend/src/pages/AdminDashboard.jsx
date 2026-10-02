@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { AdminShell } from "../components/AdminShell";
+import AdminShell from "../components/AdminShell";
 import { Icon } from "../components/ProviderShell";
 import { getAdminDashboard } from "../api/admin";
 import "../styles/admin-dashboard.css";
