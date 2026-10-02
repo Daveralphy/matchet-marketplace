@@ -415,7 +415,18 @@ function MarketplaceCard({ item, compact = false }) {
           item.imageTone,
         ].join(" ")}
       >
-        <span className="text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105">
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.title || ""}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+              event.currentTarget.nextElementSibling?.classList.remove("hidden");
+            }}
+          />
+        ) : null}
+        <span className={item.image ? "hidden text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105" : "text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105"}>
           <Icon name={getMarketplacePlaceholderIcon(item)} size={72} strokeWidth={1.25} />
         </span>
 
