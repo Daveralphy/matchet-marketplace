@@ -1,6 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Brima
 
+import { useEffect, useState } from "react";
 import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
@@ -243,7 +244,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/profile",
-    element: <RequireAuth><ProviderProfile /></RequireAuth>,
+    element: <RequireProvider><ProviderProfile /></RequireProvider>,
   },
   {
     path: "/orders",
@@ -251,11 +252,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/bookings",
-    element: <RequireAuth><ProviderBookings /></RequireAuth>,
+    element: <RequireProvider><ProviderBookings /></RequireProvider>,
   },
   {
     path: "/provider/settings",
-    element: <RequireAuth><ProviderSettings /></RequireAuth>,
+    element: <RequireProvider><ProviderSettings /></RequireProvider>,
   },
   {
     path: "/help",
@@ -263,7 +264,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/reviews",
-    element: <RequireAuth><ProviderReviews /></RequireAuth>,
+    element: <RequireProvider><ProviderReviews /></RequireProvider>,
   },
   {
     path: "/categories",
@@ -279,11 +280,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/services",
-    element: <RequireAuth><ProviderServices /></RequireAuth>,
+    element: <RequireProvider><ProviderServices /></RequireProvider>,
   },
   {
     path: "/provider/messages",
-    element: <RequireAuth><ProviderMessages /></RequireAuth>,
+    element: <RequireProvider><ProviderMessages /></RequireProvider>,
   },
   {
     path: "/saved-items",
@@ -327,7 +328,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/dashboard",
-    element: <RequireAuth><ProviderDashboard /></RequireAuth>,
+    element: <RequireProvider><ProviderDashboard /></RequireProvider>,
   },
   {
     path: "/seller/dashboard",
@@ -379,7 +380,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/earnings",
-    element: <RequireAuth><ProviderEarnings /></RequireAuth>,
+    element: <RequireProvider><ProviderEarnings /></RequireProvider>,
   },
   {
     path: "/provider/application-status",
