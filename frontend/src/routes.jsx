@@ -22,6 +22,12 @@ import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
 import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminProviders from "./pages/AdminProviders";
+import AdminSellers from "./pages/AdminSellers";
+import AdminUsers from "./pages/AdminUsers";
+import AdminListings from "./pages/AdminListings";
+import AdminReports from "./pages/AdminReports";
+import AdminSettings from "./pages/AdminSettings";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerOrders from "./pages/SellerOrders";
 import SellerOrderDetail from "./pages/SellerOrderDetail";
@@ -210,6 +216,30 @@ const router = createBrowserRouter([
   {
     path: "/admin/dashboard",
     element: <RequireAdmin><AdminDashboard /></RequireAdmin>,
+  },
+  {
+    path: "/admin/providers",
+    element: <RequireAdmin><AdminProviders /></RequireAdmin>,
+  },
+  {
+    path: "/admin/sellers",
+    element: <RequireAdmin><AdminSellers /></RequireAdmin>,
+  },
+  {
+    path: "/admin/users",
+    element: <RequireAdmin><AdminUsers /></RequireAdmin>,
+  },
+  {
+    path: "/admin/listings",
+    element: <RequireAdmin><AdminListings /></RequireAdmin>,
+  },
+  {
+    path: "/admin/reports",
+    element: <RequireAdmin><AdminReports /></RequireAdmin>,
+  },
+  {
+    path: "/admin/settings",
+    element: <RequireAdmin><AdminSettings /></RequireAdmin>,
   },
   {
     path: "/provider/profile",
