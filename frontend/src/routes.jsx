@@ -493,26 +493,6 @@ const router = createBrowserRouter([
     element: <RequireAuth><ProviderApplicationStatus /></RequireAuth>,
   },
   {
-    path: "/provider/earnings",
-    element: <RequireAuth><ProviderDataPage type="earnings" /></RequireAuth>,
-  },
-  {
-    path: "/provider/reviews",
-    element: <RequireAuth><ProviderDataPage type="reviews" /></RequireAuth>,
-  },
-  {
-    path: "/provider/profile",
-    element: <RequireAuth><ProviderDataPage type="profile" /></RequireAuth>,
-  },
-  {
-    path: "/provider/settings",
-    element: <RequireAuth><ProviderDataPage type="settings" /></RequireAuth>,
-  },
-  {
-    path: "/provider/bookings",
-    element: <RequireAuth><ProviderBookings /></RequireAuth>,
-  },
-  {
     path: "/provider/listings",
     element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Listings" /></MarketplaceLayout></RequireAuth>,
   },
