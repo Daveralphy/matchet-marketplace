@@ -1,5 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
+const { requireActiveProvider } = require("../middleware/providerAccess");
 const { getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, deleteSellerProduct, createProviderService, updateProviderService, deleteProviderService, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
@@ -25,23 +26,23 @@ router.get("/seller-reviews", requireAuth, getSellerReviews);
 router.post("/seller-products", requireAuth, createSellerProduct);
 router.patch("/seller-products/:productId", requireAuth, updateSellerProduct);
 router.delete("/seller-products/:productId", requireAuth, deleteSellerProduct);
-router.get("/dashboard", requireAuth, getProviderDashboard);
-router.get("/services", requireAuth, getProviderServices);
-router.post("/services", requireAuth, createProviderService);
-router.patch("/services/:serviceId", requireAuth, updateProviderService);
-router.delete("/services/:serviceId", requireAuth, deleteProviderService);
-router.get("/bookings", requireAuth, getProviderBookings);
-router.get("/earnings", requireAuth, getProviderEarnings);
-router.get("/reviews", requireAuth, getProviderReviews);
-router.get("/messages", requireAuth, getProviderMessages);
-router.get("/messages/:conversationId", requireAuth, getProviderConversation);
-router.post("/messages", requireAuth, sendProviderMessage);
+router.get("/dashboard", requireAuth, requireActiveProvider, getProviderDashboard);
+router.get("/services", requireAuth, requireActiveProvider, getProviderServices);
+router.post("/services", requireAuth, requireActiveProvider, createProviderService);
+router.patch("/services/:serviceId", requireAuth, requireActiveProvider, updateProviderService);
+router.delete("/services/:serviceId", requireAuth, requireActiveProvider, deleteProviderService);
+router.get("/bookings", requireAuth, requireActiveProvider, getProviderBookings);
+router.get("/earnings", requireAuth, requireActiveProvider, getProviderEarnings);
+router.get("/reviews", requireAuth, requireActiveProvider, getProviderReviews);
+router.get("/messages", requireAuth, requireActiveProvider, getProviderMessages);
+router.get("/messages/:conversationId", requireAuth, requireActiveProvider, getProviderConversation);
+router.post("/messages", requireAuth, requireActiveProvider, sendProviderMessage);
 
 module.exports = router;
 
 router.get("/profile", requireAuth, getProviderProfile);
-router.get("/settings", requireAuth, getProviderSettings);
-router.patch("/settings/preferences", requireAuth, updateProviderSettingsPreferences);
+router.get("/settings", requireAuth, requireActiveProvider, getProviderSettings);
+router.patch("/settings/preferences", requireAuth, requireActiveProvider, updateProviderSettingsPreferences);
 
 router.get("/seller-profile", requireAuth, getSellerProfile);
 router.patch("/seller-profile", requireAuth, updateSellerProfile);
