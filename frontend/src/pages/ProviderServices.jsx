@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ProviderShell, Icon } from "../components/ProviderShell";
-import { getProviderServices } from "../api/provider";
+import { createProviderService, getProviderServices, updateProviderService } from "../api/provider";
 import "../styles/provider-dashboard.css";
 
 function formatPrice(amount, currency) {
@@ -47,8 +47,14 @@ export default function ProviderServices() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showForm, setShowForm] = useState(false);
+  const [editingService, setEditingService] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const pageSize = 6;
+
+  const emptyForm = { title: "", description: "", category: "", pricingType: "fixed", price: "", durationMinutes: "", images: [] };
+  const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
     let active = true;
@@ -115,7 +121,7 @@ export default function ProviderServices() {
             <h1>Services</h1>
             <span>Manage your services, set prices, and showcase what you offer.</span>
           </div>
-          <button className="provider-blue-button" type="button">
+          <button className="provider-blue-button" type="button" onClick={() => { setEditingService(null); setForm(emptyForm); setShowForm(true); }}>
             <Icon name="plus" size={18} /> Add a new service
           </button>
         </div>
@@ -221,7 +227,7 @@ export default function ProviderServices() {
                   <span className={"status " + service.status}>{statusLabel(service.status)}</span>
                   <span>{service.bookingsLast30Days ?? 0}</span>
                   <div className="provider-service-actions">
-                    <button type="button">Edit</button>
+                    <button type="button" onClick={() => { setEditingService(service); setForm({ title: service.title || "", description: service.description || "", category: service.category || "", pricingType: service.pricingType || "fixed", price: service.price ?? "", durationMinutes: service.durationMinutes || "", images: service.images || (service.image ? [{ url: service.image, publicId: "existing" }] : []) }); setShowForm(true); }}>Edit</button>
                     <button type="button" aria-label={"More actions for " + service.title}>⋮</button>
                   </div>
                 </div>
@@ -265,6 +271,39 @@ export default function ProviderServices() {
             </div>
           )}
         </div>
+        {showForm && (
+          <div className="provider-service-modal-backdrop" role="presentation">
+            <form className="provider-service-modal" onSubmit={async (event) => {
+              event.preventDefault();
+              setSaving(true);
+              setError("");
+              try {
+                const payload = { ...form, price: form.pricingType === "customQuote" ? undefined : form.price };
+                const response = editingService
+                  ? await updateProviderService(editingService.id, payload)
+                  : await createProviderService(payload);
+                const saved = response.service;
+                setServices((current) => editingService
+                  ? current.map((item) => item.id === editingService.id ? { ...item, title: saved.title, description: saved.description, category: saved.category, price: saved.pricing?.amount ?? null, pricingType: saved.pricing?.type, durationMinutes: saved.durationMinutes, status: saved.status, image: saved.images?.find((image) => image.isPrimary)?.url || saved.images?.[0]?.url || null } : item)
+                  : [{ id: saved._id, title: saved.title, description: saved.description, category: saved.category, price: saved.pricing?.amount ?? null, currency: saved.pricing?.currency, pricingType: saved.pricing?.type, durationMinutes: saved.durationMinutes, status: saved.status, bookingsLast30Days: 0, views: 0, image: saved.images?.find((image) => image.isPrimary)?.url || saved.images?.[0]?.url || null, createdAt: saved.createdAt }, ...current]);
+                setShowForm(false);
+              } catch (requestError) {
+                setError(requestError.message || "Unable to save your service.");
+              } finally {
+                setSaving(false);
+              }
+            }}>
+              <div className="provider-service-modal-head"><div><h2>{editingService ? "Edit service" : "Add a new service"}</h2><p>Publish the service you want customers to find on Matchet.</p></div><button type="button" onClick={() => setShowForm(false)} aria-label="Close">×</button></div>
+              <label>Service name<input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></label>
+              <label>Description<textarea required rows="4" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></label>
+              <div className="provider-service-modal-grid"><label>Category<input required value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></label><label>Pricing<select value={form.pricingType} onChange={(e) => setForm({ ...form, pricingType: e.target.value })}><option value="fixed">Fixed price</option><option value="startingFrom">Starting from</option><option value="customQuote">Custom quote</option></select></label></div>
+              {form.pricingType !== "customQuote" && <label>Price<input required type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></label>}
+              <label>Duration in minutes<input type="number" min="1" value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} /></label>
+              <label>Service images<input type="file" accept="image/*" multiple onChange={(e) => setForm({ ...form, images: [...(form.images || []), ...Array.from(e.target.files || [])].slice(0, 6) })} /></label>
+              <div className="provider-service-modal-actions"><button type="button" onClick={() => setShowForm(false)}>Cancel</button><button className="provider-blue-button" disabled={saving}>{saving ? "Saving..." : editingService ? "Save changes" : "Publish service"}</button></div>
+            </form>
+          </div>
+        )}
       </div>
     </ProviderShell>
   );
