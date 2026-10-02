@@ -219,7 +219,7 @@ function RequireProvider({ children }) {
       if (!active) return;
       const profile = response?.data?.profile;
       if (!profile) setState("missing");
-      else if (profile.status === "active" && profile.verificationStatus === "verified") setState("active");
+      else if (profile.status === "active" && profile.verificationStatus === "verified" && profile.applicationSubmittedAt) setState("active");
       else if (profile.verificationStatus === "rejected") setState("rejected");
       else if (!profile.applicationSubmittedAt) setState("incomplete");
       else setState("pending");
