@@ -440,7 +440,7 @@ function MyProfile() {
               <button type="button" className="profile-edit-button" onClick={() => setEditing((value) => !value)}>
                 <PencilIcon />
                 <span>{editing ? "Cancel editing" : "Edit Profile"}</span>
-              </Button>
+              </button>
 
             </div>
           </div>
