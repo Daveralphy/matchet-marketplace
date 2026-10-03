@@ -131,8 +131,7 @@ export default function SellerSignupPageEight() {
 
             <div>
               <strong>
-                You can check the status of your application anytime from your
-                dashboard.
+                You can check the status of your application anytime from the application status page.
               </strong>
               <p>If we need any additional information, we'll reach out.</p>
             </div>
@@ -140,7 +139,7 @@ export default function SellerSignupPageEight() {
 
           <div className="seller-signup-submission-actions">
             <Link
-              to="/seller/dashboard"
+              to="/seller/application-status"
               className="seller-signup-dashboard-button"
             >
               Go to dashboard
