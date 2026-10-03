@@ -115,7 +115,11 @@ function RequireOnboardingStep({ flow, step, children }) {
       const data = response?.data;
       if (data?.submitted) return;
       const firstIncomplete = Number(data?.firstIncompleteStep || 1);
-      if (firstIncomplete < step) setRedirectStep(firstIncomplete);
+      // The provider review page is the final review surface. If the backend
+      // still considers Step 6 incomplete, allow Step 7 to render so the user
+      // can see the saved values and correct them before final submission.
+      const allowProviderReviewAfterStep6 = flow === "service" && step === 7 && firstIncomplete === 6;
+      if (firstIncomplete < step && !allowProviderReviewAfterStep6) setRedirectStep(firstIncomplete);
     }).catch(() => active && setRedirectStep(1)).finally(() => active && setChecking(false));
     return () => { active = false; };
   }, [flow, step, isAuthenticated, loading]);
