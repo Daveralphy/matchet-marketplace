@@ -42,6 +42,7 @@ import PublicSellerStore from "./pages/PublicSellerStore";
 import ProviderDataPage from "./pages/ProviderDataPage";
 import ProviderBookings from "./pages/ProviderBookings";
 import ProviderApplicationStatus from "./pages/ProviderApplicationStatus";
+import SellerApplicationStatus from "./pages/SellerApplicationStatus";
 import ProviderMessages from "./pages/ProviderMessages";
 import ProviderServices from "./pages/ProviderServices";
 import ProviderEarnings from "./pages/ProviderEarnings";
@@ -509,6 +510,10 @@ const router = createBrowserRouter([
   {
     path: "/provider/dashboard",
     element: <RequireProvider><ProviderDashboard /></RequireProvider>,
+  },
+  {
+    path: "/seller/application-status",
+    element: <RequireAuth><SellerApplicationStatus /></RequireAuth>,
   },
   {
     path: "/seller/dashboard",
