@@ -19,4 +19,3 @@ const startServer = async () => {
 startServer().catch((error) => {
   console.error("Unexpected server startup error:", error);
 });
-
