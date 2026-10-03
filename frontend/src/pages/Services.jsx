@@ -917,7 +917,7 @@ function ServiceListingCard({ service }) {
           aria-label={saved ? `Unsave ${service.title}` : `Save ${service.title}`}
           aria-pressed={saved}
           onClick={handleSave}
-          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-all ${saved ? "bg-[#eaf9ee] text-[#07863a] scale-105" : "bg-white text-[#10183f]"}`}
+          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-all ${saved ? "bg-[#10183f] text-white scale-105" : "bg-white text-[#10183f]"}`}
         >
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
