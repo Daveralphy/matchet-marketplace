@@ -966,7 +966,7 @@ function ServicesListingSection({ isAuthenticated }) {
   useEffect(() => {
     let active = true;
 
-    getServiceCollection(isAuthenticated ? "recommended" : "featured").then((items) => {
+    getServiceCollection().then((items) => {
       if (active) setServices(items.filter((item) => (!search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())) && (!selectedLocation || item.location === selectedLocation)));
     });
 
