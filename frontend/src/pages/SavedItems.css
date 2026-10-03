@@ -143,9 +143,113 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid #e3e8f1;
-  border-radius: 10px;
+  border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 2px 7px rgba(26, 35, 75, 0.03);
+  box-shadow: 0 8px 24px rgba(16, 24, 63, 0.055);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.saved-item-card:hover {
+  transform: translateY(-2px);
+  border-color: #d8e0eb;
+  box-shadow: 0 14px 32px rgba(16, 24, 63, 0.09);
+}
+.saved-item-image-wrap {
+  display: flex;
+  position: relative;
+  height: 205px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f1f4f7;
+  text-decoration: none;
+}
+.saved-item-image-wrap::after {
+  content: "Saved";
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: #10183f;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+.saved-item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+.saved-item-card:hover .saved-item-image {
+  transform: scale(1.025);
+}
+.saved-item-content {
+  padding: 16px;
+}
+.saved-item-type {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #eaf9ee;
+  color: #07863a;
+  font-size: 10px;
+  font-weight: 700;
+}
+.saved-item-content h2 {
+  margin: 10px 0 0;
+  color: #10183f;
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+.saved-item-price {
+  margin: 9px 0 0;
+  color: #07863a;
+  font-size: 17px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+.saved-item-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 15px;
+}
+.saved-item-view-button,
+.saved-item-remove-button {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 11px;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.saved-item-view-button {
+  border: 1px solid #07863a;
+  background: #07863a;
+  color: #fff;
+}
+.saved-item-view-button:hover {
+  background: #066f31;
+  border-color: #066f31;
+}
+.saved-item-remove-button {
+  border: 1px solid #dfe5ec;
+  background: #fff;
+  color: #27335f;
+}
+.saved-item-remove-button:hover {
+  border-color: #c9d2df;
+  background: #f5f7fa;
+  color: #10183f;
 }
 
 .saved-item-skeleton {
