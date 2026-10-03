@@ -742,10 +742,10 @@ function ExploreResultsSection({ isAuthenticated }) {
     .filter((item) => !selectedLocation || item.location === selectedLocation)
     .sort((a, b) => {
       if (sortBy === "price-low") {
-        return Number(String(a.price).replace(/[^0-9]/g, "")) - Number(String(b.price).replace(/[^0-9]/g, ""));
+        return Number(a.priceValue ?? String(a.price).replace(/[^0-9]/g, "")) - Number(b.priceValue ?? String(b.price).replace(/[^0-9]/g, ""));
       }
       if (sortBy === "price-high") {
-        return Number(String(b.price).replace(/[^0-9]/g, "")) - Number(String(a.price).replace(/[^0-9]/g, ""));
+        return Number(b.priceValue ?? String(b.price).replace(/[^0-9]/g, "")) - Number(a.priceValue ?? String(a.price).replace(/[^0-9]/g, ""));
       }
       if (sortBy === "rating") return Number(b.rating) - Number(a.rating);
       return 0;
