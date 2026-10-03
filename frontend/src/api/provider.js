@@ -59,6 +59,7 @@ async function request(path, options = {}) {
     const error = new Error(payload.message || "Something went wrong.");
     error.status = response.status;
     error.errors = payload.errors || {};
+    error.missingFields = payload.missingFields || payload.missing || [];
     throw error;
   }
 
@@ -259,11 +260,11 @@ export function getSellerOnboardingDraft() {
   return request("/api/provider/seller-onboarding/draft");
 }
 
-export async function saveSellerOnboardingDraft(formData) {
+export async function saveSellerOnboardingDraft(formData, step) {
   const next = await prepareSellerOnboardingPayload(formData);
   return request("/api/provider/seller-onboarding", {
     method: "POST",
-    body: JSON.stringify({ formData: serializeOnboardingValue(next), draft: true }),
+    body: JSON.stringify({ formData: serializeOnboardingValue(next), draft: true, step }),
   });
 }
 
@@ -334,4 +335,25 @@ export function updateSellerOrderNote(id,note){return request("/api/provider/sel
 
 export function searchProviderLocations(query) {
   return request("/api/provider/locations/search?q=" + encodeURIComponent(query), { cache: false });
+}
+
+
+export function highlightOnboardingFields(fields = []) {
+  const names = new Set(fields);
+  const elements = Array.from(document.querySelectorAll("input[name], select[name], textarea[name]")).filter((el) => names.has(el.name));
+  elements.forEach((el) => {
+    el.classList.add("onboarding-field-error");
+    const group = el.closest("label, .provider-signup-form-field-group, .provider-payment-card, .provider-availability-booking-card, .seller-signup-form-field-group");
+    if (group) group.classList.add("onboarding-section-error");
+    const clear = () => {
+      el.classList.remove("onboarding-field-error");
+      if (group) group.classList.remove("onboarding-section-error");
+    };
+    el.addEventListener("input", clear, { once: true });
+    el.addEventListener("change", clear, { once: true });
+  });
+  if (elements[0]) {
+    elements[0].scrollIntoView({ behavior: "smooth", block: "center" });
+    elements[0].focus({ preventScroll: true });
+  }
 }
