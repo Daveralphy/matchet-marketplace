@@ -58,6 +58,7 @@ async function request(path, options = {}) {
   if (!response.ok) {
     const error = new Error(payload.message || "Something went wrong.");
     error.status = response.status;
+    error.code = payload.code || "";
     error.errors = payload.errors || {};
     error.missingFields = payload.missingFields || payload.missing || [];
     throw error;
