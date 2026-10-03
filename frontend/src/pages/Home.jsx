@@ -1426,14 +1426,16 @@ export default function Home({ isAuthenticated = false, userName }) {
       .then(({ products, services }) => {
         if (!active) return;
 
-        const all = [...products, ...services];
-        const size = Math.max(4, Math.min(8, all.length));
+        const productItems = products.filter((item) => item?.type === "product");
+        const serviceItems = services.filter((item) => item?.type === "service");
+        const productSize = Math.min(8, productItems.length);
+        const serviceSize = Math.min(8, serviceItems.length);
 
         setMarketplace({
-          featured: all.slice(0, size),
-          picked: all.slice(0, size),
-          popularNearby: all.filter((item) => item.location).slice(0, size),
-          continueExploring: all.slice(0, size),
+          featured: [...productItems.slice(0, productSize), ...serviceItems.slice(0, serviceSize)].slice(0, 8),
+          picked: [...productItems.slice(0, productSize), ...serviceItems.slice(0, serviceSize)].slice(0, 8),
+          popularNearby: [...productItems, ...serviceItems].filter((item) => item.location).slice(0, 8),
+          continueExploring: [...productItems, ...serviceItems].slice(0, 8),
         });
       })
       .catch((error) => {
