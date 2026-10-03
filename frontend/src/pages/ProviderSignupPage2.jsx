@@ -75,9 +75,10 @@ export default function ProviderSignupPageTwo() {
   };
 
   useEffect(() => {
+    let cancelled = false;
     const images = Array.isArray(formData.providerServiceImages) ? formData.providerServiceImages : [];
-    const blobUrls = [];
     const next = Array(6).fill(null);
+    const localFiles = [];
 
     images.slice(0, 6).forEach((image, index) => {
       if (typeof image === "string") {
@@ -85,14 +86,29 @@ export default function ProviderSignupPageTwo() {
       } else if (image?.url) {
         next[index] = image.url;
       } else if (typeof File !== "undefined" && image instanceof File) {
-        const url = URL.createObjectURL(image);
-        blobUrls.push(url);
-        next[index] = url;
+        localFiles.push({ index, file: image });
       }
     });
 
     setServicePreviews(next);
-    return () => blobUrls.forEach((url) => URL.revokeObjectURL(url));
+
+    localFiles.forEach(({ index, file }) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (!cancelled) {
+          setServicePreviews((current) => {
+            const updated = [...current];
+            updated[index] = String(reader.result || "");
+            return updated;
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [formData.providerServiceImages]);
 
   const handleServiceImage = (index, file) => {
@@ -106,13 +122,16 @@ export default function ProviderSignupPageTwo() {
       return;
     }
 
-    const previewUrl = URL.createObjectURL(file);
-    setServicePreviews((previous) => {
-      const next = [...previous];
-      if (next[index]?.startsWith("blob:")) URL.revokeObjectURL(next[index]);
-      next[index] = previewUrl;
-      return next;
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      setServicePreviews((previous) => {
+        const next = [...previous];
+        next[index] = String(reader.result || "");
+        return next;
+      });
+    };
+    reader.onerror = () => alert("Unable to preview this image. Please try another image.");
+    reader.readAsDataURL(file);
 
     const images = Array.isArray(formData.providerServiceImages)
       ? [...formData.providerServiceImages]
@@ -124,7 +143,6 @@ export default function ProviderSignupPageTwo() {
   const removeServiceImage = (index) => {
     setServicePreviews((previous) => {
       const next = [...previous];
-      if (next[index]?.startsWith("blob:")) URL.revokeObjectURL(next[index]);
       next.splice(index, 1);
       next.push(null);
       return next;
