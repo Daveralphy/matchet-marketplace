@@ -137,3 +137,12 @@ export async function clearCart() {
   const payload = await request("/api/cart", { method: "DELETE" });
   return payload.items ?? [];
 }
+
+export async function getBuyerOrders(){const p=await request("/api/orders");return p.orders??[];}
+export async function getBuyerOrder(id){const p=await request("/api/orders/"+encodeURIComponent(id));return p.order??null;}
+export async function getBuyerBookings(){const p=await request("/api/bookings");return p.bookings??[];}
+export async function getBuyerBooking(id){const p=await request("/api/bookings/"+encodeURIComponent(id));return p.booking??null;}
+export async function getSavedItems(){const p=await request("/api/saved-items");return p.items??[];}
+export async function saveItem(data){const p=await request("/api/saved-items",{method:"POST",body:JSON.stringify(data)});return p.item;}
+export async function removeSavedItem(id){return request("/api/saved-items/"+encodeURIComponent(id),{method:"DELETE"});}
+export async function clearSavedItems(type){return request("/api/saved-items"+(type?"?type="+encodeURIComponent(type):""),{method:"DELETE"});}
