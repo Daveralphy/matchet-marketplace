@@ -1,5 +1,5 @@
 const express=require("express");
-const {requireAuth}=require("../middleware/auth");
+const requireAuth=require("../middleware/auth");
 const {listBuyerOrders,getBuyerOrder}=require("../controllers/orderController");
 const router=express.Router();
 router.use(requireAuth);
