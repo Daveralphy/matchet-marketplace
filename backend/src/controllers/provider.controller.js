@@ -797,6 +797,7 @@ module.exports.updateProviderSettingsPreferences = updateProviderSettingsPrefere
 
 
 async function submitProviderOnboarding(req, res) {
+  const { step } = req.body || {};
   try {
     const providerId = req.user._id;
     const isDraft = Boolean(req.body?.draft);
@@ -848,7 +849,21 @@ async function submitProviderOnboarding(req, res) {
       country: input.providerCountry || "Nigeria",
     };
 
+    const requestedStep = Number(step);
     const progressAfterSave = getFirstIncompleteOnboardingStep(input, providerStepRequirements);
+    if (isDraft && Number.isInteger(requestedStep) && requestedStep >= 1 && requestedStep <= providerStepRequirements.length) {
+      const checks = providerStepRequirements[requestedStep - 1](input);
+      const missingFields = checks.filter(([, complete]) => !complete).map(([field]) => field);
+      if (missingFields.length) {
+        return res.status(422).json({
+          success: false,
+          code: "ONBOARDING_STEP_INCOMPLETE",
+          step: requestedStep,
+          missingFields,
+          message: "Please complete the highlighted fields before continuing.",
+        });
+      }
+    }
     const savedStep = isDraft
       ? Math.min(progressAfterSave.step, providerStepRequirements.length)
       : providerStepRequirements.length + 1;
