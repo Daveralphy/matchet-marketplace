@@ -23,7 +23,13 @@ export default function SellerSignupPageSix() {
     }
 
     try {
-      const response = await saveSellerOnboardingDraft(formData);
+      const paymentFormData = {
+        ...formData,
+        accountName:
+          formData.accountName ||
+          [formData.firstName, formData.lastName].filter(Boolean).join(" ").trim(),
+      };
+      const response = await saveSellerOnboardingDraft(paymentFormData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/register/page7");
     } catch (error) {
