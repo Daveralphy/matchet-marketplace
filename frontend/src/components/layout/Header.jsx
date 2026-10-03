@@ -602,6 +602,7 @@ export default function Header({
 
           <Link
             to="/cart"
+            data-cart-target="true"
             onClick={closeOverlays}
             aria-label="Cart"
             className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-slate-50 sm:h-11 sm:w-11 ${
