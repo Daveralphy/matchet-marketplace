@@ -1,6 +1,7 @@
 const express = require("express");
 const orderRoutes = require("./routes/orderRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const savedItemRoutes = require("./routes/savedItem.routes");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
