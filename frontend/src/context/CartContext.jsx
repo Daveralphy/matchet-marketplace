@@ -1,55 +1,73 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { addCartItem, clearCart as clearCartRequest, getCart, removeCartItem, updateCartItem } from "../api/marketplace";
 import { getProductById } from "../data/marketplaceApi";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
-const STORAGE_KEY = "matchet-cart";
 
-function readStoredCart() {
-  try {
-    const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(value) ? value : [];
-  } catch {
-    return [];
-  }
+function normalizeItems(items) {
+  return Array.isArray(items) ? items : [];
 }
 
 export function CartProvider({ children }) {
-  const [items, setItems] = useState(readStoredCart);
+  const { user, loading: authLoading } = useAuth();
+  const [items, setItems] = useState([]);
+  const [cartLoading, setCartLoading] = useState(true);
+
+  const loadCart = useCallback(async () => {
+    if (!user) {
+      setItems([]);
+      setCartLoading(false);
+      return;
+    }
+    setCartLoading(true);
+    try {
+      const serverItems = await getCart();
+      setItems(normalizeItems(serverItems));
+    } catch {
+      setItems([]);
+    } finally {
+      setCartLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+    if (!authLoading) loadCart();
+  }, [authLoading, loadCart]);
 
-  const addItem = (product, quantity = 1) => {
-    setItems((current) => {
-      const existing = current.find((item) => item.id === product.id);
-      if (existing) {
-        return current.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: Math.min(item.quantity + quantity, product.stockCount || 99) }
-            : item,
-        );
-      }
-      return [...current, { ...product, quantity: Math.max(1, quantity) }];
-    });
-  };
+  const addItem = useCallback(async (product, quantity = 1) => {
+    if (!user) return { requiresAuth: true };
+    const next = await addCartItem(product.id, quantity);
+    setItems(normalizeItems(next));
+    return { items: next };
+  }, [user]);
 
-  const updateQuantity = (id, quantity) => {
-    setItems((current) =>
-      current
-        .map((item) => item.id === id ? { ...item, quantity: Math.max(1, Math.min(quantity, item.stockCount || 99)) } : item)
-        .filter((item) => item.quantity > 0),
-    );
-  };
+  const updateQuantity = useCallback(async (id, quantity) => {
+    if (!user) return;
+    const next = await updateCartItem(id, quantity);
+    setItems(normalizeItems(next));
+  }, [user]);
 
-  const removeItem = (id) => setItems((current) => current.filter((item) => item.id !== id));
-  const clearCart = () => setItems([]);
+  const removeItem = useCallback(async (id) => {
+    if (!user) return;
+    const next = await removeCartItem(id);
+    setItems(normalizeItems(next));
+  }, [user]);
 
-  const cartCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
-  const subtotal = useMemo(() => items.reduce((sum, item) => sum + parsePrice(item.price) * item.quantity, 0), [items]);
+  const clearCart = useCallback(async () => {
+    if (!user) {
+      setItems([]);
+      return;
+    }
+    const next = await clearCartRequest();
+    setItems(normalizeItems(next));
+  }, [user]);
+
+  const cartCount = useMemo(() => items.reduce((sum, item) => sum + Number(item.quantity || 0), 0), [items]);
+  const subtotal = useMemo(() => items.reduce((sum, item) => sum + Number(item.priceValue ?? parsePrice(item.price)) * Number(item.quantity || 0), 0), [items]);
 
   return (
-    <CartContext.Provider value={{ items, cartCount, subtotal, addItem, updateQuantity, removeItem, clearCart }}>
+    <CartContext.Provider value={{ items, cartCount, subtotal, addItem, updateQuantity, removeItem, clearCart, cartLoading, refreshCart: loadCart }}>
       {children}
     </CartContext.Provider>
   );
