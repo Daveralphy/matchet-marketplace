@@ -1,4 +1,7 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "../../context/FormContext";
+import { saveProviderOnboardingDraft } from "../../api/provider";
 
 function SaveIcon() {
   return (
@@ -10,6 +13,8 @@ function SaveIcon() {
 }
 
 function ProviderSignupFormHeader({ step }) {
+  const navigate = useNavigate();
+  const { formData } = useForm();
   const stepsData = [
     { num: 1, label: "Your Details" },
     { num: 2, label: "Services" },
@@ -29,7 +34,14 @@ function ProviderSignupFormHeader({ step }) {
             Set up your provider profile and start offering your services on Matchet.
           </p>
         </div>
-        <button type="button" className="provider-signup-save-and-exit">
+        <button type="button" className="provider-signup-save-and-exit" onClick={async () => {
+          try {
+            await saveProviderOnboardingDraft(formData);
+            navigate("/for-providers", { replace: true });
+          } catch (error) {
+            window.alert(error.message || "Unable to save your progress. Please try again.");
+          }
+        }}>
           <SaveIcon />
           Save and exit
         </button>
