@@ -959,7 +959,7 @@ function ServicesListingSection({ isAuthenticated }) {
   const savedSearch = sessionStorage.getItem("matchet_services_search") || "";
   const [search, setSearch] = useState(() => searchParams.get("q") || savedSearch);
   const [services, setServices] = useState([]);
-  const selectedLocation = searchParams.get("location") || localStorage.getItem("matchet_location") || "";
+  const selectedLocation = searchParams.get("location") || "";
 
   useEffect(() => { sessionStorage.setItem("matchet_services_search", search); }, [search]);
 
