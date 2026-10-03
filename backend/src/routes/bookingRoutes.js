@@ -1,1 +1,1 @@
-// Backend route placeholder
+const express=require("express");const {requireAuth}=require("../middleware/auth");const {listBuyerBookings,getBuyerBooking}=require("../controllers/bookingController");const router=express.Router();router.use(requireAuth);router.get("/",listBuyerBookings);router.get("/:id",getBuyerBooking);module.exports=router;
