@@ -72,7 +72,37 @@ function ServiceDetails({service,related}) {
     </div>
    </section>
   </div>
-  <section className="mt-7 border-t border-[#e1e6ec] pt-7"><h2 className="text-[24px] font-bold tracking-[-0.04em] text-[#10183f] sm:text-[28px]">You might also like</h2><div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">{related.map(item=><Link key={item.id} to={`/services/${item.id}`} className="rounded-[10px] border border-[#e4e8ee] bg-white p-2.5"><ServiceVisual service={item}/><h3 className="mt-2 truncate text-[12px] font-medium text-[#10183f]">{item.title}</h3><div className="mt-1 text-[10px]"><Stars rating={item.rating}/> <span>{Number(item.rating).toFixed(1)} ({item.reviews||0})</span></div><p className="mt-2 text-[15px] font-bold text-[#10183f]">{item.price}</p><p className="mt-1 truncate text-[10px] text-[#69739a]">{item.seller} · {item.location}</p></Link>)}</div></section>
+  <section className="mt-7 border-t border-[#e1e6ec] pt-7">
+    <div className="flex items-end justify-between gap-4">
+      <div>
+        <h2 className="text-[24px] font-bold tracking-[-0.04em] text-[#10183f] sm:text-[28px]">You might also like</h2>
+        <p className="mt-1 text-[13px] text-[#69739a]">More services similar to this one.</p>
+      </div>
+      <Link to="/services" className="hidden text-[12px] font-medium text-[#0759e8] sm:block">View more services →</Link>
+    </div>
+    <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
+      {related.length ? related.map(item=><Link key={item.id} to={`/services/${item.id}`} className="rounded-[10px] border border-[#e4e8ee] bg-white p-2.5">
+        <ServiceVisual service={item}/>
+        <h3 className="mt-2 truncate text-[12px] font-medium text-[#10183f]">{item.title}</h3>
+        <div className="mt-1 text-[10px]"><Stars rating={item.rating}/> <span>{Number(item.rating).toFixed(1)} ({item.reviews||0})</span></div>
+        <p className="mt-2 text-[15px] font-bold text-[#10183f]">{item.price}</p>
+        <p className="mt-1 truncate text-[10px] text-[#69739a]">{item.seller} · {item.location}</p>
+      </Link>) : (
+        <div className="col-span-full rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
+          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f7] text-[#69739a]">
+            ♡
+          </div>
+          <p className="mt-3 text-[13px] font-semibold text-[#10183f]">No similar services yet</p>
+          <p className="mx-auto mt-1 max-w-[430px] text-[11px] leading-5 text-[#69739a]">
+            We do not have any more services similar to this one right now. You can browse the full services catalogue instead.
+          </p>
+          <Link to="/services" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">
+            Browse all services
+          </Link>
+        </div>
+      )}
+    </div>
+  </section>
  </div></main>;
 }
 export default function ServiceDetailsPage(){const {id}=useParams();useEffect(()=>{window.scrollTo({top:0,behavior:"auto"})},[id]);const [service,setService]=useState(null);const [related,setRelated]=useState([]);useEffect(()=>{let active=true;Promise.all([getServiceById(id),getRelatedServices(id)]).then(([s,r])=>{if(active){setService(s);setRelated(r)}});return()=>{active=false}},[id]);if(!service)return <main className="mx-auto min-h-[60vh] max-w-[1470px] animate-pulse px-4 py-8 sm:px-6 lg:px-8"><div className="grid gap-8 lg:grid-cols-2"><div className="h-[480px] rounded-xl bg-slate-100"/><div className="space-y-4"><div className="h-6 w-24 rounded bg-slate-100"/><div className="h-10 w-3/4 rounded bg-slate-100"/><div className="h-5 w-1/3 rounded bg-slate-100"/><div className="h-24 rounded bg-slate-100"/><div className="h-12 w-40 rounded bg-slate-100"/></div></div></main>;return <ServiceDetails service={service} related={related}/>;}
