@@ -71,7 +71,7 @@ export default function ProviderSignupPageThree() {
     }
     try {
       const response = await saveProviderOnboardingDraft(formData);
-      if (response?.data?.formData) mergeFormData(response.data.formData);      if (response?.data?.formData) mergeFormData(response.data.formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page4");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
