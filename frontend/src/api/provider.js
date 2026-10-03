@@ -320,7 +320,7 @@ export function getSellerEarnings(){ return request("/api/provider/seller-earnin
 
 export function getSellerReviews(){ return request("/api/provider/seller-reviews"); }
 
-export function getSellerProfile(){return request("/api/provider/seller-profile");}
+export function getSellerProfile(){return request("/api/provider/seller-profile", { cache: false });}
 export function updateSellerProfile(payload){return request("/api/provider/seller-profile",{method:"PATCH",body:JSON.stringify(payload)});}
 
 export function getSellerSettings(){return request("/api/provider/seller-settings");}
