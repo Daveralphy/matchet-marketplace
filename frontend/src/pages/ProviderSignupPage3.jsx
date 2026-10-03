@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
 import { saveProviderOnboardingDraft } from "../api/provider";
+import { uploadFiles } from "../api/uploads";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -27,19 +28,18 @@ export default function ProviderSignupPageThree() {
     updateField(name, value);
   };
 
-  const addFiles = (files) => {
+  const addFiles = async (files) => {
     const validFiles = Array.from(files || []).filter((file) => {
-      if (file.size > 10 * 1024 * 1024) {
-        alert(`"${file.name}" is larger than 10MB and was not added.`);
-        return false;
-      }
-      return ["image/jpeg", "image/png", "image/webp", "video/mp4"].includes(file.type);
+      if (file.size > 10 * 1024 * 1024) { alert(`"${file.name}" is larger than 10MB and was not added.`); return false; }
+      if (!["image/jpeg", "image/png", "image/webp", "video/mp4"].includes(file.type)) { alert(`"${file.name}" is not a supported portfolio file.`); return false; }
+      return true;
     });
-
     if (!validFiles.length) return;
-
-    const currentFiles = formData.providerPortfolioMedia || [];
-    updateField("providerPortfolioMedia", [...currentFiles, ...validFiles]);
+    try {
+      const uploaded = await uploadFiles(validFiles, "matchet/portfolio");
+      const currentFiles = Array.isArray(formData.providerPortfolioMedia) ? formData.providerPortfolioMedia : [];
+      updateField("providerPortfolioMedia", [...currentFiles, ...uploaded].slice(0, 10));
+    } catch (error) { alert(error.message || "Unable to upload portfolio media."); }
   };
 
   useEffect(() => {
