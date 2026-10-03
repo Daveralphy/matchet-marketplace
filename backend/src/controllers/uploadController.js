@@ -8,7 +8,7 @@ const FOLDER_RULES = {
   "matchet/profiles": { maxFiles: 1, maxBytes: 5 * 1024 * 1024, accessType: "upload" },
   "matchet/stores": { maxFiles: 2, maxBytes: 5 * 1024 * 1024, accessType: "upload" },
   "matchet/portfolio": { maxFiles: 10, maxBytes: 10 * 1024 * 1024, accessType: "upload" },
-  "matchet/verification": { maxFiles: 3, maxBytes: 5 * 1024 * 1024, accessType: "authenticated" },
+  "matchet/verification": { maxFiles: 3, maxBytes: 5 * 1024 * 1024, accessType: "upload" },
 };
 
 function decodeDataUrl(dataUrl) {

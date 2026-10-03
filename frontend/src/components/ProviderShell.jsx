@@ -68,6 +68,8 @@ export function ProviderShell({ children, mode = "provider" }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
+  const [logoutSubmitting, setLogoutSubmitting] = useState(false);
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
 
@@ -127,9 +129,14 @@ export function ProviderShell({ children, mode = "provider" }) {
   };
 
   const handleLogout = async () => {
-    setProfileOpen(false);
-    await logout();
-    navigate("/login", { replace: true });
+    setLogoutSubmitting(true);
+    try {
+      await logout();
+      navigate("/", { replace: true });
+    } finally {
+      setLogoutSubmitting(false);
+      setLogoutConfirmOpen(false);
+    }
   };
 
   return (
@@ -211,7 +218,7 @@ export function ProviderShell({ children, mode = "provider" }) {
                 <button type="button" onClick={() => navigate(sellerMode ? "/seller/settings" : "/provider/settings")}><Icon name="settings" size={18} /> Settings</button>
                 <button type="button" onClick={() => navigate(sellerMode ? "/seller/messages" : "/provider/messages")}><Icon name="message" size={18} /> Messages {unreadCount > 0 && <b>{unreadCount}</b>}</button>
                 <div className="provider-profile-menu-divider" />
-                <button type="button" className="danger" onClick={handleLogout}><Icon name="logout" size={18} /> Sign out</button>
+                <button type="button" className="danger" onClick={() => { setProfileOpen(false); setLogoutConfirmOpen(true); }}><Icon name="logout" size={18} /> Sign out</button>
               </div>
             )}
           </div>
@@ -219,6 +226,19 @@ export function ProviderShell({ children, mode = "provider" }) {
       </header>
 
       <main className="provider-main">{children}</main>
+      {logoutConfirmOpen && (
+        <div className="provider-logout-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !logoutSubmitting) setLogoutConfirmOpen(false); }}>
+          <div className="provider-logout-modal" role="dialog" aria-modal="true" aria-labelledby="provider-logout-title">
+            <h2 id="provider-logout-title">Log out of Matchet?</h2>
+            <p>You will need to sign in again to access your account.</p>
+            <div className="provider-logout-actions">
+              <button type="button" disabled={logoutSubmitting} onClick={() => setLogoutConfirmOpen(false)}>Cancel</button>
+              <button type="button" className="danger" disabled={logoutSubmitting} onClick={handleLogout}>{logoutSubmitting ? "Logging out..." : "Log out"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

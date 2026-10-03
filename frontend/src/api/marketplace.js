@@ -37,6 +37,11 @@ export async function getMarketplaceServices() {
   return payload.services ?? [];
 }
 
+export async function getMarketplaceProviders() {
+  const payload = await request("/api/marketplace/providers");
+  return payload.providers ?? [];
+}
+
 export async function getMarketplaceProductById(id) {
   try {
     const payload = await request(`/api/marketplace/products/${encodeURIComponent(id)}`);

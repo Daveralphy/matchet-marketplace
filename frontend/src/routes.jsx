@@ -1,6 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Brima
 
+import { useEffect, useState } from "react";
 import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
@@ -22,6 +23,13 @@ import ProviderSignupPageSix from "./pages/ProviderSignupPage6";
 import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
 import ProviderSignupPageEight from "./pages/ProviderSignupPage8";
 import ProviderDashboard from "./pages/ProviderDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminProviders from "./pages/AdminProviders";
+import AdminSellers from "./pages/AdminSellers";
+import AdminUsers from "./pages/AdminUsers";
+import AdminListings from "./pages/AdminListings";
+import AdminReports from "./pages/AdminReports";
+import AdminSettings from "./pages/AdminSettings";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerOrders from "./pages/SellerOrders";
 import SellerOrderDetail from "./pages/SellerOrderDetail";
@@ -42,6 +50,7 @@ import ProviderEarnings from "./pages/ProviderEarnings";
 import ProviderReviews from "./pages/ProviderReviews";
 import ProviderProfile from "./pages/ProviderProfile";
 import ProviderSettings from "./pages/ProviderSettings";
+import { getOnboardingProgress, getProviderProfile, getSellerProfile } from "./api/provider";
 import Login from "./pages/Login";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
@@ -63,6 +72,69 @@ function BlankPage() {
   return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
 }
 
+function RequireAdmin({ children }) {
+  const { user, loading, isAuthenticated } = useAuth();
+  const location = useLocation();
+  if (loading) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to={"/login?returnTo=" + encodeURIComponent(location.pathname)} replace />;
+  if (user?.role !== "admin") return <Navigate to="/" replace />;
+  return children;
+}
+
+function RequireOnboardingSubmitted({ flow, children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [submitted, setSubmitted] = useState(false);
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getOnboardingProgress(flow).then((response) => {
+      if (active) setSubmitted(Boolean(response?.data?.submitted));
+    }).catch(() => {
+      if (active) setSubmitted(false);
+    }).finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [flow, isAuthenticated, loading]);
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!submitted) {
+    const target = flow === "service" ? "/provider/onboarding" : "/register";
+    return <Navigate to={target} replace />;
+  }
+  return children;
+}
+
+function RequireOnboardingStep({ flow, step, children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [redirectStep, setRedirectStep] = useState(null);
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getOnboardingProgress(flow).then((response) => {
+      if (!active) return;
+      const data = response?.data;
+      if (data?.submitted) return;
+      const firstIncomplete = Number(data?.firstIncompleteStep || 1);
+      // The provider review page is the final review surface. If the backend
+      // still considers Step 6 incomplete, allow Step 7 to render so the user
+      // can see the saved values and correct them before final submission.
+      const allowProviderReviewAfterStep6 = flow === "service" && step === 7 && firstIncomplete === 6;
+      if (firstIncomplete < step && !allowProviderReviewAfterStep6) setRedirectStep(firstIncomplete);
+    }).catch(() => active && setRedirectStep(1)).finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [flow, step, isAuthenticated, loading]);
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (redirectStep) {
+    const target = flow === "service"
+      ? (redirectStep === 1 ? "/provider/onboarding" : "/provider/onboarding/page" + redirectStep)
+      : (redirectStep === 1 ? "/register" : "/register/page" + redirectStep);
+    return <Navigate to={target} replace />;
+  }
+  return children;
+}
+
 function RequireAuth({ children }) {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
@@ -70,6 +142,99 @@ function RequireAuth({ children }) {
   if (isAuthenticated) return children;
   const returnTo = location.pathname + location.search;
   return <Navigate to={"/login?returnTo=" + encodeURIComponent(returnTo)} replace />;
+}
+
+function ProviderAccessPage({ state }) {
+  const title = state === "missing"
+    ? "Provider access is not available"
+    : state === "incomplete"
+      ? "Continue your provider application"
+      : state === "rejected"
+        ? "Provider application was not approved"
+        : "Provider application is still being reviewed";
+  const message = state === "missing"
+    ? "This account has not completed provider onboarding, so provider dashboard pages are not available."
+    : state === "incomplete"
+      ? "You started provider onboarding but have not submitted your application yet. Continue from the step you last completed."
+      : state === "rejected"
+        ? "Your provider application is not currently approved. View the application status for the next steps."
+        : "Your provider application has not been approved yet. You can view its current status or return to the marketplace.";
+  return (
+    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
+      <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
+        <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
+        <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
+        {state === "missing" || state === "incomplete" ? <a href="/provider/onboarding">Continue application</a> : <a href="/provider/application-status">View application status</a>}
+        <div style={{ marginTop: "16px" }}><a href="/">Return to marketplace</a></div>
+      </section>
+    </main>
+  );
+}
+
+function SellerAccessPage({ state }) {
+  const title = state === "missing" ? "Seller access is not available" : state === "rejected" ? "Seller application was not approved" : "Seller application is still being reviewed";
+  const message = state === "missing"
+    ? "This account does not have an approved seller profile, so seller dashboard pages are not available."
+    : state === "rejected"
+      ? "Your seller application is not currently approved."
+      : "Your seller application has not been approved yet.";
+  return (
+    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
+      <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
+        <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
+        <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
+        {state === "missing" && <a href="/register">Start seller onboarding</a>}
+        <div style={{ marginTop: "16px" }}><a href="/">Return to marketplace</a></div>
+      </section>
+    </main>
+  );
+}
+
+function RequireSeller({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [state, setState] = useState("missing");
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getSellerProfile().then((response) => {
+      if (!active) return;
+      const store = response?.data?.store;
+      if (!store) setState("missing");
+      else if (store.status === "active" && store.verificationStatus === "verified") setState("active");
+      else if (store.verificationStatus === "rejected") setState("rejected");
+      else setState("pending");
+    }).catch(() => active && setState("missing")).finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [isAuthenticated, loading]);
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (state !== "active") return <SellerAccessPage state={state} />;
+  return children;
+}
+
+function RequireProvider({ children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [state, setState] = useState("missing");
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getProviderProfile().then((response) => {
+      if (!active) return;
+      const profile = response?.data?.profile;
+      if (!profile) setState("missing");
+      else if (profile.status === "active" && profile.verificationStatus === "verified" && profile.applicationSubmittedAt) setState("active");
+      else if (profile.verificationStatus === "rejected") setState("rejected");
+      else if (!profile.applicationSubmittedAt) setState("incomplete");
+      else setState("pending");
+    }).catch(() => active && setState("missing")).finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [isAuthenticated, loading]);
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (state !== "active") return <ProviderAccessPage state={state} />;
+  return children;
 }
 
 const router = createBrowserRouter([
@@ -123,35 +288,35 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <RequireAuth><SellerSignupPageOne /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={1}><SellerSignupPageOne /></RequireOnboardingStep>,
   },
   {
     path: "/register/page2",
-    element: <RequireAuth><SellerSignupPageTwo /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={2}><SellerSignupPageTwo /></RequireOnboardingStep>,
   },
   {
     path: "/register/page3",
-    element: <RequireAuth><SellerSignupPageThree /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageThree /></RequireOnboardingStep>,
   },
   {
     path: "/register/page4",
-    element: <RequireAuth><SellerSignupPageFour /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFour /></RequireOnboardingStep>,
   },
   {
     path: "/register/page5",
-    element: <RequireAuth><SellerSignupPageFive /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/register/page6",
-    element: <RequireAuth><SellerSignupPageSix /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={6}><SellerSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/register/page7",
-    element: <RequireAuth><SellerSignupPageSeven /></RequireAuth>,
+    element: <RequireOnboardingStep flow="seller" step={7}><SellerSignupPageSeven /></RequireOnboardingStep>,
   },
   {
     path: "/register/page8",
-    element: <RequireAuth><SellerSignupPageEight /></RequireAuth>,
+    element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
   },
   {
     path: "/account/saved-items",
@@ -203,8 +368,36 @@ const router = createBrowserRouter([
   },
 
   {
+    path: "/admin/dashboard",
+    element: <RequireAdmin><AdminDashboard /></RequireAdmin>,
+  },
+  {
+    path: "/admin/providers",
+    element: <RequireAdmin><AdminProviders /></RequireAdmin>,
+  },
+  {
+    path: "/admin/sellers",
+    element: <RequireAdmin><AdminSellers /></RequireAdmin>,
+  },
+  {
+    path: "/admin/users",
+    element: <RequireAdmin><AdminUsers /></RequireAdmin>,
+  },
+  {
+    path: "/admin/listings",
+    element: <RequireAdmin><AdminListings /></RequireAdmin>,
+  },
+  {
+    path: "/admin/reports",
+    element: <RequireAdmin><AdminReports /></RequireAdmin>,
+  },
+  {
+    path: "/admin/settings",
+    element: <RequireAdmin><AdminSettings /></RequireAdmin>,
+  },
+  {
     path: "/provider/profile",
-    element: <RequireAuth><ProviderProfile /></RequireAuth>,
+    element: <RequireProvider><ProviderProfile /></RequireProvider>,
   },
   {
     path: "/orders",
@@ -212,11 +405,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/bookings",
-    element: <RequireAuth><ProviderBookings /></RequireAuth>,
+    element: <RequireProvider><ProviderBookings /></RequireProvider>,
   },
   {
     path: "/provider/settings",
-    element: <RequireAuth><ProviderSettings /></RequireAuth>,
+    element: <RequireProvider><ProviderSettings /></RequireProvider>,
   },
   {
     path: "/help",
@@ -224,7 +417,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/reviews",
-    element: <RequireAuth><ProviderReviews /></RequireAuth>,
+    element: <RequireProvider><ProviderReviews /></RequireProvider>,
   },
   {
     path: "/categories",
@@ -240,11 +433,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/services",
-    element: <RequireAuth><ProviderServices /></RequireAuth>,
+    element: <RequireProvider><ProviderServices /></RequireProvider>,
   },
   {
     path: "/provider/messages",
-    element: <RequireAuth><ProviderMessages /></RequireAuth>,
+    element: <RequireProvider><ProviderMessages /></RequireProvider>,
   },
   {
     path: "/saved-items",
@@ -288,15 +481,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/dashboard",
-    element: <RequireAuth><ProviderDashboard /></RequireAuth>,
+    element: <RequireProvider><ProviderDashboard /></RequireProvider>,
   },
   {
     path: "/seller/dashboard",
-    element: <RequireAuth><SellerDashboard /> </RequireAuth>,
+    element: <RequireSeller><SellerDashboard /></RequireSeller>,
   },
   {
     path: "/seller/orders",
-    element: <RequireAuth><SellerOrders /></RequireAuth>,
+    element: <RequireSeller><SellerOrders /></RequireSeller>,
   },
   {
     path: "/seller/orders/:orderId",
@@ -304,31 +497,31 @@ const router = createBrowserRouter([
   },
   {
     path: "/seller/messages",
-    element: <RequireAuth><SellerMessages /></RequireAuth>,
+    element: <RequireSeller><SellerMessages /></RequireSeller>,
   },
   {
     path: "/seller/products",
-    element: <RequireAuth><SellerProducts /></RequireAuth>,
+    element: <RequireSeller><SellerProducts /></RequireSeller>,
   },
   {
     path: "/seller/products/new",
-    element: <RequireAuth><SellerProductForm /></RequireAuth>,
+    element: <RequireSeller><SellerProductForm /></RequireSeller>,
   },
   {
     path: "/seller/products/:productId/edit",
-    element: <RequireAuth><SellerProductForm /></RequireAuth>,
+    element: <RequireSeller><SellerProductForm /></RequireSeller>,
   },
   {
     path: "/seller/earnings",
-    element: <RequireAuth><SellerEarnings /></RequireAuth>,
+    element: <RequireSeller><SellerEarnings /></RequireSeller>,
   },
   {
     path: "/seller/reviews",
-    element: <RequireAuth><SellerReviews /></RequireAuth>,
+    element: <RequireSeller><SellerReviews /></RequireSeller>,
   },
   {
     path: "/seller/profile",
-    element: <RequireAuth><SellerProfile /></RequireAuth>,
+    element: <RequireSeller><SellerProfile /></RequireSeller>,
   },
   {
     path: "/store/:slug",
@@ -336,11 +529,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/seller/settings",
-    element: <RequireAuth><SellerSettings /></RequireAuth>,
+    element: <RequireSeller><SellerSettings /></RequireSeller>,
   },
   {
     path: "/provider/earnings",
-    element: <RequireAuth><ProviderEarnings /></RequireAuth>,
+    element: <RequireProvider><ProviderEarnings /></RequireProvider>,
   },
   {
     path: "/provider/application-status",
@@ -348,59 +541,39 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/onboarding",
-    element: <RequireAuth><ProviderSignupPageOne /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={1}><ProviderSignupPageOne /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page2",
-    element: <RequireAuth><ProviderSignupPageTwo /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={2}><ProviderSignupPageTwo /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page3",
-    element: <RequireAuth><ProviderSignupPageThree /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={3}><ProviderSignupPageThree /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page4",
-    element: <RequireAuth><ProviderSignupPageFour /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={4}><ProviderSignupPageFour /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page5",
-    element: <RequireAuth><ProviderSignupPageFive /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={5}><ProviderSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page6",
-    element: <RequireAuth><ProviderSignupPageSix /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={6}><ProviderSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page7",
-    element: <RequireAuth><ProviderSignupPageSeven /></RequireAuth>,
+    element: <RequireOnboardingStep flow="service" step={7}><ProviderSignupPageSeven /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/success",
-    element: <RequireAuth><ProviderSignupPageEight /></RequireAuth>,
+    element: <RequireOnboardingSubmitted flow="service"><ProviderSignupPageEight /></RequireOnboardingSubmitted>,
   },
   {
     path: "/provider/application-status",
     element: <RequireAuth><ProviderApplicationStatus /></RequireAuth>,
-  },
-  {
-    path: "/provider/earnings",
-    element: <RequireAuth><ProviderDataPage type="earnings" /></RequireAuth>,
-  },
-  {
-    path: "/provider/reviews",
-    element: <RequireAuth><ProviderDataPage type="reviews" /></RequireAuth>,
-  },
-  {
-    path: "/provider/profile",
-    element: <RequireAuth><ProviderDataPage type="profile" /></RequireAuth>,
-  },
-  {
-    path: "/provider/settings",
-    element: <RequireAuth><ProviderDataPage type="settings" /></RequireAuth>,
-  },
-  {
-    path: "/provider/bookings",
-    element: <RequireAuth><ProviderBookings /></RequireAuth>,
   },
   {
     path: "/provider/listings",

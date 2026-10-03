@@ -880,15 +880,22 @@ function ServiceListingCard({ service }) {
   return (
     <Link to={`/services/${service.id}`} className="block overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
       <div className={`relative h-[218px] overflow-hidden ${service.imageTone || "bg-[#dfe7e2]"}`}>
-        {service.image ? (
-          <img src={service.image} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
+        {service.image || service.gallery?.[0] ? (
+          <img
+            src={service.image || service.gallery?.[0]}
+            alt=""
+            className="h-full w-full object-cover"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+              event.currentTarget.nextElementSibling?.classList.remove("hidden");
+            }}
+          />
+        ) : null}
+        <div className={service.image || service.gallery?.[0] ? "absolute inset-0 hidden items-center justify-center" : "absolute inset-0 flex items-center justify-center"}>
             <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
               <Icon name={service.icon || (service.category === "Beauty & Care" || service.category === "Beauty & Wellness" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home")} size={42} strokeWidth={1.45} />
             </span>
           </div>
-        )}
 
         {service.match && (
           <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold text-[#07863a] shadow-sm">
@@ -1005,9 +1012,14 @@ function ServicesListingSection({ isAuthenticated }) {
       </div>
 
       <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {services.map((service) => (
+        {services.length ? services.map((service) => (
           <ServiceListingCard key={service.id} service={service} />
-        ))}
+        )) : (
+          <div className="col-span-full rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-14 text-center">
+            <p className="text-[13px] font-semibold text-[#10183f]">No services available yet</p>
+            <p className="mt-1 text-[11px] text-[#69739a]">Live services will appear here when a provider publishes an active service.</p>
+          </div>
+        )}
       </div>
     </section>
   );

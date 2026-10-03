@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
 import { saveProviderOnboardingDraft } from "../api/provider";
+import { uploadFiles } from "../api/uploads";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -27,32 +28,31 @@ export default function ProviderSignupPageThree() {
     updateField(name, value);
   };
 
-  const addFiles = (files) => {
+  const addFiles = async (files) => {
     const validFiles = Array.from(files || []).filter((file) => {
-      if (file.size > 10 * 1024 * 1024) {
-        alert(`"${file.name}" is larger than 10MB and was not added.`);
-        return false;
-      }
-      return ["image/jpeg", "image/png", "image/webp", "video/mp4"].includes(file.type);
+      if (file.size > 10 * 1024 * 1024) { alert(`"${file.name}" is larger than 10MB and was not added.`); return false; }
+      if (!["image/jpeg", "image/png", "image/webp", "video/mp4"].includes(file.type)) { alert(`"${file.name}" is not a supported portfolio file.`); return false; }
+      return true;
     });
-
     if (!validFiles.length) return;
-
-    const currentFiles = formData.providerPortfolioMedia || [];
-    updateField("providerPortfolioMedia", [...currentFiles, ...validFiles]);
+    try {
+      const uploaded = await uploadFiles(validFiles, "matchet/portfolio");
+      const currentFiles = Array.isArray(formData.providerPortfolioMedia) ? formData.providerPortfolioMedia : [];
+      updateField("providerPortfolioMedia", [...currentFiles, ...uploaded].slice(0, 10));
+    } catch (error) { alert(error.message || "Unable to upload portfolio media."); }
   };
 
   useEffect(() => {
     const files = formData.providerPortfolioMedia || [];
     const next = files.slice(0, 3).map((file) => ({
       file,
-      url: typeof file === "string" ? file : file?.url || URL.createObjectURL(file),
+      url: typeof file === "string" ? file : file?.url || (typeof File !== "undefined" && file instanceof File ? URL.createObjectURL(file) : ""),
     }));
     setPreviews(next);
 
     return () => {
       next.forEach((item) => {
-        if (item.file && typeof item.file !== "string" && !item.file.url) URL.revokeObjectURL(item.url);
+        if (item.file && typeof File !== "undefined" && item.file instanceof File && item.url?.startsWith("blob:")) URL.revokeObjectURL(item.url);
       });
     };
   }, [formData.providerPortfolioMedia]);
@@ -71,7 +71,7 @@ export default function ProviderSignupPageThree() {
     }
     try {
       const response = await saveProviderOnboardingDraft(formData);
-      if (response?.data?.formData) mergeFormData(response.data.formData);      if (response?.data?.formData) mergeFormData(response.data.formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page4");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
@@ -139,9 +139,7 @@ export default function ProviderSignupPageThree() {
                 </label>
               </div>
 
-              <button type="button" className="provider-add-another-certification-button">
-                + Add another certification
-              </button>
+              <p className="provider-add-another-certification-note">You can add additional certifications to your provider profile after onboarding.</p>
             </div>
 
             <div className="provider-signup-form-field-group">
@@ -176,7 +174,7 @@ export default function ProviderSignupPageThree() {
 
                 {previews.map((item, index) => (
                   <div className="provider-portfolio-preview" key={`${item.url}-${index}`}>
-                    {item.file?.type === "video/mp4" ? <video src={item.url} muted /> : <img src={item.url} alt={`Portfolio preview ${index + 1}`} />}
+                    {(item.file?.type === "video/mp4" || item.file?.mimeType === "video/mp4") ? <video src={item.url} muted /> : item.url ? <img src={item.url} alt={`Portfolio preview ${index + 1}`} /> : <span>Preview unavailable</span> }
                     <button type="button" className="provider-portfolio-remove" onClick={() => removeFile(index)} aria-label={`Remove portfolio file ${index + 1}`}>×</button>
                   </div>
                 ))}

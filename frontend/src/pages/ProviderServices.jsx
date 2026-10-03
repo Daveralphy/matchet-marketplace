@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
-import { getProviderServices } from "../api/provider";
+import { createProviderService, getProviderServices, updateProviderService, deleteProviderService } from "../api/provider";
 import "../styles/provider-dashboard.css";
 
 function formatPrice(amount, currency) {
@@ -47,8 +48,48 @@ export default function ProviderServices() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [showForm, setShowForm] = useState(false);
+  const [editingService, setEditingService] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [menuService, setMenuService] = useState(null);
+  const [menuPosition, setMenuPosition] = useState(null);
   const pageSize = 6;
+
+  const openServiceMenu = (serviceId, event) => {
+    if (menuService === serviceId) {
+      setMenuService(null);
+      setMenuPosition(null);
+      return;
+    }
+    const rect = event.currentTarget.getBoundingClientRect();
+    const menuWidth = 200;
+    const menuHeight = 122;
+    const gap = 6;
+    const left = Math.max(12, Math.min(rect.right - menuWidth, window.innerWidth - menuWidth - 12));
+    const top = rect.bottom + gap <= window.innerHeight - 12
+      ? rect.bottom + gap
+      : Math.max(12, rect.top - menuHeight - gap);
+    setMenuService(serviceId);
+    setMenuPosition({ top, left });
+  };
+  useEffect(() => {
+    if (!menuService) return;
+    const close = () => {
+      setMenuService(null);
+      setMenuPosition(null);
+    };
+    document.addEventListener("mousedown", close);
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [menuService]);
+
+  const emptyForm = { title: "", description: "", category: "", pricingType: "fixed", price: "", durationMinutes: "", images: [] };
+  const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
     let active = true;
@@ -115,7 +156,7 @@ export default function ProviderServices() {
             <h1>Services</h1>
             <span>Manage your services, set prices, and showcase what you offer.</span>
           </div>
-          <button className="provider-blue-button" type="button">
+          <button className="provider-blue-button" type="button" onClick={() => { setEditingService(null); setForm(emptyForm); setShowForm(true); }}>
             <Icon name="plus" size={18} /> Add a new service
           </button>
         </div>
@@ -221,8 +262,9 @@ export default function ProviderServices() {
                   <span className={"status " + service.status}>{statusLabel(service.status)}</span>
                   <span>{service.bookingsLast30Days ?? 0}</span>
                   <div className="provider-service-actions">
-                    <button type="button">Edit</button>
-                    <button type="button" aria-label={"More actions for " + service.title}>⋮</button>
+                    <div className="provider-service-actions-menu-wrap">
+                      <button type="button" aria-label={"More actions for " + service.title} onMouseDown={(event) => { event.stopPropagation(); openServiceMenu(service.id, event); }}>⋮</button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -265,6 +307,113 @@ export default function ProviderServices() {
             </div>
           )}
         </div>
+        {menuService && menuPosition && createPortal(
+          (() => {
+            const service = services.find((item) => item.id === menuService);
+            if (!service) return null;
+            const nextStatus = service.status === "active" ? "paused" : "active";
+            const nextStatusLabel = service.status === "active" ? "Paused" : "Active";
+            return (
+              <div className="provider-service-actions-menu provider-service-actions-menu-portal" style={{ top: menuPosition.top, left: menuPosition.left }} onMouseDown={(event) => event.stopPropagation()}>
+                <button type="button" onClick={() => {
+                  setEditingService(service);
+                  setForm({ title: service.title || "", description: service.description || "", category: service.category || "", pricingType: service.pricingType || "fixed", price: service.price ?? "", durationMinutes: service.durationMinutes || "", images: service.images || [] });
+                  setShowForm(true); setMenuService(null); setMenuPosition(null);
+                }}>Edit service</button>
+                <button type="button" onClick={async () => {
+                  setMenuService(null); setMenuPosition(null);
+                  try {
+                    const response = await updateProviderService(service.id, { status: nextStatus });
+                    const saved = response.service;
+                    setServices((current) => current.map((item) => item.id === service.id ? { ...item, status: saved.status } : item));
+                    if (saved.status !== nextStatus && nextStatus === "active") {
+                      setError("This service could not be published yet. Your provider profile must be approved and verified first.");
+                    }
+                  } catch (e) { setError(e.message || "Unable to change service status."); }
+                }}>Change status: {nextStatusLabel}</button>
+                <button type="button" className="danger" onClick={async () => {
+                  setMenuService(null); setMenuPosition(null);
+                  if (!window.confirm("Delete \"" + service.title + "\"? This cannot be undone.")) return;
+                  try {
+                    await deleteProviderService(service.id);
+                    setServices((current) => current.filter((item) => item.id !== service.id));
+                  } catch (e) { setError(e.message || "Unable to delete service."); }
+                }}>Delete service</button>
+              </div>
+            );
+          })(),
+          document.body,
+        )}
+        {showForm && (
+          <div className="provider-service-modal-backdrop" role="presentation">
+            <form className="provider-service-modal" onSubmit={async (event) => {
+              event.preventDefault();
+              setSaving(true);
+              setError("");
+              try {
+                const payload = { ...form, price: form.pricingType === "customQuote" ? undefined : form.price };
+                const response = editingService
+                  ? await updateProviderService(editingService.id, payload)
+                  : await createProviderService(payload);
+                const saved = response.service;
+                setServices((current) => editingService
+                  ? current.map((item) => item.id === editingService.id ? { ...item, title: saved.title, description: saved.description, category: saved.category, price: saved.pricing?.amount ?? null, pricingType: saved.pricing?.type, durationMinutes: saved.durationMinutes, status: saved.status, image: saved.images?.find((image) => image.isPrimary)?.url || saved.images?.[0]?.url || null } : item)
+                  : [{ id: saved._id, title: saved.title, description: saved.description, category: saved.category, price: saved.pricing?.amount ?? null, currency: saved.pricing?.currency, pricingType: saved.pricing?.type, durationMinutes: saved.durationMinutes, status: saved.status, bookingsLast30Days: 0, views: 0, image: saved.images?.find((image) => image.isPrimary)?.url || saved.images?.[0]?.url || null, createdAt: saved.createdAt }, ...current]);
+                setShowForm(false);
+              } catch (requestError) {
+                setError(requestError.message || "Unable to save your service.");
+              } finally {
+                setSaving(false);
+              }
+            }}>
+              <div className="provider-service-modal-head"><div><h2>{editingService ? "Edit service" : "Add a new service"}</h2><p>Publish the service you want customers to find on Matchet.</p></div><button type="button" onClick={() => setShowForm(false)} aria-label="Close">×</button></div>
+              <label>Service name<input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></label>
+              <label>Description<textarea required rows="4" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></label>
+              <div className="provider-service-modal-grid"><label>Category<input required value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></label><label>Pricing<select value={form.pricingType} onChange={(e) => setForm({ ...form, pricingType: e.target.value })}><option value="fixed">Fixed price</option><option value="startingFrom">Starting from</option><option value="customQuote">Custom quote</option></select></label></div>
+              {form.pricingType !== "customQuote" && <label>Price<input required type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></label>}
+              <label>Duration in minutes<input type="number" min="1" value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} /></label>
+              <label>
+                Service images
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.files || []);
+                    setForm((current) => ({
+                      ...current,
+                      images: [...(current.images || []), ...selected].slice(0, 6),
+                    }));
+                    e.target.value = "";
+                  }}
+                />
+                <small className="provider-service-image-help">Add up to 6 images. Images are securely uploaded to Cloudinary when you publish.</small>
+              </label>
+              {form.images?.length > 0 && (
+                <div className="provider-service-image-grid">
+                  {form.images.map((image, index) => {
+                    const preview = image instanceof File ? URL.createObjectURL(image) : image?.url;
+                    return (
+                      <div className="provider-service-image-preview" key={(image?.publicId || image?.url || image?.name || "image") + index}>
+                        {preview ? <img src={preview} alt={form.title || "Service preview"} /> : <Icon name="grid" size={22} />}
+                        {index === 0 && <span>Primary</span>}
+                        <button
+                          type="button"
+                          onClick={() => setForm((current) => ({
+                            ...current,
+                            images: current.images.filter((_, imageIndex) => imageIndex !== index),
+                          }))}
+                          aria-label={"Remove image " + (index + 1)}
+                        >×</button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <div className="provider-service-modal-actions"><button type="button" onClick={() => setShowForm(false)}>Cancel</button><button className="provider-blue-button" disabled={saving}>{saving ? "Saving..." : editingService ? "Save changes" : "Publish service"}</button></div>
+            </form>
+          </div>
+        )}
       </div>
     </ProviderShell>
   );

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
 import { saveProviderOnboardingDraft } from "../api/provider";
+import { uploadFile } from "../api/uploads";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -15,12 +16,30 @@ function ServiceTypeIcon({ type }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10l-3-3M17 17H7l3 3M17 7l3 3-3 3M7 17l-3-3 3-3" /></svg>;
 }
 
+function getScalarSelectValue(value) {
+  if (Array.isArray(value)) {
+    return value.length > 0 ? String(value[0] ?? "") : "";
+  }
+
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  if (typeof value === "object") {
+    return String(value.value ?? value.label ?? value.name ?? "");
+  }
+
+  return String(value);
+}
+
 export default function ProviderSignupPageTwo() {
   const { formData, updateField, mergeFormData } = useForm();
   const navigate = useNavigate();
-  const [areas, setAreas] = useState(
-    formData.providerAreasServed ? [formData.providerAreasServed] : [""],
-  );
+  const [areas, setAreas] = useState(() => {
+    const value = formData.providerAreasServed;
+    if (Array.isArray(value)) return value.length ? value.map((item) => getScalarSelectValue(item)) : [""];
+    return value ? [getScalarSelectValue(value)] : [""];
+  });
   const [servicePreviews, setServicePreviews] = useState(() => Array(6).fill(null));
 
   const categories = [
@@ -46,12 +65,10 @@ export default function ProviderSignupPageTwo() {
   };
 
   const handleAreaChange = (index, value) => {
-    setAreas((current) => {
-      const next = [...current];
-      next[index] = value;
-      updateField("providerAreasServed", next.filter(Boolean));
-      return next;
-    });
+    const next = areas.map((item) => getScalarSelectValue(item));
+    next[index] = getScalarSelectValue(value);
+    setAreas(next);
+    updateField("providerAreasServed", next.filter(Boolean));
   };
 
   const addArea = () => {
@@ -59,17 +76,43 @@ export default function ProviderSignupPageTwo() {
   };
 
   useEffect(() => {
+    let cancelled = false;
     const images = Array.isArray(formData.providerServiceImages) ? formData.providerServiceImages : [];
-    setServicePreviews((previous) => {
-      const next = Array(6).fill(null);
-      images.slice(0, 6).forEach((image, index) => {
-        next[index] = image?.url || (typeof image === "string" ? image : previous[index] || null);
-      });
-      return next;
+    const next = Array(6).fill(null);
+    const localFiles = [];
+
+    images.slice(0, 6).forEach((image, index) => {
+      if (typeof image === "string") {
+        next[index] = image;
+      } else if (image?.url) {
+        next[index] = image.url;
+      } else if (typeof File !== "undefined" && image instanceof File) {
+        localFiles.push({ index, file: image });
+      }
     });
+
+    setServicePreviews(next);
+
+    localFiles.forEach(({ index, file }) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (!cancelled) {
+          setServicePreviews((current) => {
+            const updated = [...current];
+            updated[index] = String(reader.result || "");
+            return updated;
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [formData.providerServiceImages]);
 
-  const handleServiceImage = (index, file) => {
+  const handleServiceImage = async (index, file) => {
     if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       alert("Please upload a JPG, PNG, or WebP image.");
@@ -79,26 +122,24 @@ export default function ProviderSignupPageTwo() {
       alert("File is too large. Maximum size allowed is 5MB.");
       return;
     }
-
-    const previewUrl = URL.createObjectURL(file);
-    setServicePreviews((previous) => {
-      const next = [...previous];
-      if (next[index]?.startsWith("blob:")) URL.revokeObjectURL(next[index]);
-      next[index] = previewUrl;
-      return next;
-    });
-
-    const images = Array.isArray(formData.providerServiceImages)
-      ? [...formData.providerServiceImages]
-      : [];
-    images[index] = file;
-    updateField("providerServiceImages", images.slice(0, 6));
+    try {
+      const uploaded = await uploadFile(file, "matchet/services");
+      if (!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
+      setServicePreviews((previous) => {
+        const next = [...previous];
+        next[index] = uploaded.url;
+        return next;
+      });
+      const images = Array.isArray(formData.providerServiceImages) ? [...formData.providerServiceImages] : [];
+      images[index] = uploaded;
+      updateField("providerServiceImages", images.slice(0, 6));
+    } catch (error) {
+      alert(error.message || "Unable to upload this service image.");
+    }
   };
-
   const removeServiceImage = (index) => {
     setServicePreviews((previous) => {
       const next = [...previous];
-      if (next[index]?.startsWith("blob:")) URL.revokeObjectURL(next[index]);
       next.splice(index, 1);
       next.push(null);
       return next;
@@ -151,7 +192,7 @@ export default function ProviderSignupPageTwo() {
 
               <label htmlFor="providerServiceCat">
                 Service category *
-                <select id="providerServiceCat" name="providerServiceCat" value={formData.providerServiceCat || ""} onChange={handleChange} required>
+                <select id="providerServiceCat" name="providerServiceCat" value={getScalarSelectValue(formData.providerServiceCat)} onChange={handleChange} required>
                   <option value="" disabled>Select a category</option>
                   {categories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}
                 </select>
@@ -232,7 +273,7 @@ export default function ProviderSignupPageTwo() {
 
               <label htmlFor="providerServiceDuration">
                 Service duration *
-                <select id="providerServiceDuration" name="providerServiceDuration" value={formData.providerServiceDuration || ""} onChange={handleChange} required>
+                <select id="providerServiceDuration" name="providerServiceDuration" value={getScalarSelectValue(formData.providerServiceDuration)} onChange={handleChange} required>
                   <option value="" disabled>Select duration</option>
                   {durations.map((duration) => <option key={duration} value={duration}>{duration}</option>)}
                 </select>
@@ -240,7 +281,7 @@ export default function ProviderSignupPageTwo() {
 
               <label htmlFor="providerServiceNumberOfPeople">
                 Number of people (per session)
-                <select id="providerServiceNumberOfPeople" name="providerServiceNumberOfPeople" value={formData.providerServiceNumberOfPeople || ""} onChange={handleChange}>
+                <select id="providerServiceNumberOfPeople" name="providerServiceNumberOfPeople" value={getScalarSelectValue(formData.providerServiceNumberOfPeople)} onChange={handleChange}>
                   <option value="" disabled>Select</option>
                   {peopleOptions.map((people) => <option key={people} value={people}>{people}</option>)}
                 </select>
@@ -249,7 +290,7 @@ export default function ProviderSignupPageTwo() {
               <div className="provider-areas-served-field">
                 <label htmlFor="providerAreasServed-0">
                   Areas served *
-                  <select id="providerAreasServed-0" value={areas[0] || ""} onChange={(event) => handleAreaChange(0, event.target.value)} required>
+                  <select id="providerAreasServed-0" value={getScalarSelectValue(areas[0])} onChange={(event) => handleAreaChange(0, event.target.value)} required>
                     <option value="" disabled>Search locations (e.g. Lagos, Ikeja, Victoria Island)</option>
                     <option value="Lagos, Nigeria">Lagos, Nigeria</option>
                     <option value="Ikeja, Lagos">Ikeja, Lagos</option>
@@ -263,7 +304,7 @@ export default function ProviderSignupPageTwo() {
                 <div className="provider-areas-served-field" key={index}>
                   <label htmlFor={`providerAreasServed-${index + 1}`}>
                     Additional area
-                    <select id={`providerAreasServed-${index + 1}`} value={area} onChange={(event) => handleAreaChange(index + 1, event.target.value)}>
+                    <select id={`providerAreasServed-${index + 1}`} value={getScalarSelectValue(area)} onChange={(event) => handleAreaChange(index + 1, event.target.value)}>
                       <option value="">Select another location</option>
                       <option value="Lagos, Nigeria">Lagos, Nigeria</option>
                       <option value="Ikeja, Lagos">Ikeja, Lagos</option>
@@ -279,7 +320,7 @@ export default function ProviderSignupPageTwo() {
 
             <div className="provider-signup-page2-actions">
               <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding")}>←&nbsp;&nbsp;Back</button>
-              <button type="button" className="provider-add-another-service-button" onClick={() => navigate("/provider/onboarding/page2")}>Save and add another service</button>
+              <span className="provider-add-another-service-note">You can add additional services from your provider dashboard after approval.</span>
               <button type="submit" className="provider-signup-save-continue-button">Save &amp; continue&nbsp;&nbsp;→</button>
             </div>
           </form>

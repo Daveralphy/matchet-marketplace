@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
 import { saveProviderOnboardingDraft } from "../api/provider";
+import { uploadFile } from "../api/uploads";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -31,44 +32,32 @@ export default function ProviderSignupPageFive() {
 
   const maxFileSize = 5 * 1024 * 1024;
 
+  const uploadVerificationFile = async (file, field, acceptedTypes) => {
+    if (!file) return;
+    if (!acceptedTypes.includes(file.type)) { alert("Please upload a supported file type."); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("File is too large. Maximum size allowed is 5MB."); return; }
+    try {
+      const uploaded = await uploadFile(file, "matchet/verification");
+      if (!uploaded?.url) throw new Error("Cloudinary did not return a file URL.");
+      updateField(field, uploaded);
+    } catch (error) { alert(error.message || "Unable to upload this verification file."); }
+  };
   const validateAndStoreFile = (event, field, acceptedTypes) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    if (!acceptedTypes.includes(file.type)) {
-      alert("Please upload a supported file type.");
-      event.target.value = "";
-      return;
-    }
-    if (file.size > maxFileSize) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      event.target.value = "";
-      return;
-    }
-    updateField(field, file);
     event.target.value = "";
+    uploadVerificationFile(file, field, acceptedTypes);
   };
-
   const handleDrop = (event, field, acceptedTypes) => {
     event.preventDefault();
-    const file = event.dataTransfer.files?.[0];
-    if (!file) return;
-    if (!acceptedTypes.includes(file.type)) {
-      alert("Please upload a supported file type.");
-      return;
-    }
-    if (file.size > maxFileSize) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      return;
-    }
-    updateField(field, file);
+    uploadVerificationFile(event.dataTransfer.files?.[0], field, acceptedTypes);
   };
 
   const filePreview = useMemo(() => {
     const createPreview = (value) => {
       if (!value) return null;
-      if (typeof value === "string") return value;
-      if (value.url) return value.url;
-      if (typeof File !== "undefined" && value instanceof File) return URL.createObjectURL(value);
+      if (typeof value === "string") return { url: value, type: "" };
+      if (value && typeof value === "object" && value.url) return { url: value.url, type: value.mimeType || value.type || "" };
+      if (typeof File !== "undefined" && value instanceof File) return { url: URL.createObjectURL(value), type: value.type || "" };
       return null;
     };
     return {
@@ -79,7 +68,7 @@ export default function ProviderSignupPageFive() {
   }, [formData.providerIdImageFront, formData.providerIdImageBack, formData.providerSelfieImage]);
 
   useEffect(() => {
-    return () => Object.values(filePreview).forEach((url) => url && URL.revokeObjectURL(url));
+    return () => Object.values(filePreview).forEach((item) => item?.url && item.url.startsWith("blob:") && URL.revokeObjectURL(item.url));
   }, [filePreview]);
 
   const renderUploadBox = ({ field, inputId, title, accept, types, preview, file }) => (

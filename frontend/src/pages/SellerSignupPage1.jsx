@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 import { getProviderCapabilities, getSellerOnboardingDraft, saveSellerOnboardingDraft } from "../api/provider";
+import { uploadFile } from "../api/uploads";
 
 export default function SellerSignupPageOne() {
   const { formData, updateField, mergeFormData, setOnboardingFlow, clearForm } = useForm();
@@ -638,10 +639,13 @@ export default function SellerSignupPageOne() {
                         return;
                       }
                       photoSelectionRef.current = true;
-                      updateField("profileImage", file);
-                      setPhotoPreview((previousUrl) => {
-                        if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
-                        return URL.createObjectURL(file);
+                      uploadFile(file, "matchet/profiles").then((uploaded) => {
+                        if (!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
+                        updateField("profileImage", uploaded);
+                        setPhotoPreview(uploaded.url);
+                      }).catch((error) => {
+                        photoSelectionRef.current = false;
+                        alert(error.message || "Unable to upload your profile photo.");
                       });
                       e.target.value = "";
                     }}

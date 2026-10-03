@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
-import { getMarketplaceCollection } from "../data/marketplaceApi";
+import { getMarketplaceData } from "../data/marketplaceApi";
 import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMock";
 import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } from "../data/homeCommunityMock";
 import { MOBILE_APP_SECTIONS } from "../data/homeMobileAppMock";
@@ -415,7 +415,18 @@ function MarketplaceCard({ item, compact = false }) {
           item.imageTone,
         ].join(" ")}
       >
-        <span className="text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105">
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.title || ""}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            onError={(event) => {
+              event.currentTarget.style.display = "none";
+              event.currentTarget.nextElementSibling?.classList.remove("hidden");
+            }}
+          />
+        ) : null}
+        <span className={item.image ? "hidden text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105" : "text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105"}>
           <Icon name={getMarketplacePlaceholderIcon(item)} size={72} strokeWidth={1.25} />
         </span>
 
@@ -556,14 +567,21 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, viewPath 
         </div>
       </div>
 
-      <div
-        ref={railRef}
-        className="mt-6 flex gap-4 overflow-x-auto pb-2 scrollbar-none"
-      >
-        {items.map((item) => (
-          <MarketplaceCard key={item.id} item={item} />
-        ))}
-      </div>
+      {items.length ? (
+        <div
+          ref={railRef}
+          className="mt-6 flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+        >
+          {items.map((item) => (
+            <MarketplaceCard key={item.id} item={item} />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-6 rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
+          <p className="text-[13px] font-semibold text-[#10183f]">Nothing to show here yet</p>
+          <p className="mt-1 text-[11px] text-[#69739a]">Products and services will appear here when sellers and providers publish active listings.</p>
+        </div>
+       )}
     </section>
   );
 }
@@ -663,14 +681,21 @@ function NearbyMarketplaceSection({ isAuthenticated, items }) {
         </div>
       </div>
 
-      <div
-        ref={railRef}
-        className="mt-6 flex gap-4 overflow-x-auto pb-2 scrollbar-none"
-      >
-        {items.map((item) => (
-          <MarketplaceCard key={item.id} item={item} compact />
-        ))}
-      </div>
+      {items.length ? (
+        <div
+          ref={railRef}
+          className="mt-6 flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+        >
+          {items.map((item) => (
+            <MarketplaceCard key={item.id} item={item} compact />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-6 rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-10 text-center">
+          <p className="text-[13px] font-semibold text-[#10183f]">No marketplace listings yet</p>
+          <p className="mt-1 text-[11px] text-[#69739a]">Live products and services will appear here once they are active.</p>
+        </div>
+      )}
     </section>
   );
 }
@@ -1397,21 +1422,23 @@ export default function Home({ isAuthenticated = false, userName }) {
   useEffect(() => {
     let active = true;
 
-    Promise.all([
-      getMarketplaceCollection("featured"),
-      getMarketplaceCollection("picked"),
-      getMarketplaceCollection("popularNearby"),
-      getMarketplaceCollection("continueExploring"),
-    ]).then(([featured, picked, popularNearby, continueExploring]) => {
-      if (!active) return;
+    getMarketplaceData()
+      .then(({ products, services }) => {
+        if (!active) return;
 
-      setMarketplace({
-        featured,
-        picked,
-        popularNearby,
-        continueExploring,
+        const all = [...products, ...services];
+        const size = Math.max(4, Math.min(8, all.length));
+
+        setMarketplace({
+          featured: all.slice(0, size),
+          picked: all.slice(0, size),
+          popularNearby: all.filter((item) => item.location).slice(0, size),
+          continueExploring: all.slice(0, size),
+        });
+      })
+      .catch((error) => {
+        console.error("Homepage marketplace loading error:", error);
       });
-    });
 
     return () => {
       active = false;

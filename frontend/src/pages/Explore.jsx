@@ -420,8 +420,9 @@ function ProviderCard({ provider }) {
   return (
     <article className="overflow-hidden rounded-[12px] border border-[#e4e9f0] bg-white shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
       <div className="relative h-[150px]">
-        <div className={`flex h-full w-full items-center justify-center ${provider.imageTone}`}>
-          <Icon name="provider" size={72} strokeWidth={1.2} />
+        <div className={`relative flex h-full w-full items-center justify-center ${provider.imageTone}`}>
+          {provider.image ? <img src={provider.image} alt={provider.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
+          <span className={provider.image ? "hidden" : "text-[#10183f]/60"}><Icon name="provider" size={72} strokeWidth={1.2} /></span>
         </div>
         {provider.match && (
           <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[9px] font-semibold text-[#07863a] shadow-sm">
@@ -512,7 +513,7 @@ function ProvidersSection({ isAuthenticated }) {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {providers.map((provider) => <ProviderCard key={provider.id} provider={provider} />)}
+        {providers.length ? providers.map((provider) => <ProviderCard key={provider.id} provider={provider} />) : <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-10 text-center text-[11px] text-[#69739a]">No service providers with active services are available yet.</div>}
       </div>
     </section>
   );
@@ -533,8 +534,9 @@ function ExploreProductCard({ item, listView = false }) {
   return (
     <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "block overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
       <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
-        <div className={`flex h-full w-full items-center justify-center ${item.imageTone}`}>
-          <Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} />
+        <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone}`}>
+          {item.image ? <img src={item.image} alt={item.title || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
+          <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
         </div>
         <HeartButton />
       </div>
@@ -860,9 +862,14 @@ function ExploreResultsSection({ isAuthenticated }) {
       </div>
 
       <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"}>
-        {visibleItems.map((item) => (
+        {visibleItems.length ? visibleItems.map((item) => (
           <ExploreProductCard key={item.title} item={item} listView={listView} />
-        ))}
+        )) : (
+          <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-14 text-center">
+            <p className="text-[13px] font-semibold text-[#10183f]">Nothing matches your search</p>
+            <p className="mt-1 text-[11px] text-[#69739a]">There are no active products or services matching the current filters.</p>
+          </div>
+        )}
       </div>
 
       {visibleItems.length === 0 && (

@@ -81,7 +81,7 @@ export default function ProviderSignupPageFour() {
     }
     try {
       const response = await saveProviderOnboardingDraft(formData);
-      if (response?.data?.formData) mergeFormData(response.data.formData);      if (response?.data?.formData) mergeFormData(response.data.formData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page5");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
@@ -135,7 +135,7 @@ export default function ProviderSignupPageFour() {
                           <option value="" disabled>{data.enabled ? "End time" : "Not available"}</option>
                           {timeSlots.map((time) => <option key={time} value={time}>{time}</option>)}
                         </select>
-                        <button type="button" className="provider-add-time-button" aria-label={`Add another time slot for ${day.label}`}>+</button>
+                        <span className="provider-add-time-note" aria-hidden="true">+</span>
                       </div>
                     );
                   })}

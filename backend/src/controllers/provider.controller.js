@@ -10,6 +10,59 @@ const Payout = require("../models/Payout");
 const Order = require("../models/Order");
 const User = require("../models/User");
 
+function isValidImageAsset(value) {
+  return Boolean(
+    value &&
+    typeof value === "object" &&
+    typeof value.url === "string" &&
+    value.url.trim() &&
+    typeof value.publicId === "string" &&
+    value.publicId.trim(),
+  );
+}
+
+function normalizeImageAssets(value, limit = 6) {
+  if (!Array.isArray(value)) return [];
+  return value.filter(isValidImageAsset).slice(0, limit).map((image, index) => ({
+    url: image.url.trim(),
+    publicId: image.publicId.trim(),
+    isPrimary: Boolean(image.isPrimary) || index === 0,
+  }));
+}
+
+async function geocodeProviderLocation(location) {
+  const query = String(location || "").trim();
+  if (!query) return null;
+
+  const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
+  url.searchParams.set("name", query);
+  url.searchParams.set("count", "5");
+  url.searchParams.set("language", "en");
+  url.searchParams.set("format", "json");
+  url.searchParams.set("countryCode", "NG");
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const payload = await response.json();
+    const result = Array.isArray(payload.results) ? payload.results[0] : null;
+    if (!result || !Number.isFinite(Number(result.latitude)) || !Number.isFinite(Number(result.longitude))) return null;
+
+    return {
+      city: result.name || query,
+      state: result.admin1 || "",
+      country: result.country || "Nigeria",
+      coordinates: {
+        type: "Point",
+        coordinates: [Number(result.longitude), Number(result.latitude)],
+      },
+    };
+  } catch (error) {
+    console.warn("Provider location geocoding failed:", error.message);
+    return null;
+  }
+}
+
 function monthBounds(date = new Date()) {
   const start = new Date(date.getFullYear(), date.getMonth(), 1);
   const next = new Date(date.getFullYear(), date.getMonth() + 1, 1);
@@ -24,6 +77,46 @@ function initials(user) {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+}
+
+async function searchProviderLocations(req, res) {
+  try {
+    const query = String(req.query?.q || "").trim();
+    if (query.length < 2) return res.json({ success: true, data: { locations: [] } });
+
+    const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
+    url.searchParams.set("name", query);
+    url.searchParams.set("count", "8");
+    url.searchParams.set("language", "en");
+    url.searchParams.set("format", "json");
+    url.searchParams.set("countryCode", "NG");
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Location service unavailable.");
+    const payload = await response.json();
+
+    const locations = (Array.isArray(payload.results) ? payload.results : [])
+      .filter((item) => Number.isFinite(Number(item.latitude)) && Number.isFinite(Number(item.longitude)))
+      .map((item) => ({
+        label: [item.name, item.admin1, item.country].filter(Boolean).join(", "),
+        city: item.name || "",
+        state: item.admin1 || "",
+        country: item.country || "Nigeria",
+        coordinates: {
+          type: "Point",
+          coordinates: [Number(item.longitude), Number(item.latitude)],
+        },
+      }));
+
+    return res.json({ success: true, data: { locations } });
+  } catch (error) {
+    console.error("Provider location search error:", error);
+    return res.status(502).json({
+      success: false,
+      message: "Unable to search locations right now.",
+      data: { locations: [] },
+    });
+  }
 }
 
 async function getProviderDashboard(req, res) {
@@ -461,6 +554,7 @@ async function getProviderServices(req, res) {
             service.images?.find((image) => image.isPrimary)?.url ||
             service.images?.[0]?.url ||
             null,
+          images: service.images || [],
           createdAt: service.createdAt,
           updatedAt: service.updatedAt,
         })),
@@ -707,6 +801,18 @@ async function submitProviderOnboarding(req, res) {
     const providerId = req.user._id;
     const isDraft = Boolean(req.body?.draft);
     const input = req.body?.formData || req.body || {};
+    if (!isDraft) {
+      const progress = getFirstIncompleteOnboardingStep(input, providerStepRequirements);
+      if (progress.step <= providerStepRequirements.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Complete all required provider onboarding steps before submitting.",
+          code: "ONBOARDING_INCOMPLETE",
+          step: progress.step,
+          missing: progress.missing,
+        });
+      }
+    }
 
     const businessName =
       input.providerBusinessName ||
@@ -724,11 +830,28 @@ async function submitProviderOnboarding(req, res) {
       ...(Array.isArray(input.providerAreasServed) ? input.providerAreasServed : []),
     ].map((value) => String(value).trim()).filter(Boolean);
 
-    const serviceArea = {
+    const suppliedLocation = input.providerLocationData?.coordinates?.coordinates;
+    const suppliedCoordinates = Array.isArray(suppliedLocation) && suppliedLocation.length === 2 && suppliedLocation.every((value) => Number.isFinite(Number(value)))
+      ? { type: "Point", coordinates: [Number(suppliedLocation[0]), Number(suppliedLocation[1])] }
+      : null;
+    const geocodedServiceArea = suppliedCoordinates
+      ? {
+          city: input.providerLocationData.city || input.providerLocation || "",
+          state: input.providerLocationData.state || "",
+          country: input.providerLocationData.country || input.providerCountry || "Nigeria",
+          coordinates: suppliedCoordinates,
+        }
+      : await geocodeProviderLocation(input.providerLocation);
+    const serviceArea = geocodedServiceArea || {
       city: input.providerLocation || "",
       state: "",
-      country: input.providerCountry || "",
+      country: input.providerCountry || "Nigeria",
     };
+
+    const progressAfterSave = getFirstIncompleteOnboardingStep(input, providerStepRequirements);
+    const savedStep = isDraft
+      ? Math.min(progressAfterSave.step, providerStepRequirements.length)
+      : providerStepRequirements.length + 1;
 
     const provider = await ProviderProfile.findOneAndUpdate(
       { userId: providerId },
@@ -743,6 +866,7 @@ async function submitProviderOnboarding(req, res) {
           verificationStatus: "pending",
           status: "draft",
           onboardingData: input,
+          onboardingStep: savedStep,
           applicationSubmittedAt: isDraft ? (input.applicationSubmittedAt || null) : new Date(),
           reviewedAt: null,
           reviewNote: "",
@@ -765,35 +889,6 @@ async function submitProviderOnboarding(req, res) {
       });
     }
 
-    const parsedPrice = Number(String(input.providerServicePrice || "").replace(/[^0-9.]/g, "")) || 0;
-    const pricingType = ["fixed", "startingFrom", "customQuote"].includes(input.providerServiceType)
-      ? input.providerServiceType
-      : "fixed";
-    const durationMatch = String(input.providerServiceDuration || "").match(/[0-9]+(?:\\.[0-9]+)?/);
-    const durationValue = durationMatch ? Number(durationMatch[0]) : null;
-    const durationMinutes = durationValue
-      ? /hour/i.test(String(input.providerServiceDuration)) ? Math.round(durationValue * 60) : Math.round(durationValue)
-      : null;
-
-    if (input.providerServiceName) {
-      await Service.findOneAndUpdate(
-        { providerId, title: input.providerServiceName },
-        {
-          $set: {
-            description: input.providerServiceDesc || "Service submitted during provider onboarding.",
-            category: categories[0] || "Other",
-            pricing: { type: pricingType, amount: parsedPrice, currency: "NGN" },
-            ...(durationMinutes ? { durationMinutes } : {}),
-            location: serviceArea,
-            availability: input.providerAvailability || {},
-            images: Array.isArray(input.providerServiceImages) ? input.providerServiceImages : [],
-            status: "draft",
-          },
-          $setOnInsert: { providerId, title: input.providerServiceName },
-        },
-        { upsert: true, new: true, runValidators: true },
-      );
-    }
 
     const userUpdates = {};
     if (input.providerPhoneNumber) {
@@ -806,8 +901,6 @@ async function submitProviderOnboarding(req, res) {
         country: input.providerCountry || req.user.location?.country || "",
       };
     }
-    if (!isDraft) userUpdates["capabilities.provider"] = true;
-    if (!isDraft && req.user.role !== "provider") userUpdates.role = "provider";
 
     if (Object.keys(userUpdates).length) {
       await User.findByIdAndUpdate(providerId, { $set: userUpdates });
@@ -838,6 +931,128 @@ async function submitProviderOnboarding(req, res) {
 
 module.exports.submitProviderOnboarding = submitProviderOnboarding;
 
+
+async function createProviderService(req, res) {
+  try {
+    const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
+    const canPublish =
+      provider?.status === "active" &&
+      provider?.verificationStatus === "verified";
+
+    const body = req.body || {};
+    const title = String(body.title || "").trim();
+    const description = String(body.description || "").trim();
+    const category = String(body.category || "").trim();
+    const pricingType = String(body.pricingType || body.pricing?.type || "fixed").trim();
+    const amount = body.price ?? body.pricing?.amount;
+    const numericAmount = amount === undefined || amount === "" ? undefined : Number(amount);
+
+    if (!title || !description || !category) {
+      return res.status(400).json({ success: false, message: "Service title, description, and category are required." });
+    }
+    if (!["fixed", "startingFrom", "customQuote"].includes(pricingType)) {
+      return res.status(400).json({ success: false, message: "Choose a valid pricing type." });
+    }
+    if (pricingType !== "customQuote" && (!Number.isFinite(numericAmount) || numericAmount < 0)) {
+      return res.status(400).json({ success: false, message: "Enter a valid service price." });
+    }
+
+    const service = await Service.create({
+      providerId: req.user._id,
+      title,
+      description,
+      category,
+      pricing: {
+        type: pricingType,
+        amount: pricingType === "customQuote" ? undefined : numericAmount,
+        currency: String(body.currency || "NGN").toUpperCase(),
+      },
+      durationMinutes: body.durationMinutes ? Number(body.durationMinutes) : undefined,
+      images: Array.isArray(body.images) ? body.images.filter((image) => image?.url && image?.publicId).slice(0, 6) : [],
+      location: body.location || provider?.serviceArea || undefined,
+      availability: body.availability || undefined,
+      status: canPublish && ["active", "paused", "draft", "archived"].includes(body.status)
+        ? body.status
+        : canPublish
+          ? "active"
+          : "draft",
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: canPublish ? "Service published successfully." : "Service saved as a draft.",
+      service,
+    });
+  } catch (error) {
+    console.error("Create provider service error:", error);
+    return res.status(500).json({ success: false, message: "Unable to create your service right now." });
+  }
+}
+
+async function updateProviderService(req, res) {
+  try {
+    const provider = await ProviderProfile.findOne({ userId: req.user._id }).lean();
+    const canPublish =
+      provider?.status === "active" &&
+      provider?.verificationStatus === "verified";
+
+    const service = await Service.findOne({ _id: req.params.serviceId, providerId: req.user._id });
+    if (!service) return res.status(404).json({ success: false, message: "Service not found." });
+
+    const body = req.body || {};
+    if (body.title !== undefined) service.title = String(body.title).trim();
+    if (body.description !== undefined) service.description = String(body.description).trim();
+    if (body.category !== undefined) service.category = String(body.category).trim();
+    if (body.pricingType !== undefined || body.pricing !== undefined || body.price !== undefined) {
+      const pricingType = String(body.pricingType || body.pricing?.type || service.pricing.type).trim();
+      const amount = body.price ?? body.pricing?.amount ?? service.pricing.amount;
+      const numericAmount = amount === undefined || amount === "" ? undefined : Number(amount);
+      if (!["fixed", "startingFrom", "customQuote"].includes(pricingType)) {
+        return res.status(400).json({ success: false, message: "Choose a valid pricing type." });
+      }
+      if (pricingType !== "customQuote" && (!Number.isFinite(numericAmount) || numericAmount < 0)) {
+        return res.status(400).json({ success: false, message: "Enter a valid service price." });
+      }
+      service.pricing = {
+        type: pricingType,
+        amount: pricingType === "customQuote" ? undefined : numericAmount,
+        currency: String(body.currency || service.pricing.currency || "NGN").toUpperCase(),
+      };
+    }
+    if (body.durationMinutes !== undefined) service.durationMinutes = body.durationMinutes ? Number(body.durationMinutes) : undefined;
+    if (Array.isArray(body.images)) service.images = body.images.filter((image) => image?.url && image?.publicId).slice(0, 6);
+    if (body.location !== undefined) service.location = body.location;
+    if (body.availability !== undefined) service.availability = body.availability;
+    if (body.status !== undefined && ["active", "paused", "draft", "archived"].includes(body.status)) {
+      service.status = canPublish ? body.status : "draft";
+    }
+    if (!canPublish) service.status = "draft";
+
+    await service.save();
+    return res.json({ success: true, message: "Service updated successfully.", service });
+  } catch (error) {
+    console.error("Update provider service error:", error);
+    return res.status(500).json({ success: false, message: "Unable to update your service right now." });
+  }
+}
+
+async function deleteProviderService(req, res) {
+  try {
+    const service = await Service.findOneAndDelete({
+      _id: req.params.serviceId,
+      providerId: req.user._id,
+    });
+    if (!service) return res.status(404).json({ success: false, message: "Service not found." });
+    return res.json({ success: true, message: "Service deleted successfully.", data: { id: service._id } });
+  } catch (error) {
+    console.error("Delete provider service error:", error);
+    return res.status(500).json({ success: false, message: "Unable to delete this service right now." });
+  }
+}
+
+module.exports.createProviderService = createProviderService;
+module.exports.updateProviderService = updateProviderService;
+module.exports.deleteProviderService = deleteProviderService;
 
 async function getProviderBookings(req, res) {
   try {
@@ -985,54 +1200,188 @@ async function getSellerOnboardingDraft(req, res) {
 
 module.exports.getSellerOnboardingDraft = getSellerOnboardingDraft;
 
+const onboardingHasValue = (value) => {
+  if (typeof value === "string") return value.trim().length > 0;
+  if (typeof value === "number") return Number.isFinite(value);
+  if (Array.isArray(value)) return value.length > 0;
+  return Boolean(value);
+};
+
+const onboardingHasFile = (value) =>
+  Boolean(value && typeof value === "object" && (value.url || value.publicId));
+
+const providerStepRequirements = [
+  (data) => [
+    ["providerFirstName", onboardingHasValue(data.providerFirstName)],
+    ["providerLastName", onboardingHasValue(data.providerLastName)],
+    ["providerEmail", onboardingHasValue(data.providerEmail)],
+    ["providerCountryCode", onboardingHasValue(data.providerCountryCode)],
+    ["providerPhoneNumber", onboardingHasValue(data.providerPhoneNumber)],
+    ["providerType", onboardingHasValue(data.providerType)],
+    ["providerLocation", onboardingHasValue(data.providerLocation)],
+    ["providerBio", onboardingHasValue(data.providerBio)],
+  ],
+  (data) => [
+    ["providerServiceCat", onboardingHasValue(data.providerServiceCat)],
+    ["providerServiceName", onboardingHasValue(data.providerServiceName)],
+    ["providerServiceDesc", onboardingHasValue(data.providerServiceDesc)],
+    ["providerServiceType", onboardingHasValue(data.providerServiceType)],
+    ["providerServicePrice", data.providerServicePrice !== undefined && data.providerServicePrice !== ""],
+    ["providerServiceDuration", onboardingHasValue(data.providerServiceDuration)],
+    ["providerAreasServed", onboardingHasValue(data.providerAreasServed)],
+    ["providerServiceImages", Array.isArray(data.providerServiceImages) && data.providerServiceImages.some(onboardingHasFile)],
+  ],
+  (data) => [
+    ["providerYearsofExperience", data.providerYearsofExperience !== undefined && data.providerYearsofExperience !== ""],
+    ["providerAreasofExpertise", onboardingHasValue(data.providerAreasofExpertise)],
+    ["providerPortfolioMedia", Array.isArray(data.providerPortfolioMedia) && data.providerPortfolioMedia.some(onboardingHasFile)],
+  ],
+  (data) => {
+    const availability = data.providerAvailability || {};
+    const hasAvailability = Object.values(availability).some((day) =>
+      day?.enabled && onboardingHasValue(day.startTime) && onboardingHasValue(day.endTime)
+    );
+    const area = data.providerServiceArea;
+    const areaComplete =
+      area === "remote" ||
+      (area === "radius" && onboardingHasValue(data.providerServiceAreaRadius)) ||
+      (area === "specificLocations" && Array.isArray(data.providerServiceAreaSpecificLocations) && data.providerServiceAreaSpecificLocations.length > 0);
+    return [
+      ["providerAvailability", hasAvailability],
+      ["providerMinimumNoticeRequired", onboardingHasValue(data.providerMinimumNoticeRequired)],
+      ["providerMaximumAdvanceBooking", onboardingHasValue(data.providerMaximumAdvanceBooking)],
+      ["providerResponseTime", onboardingHasValue(data.providerResponseTime)],
+      ["providerServiceArea", onboardingHasValue(area)],
+      ["providerServiceAreaDetails", areaComplete],
+    ];
+  },
+  (data) => [
+    ["providerIdType", onboardingHasValue(data.providerIdType)],
+    ["providerIdNumber", onboardingHasValue(data.providerIdNumber)],
+    ["providerIdImageFront", onboardingHasFile(data.providerIdImageFront)],
+    ["providerIdImageBack", onboardingHasFile(data.providerIdImageBack)],
+    ["providerSelfieImage", onboardingHasFile(data.providerSelfieImage)],
+  ],
+  (data) => [
+    ["providerBankName", onboardingHasValue(data.providerBankName)],
+    ["providerAccountNumber", onboardingHasValue(data.providerAccountNumber)],
+    ["providerAccountName", onboardingHasValue(data.providerAccountName) || onboardingHasValue([data.providerFirstName, data.providerLastName].filter(Boolean).join(" "))],
+    ["providerAccountType", onboardingHasValue(data.providerAccountType)],
+  ],
+];
+
+const sellerStepRequirements = [
+  (data) => [
+    ["firstName", onboardingHasValue(data.firstName)],
+    ["lastName", onboardingHasValue(data.lastName)],
+    ["email", onboardingHasValue(data.email)],
+    ["countryCode", onboardingHasValue(data.countryCode)],
+    ["phoneNumber", onboardingHasValue(data.phoneNumber)],
+    ["sellerType", onboardingHasValue(data.sellerType)],
+    ["location", onboardingHasValue(data.location)],
+  ],
+  (data) => [
+    ["businessName", onboardingHasValue(data.businessName)],
+    ["businessCat", onboardingHasValue(data.businessCat)],
+    ["businessDesc", onboardingHasValue(data.businessDesc)],
+    ["businessAddress", onboardingHasValue(data.businessAddress)],
+    ["businessPhoneCountryCode", onboardingHasValue(data.businessPhoneCountryCode)],
+    ["businessPhoneNumber", onboardingHasValue(data.businessPhoneNumber)],
+  ],
+  (data) => [
+    ["productName", onboardingHasValue(data.productName)],
+    ["productCat", onboardingHasValue(data.productCat)],
+    ["productPrice", data.productPrice !== undefined && data.productPrice !== ""],
+    ["productStock", data.productStock !== undefined && data.productStock !== ""],
+    ["productDesc", onboardingHasValue(data.productDesc)],
+    ["productCondition", onboardingHasValue(data.productCondition)],
+    ["productImages", Array.isArray(data.productImages) && data.productImages.some(onboardingHasFile)],
+  ],
+  (data) => [
+    ["shippingOptions", onboardingHasValue(data.shippingOptions)],
+    ["shippingRegions", onboardingHasValue(data.shippingRegions)],
+    ["shippingFee", onboardingHasValue(data.shippingFee)],
+    ["shippingFeeAmount", data.shippingFeeAmount !== undefined && data.shippingFeeAmount !== ""],
+    ["processingTime", onboardingHasValue(data.processingTime)],
+  ],
+  (data) => [
+    ["idType", onboardingHasValue(data.idType)],
+    ["idNumber", onboardingHasValue(data.idNumber)],
+    ["idImageFront", onboardingHasFile(data.idImageFront)],
+    ["idImageBack", onboardingHasFile(data.idImageBack)],
+    ["selfieImage", onboardingHasFile(data.selfieImage)],
+  ],
+  (data) => [
+    ["bankName", onboardingHasValue(data.bankName)],
+    ["accountNumber", onboardingHasValue(data.accountNumber)],
+    ["accountName", onboardingHasValue(data.accountName)],
+    ["accountType", onboardingHasValue(data.accountType)],
+  ],
+];
+
+function getFirstIncompleteOnboardingStep(formData, requirements) {
+  const data = formData || {};
+  for (let index = 0; index < requirements.length; index += 1) {
+    const missing = requirements[index](data).filter(([, complete]) => !complete).map(([field]) => field);
+    if (missing.length) return { step: index + 1, missing };
+  }
+  return { step: requirements.length + 1, missing: [] };
+}
+
+async function getOnboardingProgress(req, res) {
+  try {
+    const flow = req.query?.flow === "service" ? "service" : "seller";
+    const Model = flow === "service" ? ProviderProfile : StoreProfile;
+    const profile = await Model.findOne({ userId: req.user._id }).select("onboardingData onboardingStatus onboardingStep status verificationStatus applicationSubmittedAt").lean();
+    const requirements = flow === "service" ? providerStepRequirements : sellerStepRequirements;
+    const formData = profile?.onboardingData || {};
+    const progress = getFirstIncompleteOnboardingStep(formData, requirements);
+    const submitted = Boolean(profile?.applicationSubmittedAt) || profile?.onboardingStatus === "submitted";
+    return res.json({
+      success: true,
+      data: {
+        flow,
+        exists: Boolean(profile),
+        submitted,
+        currentStep: submitted ? requirements.length + 1 : Math.min(progress.step, requirements.length),
+        firstIncompleteStep: submitted ? null : Math.min(progress.step, requirements.length),
+        missing: submitted ? [] : progress.missing,
+        totalSteps: requirements.length,
+        status: profile?.status || "not_started",
+        verificationStatus: profile?.verificationStatus || null,
+      },
+    });
+  } catch (error) {
+    console.error("Onboarding progress lookup error:", error);
+    return res.status(500).json({ success: false, message: "Unable to check your onboarding progress right now." });
+  }
+}
+
+
+
 
 async function submitSellerOnboarding(req, res) {
   try {
     const userId = req.user._id;
     const isDraft = Boolean(req.body?.draft);
     const input = req.body?.formData || req.body || {};
+    if (!isDraft) {
+      const progress = getFirstIncompleteOnboardingStep(input, sellerStepRequirements);
+      if (progress.step <= sellerStepRequirements.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Complete all required seller onboarding steps before submitting.",
+          code: "ONBOARDING_INCOMPLETE",
+          step: progress.step,
+          missing: progress.missing,
+        });
+      }
+    }
+
     const storeName = input.businessName || [input.firstName, input.lastName].filter(Boolean).join(" ") || "Matchet Store";
     const baseSlug = storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "matchet-store";
     const existing = await StoreProfile.findOne({ slug: { $regex: new RegExp("^" + baseSlug + "(?:-[0-9]+)?$") }, userId: { $ne: userId } }).sort({ createdAt: -1 }).lean();
     const slug = existing ? baseSlug + "-" + String(Date.now()).slice(-6) : baseSlug;
-    const productName = input.productName || "";
-    const hasInitialProduct = Boolean(productName && input.productPrice !== undefined && input.productPrice !== "");
-    if (hasInitialProduct) {
-      const productImages = (Array.isArray(input.productImages) ? input.productImages : [])
-        .filter((image) => image && image.url && image.publicId)
-        .slice(0, 5)
-        .map((image, index) => ({
-          url: image.url,
-          publicId: image.publicId,
-          isPrimary: index === 0,
-        }));
-
-      await Product.findOneAndUpdate(
-        { sellerId: userId, "details.onboardingSource": "seller-onboarding" },
-        {
-          $set: {
-            name: productName,
-            description: input.productDesc || productName,
-            shortDescription: String(input.productDesc || productName).slice(0, 200),
-            category: input.productCat || input.businessCat || "Other",
-            price: Number(input.productPrice) || 0,
-            inventory: Number(input.productStock) || 0,
-            sku: input.productSku || undefined,
-            images: productImages,
-            status: "draft",
-            details: {
-              onboardingSource: "seller-onboarding",
-              condition: input.productCondition || "New",
-              comparePrice: Number(input.productComparePrice) || 0,
-              tags: Array.isArray(input.productTags)
-                ? input.productTags
-                : String(input.productTags || "").split(",").map((tag) => tag.trim()).filter(Boolean),
-            },
-          },
-        },
-        { upsert: true, new: true, runValidators: true }
-      );
-    }
 
     const normalizedLocation = String(input.location || "").toLowerCase() === "lagos-nigeria"
       ? { city: "Lagos", state: "Lagos", country: "Nigeria" }
@@ -1113,7 +1462,6 @@ async function submitSellerOnboarding(req, res) {
       email: input.email || req.user.email,
       phone: [input.countryCode, input.phoneNumber].filter(Boolean).join(" ") || req.user.phone || "",
       location: normalizedLocation,
-      ...(isDraft ? {} : { "capabilities.seller": true }),
     };
     if (input.profileImage?.url) {
       userUpdates.avatar = {
@@ -1404,7 +1752,7 @@ async function getSellerProducts(req, res) {
     const mapped = filtered.map(p => ({
       id:p._id, name:p.name, description:p.description, shortDescription:p.shortDescription||"", details:p.details||{}, category:p.category, price:p.price, inventory:p.inventory,
       status:p.status, orders:orderCounts[String(p._id)] || 0, createdAt:p.createdAt, updatedAt:p.updatedAt,
-      image:p.images?.find(i=>i.isPrimary)?.url || p.images?.[0]?.url || null, createdAt:p.createdAt
+      images:p.images||[], image:p.images?.find(i=>i.isPrimary)?.url || p.images?.[0]?.url || null, createdAt:p.createdAt
     }));
     return res.json({success:true,data:{
       products:mapped,
@@ -1421,7 +1769,8 @@ async function createSellerProduct(req,res){
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     const safeStatus=canPublish ? status : "draft";
-    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images,status:safeStatus,location,details,sku});
+    const safeImages = normalizeImageAssets(images, 5);
+    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images:safeImages,status:safeStatus,location,details,sku});
     return res.status(201).json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
@@ -1432,15 +1781,30 @@ async function updateSellerProduct(req,res){
     const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details"];
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
-    allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=req.body[k]});
+    allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=k==="images" ? normalizeImageAssets(req.body[k], 5) : req.body[k]});
     if (!canPublish) product.status="draft";
     await product.save();
     return res.json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
+async function deleteSellerProduct(req, res) {
+  try {
+    const product = await Product.findOneAndDelete({
+      _id: req.params.productId,
+      sellerId: req.user._id,
+    });
+    if (!product) return res.status(404).json({ success: false, message: "Product not found." });
+    return res.json({ success: true, message: "Product deleted successfully.", data: { id: product._id } });
+  } catch (error) {
+    console.error("Delete seller product error:", error);
+    return res.status(500).json({ success: false, message: "Unable to delete this product right now." });
+  }
+}
+
 module.exports.getSellerProducts=getSellerProducts;
 module.exports.createSellerProduct=createSellerProduct;
 module.exports.updateSellerProduct=updateSellerProduct;
+module.exports.deleteSellerProduct=deleteSellerProduct;
 
 
 async function getSellerEarnings(req, res) {
@@ -1501,3 +1865,7 @@ module.exports.updateSellerSettingsPreferences=updateSellerSettingsPreferences;
 module.exports.updateSellerSettingsStore=updateSellerSettingsStore;
 
 module.exports.getPublicSellerStore=getPublicSellerStore;
+
+module.exports.getOnboardingProgress = getOnboardingProgress;
+
+module.exports.searchProviderLocations = searchProviderLocations;

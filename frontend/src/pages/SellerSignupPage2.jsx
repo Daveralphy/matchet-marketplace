@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";
 import { useForm } from "../context/FormContext";
+import { uploadFile } from "../api/uploads";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
@@ -43,24 +44,16 @@ export default function SellerSignupPageTwo() {
     updateField(name, value);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-      alert("Please upload a PNG, JPG, or WebP image.");
-      e.target.value = "";
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      e.target.value = "";
-      return;
-    }
-    updateField("businessLogo", file);
-    const reader = new FileReader();
-    reader.onload = () => setLogoPreview(reader.result);
-    reader.readAsDataURL(file);
-    e.target.value = "";
+  const handleFileChange = async (e) => {
+    const file=e.target.files?.[0]; e.target.value="";
+    if(!file) return;
+    if(!["image/png","image/jpeg","image/webp"].includes(file.type)){alert("Please upload a PNG, JPG, or WebP image.");return;}
+    if(file.size>5*1024*1024){alert("File is too large. Maximum size allowed is 5MB.");return;}
+    try{
+      const uploaded=await uploadFile(file,"matchet/stores");
+      if(!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
+      updateField("businessLogo",uploaded); setLogoPreview(uploaded.url);
+    }catch(error){alert(error.message||"Unable to upload your business logo.");}
   };
 
   const handleSubmit = async (e) => {

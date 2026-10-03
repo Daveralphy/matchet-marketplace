@@ -8,7 +8,7 @@ import { getProviderCapabilities } from "../api/provider";
 import heroImage from "../assets/inspirations/for provider/hero.png";
 
 export default function ForProviders() {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState("");
 
@@ -20,6 +20,17 @@ export default function ForProviders() {
       return;
     }
     sessionStorage.setItem("matchet_onboarding_flow", capability === "product" ? "seller" : "service");
+
+    if (capability === "service" && (user?.role === "provider" || user?.capabilities?.provider)) {
+      navigate("/provider/dashboard");
+      return;
+    }
+
+    if (capability === "product" && user?.capabilities?.seller) {
+      navigate("/seller/dashboard");
+      return;
+    }
+
     setLoading(capability);
     try {
       const response = await getProviderCapabilities();
@@ -29,23 +40,34 @@ export default function ForProviders() {
         return;
       }
       if (capability === "service") {
-        if (state.status === "active" || state.verificationStatus === "verified") navigate("/provider/dashboard");
-        else if (state.verificationStatus === "rejected") navigate("/provider/application-status");
-        else if (state.applicationSubmittedAt) navigate("/provider/application-status");
-        else navigate("/provider/onboarding");
-      } else {
-        if (state.onboardingStatus === "in_progress") {
-          navigate("/register");
+        if (state.status === "active" && state.verificationStatus === "verified" && state.applicationSubmittedAt) {
+          navigate("/provider/dashboard");
+        } else if (state.verificationStatus === "rejected") {
+          navigate("/provider/application-status");
+        } else if (state.applicationSubmittedAt) {
+          navigate("/provider/application-status");
         } else {
+          navigate("/provider/onboarding");
+        }
+      } else {
+        if (state.onboardingStatus === "submitted" && state.status === "active" && state.verificationStatus === "verified") {
           navigate("/seller/dashboard");
+        } else {
+          navigate("/register");
         }
       }
     } catch {
-      navigate(capability === "product" ? "/register" : "/provider/onboarding");
+      if (capability === "service" && (user?.role === "provider" || user?.capabilities?.provider)) {
+        navigate("/provider/dashboard");
+      } else if (capability === "product" && user?.capabilities?.seller) {
+        navigate("/seller/dashboard");
+      } else {
+        navigate(capability === "product" ? "/register" : "/provider/onboarding");
+      }
     } finally {
       setLoading("");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
 
   useEffect(() => {
     if (!isAuthenticated) return;

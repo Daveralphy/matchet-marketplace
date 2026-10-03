@@ -88,7 +88,39 @@ export function sendProviderMessage(payload) {
 
 
 export function getProviderServices() {
-  return request("/api/provider/services");
+  return request("/api/provider/services", { cache: false });
+}
+
+export async function createProviderService(payload) {
+  const next = { ...payload };
+  if (Array.isArray(payload.images)) {
+    const files = payload.images.filter((item) => item instanceof File);
+    const existing = payload.images.filter((item) => item && !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/services") : [];
+    next.images = [...existing, ...uploaded].slice(0, 6);
+  }
+  return request("/api/provider/services", {
+    method: "POST",
+    body: JSON.stringify(next),
+  });
+}
+
+export async function updateProviderService(id, payload) {
+  const next = { ...payload };
+  if (Array.isArray(payload.images)) {
+    const files = payload.images.filter((item) => item instanceof File);
+    const existing = payload.images.filter((item) => item && !(item instanceof File));
+    const uploaded = files.length ? await uploadFiles(files, "matchet/services") : [];
+    next.images = [...existing, ...uploaded].slice(0, 6);
+  }
+  return request("/api/provider/services/" + encodeURIComponent(id), {
+    method: "PATCH",
+    body: JSON.stringify(next),
+  });
+}
+
+export function deleteProviderService(id) {
+  return request("/api/provider/services/" + encodeURIComponent(id), { method: "DELETE" });
 }
 
 export function getProviderEarnings() {
@@ -177,6 +209,10 @@ export async function submitProviderOnboarding(formData) {
 
 export function getProviderBookings() {
   return request("/api/provider/bookings");
+}
+
+export function getOnboardingProgress(flow) {
+  return request("/api/provider/onboarding/progress?flow=" + encodeURIComponent(flow === "service" ? "service" : "seller"), { cache: false });
 }
 
 export function getProviderOnboardingDraft() {
@@ -278,6 +314,7 @@ export async function updateSellerProduct(id,payload) {
   }
   return request("/api/provider/seller-products/"+encodeURIComponent(id),{method:"PATCH",body:JSON.stringify(next)});
 }
+export function deleteSellerProduct(id){return request("/api/provider/seller-products/"+encodeURIComponent(id),{method:"DELETE"});}
 
 export function getSellerEarnings(){ return request("/api/provider/seller-earnings"); }
 
@@ -294,3 +331,7 @@ export function getPublicSellerStore(slug){return request("/api/provider/store/"
 
 export function getSellerOrderDetail(id){return request("/api/provider/seller-orders/"+encodeURIComponent(id));}
 export function updateSellerOrderNote(id,note){return request("/api/provider/seller-orders/"+encodeURIComponent(id)+"/note",{method:"PATCH",body:JSON.stringify({note})});}
+
+export function searchProviderLocations(query) {
+  return request("/api/provider/locations/search?q=" + encodeURIComponent(query), { cache: false });
+}

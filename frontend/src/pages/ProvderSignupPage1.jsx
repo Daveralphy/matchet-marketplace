@@ -4,7 +4,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
-import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft } from "../api/provider";
+import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, searchProviderLocations } from "../api/provider";
+import { uploadFile } from "../api/uploads";
 import { useAuth } from "../context/AuthContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
@@ -29,7 +30,7 @@ export default function ProviderSignupPageOne() {
 
         if (draft?.formData) mergeFormData(draft.formData);
 
-        if (state?.status === "active" || state?.verificationStatus === "verified") {
+        if (state?.status === "active" && state?.verificationStatus === "verified" && state?.applicationSubmittedAt) {
           navigate("/provider/dashboard", { replace: true });
         } else if (state?.applicationSubmittedAt || state?.verificationStatus === "rejected") {
           navigate("/provider/application-status", { replace: true });
@@ -65,6 +66,13 @@ export default function ProviderSignupPageOne() {
     }
   }, [user, formData.providerFirstName, formData.providerLastName, formData.providerEmail, formData.providerPhoneNumber, formData.providerProfileImage, formData.providerLocation, updateField]);
   const [profilePreview, setProfilePreview] = useState(null);
+  const [locationQuery, setLocationQuery] = useState(formData.providerLocation || "");
+
+  useEffect(() => {
+    setLocationQuery(formData.providerLocation || "");
+  }, [formData.providerLocation]);
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   useEffect(() => {
     const image = formData.providerProfileImage;
@@ -88,6 +96,27 @@ export default function ProviderSignupPageOne() {
     setProfilePreview(null);
   }, [formData.providerProfileImage]);
 
+  useEffect(() => {
+    const query = locationQuery.trim();
+    if (query.length < 2 || query === formData.providerLocation) {
+      setLocationSuggestions([]);
+      return undefined;
+    }
+    let active = true;
+    const timer = setTimeout(async () => {
+      setLocationLoading(true);
+      try {
+        const response = await searchProviderLocations(query);
+        if (active) setLocationSuggestions(response?.data?.locations || []);
+      } catch {
+        if (active) setLocationSuggestions([]);
+      } finally {
+        if (active) setLocationLoading(false);
+      }
+    }, 300);
+    return () => { active = false; clearTimeout(timer); };
+  }, [locationQuery, formData.providerLocation]);
+
   const providerTypes = [
     { value: "Individual", title: "Individual", description: "I offer services on my own" },
     { value: "Business/Company", title: "Business / Company", description: "I represent a registered business" },
@@ -99,17 +128,18 @@ export default function ProviderSignupPageOne() {
     updateField(name, value);
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      event.target.value = "";
-      return;
-    }
-    updateField("providerProfileImage", file);
-    setProfilePreview(URL.createObjectURL(file));
     event.target.value = "";
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) { alert("Please upload a JPG, PNG, or WebP image."); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("File is too large. Maximum size allowed is 5MB."); return; }
+    try {
+      const uploaded = await uploadFile(file, "matchet/profiles");
+      if (!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
+      updateField("providerProfileImage", uploaded);
+      setProfilePreview(uploaded.url);
+    } catch (error) { alert(error.message || "Unable to upload your profile photo."); }
   };
 
   const handleSubmit = async (event) => {
@@ -212,14 +242,43 @@ export default function ProviderSignupPageOne() {
                   </div>
                 </div>
 
-                <label htmlFor="providerLocation">
-                  Location
-                  <select id="providerLocation" name="providerLocation" value={formData.providerLocation || ""} onChange={handleChange} required>
-                    <option value="" disabled>Select location</option>
-                    <option value="Lagos, Nigeria">Lagos, Nigeria</option>
-                    <option value="Abuja, Nigeria">Abuja, Nigeria</option>
-                  </select>
-                </label>
+                <div style={{ position: "relative" }}>
+                  <label htmlFor="providerLocation">Location</label>
+                  <input
+                    type="text"
+                    id="providerLocation"
+                    name="providerLocation"
+                    value={locationQuery}
+                    placeholder="Search city or area"
+                    autoComplete="off"
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setLocationQuery(value);
+                      if (value !== formData.providerLocation) updateField("providerLocation", "");
+                    }}
+                    required
+                  />
+                  {(locationLoading || locationSuggestions.length > 0) && locationQuery !== formData.providerLocation && (
+                    <div style={{ position: "absolute", zIndex: 20, top: "100%", left: 0, right: 0, marginTop: 4, background: "#fff", border: "1px solid #dfe4ef", borderRadius: 8, boxShadow: "0 8px 24px rgba(16,24,63,.12)", overflow: "hidden" }}>
+                      {locationLoading && <div style={{ padding: "10px 12px", color: "#687099" }}>Searching locations...</div>}
+                      {!locationLoading && locationSuggestions.map((location) => (
+                        <button
+                          key={location.label + location.coordinates.coordinates.join(",")}
+                          type="button"
+                          style={{ display: "block", width: "100%", border: 0, background: "#fff", padding: "10px 12px", textAlign: "left", cursor: "pointer" }}
+                          onClick={() => {
+                            setLocationQuery(location.label);
+                            updateField("providerLocation", location.label);
+                            updateField("providerLocationData", location);
+                            setLocationSuggestions([]);
+                          }}
+                        >
+                          {location.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="provider-signup-bio-field">

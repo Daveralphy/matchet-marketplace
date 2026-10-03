@@ -4,6 +4,7 @@
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";
 import { useForm } from "../context/FormContext";
+import { uploadFile } from "../api/uploads";
 import { useEffect, useState } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
@@ -38,39 +39,17 @@ export default function SellerSignupPageThree() {
     updateField(e.target.name, selectedValues);
   };
 
-  const handleProductImage = (index, file) => {
-    if (!file) return;
-
-    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-      alert("Please upload a PNG, JPG, or WebP image.");
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      return;
-    }
-
-    const previewUrl = URL.createObjectURL(file);
-
-    setProductPreviews((previous) => {
-      const next = [...previous];
-      const previousUrl = next[index];
-
-      if (previousUrl?.startsWith("blob:")) {
-        URL.revokeObjectURL(previousUrl);
-      }
-
-      next[index] = previewUrl;
-      return next;
-    });
-
-    const images = Array.isArray(formData.productImages)
-      ? [...formData.productImages]
-      : [];
-
-    images[index] = file;
-    updateField("productImages", images.slice(0, 5));
+  const handleProductImage = async (index, file) => {
+    if(!file) return;
+    if(!["image/png","image/jpeg","image/webp"].includes(file.type)){alert("Please upload a PNG, JPG, or WebP image.");return;}
+    if(file.size>5*1024*1024){alert("File is too large. Maximum size allowed is 5MB.");return;}
+    try{
+      const uploaded=await uploadFile(file,"matchet/products");
+      if(!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
+      setProductPreviews((previous)=>{const next=[...previous];next[index]=uploaded.url;return next;});
+      const images=Array.isArray(formData.productImages)?[...formData.productImages]:[];
+      images[index]=uploaded; updateField("productImages",images.slice(0,5));
+    }catch(error){alert(error.message||"Unable to upload this product image.");}
   };
 
   const removeProductImage = (index) => {

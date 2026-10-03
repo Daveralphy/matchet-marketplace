@@ -21,25 +21,38 @@ export async function uploadFiles(files, folder) {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        files: [{ name: file.name, folder, dataUrl }],
-      }),
+      body: JSON.stringify({ files: [{ name: file.name, folder, dataUrl }] }),
     });
-
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
       const error = new Error(payload.message || "Unable to upload your file.");
       error.status = response.status;
       throw error;
     }
-
     uploaded.push(...(payload.files || []));
   }
-
   return uploaded;
 }
 
 export async function uploadFile(file, folder) {
   const [uploaded] = await uploadFiles([file], folder);
   return uploaded || null;
+}
+
+export async function deleteUploadedFile(asset) {
+  if (!asset?.publicId) return;
+  const response = await fetch(`${API_BASE_URL}/api/uploads`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      publicId: asset.publicId,
+      resourceType: asset.resourceType || "image",
+      accessType: asset.type || "upload",
+    }),
+  });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new Error(payload.message || "Unable to remove the uploaded file.");
+  }
 }

@@ -4,6 +4,7 @@
 import { useNavigate } from "react-router-dom";
 import { saveSellerOnboardingDraft } from "../api/provider";
 import { useForm } from "../context/FormContext";
+import { uploadFile } from "../api/uploads";
 import { useEffect, useMemo } from "react";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
@@ -36,21 +37,17 @@ export default function SellerSignupPageFive() {
     updateField(name, value);
   };
 
-  const handleIdentityFile = (field, maxTypes) => (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!maxTypes.includes(file.type)) {
-      alert("Please upload a supported file type.");
-      e.target.value = "";
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      e.target.value = "";
-      return;
-    }
-    updateField(field, file);
-    e.target.value = "";
+  const uploadIdentityFile = async (file, field, acceptedTypes) => {
+    if(!file || !acceptedTypes.includes(file.type)){if(file) alert("Please upload a supported file type.");return;}
+    if(file.size>5*1024*1024){alert("File is too large. Maximum size allowed is 5MB.");return;}
+    try{
+      const uploaded=await uploadFile(file,"matchet/verification");
+      if(!uploaded?.url) throw new Error("Cloudinary did not return a file URL.");
+      updateField(field,uploaded);
+    }catch(error){alert(error.message||"Unable to upload this verification file.");}
+  };
+  const handleIdentityFile = (field,maxTypes)=>(e)=>{
+    const file=e.target.files?.[0]; e.target.value=""; uploadIdentityFile(file,field,maxTypes);
   };
 
   const handleSubmit = async (e) => {

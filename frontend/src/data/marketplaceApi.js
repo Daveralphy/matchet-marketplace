@@ -1,4 +1,4 @@
-import { getMarketplaceProducts, getMarketplaceServices, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
+import { getMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
 import { marketplaceContent } from "./marketplaceContent";
 
 async function loadMarketplace() {
@@ -16,6 +16,9 @@ function withProductUiFields(product) {
     : [];
   return {
     ...product,
+    title: product.title || product.name || "Untitled product",
+    location: product.location || "",
+    seller: product.seller || "Seller",
     gallery,
     reviews: Number(product.reviews ?? 0),
     rating: Number(product.rating ?? 0),
@@ -23,7 +26,7 @@ function withProductUiFields(product) {
     sellerVerified: Boolean(product.sellerVerified),
     sellerType: product.sellerType || "Seller",
     sellerInitial: product.sellerInitial || String(product.seller || "S").trim().charAt(0).toUpperCase(),
-    image: product.image || gallery[0] || "",
+    image: gallery[0] || "",
     imageTone: product.imageTone || "bg-[#eef2ef]",
     categoryTone: product.categoryTone || "bg-[#e8f5ed] text-[#07863a]",
     avatarTone: product.avatarTone || "bg-[#dcefe5] text-[#07863a]",
@@ -41,12 +44,15 @@ function withServiceUiFields(service) {
     : [];
   return {
     ...service,
+    title: service.title || service.name || "Untitled service",
+    location: service.location || "",
+    seller: service.seller || "Provider",
     gallery,
     reviews: Number(service.reviews ?? 0),
     rating: Number(service.rating ?? 0),
     sellerVerified: Boolean(service.sellerVerified),
     sellerInitial: service.sellerInitial || String(service.seller || "P").trim().charAt(0).toUpperCase(),
-    image: service.image || gallery[0] || "",
+    image: gallery[0] || "",
     imageTone: service.imageTone || "bg-[#eef1ef]",
     avatarTone: service.avatarTone || "bg-[#e8f0f8] text-[#2682e9]",
     providerVerified: Boolean(service.providerVerified),
@@ -104,30 +110,14 @@ export async function searchMarketplace({ type = "all", query = "", location = "
 }
 
 export async function getProviderCollection() {
-  const { services } = await getMarketplaceData();
-  const providers = new Map();
-  services.forEach((service) => {
-    const key = service.providerId || service.seller || service.id;
-    if (!providers.has(key)) {
-      providers.set(key, {
-        id: key,
-        name: service.seller || "Service Provider",
-        category: service.category || "Services",
-        rating: service.rating || 0,
-        reviews: service.reviews || 0,
-        location: service.location || "",
-        listings: 1,
-        initials: service.sellerInitial || String(service.seller || "P").trim().charAt(0).toUpperCase(),
-        image: service.image || "",
-        imageTone: service.imageTone || "bg-[#eef1ef]",
-        logoTone: service.avatarTone || "bg-[#e8f0f8] text-[#2682e9]",
-        sellerVerified: service.sellerVerified,
-      });
-    } else {
-      providers.get(key).listings += 1;
-    }
-  });
-  return [...providers.values()];
+  const providers = await getMarketplaceProviders();
+  return providers.map((provider) => ({
+    ...provider,
+    initials: provider.name?.trim()?.charAt(0)?.toUpperCase() || "P",
+    imageTone: provider.image ? "" : "bg-[#eef1ef]",
+    logoTone: "bg-[#e8f0f8] text-[#2682e9]",
+    sellerVerified: Boolean(provider.verified),
+  }));
 }
 
 export async function getCategoryCollections() {

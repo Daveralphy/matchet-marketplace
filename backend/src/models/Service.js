@@ -23,7 +23,7 @@ const locationSchema = new mongoose.Schema({
     type: { type: String, enum: ["Point"] },
     coordinates: {
       type: [Number],
-      validate: { validator: (value) => value.length === 2, message: "Coordinates must contain longitude and latitude." },
+      validate: { validator: (value) => !value || value.length === 2, message: "Coordinates must contain longitude and latitude." },
     },
   },
 }, { _id: false });

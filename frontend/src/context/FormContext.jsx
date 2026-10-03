@@ -12,6 +12,64 @@ const FORM_STORAGE_KEY = "matchet_onboarding_forms";
 function loadStoredForms() {
   try { return JSON.parse(sessionStorage.getItem(FORM_STORAGE_KEY) || "{}"); } catch { return {}; }
 }
+function normalizeOnboardingData(values) {
+  if (!values || typeof values !== "object") return values;
+  const next = { ...values };
+  const scalarFields = [
+    "firstName","lastName","email","countryCode","phoneNumber","sellerType","location","sellerBio",
+    "businessName","businessReg","businessCat","businessDesc","businessAddress","businessPhoneCountryCode","businessPhoneNumber",
+    "productName","productCat","productPrice","productComparePrice","productStock","productDesc","productCondition","productSku",
+    "shippingOptions","shippingRegions","shippingFee","shippingFeeAmount","processingTime","shippingNotes","idType","idNumber",
+    "bankName","accountNumber","accountName","accountType","bvn","tin",
+    "providerFirstName","providerLastName","providerEmail","providerCountryCode","providerPhoneNumber","providerType",
+    "providerLocation","providerBio","providerServiceCat","providerServiceName","providerServiceDesc","providerServiceType",
+    "providerServicePrice","providerServiceDuration","providerServiceNumberOfPeople","providerYearsofExperience",
+    "providerAreasofExpertise","providerCertification","providerCertificationIssuingOrg","providerCertificationYearObtained",
+    "providerPortfolioLink","providerMinimumNoticeRequired","providerMaximumAdvanceBooking","providerResponseTime",
+    "providerServiceArea","providerServiceAreaRadius","providerIdType","providerIdNumber","providerBankName",
+    "providerAccountNumber","providerAccountName","providerAccountType","providerBvn","providerTin"
+  ];
+  scalarFields.forEach((key) => {
+    if (Array.isArray(next[key])) next[key] = next[key][0] ?? "";
+    else if (next[key] && typeof next[key] === "object" && !(next[key] instanceof File)) {
+      next[key] = String(next[key].value ?? next[key].label ?? next[key].name ?? "");
+    }
+  });
+  if (!Array.isArray(next.providerAreasServed)) {
+    next.providerAreasServed = next.providerAreasServed ? [next.providerAreasServed] : [];
+  } else {
+    next.providerAreasServed = next.providerAreasServed.map((value) =>
+      typeof value === "string" || typeof value === "number" ? String(value) : String(value?.value ?? value?.label ?? "")
+    ).filter(Boolean);
+  }
+  const normalizeAssets = (value) => {
+    if (!Array.isArray(value)) return [];
+    return value.map((item) => {
+      if (!item) return null;
+      if (typeof item === "string") return item;
+      if (typeof File !== "undefined" && item instanceof File) return item;
+      if (typeof item === "object") {
+        if (item.url || item.publicId) {
+          return {
+            url: item.url || "",
+            publicId: item.publicId || "",
+            isPrimary: Boolean(item.isPrimary),
+            name: item.name || "",
+            mimeType: item.mimeType || item.type || "",
+          };
+        }
+      }
+      return null;
+    }).filter(Boolean);
+  };
+
+  next.providerServiceImages = normalizeAssets(next.providerServiceImages);
+  next.providerPortfolioMedia = normalizeAssets(next.providerPortfolioMedia);
+
+  if (!Array.isArray(next.productTags)) next.productTags = next.productTags ? [next.productTags] : [];
+  return next;
+}
+
 
 export function FormProvider({ children }) {
   const stored = loadStoredForms();
@@ -116,7 +174,7 @@ export function FormProvider({ children }) {
     providerBvn: "",
     providerTin: "",
   }));
-  if (stored[flow]) Object.assign(formData, stored[flow]);
+  if (stored[flow]) Object.assign(formData, normalizeOnboardingData(stored[flow]));
 
   const setOnboardingFlow = useCallback((nextFlow) => {
     const safeFlow = nextFlow === "service" ? "service" : "seller";
@@ -134,7 +192,7 @@ export function FormProvider({ children }) {
   // Function to update a single field's value
   const updateField = (name, value) => {
     setFormData((prevData) => {
-      const next = { ...prevData, [name]: value };
+      const next = normalizeOnboardingData({ ...prevData, [name]: value });
       try {
         const all = loadStoredForms();
         const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
@@ -147,7 +205,7 @@ export function FormProvider({ children }) {
   const mergeFormData = useCallback((values) => {
     if (!values || typeof values !== "object") return;
     setFormData((prevData) => {
-      const next = { ...prevData, ...values };
+      const next = normalizeOnboardingData({ ...prevData, ...values });
       try {
         const all = loadStoredForms();
         const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";

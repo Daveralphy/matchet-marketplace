@@ -1,6 +1,23 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from "../api/auth";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+async function getNotificationsFromServer() {
+  const response = await fetch(API_BASE_URL + "/api/notifications", { credentials: "include" });
+  if (!response.ok) throw new Error("Unable to load notifications.");
+  const payload = await response.json();
+  return payload.data || [];
+}
+
+async function markServerNotificationsRead() {
+  await fetch(API_BASE_URL + "/api/notifications/read", {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -9,12 +26,18 @@ export function AuthProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
 
   const notificationKey = (account) => account ? `matchet_notifications:${account.id || account.email}` : "matchet_notifications:anonymous";
-  const loadNotifications = (account) => {
+  const loadNotifications = async (account) => {
     try {
-      const saved = JSON.parse(localStorage.getItem(notificationKey(account)) || "[]");
-      setNotifications(Array.isArray(saved) ? saved : []);
+      const serverNotifications = await getNotificationsFromServer();
+      setNotifications(serverNotifications);
+      return;
     } catch {
-      setNotifications([]);
+      try {
+        const saved = JSON.parse(localStorage.getItem(notificationKey(account)) || "[]");
+        setNotifications(Array.isArray(saved) ? saved : []);
+      } catch {
+        setNotifications([]);
+      }
     }
   };
   const addNotification = (account, notification) => {
@@ -25,8 +48,9 @@ export function AuthProvider({ children }) {
   const markNotificationsRead = () => {
     if (!user) return;
     const next = notifications.map((item) => ({ ...item, read: true }));
-    localStorage.setItem(notificationKey(user), JSON.stringify(next));
     setNotifications(next);
+    markServerNotificationsRead().catch(() => {});
+    localStorage.setItem(notificationKey(user), JSON.stringify(next));
   };
 
   const refreshUser = useCallback(async () => {
@@ -53,7 +77,7 @@ export function AuthProvider({ children }) {
     const response = await loginRequest(credentials);
     setUser(response.user);
     sessionStorage.setItem("matchet_cache_user", response.user.id || response.user.email || "account");
-    loadNotifications(response.user);
+    await loadNotifications(response.user);
     addNotification(response.user, { type: "login", title: "New login", message: "Your Matchet account was just signed in." });
     return response.user;
   }, []);
@@ -62,7 +86,7 @@ export function AuthProvider({ children }) {
     const response = await registerRequest(details);
     setUser(response.user);
     sessionStorage.setItem("matchet_cache_user", response.user.id || response.user.email || "account");
-    loadNotifications(response.user);
+    await loadNotifications(response.user);
     addNotification(response.user, { type: "welcome", title: "Welcome to Matchet", message: "Your account is ready. Start exploring products and services." });
     return response.user;
   }, []);

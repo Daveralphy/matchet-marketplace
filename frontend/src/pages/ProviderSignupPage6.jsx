@@ -57,8 +57,14 @@ export default function ProviderSignupPageSix() {
       return;
     }
     try {
-      const response = await saveProviderOnboardingDraft(formData);
-      if (response?.data?.formData) mergeFormData(response.data.formData);      if (response?.data?.formData) mergeFormData(response.data.formData);
+      // The account name is displayed as a derived value on this page, but it is
+      // also part of the persisted onboarding payload expected by the backend.
+      const paymentFormData = {
+        ...formData,
+        providerAccountName: accountName,
+      };
+      const response = await saveProviderOnboardingDraft(paymentFormData);
+      if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page7");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");

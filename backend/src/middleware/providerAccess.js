@@ -27,6 +27,9 @@ async function requireActiveProvider(req, res, next) {
 }
 
 async function requireActiveSeller(req, res, next) {
+  if (!req.user?.capabilities?.seller) {
+    return res.status(403).json({ success: false, message: "Seller access is not enabled for this account.", code: "SELLER_CAPABILITY_REQUIRED" });
+  }
   const profile = await StoreProfile.findOne({ userId: req.user._id });
 
   if (!profile) {
