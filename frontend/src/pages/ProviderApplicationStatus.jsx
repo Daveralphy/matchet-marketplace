@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ProviderShell, Icon } from "../components/ProviderShell";
 import { useAuth } from "../context/AuthContext";
 import { getProviderProfile } from "../api/provider";
 import "../styles/provider-dashboard.css";
@@ -8,63 +7,95 @@ import "../styles/provider-dashboard.css";
 export default function ProviderApplicationStatus() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const { refreshUser } = useAuth();
 
-  useEffect(() => {
-    let active = true;
-    getProviderProfile().then(async (response) => {
-      if (active) setData(response.data);
-      if (active && response.data?.profile?.verificationStatus === "verified") await refreshUser();
-    }).finally(() => {
-      if (active) setLoading(false);
-    });
-    return () => { active = false; };
-  }, []);
+  const loadStatus = useCallback(async (manual = false) => {
+    if (manual) setRefreshing(true);
+    try {
+      const response = await getProviderProfile();
+      setData(response.data);
+      if (response.data?.profile?.verificationStatus === "verified") await refreshUser();
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [refreshUser]);
 
-  if (loading) return <ProviderShell><div className="provider-page provider-dashboard-loading"><div className="provider-dashboard-skeleton" /><div className="provider-dashboard-skeleton large" /></div></ProviderShell>;
+  useEffect(() => {
+    loadStatus();
+  }, [loadStatus]);
+
+  if (loading) {
+    return (
+      <main className="provider-application-status-standalone">
+        <div className="provider-application-status-card">
+          <div className="provider-dashboard-skeleton" />
+          <div className="provider-dashboard-skeleton large" />
+        </div>
+      </main>
+    );
+  }
 
   const application = data?.profile;
-  const submitted = application?.applicationSubmittedAt;
   const verification = application?.verificationStatus || "pending";
-  const status = application?.status || "draft";
-  const rejected = verification === "rejected";
   const approved = verification === "verified";
+  const rejected = verification === "rejected";
+
+  if (approved) {
+    return (
+      <main className="provider-application-status-standalone">
+        <div className="provider-application-status-card">
+          <div className="provider-status-mark provider-status-mark-success">✓</div>
+          <h1>Application approved</h1>
+          <p>Your provider application has been approved. Your provider dashboard is now available.</p>
+          <div className="provider-application-status-actions">
+            <Link to="/provider/dashboard" className="provider-status-primary">Go to provider dashboard</Link>
+            <Link to="/" className="provider-status-secondary">Return to Matchet</Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <ProviderShell>
-      <div className="provider-page provider-application-page">
-        <div className="provider-heading">
-          <div><h1>Application status</h1><span>Track the review status of your provider application.</span></div>
-          {approved ? <Link to="/provider/dashboard" className="provider-outline-button">← Go to dashboard</Link> : <span className="provider-outline-button" style={{ cursor: "default" }}>Application under review</span>}
+    <main className="provider-application-status-standalone">
+      <div className="provider-application-status-card">
+        <div className={"provider-status-mark " + (rejected ? "provider-status-mark-rejected" : "provider-status-mark-pending")}>
+          {rejected ? "!" : "✓"}
         </div>
 
-        <section className={"provider-card provider-application-hero " + (approved ? "approved" : rejected ? "rejected" : "pending")}>
-          <div className="provider-application-icon"><Icon name={approved ? "shield" : rejected ? "bell" : "clock"} size={30} /></div>
-          <div>
-            <strong>{approved ? "Application approved" : rejected ? "Application needs attention" : "Application is under review"}</strong>
-            <p>{approved ? "Your provider profile has been approved and can proceed to provider activity." : rejected ? (application.reviewNote || "Please review the feedback and update your application.") : "Your application has been received. An administrator can review the information you submitted before activating your provider profile."}</p>
-          </div>
-        </section>
+        <h1>{rejected ? "Application needs attention" : "Your application is under review"}</h1>
 
-        <section className="provider-card">
-          <h2>Application details</h2>
-          <div className="provider-application-details">
-            <div><span>Status</span><strong>{status}</strong></div>
-            <div><span>Verification</span><strong>{verification}</strong></div>
-            <div><span>Submitted</span><strong>{submitted ? new Intl.DateTimeFormat("en-NG", { dateStyle: "medium", timeStyle: "short" }).format(new Date(submitted)) : "Not submitted"}</strong></div>
-            <div><span>Business / provider name</span><strong>{application?.businessName || data?.user?.name || "Provider"}</strong></div>
-          </div>
-        </section>
+        <p className="provider-status-lead">
+          {rejected
+            ? (application?.reviewNote || "Your application was not approved. Please review the feedback and update your application.")
+            : "Thanks for applying to become a provider on Matchet. We have received your application and our team is reviewing the information you submitted."}
+        </p>
 
-        <section className="provider-card">
-          <h2>What happens next?</h2>
-          <div className="provider-application-steps">
-            <div className="done"><span>1</span><strong>Application submitted</strong><small>Your onboarding information is stored with your provider profile.</small></div>
-            <div className={approved || rejected ? "done" : "current"}><span>2</span><strong>Application review</strong><small>An administrator can review your provider information and verification details.</small></div>
-            <div className={approved ? "done" : ""}><span>3</span><strong>Provider activation</strong><small>Once approved, your provider profile can become active.</small></div>
-          </div>
-        </section>
+        <div className="provider-status-notice">
+          <strong>{rejected ? "Next step" : "What happens next?"}</strong>
+          <p>
+            {rejected
+              ? "Update the required information and submit your application again when you are ready."
+              : "You will receive an email and in-app notification when a decision has been made. Until your application is approved, provider dashboard features are not available."}
+          </p>
+        </div>
+
+        <div className="provider-application-status-actions">
+          {!rejected && (
+            <button type="button" className="provider-status-primary" onClick={() => loadStatus(true)} disabled={refreshing}>
+              {refreshing ? "Checking status..." : "Refresh application status"}
+            </button>
+          )}
+          {rejected && <Link to="/provider/onboarding" className="provider-status-primary">Update application</Link>}
+          <Link to="/" className="provider-status-secondary">Return to Matchet home</Link>
+        </div>
+
+        <p className="provider-status-footnote">
+          You can safely leave this page. Your application remains under review while you wait for an update.
+        </p>
       </div>
-    </ProviderShell>
+    </main>
   );
 }
