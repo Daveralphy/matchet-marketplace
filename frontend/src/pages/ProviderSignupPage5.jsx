@@ -66,9 +66,9 @@ export default function ProviderSignupPageFive() {
   const filePreview = useMemo(() => {
     const createPreview = (value) => {
       if (!value) return null;
-      if (typeof value === "string") return value;
-      if (value.url) return value.url;
-      if (typeof File !== "undefined" && value instanceof File) return URL.createObjectURL(value);
+      if (typeof value === "string") return { url: value, type: "" };
+      if (value && typeof value === "object" && value.url) return { url: value.url, type: value.mimeType || value.type || "" };
+      if (typeof File !== "undefined" && value instanceof File) return { url: URL.createObjectURL(value), type: value.type || "" };
       return null;
     };
     return {
@@ -79,7 +79,7 @@ export default function ProviderSignupPageFive() {
   }, [formData.providerIdImageFront, formData.providerIdImageBack, formData.providerSelfieImage]);
 
   useEffect(() => {
-    return () => Object.values(filePreview).forEach((url) => url && URL.revokeObjectURL(url));
+    return () => Object.values(filePreview).forEach((item) => item?.url && item.url.startsWith("blob:") && URL.revokeObjectURL(item.url));
   }, [filePreview]);
 
   const renderUploadBox = ({ field, inputId, title, accept, types, preview, file }) => (
