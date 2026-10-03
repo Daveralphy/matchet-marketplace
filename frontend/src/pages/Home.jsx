@@ -8,6 +8,7 @@ import { getMarketplaceData } from "../data/marketplaceApi";
 import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMock";
 import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } from "../data/homeCommunityMock";
 import { MOBILE_APP_SECTIONS } from "../data/homeMobileAppMock";
+import { useSavedItems } from "../context/SavedItemsContext";
 import mockup2 from "../assets/inspirations/homepage/mockup2.png";
 import mockup3 from "../assets/inspirations/homepage/mockup3.png";
 import appStoreBadge from "../assets/inspirations/homepage/app-store-badge.svg";
@@ -406,6 +407,13 @@ function getMarketplacePlaceholderIcon(item) {
 }
 
 function MarketplaceCard({ item, compact = false }) {
+  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
+  const saved = isSaved(item.type === "service" ? "service" : "product", item.id);
+  const handleSave = async (event) => {
+    event.preventDefault(); event.stopPropagation();
+    if (!isAuthenticated) { window.location.href = "/login"; return; }
+    await toggleSaved(item.type === "service" ? "service" : "product", item.id);
+  };
   return (
     <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={`group block shrink-0 overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)] ${compact ? "w-[166px]" : "w-[172px] sm:w-[180px]"}`}>
       <div
@@ -432,8 +440,10 @@ function MarketplaceCard({ item, compact = false }) {
 
         <button
           type="button"
-          aria-label={`Save ${item.title}`}
-          className="absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_10px_rgba(16,24,63,0.12)] transition-colors hover:text-[#07983f]"
+          aria-label={saved ? `Unsave ${item.title}` : `Save ${item.title}`}
+          aria-pressed={saved}
+          onClick={handleSave}
+          className={`absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_3px_10px_rgba(16,24,63,0.12)] transition-all ${saved ? "bg-[#eaf9ee] text-[#07863a] scale-105" : "bg-white text-[#10183f] hover:text-[#07983f]"}`}
         >
           <HeartIcon size={17} />
         </button>
