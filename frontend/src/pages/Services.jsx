@@ -1026,7 +1026,7 @@ function ServicesListingSection({ isAuthenticated }) {
 }
 
 export default function Services({ isAuthenticated = false }) {
-  const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
+  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "");
   const [locationOpen, setLocationOpen] = useState(false);
 
   const locationRef = useRef(null);
