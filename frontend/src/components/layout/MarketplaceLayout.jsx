@@ -69,6 +69,7 @@ export default function MarketplaceLayout({ children }) {
       <Header
         isAuthenticated={isAuthenticated}
         username={userName}
+        avatarSrc={user?.avatar?.url || ""}
         onLogout={logout}
       />
 
