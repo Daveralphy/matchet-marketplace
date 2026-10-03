@@ -3,3 +3,25 @@
 @theme {
   --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
 }
+
+@keyframes matchet-cart-fly {
+  0% {
+    opacity: 0.98;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  55% {
+    opacity: 0.92;
+    transform: translate3d(calc((var(--cart-fly-x) - var(--cart-fly-start-x)) * 0.55), calc((var(--cart-fly-y) - var(--cart-fly-start-y)) * 0.55 - 70px), 0) scale(0.62);
+  }
+  100% {
+    opacity: 0.12;
+    transform: translate3d(calc(var(--cart-fly-x) - var(--cart-fly-start-x)), calc(var(--cart-fly-y) - var(--cart-fly-start-y)), 0) scale(0.16);
+  }
+}
+
+.matchet-cart-fly {
+  animation: matchet-cart-fly 720ms cubic-bezier(.2,.8,.2,1) forwards;
+  transform-origin: center;
+  --cart-fly-start-x: 0px;
+  --cart-fly-start-y: 0px;
+}
