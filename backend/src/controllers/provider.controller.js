@@ -1373,7 +1373,21 @@ async function submitSellerOnboarding(req, res) {
   try {
     const userId = req.user._id;
     const isDraft = Boolean(req.body?.draft);
+    const requestedStep = Number(req.body?.step);
     const input = req.body?.formData || req.body || {};
+    if (isDraft && Number.isInteger(requestedStep) && requestedStep >= 1 && requestedStep <= sellerStepRequirements.length) {
+      const checks = sellerStepRequirements[requestedStep - 1](input);
+      const missingFields = checks.filter(([, complete]) => !complete).map(([field]) => field);
+      if (missingFields.length) {
+        return res.status(422).json({
+          success: false,
+          code: "ONBOARDING_STEP_INCOMPLETE",
+          step: requestedStep,
+          missingFields,
+          message: "Please complete the highlighted fields before continuing.",
+        });
+      }
+    }
     if (!isDraft) {
       const progress = getFirstIncompleteOnboardingStep(input, sellerStepRequirements);
       if (progress.step <= sellerStepRequirements.length) {
