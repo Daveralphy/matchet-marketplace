@@ -112,6 +112,7 @@ async function updateMe(req, res) {
     if (body.phone !== undefined) user.phone = normalize(body.phone);
     if (body.avatar !== undefined) user.avatar = body.avatar || null;
     if (body.location !== undefined) user.location = { ...(user.location?.toObject?.() || user.location || {}), ...(body.location || {}) };
+    if (body.preferences !== undefined) user.preferences = { ...(user.preferences || {}), ...(body.preferences || {}) };
     await user.save();
     return res.json({ success: true, user: serializeUser(user) });
   } catch (error) {
