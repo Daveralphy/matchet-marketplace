@@ -2,6 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
 import { saveProviderOnboardingDraft } from "../api/provider";
+import { uploadFile } from "../api/uploads";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -31,36 +32,24 @@ export default function ProviderSignupPageFive() {
 
   const maxFileSize = 5 * 1024 * 1024;
 
+  const uploadVerificationFile = async (file, field, acceptedTypes) => {
+    if (!file) return;
+    if (!acceptedTypes.includes(file.type)) { alert("Please upload a supported file type."); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("File is too large. Maximum size allowed is 5MB."); return; }
+    try {
+      const uploaded = await uploadFile(file, "matchet/verification");
+      if (!uploaded?.url) throw new Error("Cloudinary did not return a file URL.");
+      updateField(field, uploaded);
+    } catch (error) { alert(error.message || "Unable to upload this verification file."); }
+  };
   const validateAndStoreFile = (event, field, acceptedTypes) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    if (!acceptedTypes.includes(file.type)) {
-      alert("Please upload a supported file type.");
-      event.target.value = "";
-      return;
-    }
-    if (file.size > maxFileSize) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      event.target.value = "";
-      return;
-    }
-    updateField(field, file);
     event.target.value = "";
+    uploadVerificationFile(file, field, acceptedTypes);
   };
-
   const handleDrop = (event, field, acceptedTypes) => {
     event.preventDefault();
-    const file = event.dataTransfer.files?.[0];
-    if (!file) return;
-    if (!acceptedTypes.includes(file.type)) {
-      alert("Please upload a supported file type.");
-      return;
-    }
-    if (file.size > maxFileSize) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      return;
-    }
-    updateField(field, file);
+    uploadVerificationFile(event.dataTransfer.files?.[0], field, acceptedTypes);
   };
 
   const filePreview = useMemo(() => {
