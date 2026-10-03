@@ -133,6 +133,43 @@ function RequireOnboardingStep({ flow, step, children }) {
   return children;
 }
 
+function RequireOnboardingReview({ flow, children }) {
+  const { isAuthenticated, loading } = useAuth();
+  const [checking, setChecking] = useState(true);
+  const [redirectStep, setRedirectStep] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated || loading) return undefined;
+    getOnboardingProgress(flow)
+      .then((response) => {
+        if (!active) return;
+        const data = response?.data;
+        if (data?.submitted) {
+          setRedirectStep(0);
+          return;
+        }
+        const firstIncomplete = Number(data?.firstIncompleteStep || 1);
+        const totalSteps = Number(data?.totalSteps || 1);
+        if (firstIncomplete <= totalSteps) setRedirectStep(firstIncomplete);
+      })
+      .catch(() => active && setRedirectStep(1))
+      .finally(() => active && setChecking(false));
+    return () => { active = false; };
+  }, [flow, isAuthenticated, loading]);
+
+  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (redirectStep === 0) return <Navigate to={flow === "service" ? "/provider/application-status" : "/register/page7"} replace />;
+  if (redirectStep) {
+    const target = flow === "service"
+      ? (redirectStep === 1 ? "/provider/onboarding" : "/provider/onboarding/page" + redirectStep)
+      : (redirectStep === 1 ? "/register" : "/register/page" + redirectStep);
+    return <Navigate to={target} replace />;
+  }
+  return children;
+}
+
 function RequireAuth({ children }) {
   const { isAuthenticated, loading } = useAuth();
   const location = useLocation();
@@ -306,7 +343,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/register/page6",
-    element: <RequireOnboardingStep flow="seller" step={6}><SellerSignupPageSeven /></RequireOnboardingStep>,
+    element: <RequireOnboardingReview flow="seller"><SellerSignupPageSeven /></RequireOnboardingReview>,
   },
   {
     path: "/register/page7",
