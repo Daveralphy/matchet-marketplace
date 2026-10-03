@@ -61,7 +61,7 @@ const PROFILE_ITEMS = [
   {
     label: "Account Settings",
     description: "Manage your account preferences",
-    path: "/settings",
+    path: "/account/settings",
     icon: "settings",
   },
   {
