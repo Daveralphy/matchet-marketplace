@@ -55,13 +55,14 @@ export default function ProviderSignupPageSeven() {
     const file = formData.providerProfileImage;
     if (!file) return null;
     if (typeof file === "string") return file;
-    if (file.url) return file.url;
-    return URL.createObjectURL(file);
+    if (file && typeof file === "object" && file.url) return file.url;
+    if (typeof File !== "undefined" && file instanceof File) return URL.createObjectURL(file);
+    return null;
   }, [formData.providerProfileImage]);
 
-  const portfolioPreviews = useMemo(() => (formData.providerPortfolioMedia || []).slice(0, 3).map((file) => ({
+  const portfolioPreviews = useMemo(() => (Array.isArray(formData.providerPortfolioMedia) ? formData.providerPortfolioMedia : []).slice(0, 3).map((file) => ({
     file,
-    url: typeof file === "string" ? file : file?.url || URL.createObjectURL(file),
+    url: typeof file === "string" ? file : file?.url || (typeof File !== "undefined" && file instanceof File ? URL.createObjectURL(file) : ""),
   })), [formData.providerPortfolioMedia]);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export default function ProviderSignupPageSeven() {
   }, [profilePreview, portfolioPreviews, formData.providerProfileImage]);
 
   const maskAccount = (value) => value ? "**** " + String(value).slice(-4) : "Not provided";
-  const providerTypeLabel = { individual: "Individual provider", business: "Business / Company", team: "Team / Agency" }[formData.providerType] || formData.providerType || "Provider";
+  const providerTypeLabel = { Individual: "Individual provider", "Business/Company": "Business / Company", "Team/Agency": "Team / Agency", individual: "Individual provider", business: "Business / Company", team: "Team / Agency" }[formData.providerType] || formData.providerType || "Provider";
 
   const weekdayData = ["monday", "tuesday", "wednesday", "thursday", "friday"].map((day) => formData.providerAvailability?.[day]).filter(Boolean);
   const weekdayEnabled = weekdayData.filter((day) => day.enabled);
@@ -174,7 +175,7 @@ export default function ProviderSignupPageSeven() {
 
             <section className="provider-review-card">
               <div className="provider-review-card-heading"><Icon name="card" /><h3>Payment details</h3><EditLink to="/provider/onboarding/page6" /></div>
-              <div className="provider-review-payment"><div><strong>{formData.providerBankName || "Bank not provided"}</strong><span>{formData.providerAccountName || "Account name will be verified"}</span><small>{maskAccount(formData.providerAccountNumber)}</small></div><span className="provider-review-status">Ready for verification</span></div>
+              <div className="provider-review-payment"><div><strong>{formData.providerBankName || "Bank not provided"}</strong><span>{formData.providerAccountName || [formData.providerFirstName, formData.providerLastName].filter(Boolean).join(" ") || "Account name will be verified"}</span><small>{maskAccount(formData.providerAccountNumber)}</small></div><span className="provider-review-status">Ready for verification</span></div>
             </section>
           </div>
 
