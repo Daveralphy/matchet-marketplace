@@ -546,15 +546,23 @@ function ProductImage({ product }) {
 }
 
 function ProductCatalogueCard({ product }) {
-  const { addItem } = useCart();
+  const { addItem, items: cartItems } = useCart();
   const [added, setAdded] = useState(false);
+  const [cartBusy, setCartBusy] = useState(false);
+  const alreadyInCart = cartItems.some((item) => String(item.id || item.productId || item.product?._id) === String(product.id));
 
-  const handleAddToCart = (event) => {
+  const handleAddToCart = async (event) => {
     event.preventDefault();
     event.stopPropagation();
-    addItem(product);
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1600);
+    if (alreadyInCart || cartBusy) return;
+    setCartBusy(true);
+    try {
+      const source = event.currentTarget.closest(".relative")?.querySelector("img") || event.currentTarget;
+      const result = await addItem(product, 1, source);
+      if (result?.requiresAuth) { window.location.href = "/login"; return; }
+      setAdded(true);
+      window.setTimeout(() => setAdded(false), 1600);
+    } finally { setCartBusy(false); }
   };
   const rating = Number(product.rating) || 0;
 
@@ -564,9 +572,10 @@ function ProductCatalogueCard({ product }) {
         <ProductImage product={product} />
         <button
           type="button"
-          aria-label={`Add ${product.title} to cart`}
+          aria-label={alreadyInCart ? `${product.title} is in cart` : `Add ${product.title} to cart`}
           onClick={handleAddToCart}
-          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 ${added ? "scale-110 bg-[#eaf9ee] text-[#07863a]" : "bg-white text-[#07863a]"}`}
+          disabled={alreadyInCart || cartBusy}
+          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 ${alreadyInCart ? "cursor-not-allowed bg-[#eaf9ee] text-[#07863a]" : added ? "scale-110 bg-[#eaf9ee] text-[#07863a]" : "bg-white text-[#07863a]"}`}
         >
           <span className={added ? "animate-[pulse_0.45s_ease-out]" : ""}><Icon name="cart" size={16} /></span>
         </button>
@@ -589,8 +598,10 @@ function ProductCatalogueCard({ product }) {
           )}
           <button
             type="button"
-            aria-label={`Add ${product.title} to cart`}
-            className="ml-auto flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#e9f8ed] text-[#07863a]"
+            aria-label={alreadyInCart ? `${product.title} is in cart` : `Add ${product.title} to cart`}
+            onClick={handleAddToCart}
+            disabled={alreadyInCart || cartBusy}
+            className={`ml-auto flex h-9 w-9 items-center justify-center rounded-[9px] ${alreadyInCart ? "cursor-not-allowed bg-[#eaf9ee] text-[#07863a]" : "bg-[#e9f8ed] text-[#07863a]"}`}
           >
             <Icon name="cart" size={17} />
           </button>
