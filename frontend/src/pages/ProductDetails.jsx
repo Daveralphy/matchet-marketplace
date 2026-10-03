@@ -295,7 +295,7 @@ function ProductDetail({ product, related }) {
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-            {related.map((item) => (
+            {related.length ? related.map((item) => (
               <Link key={item.id} to={`/products/${item.id}`} className="rounded-[10px] border border-[#e4e8ee] bg-white p-2.5">
                 <ProductVisual product={item} />
                 <h3 className="mt-2 truncate text-[12px] font-medium text-[#10183f]">{item.title}</h3>
@@ -303,7 +303,14 @@ function ProductDetail({ product, related }) {
                 <p className="mt-2 text-[15px] font-bold text-[#10183f]">{item.price}</p>
                 <p className="mt-1 truncate text-[10px] text-[#69739a]">{item.seller} · {item.location}</p>
               </Link>
-            ))}
+            )) : (
+              <div className="col-span-full rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
+                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f7] text-[#69739a]">♡</div>
+                <p className="mt-3 text-[13px] font-semibold text-[#10183f]">No similar products yet</p>
+                <p className="mx-auto mt-1 max-w-[430px] text-[11px] leading-5 text-[#69739a]">We do not have any more products similar to this one right now. You can browse the full product catalogue instead.</p>
+                <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">Browse all products</Link>
+              </div>
+            )}
           </div>
         </section>
       </div>
