@@ -191,11 +191,11 @@ async function prepareProviderOnboardingPayload(formData) {
   return next;
 }
 
-export async function saveProviderOnboardingDraft(formData) {
+export async function saveProviderOnboardingDraft(formData, step) {
   const next = await prepareProviderOnboardingPayload(formData);
   return request("/api/provider/onboarding", {
     method: "POST",
-    body: JSON.stringify({ formData: serializeOnboardingValue(next), draft: true }),
+    body: JSON.stringify({ formData: serializeOnboardingValue(next), draft: true, step }),
   });
 }
 
