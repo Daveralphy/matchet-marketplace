@@ -778,7 +778,6 @@ function ProductCatalogue({ isAuthenticated }) {
     getMarketplaceData().then((data) => {
       if (!active) return;
       setProducts(data.products);
-      setLocation((current) => current || data.products[0]?.location || "");
       const prices = data.products
         .map((item) => Number(item.priceValue ?? String(item.price).replace(/[^\d]/g, "")))
         .filter((value) => Number.isFinite(value) && value >= 0);
@@ -786,7 +785,7 @@ function ProductCatalogue({ isAuthenticated }) {
       const ceiling = Math.max(1000, Math.ceil(observedMax / 10000) * 10000);
       setFilters((current) => ({
         ...current,
-        maxPrice: ceiling,
+        maxPrice: current.maxPrice == null ? ceiling : Math.min(Number(current.maxPrice), ceiling),
       }));
     });
 
@@ -969,7 +968,7 @@ function ShoppingJourneySection({ isAuthenticated }) {
 }
 
 export default function Products({ isAuthenticated = false }) {
-  const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
+  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "");
   const [locationOpen, setLocationOpen] = useState(false);
 
   const locationRef = useRef(null);
