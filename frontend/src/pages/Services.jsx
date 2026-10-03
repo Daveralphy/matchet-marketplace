@@ -878,6 +878,14 @@ function ServiceReviewsSection({ isAuthenticated }) {
 }
 
 function ServiceListingCard({ service }) {
+  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
+  const saved = isSaved("service", service.id);
+  const handleSave = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!isAuthenticated) { window.location.href = "/login"; return; }
+    await toggleSaved("service", service.id);
+  };
   return (
     <Link to={`/services/${service.id}`} className="block overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
       <div className={`relative h-[218px] overflow-hidden ${service.imageTone || "bg-[#dfe7e2]"}`}>
