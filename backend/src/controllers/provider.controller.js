@@ -1234,7 +1234,10 @@ const providerStepRequirements = [
   (data) => [
     ["providerYearsofExperience", data.providerYearsofExperience !== undefined && data.providerYearsofExperience !== ""],
     ["providerAreasofExpertise", onboardingHasValue(data.providerAreasofExpertise)],
-    ["providerPortfolioMedia", Array.isArray(data.providerPortfolioMedia) && data.providerPortfolioMedia.some(onboardingHasFile)],
+    ["providerPortfolioMedia",
+      (Array.isArray(data.providerPortfolioMedia) && data.providerPortfolioMedia.some(onboardingHasFile)) ||
+      onboardingHasValue(data.providerPortfolioLink),
+    ],
   ],
   (data) => {
     const availability = data.providerAvailability || {};
