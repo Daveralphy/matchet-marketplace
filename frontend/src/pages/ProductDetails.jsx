@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import MarketplaceLayout from "../components/layout/MarketplaceLayout";
 import { getProductById, getRelatedProducts } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
+import { useSavedItems } from "../context/SavedItemsContext";
 
 function Icon({ name, size = 20, strokeWidth = 1.8 }) {
   const paths = {
@@ -155,14 +156,27 @@ function Stars({ rating }) {
 
 function ProductDetail({ product, related }) {
   const [quantity, setQuantity] = useState(1);
-  const [saved, setSaved] = useState(false);
   const [added, setAdded] = useState(false);
-  const { addItem } = useCart();
+  const [cartBusy, setCartBusy] = useState(false);
+  const { addItem, items: cartItems } = useCart();
+  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
+  const saved = isSaved("product", product.id);
+  const alreadyInCart = cartItems.some((item) => String(item.id || item.productId || item.product?._id) === String(product.id));
 
-  const handleAddToCart = () => {
-    addItem(product, quantity);
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1800);
+  const handleAddToCart = async () => {
+    if (alreadyInCart || cartBusy) return;
+    setCartBusy(true);
+    try {
+      const result = await addItem(product, quantity);
+      if (result?.requiresAuth) { window.location.href = "/login"; return; }
+      setAdded(true);
+      window.setTimeout(() => setAdded(false), 1800);
+    } finally { setCartBusy(false); }
+  };
+
+  const handleSave = async () => {
+    if (!isAuthenticated) { window.location.href = "/login"; return; }
+    await toggleSaved("product", product.id);
   };
 
   return (
@@ -225,14 +239,14 @@ function ProductDetail({ product, related }) {
                   <span className="flex w-14 items-center justify-center border-x border-[#dfe5ec] text-[13px]">{quantity}</span>
                   <button type="button" onClick={() => setQuantity((value) => value + 1)} className="w-11 text-lg">+</button>
                 </div>
-                <button type="button" onClick={() => setSaved((value) => !value)} className="ml-auto flex h-11 items-center gap-2 rounded-[8px] border border-[#dfe5ec] px-4 text-[12px] font-medium text-[#10183f]">
-                  <Icon name="heart" /> {saved ? "Saved" : "Save"}
+                <button type="button" onClick={handleSave} aria-pressed={saved} className={`ml-auto flex h-11 items-center gap-2 rounded-[8px] border px-4 text-[12px] font-medium transition-colors ${saved ? "border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : "border-[#dfe5ec] text-[#10183f]"}`}>
+                  <Icon name="heart" /> {saved ? "Unsave" : "Save"}
                 </button>
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <button type="button" onClick={handleAddToCart} className={`flex h-[52px] items-center justify-center gap-2 rounded-[8px] border font-medium transition-all duration-200 ${added ? "scale-[1.02] border-[#087d35] bg-[#eaf9ee] text-[#087d35]" : "border-[#07863a] bg-white text-[#07863a]"}`}>
-                  <Icon name="cart" /> {added ? "Added to cart ✓" : "Add to cart"}
+                <button type="button" onClick={handleAddToCart} disabled={alreadyInCart || cartBusy} className={`flex h-[52px] items-center justify-center gap-2 rounded-[8px] border font-medium transition-all duration-200 ${alreadyInCart ? "cursor-not-allowed border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : added ? "scale-[1.02] border-[#087d35] bg-[#eaf9ee] text-[#087d35]" : "border-[#07863a] bg-white text-[#07863a]"}`}>
+                  <Icon name="cart" /> {alreadyInCart ? "In cart ✓" : added ? "Added to cart ✓" : cartBusy ? "Adding..." : "Add to cart"}
                 </button>
                 <Link to={"/checkout/" + product.id} state={{ quantity }} className="flex h-[52px] items-center justify-center rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</Link>
               </div>
