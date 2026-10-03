@@ -79,11 +79,16 @@ export async function getProductCollection() {
 
 export async function getMarketplaceCollection(collection) {
   const { products, services } = await loadMarketplace();
-  const all = [...products.map(withProductUiFields), ...services.map(withServiceUiFields)];
+  const productItems = products.map(withProductUiFields);
+  const serviceItems = services.map(withServiceUiFields);
+  const all = [...productItems, ...serviceItems];
   const size = Math.max(4, Math.min(8, all.length));
   switch (collection) {
+    case "products":
+      return productItems.slice(0, 8);
+    case "services":
+      return serviceItems.slice(0, 8);
     case "featured":
-      return all.slice(0, size);
     case "picked":
       return all.slice(0, size);
     case "popularNearby":
