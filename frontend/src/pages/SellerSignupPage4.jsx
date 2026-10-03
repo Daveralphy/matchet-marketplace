@@ -25,7 +25,7 @@ export default function SellerSignupPageFour() {
     try {
       const response = await saveSellerOnboardingDraft(formData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/register/page5");
+      navigate("/register/page4");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
     }
