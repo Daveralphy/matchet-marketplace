@@ -474,7 +474,7 @@ export default function SellerSignupPageSix() {
 
             <button
               type="button"
-              onClick={() => navigate("/register/page5")}
+              onClick={() => navigate("/register/page4")}
               className="back-button"
             >
               ← Back
