@@ -1,5 +1,6 @@
 const ProviderProfile = require("../models/ProviderProfile");
 const User = require("../models/User");
+const Notification = require("../models/Notification");
 const StoreProfile = require("../models/StoreProfile");
 
 function requireAdmin(req, res, next) {
@@ -148,6 +149,17 @@ async function reviewProviderApplication(req, res) {
       $set: { "capabilities.provider": approved },
     });
 
+    await Notification.create({
+      userId: application.userId,
+      type: approved ? "PROVIDER_APPLICATION_APPROVED" : "PROVIDER_APPLICATION_REJECTED",
+      title: approved ? "Provider application approved" : "Provider application needs attention",
+      message: approved
+        ? "Your provider application has been approved. You can now access your provider dashboard and add your services."
+        : (String(note).trim() || "Your provider application was not approved. Review the application status for the next steps."),
+      relatedId: application._id,
+      relatedType: "ProviderProfile",
+    });
+
     return res.json({
       success: true,
       message: approved ? "Provider application approved." : "Provider application rejected.",
@@ -220,6 +232,17 @@ async function reviewSellerApplication(req, res) {
 
     await User.findByIdAndUpdate(application.userId, {
       $set: { "capabilities.seller": approved },
+    });
+
+    await Notification.create({
+      userId: application.userId,
+      type: approved ? "SELLER_APPLICATION_APPROVED" : "SELLER_APPLICATION_REJECTED",
+      title: approved ? "Seller application approved" : "Seller application needs attention",
+      message: approved
+        ? "Your seller application has been approved. You can now access your seller dashboard and add products."
+        : (String(note).trim() || "Your seller application was not approved. Review your application for the next steps."),
+      relatedId: application._id,
+      relatedType: "StoreProfile",
     });
 
     return res.json({
