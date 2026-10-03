@@ -10,7 +10,6 @@ import { CartProvider } from "./context/CartContext";
 import { SavedItemsProvider } from "./context/SavedItemsContext";
 import { AuthProvider } from "./context/AuthContext";
 import "./styles/globals.css";
-import CartFlyAnimation from "./components/cart/CartFlyAnimation";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -18,7 +17,7 @@ createRoot(document.getElementById("root")).render(
       <FormProvider>
         <CartProvider>
           <SavedItemsProvider>
-            <><RouterProvider router={router} /><CartFlyAnimation /></>
+            <RouterProvider router={router} />
           </SavedItemsProvider>
         </CartProvider>
       </FormProvider>
