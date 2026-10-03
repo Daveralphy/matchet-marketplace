@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
 import { saveProviderOnboardingDraft } from "../api/provider";
+import { uploadFile } from "../api/uploads";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
 import "../styles/provider-onboarding.css";
@@ -111,7 +112,7 @@ export default function ProviderSignupPageTwo() {
     };
   }, [formData.providerServiceImages]);
 
-  const handleServiceImage = (index, file) => {
+  const handleServiceImage = async (index, file) => {
     if (!file) return;
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
       alert("Please upload a JPG, PNG, or WebP image.");
@@ -121,25 +122,21 @@ export default function ProviderSignupPageTwo() {
       alert("File is too large. Maximum size allowed is 5MB.");
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = () => {
+    try {
+      const uploaded = await uploadFile(file, "matchet/services");
+      if (!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
       setServicePreviews((previous) => {
         const next = [...previous];
-        next[index] = String(reader.result || "");
+        next[index] = uploaded.url;
         return next;
       });
-    };
-    reader.onerror = () => alert("Unable to preview this image. Please try another image.");
-    reader.readAsDataURL(file);
-
-    const images = Array.isArray(formData.providerServiceImages)
-      ? [...formData.providerServiceImages]
-      : [];
-    images[index] = file;
-    updateField("providerServiceImages", images.slice(0, 6));
+      const images = Array.isArray(formData.providerServiceImages) ? [...formData.providerServiceImages] : [];
+      images[index] = uploaded;
+      updateField("providerServiceImages", images.slice(0, 6));
+    } catch (error) {
+      alert(error.message || "Unable to upload this service image.");
+    }
   };
-
   const removeServiceImage = (index) => {
     setServicePreviews((previous) => {
       const next = [...previous];
