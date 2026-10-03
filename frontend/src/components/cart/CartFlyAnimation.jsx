@@ -18,7 +18,7 @@ export default function CartFlyAnimation() {
         top: source.top,
         width: Math.min(source.width, 150),
         height: Math.min(source.height, 150),
-        tx: targetRect.left + targetRect.width / 2,
+        tx: targetRect.right - 8,
         ty: targetRect.top + targetRect.height / 2,
       });
     };
