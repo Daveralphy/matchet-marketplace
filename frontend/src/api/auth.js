@@ -43,3 +43,8 @@ export function getCurrentUser() {
 export function logout() {
   return request("/api/auth/logout", { method: "POST" });
 }
+
+
+export function updateCurrentUser(data) {
+  return request("/api/auth/me", { method: "PATCH", body: JSON.stringify(data) });
+}
