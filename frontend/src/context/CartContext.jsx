@@ -39,6 +39,11 @@ export function CartProvider({ children }) {
     if (!user) return { requiresAuth: true };
     const next = await addCartItem(product.id, quantity);
     setItems(normalizeItems(next));
+    const sourceElement = arguments.length > 2 ? arguments[2] : null;
+    const image = product.image || product.images?.[0]?.url || product.images?.[0] || product.gallery?.[0] || "";
+    if (sourceElement && image && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("matchet:cart-add", { detail: { image, sourceRect: sourceElement.getBoundingClientRect() } }));
+    }
     return { items: next };
   }, [user]);
 
