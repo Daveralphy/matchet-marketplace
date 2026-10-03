@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/userRoutes");
 const providerRoutes = require("./routes/provider.routes");
 const adminRoutes = require("./routes/admin.routes");
 const uploadRoutes = require("./routes/uploadRoutes");
@@ -41,6 +42,12 @@ app.use(
   "/api/auth",
   requireDatabase("Matchet is temporarily unable to reach the account database. Please try again in a moment."),
   authRoutes,
+);
+
+app.use(
+  "/api/users",
+  requireDatabase("Matchet is temporarily unable to reach the account database. Please try again in a moment."),
+  userRoutes,
 );
 
 app.use(
