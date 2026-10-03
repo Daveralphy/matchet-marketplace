@@ -25,9 +25,9 @@ router.patch("/seller-orders/:orderId/status", requireAuth, requireActiveSeller,
 router.get("/seller-products", requireAuth, requireActiveSeller, getSellerProducts);
 router.get("/seller-earnings", requireAuth, requireActiveSeller, getSellerEarnings);
 router.get("/seller-reviews", requireAuth, requireActiveSeller, getSellerReviews);
-router.post("/seller-products", requireAuth, createSellerProduct);
-router.patch("/seller-products/:productId", requireAuth, updateSellerProduct);
-router.delete("/seller-products/:productId", requireAuth, deleteSellerProduct);
+router.post("/seller-products", requireAuth, requireActiveSeller, createSellerProduct);
+router.patch("/seller-products/:productId", requireAuth, requireActiveSeller, updateSellerProduct);
+router.delete("/seller-products/:productId", requireAuth, requireActiveSeller, deleteSellerProduct);
 router.get("/dashboard", requireAuth, requireActiveProvider, getProviderDashboard);
 router.get("/services", requireAuth, requireActiveProvider, getProviderServices);
 router.post("/services", requireAuth, requireActiveProvider, createProviderService);
