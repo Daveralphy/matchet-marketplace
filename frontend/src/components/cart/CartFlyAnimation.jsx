@@ -41,7 +41,9 @@ export default function CartFlyAnimation() {
         width: fly.width,
         height: fly.height,
         "--cart-fly-x": `${fly.tx}px`,
+        "--cart-fly-start-x": `${fly.left}px`,
         "--cart-fly-y": `${fly.ty}px`,
+        "--cart-fly-start-y": `${fly.top}px`,
       }}
       onAnimationEnd={() => setFly(null)}
     />
