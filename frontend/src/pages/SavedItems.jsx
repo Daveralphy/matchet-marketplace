@@ -95,16 +95,19 @@ export default function SavedItems() {
 
               return (
                 <article className="saved-item-card" key={item._id}>
-                  <div className="saved-item-image-wrap">
+                  <Link to={`/${item.itemType === "product" ? "products" : "services"}/${data?._id || data?.id || ""}`} className="saved-item-image-wrap">
                     {image && (
                       <img src={image} alt="" className="saved-item-image" />
                     )}
-                  </div>
+                  </Link>
                   <div className="saved-item-content">
-                    <small>{item.itemType === "product" ? "Product" : "Service"}</small>
+                    <span className="saved-item-type">{item.itemType === "product" ? "Product" : "Service"}</span>
                     <h2>{title}</h2>
-                    <p>{data?.price || data?.pricing?.amount || ""}</p>
-                    <button onClick={() => remove(item._id)}>Remove</button>
+                    <p className="saved-item-price">{data?.price || data?.pricing?.amount || ""}</p>
+                    <div className="saved-item-actions">
+                      <Link className="saved-item-view-button" to={`/${item.itemType === "product" ? "products" : "services"}/${data?._id || data?.id || ""}`}>View item</Link>
+                      <button type="button" className="saved-item-remove-button" onClick={() => remove(item._id)}>Remove</button>
+                    </div>
                   </div>
                 </article>
               );
