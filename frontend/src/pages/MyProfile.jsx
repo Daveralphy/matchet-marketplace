@@ -1,6 +1,10 @@
 // Created by: Brigham
 // Edited by: Brigham
 
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { getCurrentUser, updateCurrentUser } from "../api/auth";
+import { uploadFile } from "../api/uploads";
 import "./MyProfile.css";
 import Button from "../components/common/Button";
 
@@ -312,6 +316,37 @@ function TrashIcon() {
 }
 
 function MyProfile() {
+  const { user, refreshUser } = useAuth();
+  const [profile, setProfile] = useState(user);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => { getCurrentUser().then((response) => setProfile(response.user)).catch(() => {}); }, []);
+
+  const saveProfile = async (event) => {
+    event.preventDefault(); setSaving(true); setMessage(""); setError("");
+    const form = new FormData(event.currentTarget);
+    try {
+      const response = await updateCurrentUser({ firstName: form.get("firstName"), lastName: form.get("lastName"), phone: form.get("phone"), location: { city: form.get("city"), state: form.get("state"), country: form.get("country") } });
+      setProfile(response.user); await refreshUser(); setEditing(false); setMessage("Your profile has been updated.");
+    } catch (e) { setError(e.message || "Unable to update your profile."); } finally { setSaving(false); }
+  };
+
+  const changeAvatar = async (event) => {
+    const file = event.target.files?.[0]; if (!file) return;
+    setUploading(true); setMessage(""); setError("");
+    try { const uploaded = await uploadFile(file, "matchet/profiles"); const response = await updateCurrentUser({ avatar: uploaded }); setProfile(response.user); await refreshUser(); setMessage("Profile photo updated."); }
+    catch (e) { setError(e.message || "Unable to update your profile photo."); } finally { setUploading(false); }
+  };
+
+  const fullName = [profile?.firstName, profile?.lastName].filter(Boolean).join(" ") || "Your name";
+  const initials = `${profile?.firstName?.[0] || ""}${profile?.lastName?.[0] || ""}`.toUpperCase() || "U";
+  const avatar = profile?.avatar?.url || "";
+  const location = [profile?.location?.city, profile?.location?.state, profile?.location?.country].filter(Boolean).join(", ");
+
   return (
     <main className="my-profile-page">
       <div className="my-profile-container">
@@ -334,6 +369,8 @@ function MyProfile() {
         <header className="my-profile-header">
           <h1>My Profile</h1>
           <p>View and manage your personal information.</p>
+          {message && <p className="profile-feedback success">{message}</p>}
+          {error && <p className="profile-feedback error">{error}</p>}
         </header>
 
         {/* Profile summary */}
@@ -343,32 +380,26 @@ function MyProfile() {
 
             <div className="profile-avatar-wrapper">
               <div className="profile-avatar">
-                <span>U</span>
+                {avatar ? <img src={avatar} alt={fullName} /> : <span>{initials}</span>}
               </div>
 
-              <button
-                type="button"
-                className="profile-camera-button"
-                aria-label="Change profile picture"
-              >
-                <CameraIcon />
-              </button>
+              <label className="profile-camera-button" aria-label="Change profile picture"><CameraIcon /><input type="file" accept="image/*" onChange={changeAvatar} hidden /></label>
             </div>
 
             <div className="profile-summary-details">
-              <h2>User Name</h2>
+              <h2>{fullName}</h2>
 
               <p className="profile-username">
-                @username
+                @{profile?.username || "username"}
               </p>
 
-              <p>user@example.com</p>
+              <p>{profile?.email || "—"}</p>
 
-              <p>+000 000 000 000</p>
+              <p>{profile?.phone || "Phone not added"}</p>
 
               <p className="profile-location">
                 <MapPinIcon />
-                <span>Location</span>
+                <span>{location || "Location not added"}</span>
               </p>
 
               <p className="profile-bio">
@@ -411,12 +442,15 @@ function MyProfile() {
                 className="profile-edit-button"
               >
                 <PencilIcon />
-                <span>Edit Profile</span>
+                <span>{editing ? "Cancel editing" : "Edit Profile"}</span>
               </Button>
 
             </div>
           </div>
         </section>
+
+
+        {editing && <form className="profile-edit-form profile-section" onSubmit={saveProfile}><div className="profile-section-header"><h2>Edit your information</h2><p>Update the details connected to your Matchet account.</p></div><div className="profile-edit-grid"><label>First name<input name="firstName" defaultValue={profile?.firstName || ""} required /></label><label>Last name<input name="lastName" defaultValue={profile?.lastName || ""} required /></label><label>Phone number<input name="phone" defaultValue={profile?.phone || ""} /></label><label>City<input name="city" defaultValue={profile?.location?.city || ""} /></label><label>State<input name="state" defaultValue={profile?.location?.state || ""} /></label><label>Country<input name="country" defaultValue={profile?.location?.country || ""} /></label></div><button className="profile-save-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button></form>}
 
         {/* Personal Information */}
 
@@ -442,7 +476,7 @@ function MyProfile() {
                   </span>
 
                   <span className="profile-information-value">
-                    User Name
+                    {fullName}
                   </span>
                 </div>
               </div>
@@ -464,7 +498,7 @@ function MyProfile() {
                   </span>
 
                   <span className="profile-information-value">
-                    user@example.com
+                    {profile?.email || "—"}
 
                     <span className="profile-verified">
                       Verified
@@ -490,7 +524,7 @@ function MyProfile() {
                   </span>
 
                   <span className="profile-information-value">
-                    +000 000 000 000
+                    {profile?.phone || "Phone not added"}
 
                     <span className="profile-verified">
                       Verified
@@ -512,7 +546,7 @@ function MyProfile() {
 
                 <div>
                   <span className="profile-information-label">
-                    Location
+                    {location || "Location not added"}
                   </span>
 
                   <span className="profile-information-value">
