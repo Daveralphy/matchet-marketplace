@@ -889,35 +889,6 @@ async function submitProviderOnboarding(req, res) {
       });
     }
 
-    const parsedPrice = Number(String(input.providerServicePrice || "").replace(/[^0-9.]/g, "")) || 0;
-    const pricingType = ["fixed", "startingFrom", "customQuote"].includes(input.providerServiceType)
-      ? input.providerServiceType
-      : "fixed";
-    const durationMatch = String(input.providerServiceDuration || "").match(/[0-9]+(?:\\.[0-9]+)?/);
-    const durationValue = durationMatch ? Number(durationMatch[0]) : null;
-    const durationMinutes = durationValue
-      ? /hour/i.test(String(input.providerServiceDuration)) ? Math.round(durationValue * 60) : Math.round(durationValue)
-      : null;
-
-    if (input.providerServiceName) {
-      await Service.findOneAndUpdate(
-        { providerId, title: input.providerServiceName },
-        {
-          $set: {
-            description: input.providerServiceDesc || "Service submitted during provider onboarding.",
-            category: categories[0] || "Other",
-            pricing: { type: pricingType, amount: parsedPrice, currency: "NGN" },
-            ...(durationMinutes ? { durationMinutes } : {}),
-            location: serviceArea,
-            availability: input.providerAvailability || {},
-            images: normalizeImageAssets(input.providerServiceImages),
-            status: "draft",
-          },
-          $setOnInsert: { providerId, title: input.providerServiceName },
-        },
-        { upsert: true, new: true, runValidators: true },
-      );
-    }
 
     const userUpdates = {};
     if (input.providerPhoneNumber) {
@@ -930,8 +901,6 @@ async function submitProviderOnboarding(req, res) {
         country: input.providerCountry || req.user.location?.country || "",
       };
     }
-    if (!isDraft) userUpdates["capabilities.provider"] = true;
-    if (!isDraft && req.user.role !== "admin" && req.user.role !== "provider") userUpdates.role = "provider";
 
     if (Object.keys(userUpdates).length) {
       await User.findByIdAndUpdate(providerId, { $set: userUpdates });
@@ -1413,44 +1382,6 @@ async function submitSellerOnboarding(req, res) {
     const baseSlug = storeName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "matchet-store";
     const existing = await StoreProfile.findOne({ slug: { $regex: new RegExp("^" + baseSlug + "(?:-[0-9]+)?$") }, userId: { $ne: userId } }).sort({ createdAt: -1 }).lean();
     const slug = existing ? baseSlug + "-" + String(Date.now()).slice(-6) : baseSlug;
-    const productName = input.productName || "";
-    const hasInitialProduct = Boolean(productName && input.productPrice !== undefined && input.productPrice !== "");
-    if (hasInitialProduct) {
-      const productImages = (Array.isArray(input.productImages) ? input.productImages : [])
-        .filter((image) => image && image.url && image.publicId)
-        .slice(0, 5)
-        .map((image, index) => ({
-          url: image.url,
-          publicId: image.publicId,
-          isPrimary: index === 0,
-        }));
-
-      await Product.findOneAndUpdate(
-        { sellerId: userId, "details.onboardingSource": "seller-onboarding" },
-        {
-          $set: {
-            name: productName,
-            description: input.productDesc || productName,
-            shortDescription: String(input.productDesc || productName).slice(0, 200),
-            category: input.productCat || input.businessCat || "Other",
-            price: Number(input.productPrice) || 0,
-            inventory: Number(input.productStock) || 0,
-            sku: input.productSku || undefined,
-            images: productImages,
-            status: "draft",
-            details: {
-              onboardingSource: "seller-onboarding",
-              condition: input.productCondition || "New",
-              comparePrice: Number(input.productComparePrice) || 0,
-              tags: Array.isArray(input.productTags)
-                ? input.productTags
-                : String(input.productTags || "").split(",").map((tag) => tag.trim()).filter(Boolean),
-            },
-          },
-        },
-        { upsert: true, new: true, runValidators: true }
-      );
-    }
 
     const normalizedLocation = String(input.location || "").toLowerCase() === "lagos-nigeria"
       ? { city: "Lagos", state: "Lagos", country: "Nigeria" }
@@ -1531,7 +1462,6 @@ async function submitSellerOnboarding(req, res) {
       email: input.email || req.user.email,
       phone: [input.countryCode, input.phoneNumber].filter(Boolean).join(" ") || req.user.phone || "",
       location: normalizedLocation,
-      ...(isDraft ? {} : { "capabilities.seller": true }),
     };
     if (input.profileImage?.url) {
       userUpdates.avatar = {
