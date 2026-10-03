@@ -103,3 +103,37 @@ export async function createSellerProduct(product) {
   });
   return payload.product;
 }
+
+
+export async function getCart() {
+  const payload = await request("/api/cart");
+  return payload.items ?? [];
+}
+
+export async function addCartItem(productId, quantity = 1) {
+  const payload = await request("/api/cart/items", {
+    method: "POST",
+    body: JSON.stringify({ productId, quantity }),
+  });
+  return payload.items ?? [];
+}
+
+export async function updateCartItem(productId, quantity) {
+  const payload = await request(`/api/cart/items/${encodeURIComponent(productId)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ quantity }),
+  });
+  return payload.items ?? [];
+}
+
+export async function removeCartItem(productId) {
+  const payload = await request(`/api/cart/items/${encodeURIComponent(productId)}`, {
+    method: "DELETE",
+  });
+  return payload.items ?? [];
+}
+
+export async function clearCart() {
+  const payload = await request("/api/cart", { method: "DELETE" });
+  return payload.items ?? [];
+}
