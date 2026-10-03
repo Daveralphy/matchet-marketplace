@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
 import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, searchProviderLocations } from "../api/provider";
+import { uploadFile } from "../api/uploads";
 import { useAuth } from "../context/AuthContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
@@ -127,23 +128,18 @@ export default function ProviderSignupPageOne() {
     updateField(name, value);
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File is too large. Maximum size allowed is 5MB.");
-      event.target.value = "";
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = () => setProfilePreview(String(reader.result || ""));
-    reader.onerror = () => {
-      setProfilePreview(null);
-      alert("Unable to preview this image. Please try another image.");
-    };
-    reader.readAsDataURL(file);
-    updateField("providerProfileImage", file);
     event.target.value = "";
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) { alert("Please upload a JPG, PNG, or WebP image."); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("File is too large. Maximum size allowed is 5MB."); return; }
+    try {
+      const uploaded = await uploadFile(file, "matchet/profiles");
+      if (!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
+      updateField("providerProfileImage", uploaded);
+      setProfilePreview(uploaded.url);
+    } catch (error) { alert(error.message || "Unable to upload your profile photo."); }
   };
 
   const handleSubmit = async (event) => {
