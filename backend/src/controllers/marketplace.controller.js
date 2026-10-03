@@ -174,7 +174,15 @@ async function findServices(query = {}) {
 
 async function getProducts(req, res) {
   try {
-    const filter = { status: "active" };
+    const approvedStores = await StoreProfile.find({
+      status: "active",
+      verificationStatus: "verified",
+    }).select("userId").lean();
+    const approvedSellerIds = approvedStores.map((store) => store.userId).filter(Boolean);
+    const filter = {
+      status: "active",
+      sellerId: { $in: approvedSellerIds },
+    };
     if (clean(req.query.category)) filter.category = clean(req.query.category);
     const products = await findProducts(filter);
     return res.json({ success: true, products: products.map(productResponse) });
@@ -254,7 +262,15 @@ async function getProviders(req, res) {
 
 async function getServices(req, res) {
   try {
-    const filter = { status: "active" };
+    const approvedProviders = await ProviderProfile.find({
+      status: "active",
+      verificationStatus: "verified",
+    }).select("userId").lean();
+    const approvedProviderIds = approvedProviders.map((profile) => profile.userId).filter(Boolean);
+    const filter = {
+      status: "active",
+      providerId: { $in: approvedProviderIds },
+    };
     if (clean(req.query.category)) filter.category = clean(req.query.category);
     const services = await findServices(filter);
     return res.json({ success: true, services: services.map(serviceResponse) });
