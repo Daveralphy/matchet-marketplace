@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
+import MyProfile from "./pages/MyProfile";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
 import SellerSignupPageFour from "./pages/SellerSignupPage4";
@@ -353,6 +354,10 @@ const router = createBrowserRouter([
   {
     path: "/account/saved-items",
     element: <RequireAuth><MarketplaceLayout><SavedItems /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/profile",
+    element: <MyProfile />,
   },
   {
     path: "/products/:id",
