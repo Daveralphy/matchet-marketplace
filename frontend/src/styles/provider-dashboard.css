@@ -398,3 +398,99 @@
 .provider-logout-actions button{height:40px;flex:1;border:1px solid #dce3ef;border-radius:7px;background:#fff;color:#24305f;font:600 11px Poppins;cursor:pointer}
 .provider-logout-actions button.danger{border-color:#ef4b4b;background:#ef4b4b;color:#fff}
 .provider-logout-actions button:disabled{opacity:.6;cursor:not-allowed}
+
+
+.provider-application-status-standalone {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  background: #f7f8fc;
+}
+
+.provider-application-status-card {
+  width: min(680px, 100%);
+  padding: 48px;
+  background: #fff;
+  border: 1px solid #e5e8f0;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(16, 24, 63, .08);
+  text-align: center;
+}
+
+.provider-status-mark {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.provider-status-mark-pending { background: #fff3d6; color: #c47b00; }
+.provider-status-mark-success { background: #dcfce7; color: #15803d; }
+.provider-status-mark-rejected { background: #fee2e2; color: #b91c1c; }
+
+.provider-application-status-card h1 {
+  margin: 0 0 14px;
+  color: #10183f;
+  font-size: 32px;
+}
+
+.provider-status-lead {
+  max-width: 560px;
+  margin: 0 auto;
+  color: #687099;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.provider-status-notice {
+  margin: 32px 0;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: #f7f8fc;
+  text-align: left;
+}
+
+.provider-status-notice strong { color: #10183f; }
+.provider-status-notice p { margin: 7px 0 0; color: #687099; line-height: 1.6; }
+
+.provider-application-status-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.provider-status-primary,
+.provider-status-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid #d9def0;
+  cursor: pointer;
+}
+
+.provider-status-primary { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.provider-status-secondary { background: #fff; color: #344054; }
+
+.provider-status-footnote {
+  margin: 24px 0 0;
+  color: #8a91aa;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .provider-application-status-card { padding: 32px 22px; }
+  .provider-application-status-card h1 { font-size: 26px; }
+}
