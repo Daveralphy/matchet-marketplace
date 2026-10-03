@@ -634,18 +634,18 @@ function CheckRow({ label, checked, onChange, icon, count }) {
 }
 
 function ProductFilters({ products, filters, setFilters }) {
-  const categories = [...new Set(products.map((item) => item.category))];
+  const categories = [...new Set(products.map((item) => item.category).filter(Boolean))];
   const categoryCounts = categories.reduce((acc, category) => {
     acc[category] = products.filter((item) => item.category === category).length;
     return acc;
   }, {});
 
   const prices = products
-    .map((item) => Number(String(item.price).replace(/[^\d]/g, "")))
-    .filter(Number.isFinite);
-
-  const minPrice = 0;
-  const maxPrice = 1000000000;
+    .map((item) => Number(item.priceValue ?? String(item.price).replace(/[^\d]/g, "")))
+    .filter((value) => Number.isFinite(value) && value >= 0);
+  const observedMaxPrice = prices.length ? Math.max(...prices) : 0;
+  const maxPrice = Math.max(1000, Math.ceil(observedMaxPrice / 10000) * 10000);
+  const selectedMaxPrice = filters.maxPrice == null ? maxPrice : Math.min(Math.max(Number(filters.maxPrice), 0), maxPrice);
 
   return (
     <aside className="hidden w-[255px] shrink-0 rounded-[12px] border border-[#e7ebf0] bg-white px-5 py-4 lg:block">
@@ -676,15 +676,16 @@ function ProductFilters({ products, filters, setFilters }) {
         <div className="px-1">
           <input
             type="range"
-            min={minPrice}
+            min={0}
             max={maxPrice}
-            value={Math.min(filters.maxPrice || maxPrice, maxPrice)}
+            step={maxPrice <= 100000 ? 1000 : maxPrice <= 1000000 ? 5000 : 10000}
+            value={selectedMaxPrice}
             onChange={(event) => setFilters((current) => ({ ...current, maxPrice: Number(event.target.value) }))}
             className="w-full accent-[#07863a]"
           />
           <div className="mt-1 flex justify-between text-[10px] text-[#69739a]">
             <span>₦0</span>
-            <span>₦{Number(filters.maxPrice || maxPrice).toLocaleString("en-NG")}</span>
+            <span>₦{selectedMaxPrice.toLocaleString("en-NG")}</span>
           </div>
         </div>
       </FilterSection>
@@ -747,8 +748,7 @@ function ProductFilters({ products, filters, setFilters }) {
 }
 
 function ProductCatalogue({ isAuthenticated }) {
-  const minPrice = 0;
-  const maxPrice = 1000000000;
+  const [priceCeiling, setPriceCeiling] = useState(1000000);
   const [searchParams] = useSearchParams();
   const savedUiState = (() => {
     try { return JSON.parse(sessionStorage.getItem("matchet_products_ui") || "{}"); } catch { return {}; }
@@ -762,7 +762,7 @@ function ProductCatalogue({ isAuthenticated }) {
   const [search, setSearch] = useState(initialSearch || savedUiState.search || "");
   const [filters, setFilters] = useState(savedUiState.filters || {
     category: "",
-    maxPrice: maxPrice,
+    maxPrice: null,
     rating: 0,
     condition: "",
     availability: "",
@@ -781,11 +781,14 @@ function ProductCatalogue({ isAuthenticated }) {
       setProducts(data.products);
       setLocation((current) => current || data.products[0]?.location || "");
       const prices = data.products
-        .map((item) => Number(String(item.price).replace(/[^\d]/g, "")))
-        .filter(Number.isFinite);
+        .map((item) => Number(item.priceValue ?? String(item.price).replace(/[^\d]/g, "")))
+        .filter((value) => Number.isFinite(value) && value >= 0);
+      const observedMax = prices.length ? Math.max(...prices) : 0;
+      const ceiling = Math.max(1000, Math.ceil(observedMax / 10000) * 10000);
+      setPriceCeiling(ceiling);
       setFilters((current) => ({
         ...current,
-        maxPrice: maxPrice,
+        maxPrice: ceiling,
       }));
     });
 
@@ -795,14 +798,14 @@ function ProductCatalogue({ isAuthenticated }) {
   const normalizedSearch = search.trim().toLowerCase();
 
   const filtered = products.filter((product) => {
-    const price = Number(String(product.price).replace(/[^\d]/g, ""));
+    const price = Number(product.priceValue ?? String(product.price).replace(/[^\d]/g, ""));
     const rating = Number(product.rating) || 0;
 
     return (
       (!normalizedSearch || [product.title, product.category, product.seller, product.location].join(" ").toLowerCase().includes(normalizedSearch)) &&
       (!location || product.location === location) &&
       (!filters.category || product.category === filters.category) &&
-      (!filters.maxPrice || price <= filters.maxPrice) &&
+      (filters.maxPrice == null || price <= filters.maxPrice) &&
       (!filters.rating || rating >= filters.rating) &&
       (!filters.condition || product.condition === filters.condition) &&
       (!filters.availability || product.availability === filters.availability) &&
@@ -811,8 +814,8 @@ function ProductCatalogue({ isAuthenticated }) {
   });
 
   const sorted = [...filtered].sort((a, b) => {
-    if (sort === "price-low") return Number(String(a.price).replace(/[^\d]/g, "")) - Number(String(b.price).replace(/[^\d]/g, ""));
-    if (sort === "price-high") return Number(String(b.price).replace(/[^\d]/g, "")) - Number(String(a.price).replace(/[^\d]/g, ""));
+    if (sort === "price-low") return Number(a.priceValue ?? String(a.price).replace(/[^\d]/g, "")) - Number(b.priceValue ?? String(b.price).replace(/[^\d]/g, ""));
+    if (sort === "price-high") return Number(b.priceValue ?? String(b.price).replace(/[^\d]/g, "")) - Number(a.priceValue ?? String(a.price).replace(/[^\d]/g, ""));
     if (sort === "rating") return Number(b.rating) - Number(a.rating);
     return Number(b.rating) - Number(a.rating);
   });
