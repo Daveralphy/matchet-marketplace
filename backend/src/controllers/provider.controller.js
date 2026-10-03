@@ -848,10 +848,10 @@ async function submitProviderOnboarding(req, res) {
       country: input.providerCountry || "Nigeria",
     };
 
-    const requestedStep = Number(input.__onboardingStep || 0);
-    const savedStep = isDraft && requestedStep >= 1 && requestedStep <= providerStepRequirements.length
-      ? requestedStep
-      : (isDraft ? Math.min(getFirstIncompleteOnboardingStep(input, providerStepRequirements).step, providerStepRequirements.length) : providerStepRequirements.length + 1);
+    const progressAfterSave = getFirstIncompleteOnboardingStep(input, providerStepRequirements);
+    const savedStep = isDraft
+      ? Math.min(progressAfterSave.step, providerStepRequirements.length)
+      : providerStepRequirements.length + 1;
 
     const provider = await ProviderProfile.findOneAndUpdate(
       { userId: providerId },
