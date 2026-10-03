@@ -20,5 +20,3 @@ startServer().catch((error) => {
   console.error("Unexpected server startup error:", error);
 });
 
-// Export the Express app so Vercel can use this file as the deployment entry point.
-module.exports = app;
