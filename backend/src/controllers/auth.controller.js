@@ -103,6 +103,23 @@ async function login(req, res) {
   }
 }
 
+async function updateMe(req, res) {
+  try {
+    const user = req.user;
+    const body = req.body || {};
+    if (body.firstName !== undefined) user.firstName = normalize(body.firstName);
+    if (body.lastName !== undefined) user.lastName = normalize(body.lastName);
+    if (body.phone !== undefined) user.phone = normalize(body.phone);
+    if (body.avatar !== undefined) user.avatar = body.avatar || null;
+    if (body.location !== undefined) user.location = { ...(user.location?.toObject?.() || user.location || {}), ...(body.location || {}) };
+    await user.save();
+    return res.json({ success: true, user: serializeUser(user) });
+  } catch (error) {
+    console.error("Profile update failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to update your profile right now." });
+  }
+}
+
 async function me(req, res) {
   return res.status(200).json({ success: true, user: serializeUser(req.user) });
 }
@@ -112,4 +129,4 @@ function logout(_req, res) {
   return res.status(200).json({ success: true, message: "Logged out successfully." });
 }
 
-module.exports = { register, login, me, logout };
+module.exports = { register, login, me, updateMe, logout };
