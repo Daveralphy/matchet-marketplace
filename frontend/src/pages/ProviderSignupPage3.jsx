@@ -139,9 +139,7 @@ export default function ProviderSignupPageThree() {
                 </label>
               </div>
 
-              <button type="button" className="provider-add-another-certification-button">
-                + Add another certification
-              </button>
+              <p className="provider-add-another-certification-note">You can add additional certifications to your provider profile after onboarding.</p>
             </div>
 
             <div className="provider-signup-form-field-group">
