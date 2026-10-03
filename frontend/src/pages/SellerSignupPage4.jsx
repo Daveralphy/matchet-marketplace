@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
-import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
+import { highlightOnboardingFields, saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
@@ -23,11 +23,12 @@ export default function SellerSignupPageFour() {
     }
 
     try {
-      const response = await saveSellerOnboardingDraft(formData);
+      const response = await saveSellerOnboardingDraft(formData, 4);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/register/page4");
     } catch (error) {
-      alert(error.message || "Unable to save your progress. Please try again.");
+      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
+      alert(error.message || "Please complete the highlighted fields before continuing.");
     }
   };
 
