@@ -1,8 +1,6 @@
 const ProviderProfile = require("../models/ProviderProfile");
 const User = require("../models/User");
-const Service = require("../models/Service");
 const StoreProfile = require("../models/StoreProfile");
-const Product = require("../models/Product");
 
 function requireAdmin(req, res, next) {
   if (req.user?.role !== "admin") {
@@ -150,13 +148,6 @@ async function reviewProviderApplication(req, res) {
       $set: { "capabilities.provider": approved },
     });
 
-    if (approved) {
-      await Service.updateMany(
-        { providerId: application.userId, status: "draft" },
-        { $set: { status: "active" } },
-      );
-    }
-
     return res.json({
       success: true,
       message: approved ? "Provider application approved." : "Provider application rejected.",
@@ -230,13 +221,6 @@ async function reviewSellerApplication(req, res) {
     await User.findByIdAndUpdate(application.userId, {
       $set: { "capabilities.seller": approved },
     });
-
-    if (approved) {
-      await Product.updateMany(
-        { sellerId: application.userId, status: "draft" },
-        { $set: { status: "active" } },
-      );
-    }
 
     return res.json({
       success: true,
