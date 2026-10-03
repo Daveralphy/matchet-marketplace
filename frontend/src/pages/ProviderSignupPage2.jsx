@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext";
-import { saveProviderOnboardingDraft } from "../api/provider";
+import { highlightOnboardingFields, saveProviderOnboardingDraft } from "../api/provider";
 import { uploadFile } from "../api/uploads";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
@@ -160,11 +160,12 @@ export default function ProviderSignupPageTwo() {
     }
     const nextFormData = { ...formData, providerAreasServed: areas.filter(Boolean) };
     try {
-      const response = await saveProviderOnboardingDraft(nextFormData);
+      const response = await saveProviderOnboardingDraft(nextFormData, 2);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page3");
     } catch (error) {
-      alert(error.message || "Unable to save your progress. Please try again.");
+      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
+      alert(error.message || "Please complete the highlighted fields before continuing.");
     }
   };
 
