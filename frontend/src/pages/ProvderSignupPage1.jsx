@@ -29,7 +29,7 @@ export default function ProviderSignupPageOne() {
 
         if (draft?.formData) mergeFormData(draft.formData);
 
-        if (state?.status === "active" || state?.verificationStatus === "verified") {
+        if (state?.status === "active" && state?.verificationStatus === "verified" && state?.applicationSubmittedAt) {
           navigate("/provider/dashboard", { replace: true });
         } else if (state?.applicationSubmittedAt || state?.verificationStatus === "rejected") {
           navigate("/provider/application-status", { replace: true });
@@ -66,6 +66,10 @@ export default function ProviderSignupPageOne() {
   }, [user, formData.providerFirstName, formData.providerLastName, formData.providerEmail, formData.providerPhoneNumber, formData.providerProfileImage, formData.providerLocation, updateField]);
   const [profilePreview, setProfilePreview] = useState(null);
   const [locationQuery, setLocationQuery] = useState(formData.providerLocation || "");
+
+  useEffect(() => {
+    setLocationQuery(formData.providerLocation || "");
+  }, [formData.providerLocation]);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [locationLoading, setLocationLoading] = useState(false);
 
