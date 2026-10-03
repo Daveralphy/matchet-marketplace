@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
 import { getCategoryCollections, getMarketplaceData, getProviderCollection, searchMarketplace } from "../data/marketplaceApi";
+import { useSavedItems } from "../context/SavedItemsContext";
 
 const LOCATION_OPTIONS = [
   "Lagos, Nigeria",
@@ -401,12 +402,23 @@ function HeroVisual({ isAuthenticated }) {
 }
 
 
-function HeartButton() {
+function HeartButton({ item }) {
+  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
+  const type = item.type === "service" ? "service" : "product";
+  const saved = isSaved(type, item.id);
+  const handleSave = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!isAuthenticated) { window.location.href = "/login"; return; }
+    await toggleSaved(type, item.id);
+  };
   return (
     <button
       type="button"
-      aria-label="Save item"
-      className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.12)]"
+      aria-label={saved ? "Unsave item" : "Save item"}
+      aria-pressed={saved}
+      onClick={handleSave}
+      className={saved ? "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#eaf9ee] text-[#07863a] shadow-[0_2px_8px_rgba(16,24,63,0.12)] scale-105 transition-all" : "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.12)] transition-all"}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
@@ -538,7 +550,7 @@ function ExploreProductCard({ item, listView = false }) {
           {item.image ? <img src={item.image} alt={item.title || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
           <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
         </div>
-        <HeartButton />
+        <HeartButton item={item} />
       </div>
 
       <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "px-2.5 pb-2.5 pt-2"}>
