@@ -294,26 +294,22 @@ const router = createBrowserRouter([
   },
   {
     path: "/register/page3",
-    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageThree /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageFour /></RequireOnboardingStep>,
   },
   {
     path: "/register/page4",
-    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFour /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/register/page5",
-    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageFive /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/register/page6",
-    element: <RequireOnboardingStep flow="seller" step={6}><SellerSignupPageSix /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={6}><SellerSignupPageSeven /></RequireOnboardingStep>,
   },
   {
     path: "/register/page7",
-    element: <RequireOnboardingStep flow="seller" step={7}><SellerSignupPageSeven /></RequireOnboardingStep>,
-  },
-  {
-    path: "/register/page8",
     element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
   },
   {
