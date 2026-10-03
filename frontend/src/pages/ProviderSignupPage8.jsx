@@ -63,11 +63,6 @@ export default function ProviderSignupPageEight() {
             </div>
           </div>
 
-          <div className="provider-success-divider" />
-
-          <button type="button" className="provider-success-dashboard-button" onClick={() => navigate("/provider/dashboard")}>
-            Go to dashboard
-          </button>
         </div>
       </section>
     </div>
