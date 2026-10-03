@@ -46,13 +46,13 @@ export default function ProviderSignupPageThree() {
     const files = formData.providerPortfolioMedia || [];
     const next = files.slice(0, 3).map((file) => ({
       file,
-      url: typeof file === "string" ? file : file?.url || URL.createObjectURL(file),
+      url: typeof file === "string" ? file : file?.url || (typeof File !== "undefined" && file instanceof File ? URL.createObjectURL(file) : ""),
     }));
     setPreviews(next);
 
     return () => {
       next.forEach((item) => {
-        if (item.file && typeof item.file !== "string" && !item.file.url) URL.revokeObjectURL(item.url);
+        if (item.file && typeof File !== "undefined" && item.file instanceof File && item.url?.startsWith("blob:")) URL.revokeObjectURL(item.url);
       });
     };
   }, [formData.providerPortfolioMedia]);
@@ -174,7 +174,7 @@ export default function ProviderSignupPageThree() {
 
                 {previews.map((item, index) => (
                   <div className="provider-portfolio-preview" key={`${item.url}-${index}`}>
-                    {item.file?.type === "video/mp4" ? <video src={item.url} muted /> : <img src={item.url} alt={`Portfolio preview ${index + 1}`} />}
+                    {(item.file?.type === "video/mp4" || item.file?.mimeType === "video/mp4") ? <video src={item.url} muted /> : item.url ? <img src={item.url} alt={`Portfolio preview ${index + 1}`} /> : <span>Preview unavailable</span> }
                     <button type="button" className="provider-portfolio-remove" onClick={() => removeFile(index)} aria-label={`Remove portfolio file ${index + 1}`}>×</button>
                   </div>
                 ))}
