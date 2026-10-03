@@ -53,7 +53,7 @@ function ProductVisual({ product, large = false, image = null, index = 0 }) {
   const icon = product?.icon === "bag" ? "bag" : product?.icon === "home" ? "sofa" : "monitor";
 
   return (
-    <div className={`relative flex items-center justify-center overflow-hidden rounded-[10px] ${large ? "h-[410px] sm:h-[480px]" : "h-[86px]"} ${product?.imageTone || "bg-[#f1f1ef]"}`}>
+    <div className={`product-detail-fly-source relative flex items-center justify-center overflow-hidden rounded-[10px] ${large ? "h-[410px] sm:h-[480px]" : "h-[86px]"} ${product?.imageTone || "bg-[#f1f1ef]"}`}>
       {image ? (
         <img
           src={image}
@@ -167,7 +167,8 @@ function ProductDetail({ product, related }) {
     if (alreadyInCart || cartBusy) return;
     setCartBusy(true);
     try {
-      const result = await addItem(product, quantity);
+      const source = document.querySelector(".product-detail-fly-source img") || document.querySelector(".product-detail-fly-source");
+      const result = await addItem(product, quantity, source);
       if (result?.requiresAuth) { window.location.href = "/login"; return; }
       setAdded(true);
       window.setTimeout(() => setAdded(false), 1800);
