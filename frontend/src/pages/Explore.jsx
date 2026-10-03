@@ -418,7 +418,7 @@ function HeartButton({ item }) {
       aria-label={saved ? "Unsave item" : "Save item"}
       aria-pressed={saved}
       onClick={handleSave}
-      className={saved ? "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#eaf9ee] text-[#07863a] shadow-[0_2px_8px_rgba(16,24,63,0.12)] scale-105 transition-all" : "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.12)] transition-all"}
+      className={saved ? "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#10183f] text-white shadow-[0_2px_8px_rgba(16,24,63,0.12)] scale-105 transition-all" : "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.12)] transition-all"}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
