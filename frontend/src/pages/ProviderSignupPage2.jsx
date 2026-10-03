@@ -76,13 +76,23 @@ export default function ProviderSignupPageTwo() {
 
   useEffect(() => {
     const images = Array.isArray(formData.providerServiceImages) ? formData.providerServiceImages : [];
-    setServicePreviews((previous) => {
-      const next = Array(6).fill(null);
-      images.slice(0, 6).forEach((image, index) => {
-        next[index] = image?.url || (typeof image === "string" ? image : previous[index] || null);
-      });
-      return next;
+    const blobUrls = [];
+    const next = Array(6).fill(null);
+
+    images.slice(0, 6).forEach((image, index) => {
+      if (typeof image === "string") {
+        next[index] = image;
+      } else if (image?.url) {
+        next[index] = image.url;
+      } else if (typeof File !== "undefined" && image instanceof File) {
+        const url = URL.createObjectURL(image);
+        blobUrls.push(url);
+        next[index] = url;
+      }
     });
+
+    setServicePreviews(next);
+    return () => blobUrls.forEach((url) => URL.revokeObjectURL(url));
   }, [formData.providerServiceImages]);
 
   const handleServiceImage = (index, file) => {
