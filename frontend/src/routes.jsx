@@ -356,8 +356,12 @@ const router = createBrowserRouter([
     element: <RequireAuth><MarketplaceLayout><SavedItems /></MarketplaceLayout></RequireAuth>,
   },
   {
+    path: "/profile",
+    element: <RequireAuth><MarketplaceLayout><MyProfile /></MarketplaceLayout></RequireAuth>,
+  },
+  {
     path: "/account/profile",
-    element: <MyProfile />,
+    element: <Navigate to="/profile" replace />,
   },
   {
     path: "/products/:id",
