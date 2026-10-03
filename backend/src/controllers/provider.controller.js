@@ -848,6 +848,11 @@ async function submitProviderOnboarding(req, res) {
       country: input.providerCountry || "Nigeria",
     };
 
+    const requestedStep = Number(input.__onboardingStep || 0);
+    const savedStep = isDraft && requestedStep >= 1 && requestedStep <= providerStepRequirements.length
+      ? requestedStep
+      : (isDraft ? Math.min(getFirstIncompleteOnboardingStep(input, providerStepRequirements).step, providerStepRequirements.length) : providerStepRequirements.length + 1);
+
     const provider = await ProviderProfile.findOneAndUpdate(
       { userId: providerId },
       {
@@ -861,6 +866,7 @@ async function submitProviderOnboarding(req, res) {
           verificationStatus: "pending",
           status: "draft",
           onboardingData: input,
+          onboardingStep: savedStep,
           applicationSubmittedAt: isDraft ? (input.applicationSubmittedAt || null) : new Date(),
           reviewedAt: null,
           reviewNote: "",
@@ -1357,7 +1363,7 @@ async function getOnboardingProgress(req, res) {
   try {
     const flow = req.query?.flow === "service" ? "service" : "seller";
     const Model = flow === "service" ? ProviderProfile : StoreProfile;
-    const profile = await Model.findOne({ userId: req.user._id }).select("onboardingData onboardingStatus status verificationStatus applicationSubmittedAt").lean();
+    const profile = await Model.findOne({ userId: req.user._id }).select("onboardingData onboardingStatus onboardingStep status verificationStatus applicationSubmittedAt").lean();
     const requirements = flow === "service" ? providerStepRequirements : sellerStepRequirements;
     const formData = profile?.onboardingData || {};
     const progress = getFirstIncompleteOnboardingStep(formData, requirements);
@@ -1368,8 +1374,8 @@ async function getOnboardingProgress(req, res) {
         flow,
         exists: Boolean(profile),
         submitted,
-        currentStep: submitted ? requirements.length + 1 : Math.min(progress.step, requirements.length),
-        firstIncompleteStep: submitted ? null : Math.min(progress.step, requirements.length),
+        currentStep: submitted ? requirements.length + 1 : Math.min(Number(profile?.onboardingStep || progress.step), requirements.length),
+        firstIncompleteStep: submitted ? null : Math.min(Number(profile?.onboardingStep || progress.step), requirements.length),
         missing: submitted ? [] : progress.missing,
         totalSteps: requirements.length,
         status: profile?.status || "not_started",
