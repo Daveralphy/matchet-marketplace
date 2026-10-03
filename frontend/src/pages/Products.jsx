@@ -748,7 +748,6 @@ function ProductFilters({ products, filters, setFilters }) {
 }
 
 function ProductCatalogue({ isAuthenticated }) {
-  const [priceCeiling, setPriceCeiling] = useState(1000000);
   const [searchParams] = useSearchParams();
   const savedUiState = (() => {
     try { return JSON.parse(sessionStorage.getItem("matchet_products_ui") || "{}"); } catch { return {}; }
@@ -785,7 +784,6 @@ function ProductCatalogue({ isAuthenticated }) {
         .filter((value) => Number.isFinite(value) && value >= 0);
       const observedMax = prices.length ? Math.max(...prices) : 0;
       const ceiling = Math.max(1000, Math.ceil(observedMax / 10000) * 10000);
-      setPriceCeiling(ceiling);
       setFilters((current) => ({
         ...current,
         maxPrice: ceiling,
