@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
+import { useAuth } from "../context/AuthContext";
 import { getProviderProfile } from "../api/provider";
 import "../styles/provider-dashboard.css";
 
 export default function ProviderApplicationStatus() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { refreshUser } = useAuth();
 
   useEffect(() => {
     let active = true;
-    getProviderProfile().then((response) => {
+    getProviderProfile().then(async (response) => {
       if (active) setData(response.data);
+      if (active && response.data?.profile?.verificationStatus === "verified") await refreshUser();
     }).finally(() => {
       if (active) setLoading(false);
     });
@@ -32,7 +35,7 @@ export default function ProviderApplicationStatus() {
       <div className="provider-page provider-application-page">
         <div className="provider-heading">
           <div><h1>Application status</h1><span>Track the review status of your provider application.</span></div>
-          <Link to="/provider/dashboard" className="provider-outline-button">← Back to dashboard</Link>
+          {approved ? <Link to="/provider/dashboard" className="provider-outline-button">← Go to dashboard</Link> : <span className="provider-outline-button" style={{ cursor: "default" }}>Application under review</span>}
         </div>
 
         <section className={"provider-card provider-application-hero " + (approved ? "approved" : rejected ? "rejected" : "pending")}>
