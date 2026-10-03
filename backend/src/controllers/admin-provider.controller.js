@@ -2,6 +2,8 @@ const ProviderProfile = require("../models/ProviderProfile");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 const StoreProfile = require("../models/StoreProfile");
+const Product = require("../models/Product");
+const Service = require("../models/Service");
 
 function requireAdmin(req, res, next) {
   if (req.user?.role !== "admin") {
