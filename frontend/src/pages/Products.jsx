@@ -574,12 +574,13 @@ function ProductCatalogueCard({ product }) {
     <Link to={`/products/${product.id}`} className="group block min-w-0 rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
       <div className="relative">
         <ProductImage product={product} />
+        {added && <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-[#10183f]/90 px-3 py-2 text-[11px] font-semibold text-white shadow-lg">Item added to cart</div>}
         <button
           type="button"
           aria-label={saved ? "Unsave " + product.title : "Save " + product.title}
           aria-pressed={saved}
           onClick={handleSave}
-          className={saved ? "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#07863a] text-white shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 scale-105" : "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200"}
+          className={saved ? "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#eaf9ee] text-[#07863a] shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 scale-105" : "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200"}
         >
           <Icon name="heart" size={16} />
         </button>
