@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
+import BuyerOrders from "./pages/BuyerOrders";
+import BuyerBookings from "./pages/BuyerBookings";
+import AccountSettings from "./pages/AccountSettings";
+import HelpSupport from "./pages/HelpSupport";
 import MyProfile from "./pages/MyProfile";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
@@ -438,7 +442,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/orders",
-    element: <RequireAuth><MarketplaceLayout><BlankPage /></MarketplaceLayout></RequireAuth>,
+    element: <RequireAuth><MarketplaceLayout><BuyerOrders /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/provider/bookings",
@@ -450,7 +454,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/help",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><HelpSupport /></MarketplaceLayout>,
   },
   {
     path: "/provider/reviews",
@@ -479,6 +483,14 @@ const router = createBrowserRouter([
   {
     path: "/saved-items",
     element: <RequireAuth><MarketplaceLayout><SavedItems /></MarketplaceLayout></RequireAuth>,
+  {
+    path: "/bookings",
+    element: <RequireAuth><MarketplaceLayout><BuyerBookings /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/settings",
+    element: <RequireAuth><MarketplaceLayout><AccountSettings /></MarketplaceLayout></RequireAuth>,
+  },
   },
   {
     path: "/safety",
