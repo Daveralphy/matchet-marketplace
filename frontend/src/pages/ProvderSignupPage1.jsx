@@ -135,11 +135,13 @@ export default function ProviderSignupPageOne() {
       event.target.value = "";
       return;
     }
-    const previewUrl = URL.createObjectURL(file);
-    setProfilePreview((previousUrl) => {
-      if (previousUrl?.startsWith("blob:")) URL.revokeObjectURL(previousUrl);
-      return previewUrl;
-    });
+    const reader = new FileReader();
+    reader.onload = () => setProfilePreview(String(reader.result || ""));
+    reader.onerror = () => {
+      setProfilePreview(null);
+      alert("Unable to preview this image. Please try another image.");
+    };
+    reader.readAsDataURL(file);
     updateField("providerProfileImage", file);
     event.target.value = "";
   };
