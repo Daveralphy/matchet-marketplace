@@ -295,7 +295,7 @@ export default function ProviderSignupPageTwo() {
 
             <div className="provider-signup-page2-actions">
               <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding")}>←&nbsp;&nbsp;Back</button>
-              <button type="button" className="provider-add-another-service-button" onClick={() => navigate("/provider/onboarding/page2")}>Save and add another service</button>
+              <span className="provider-add-another-service-note">You can add additional services from your provider dashboard after approval.</span>
               <button type="submit" className="provider-signup-save-continue-button">Save &amp; continue&nbsp;&nbsp;→</button>
             </div>
           </form>
