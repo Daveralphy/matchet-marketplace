@@ -11,7 +11,12 @@ function Applications({ type }) {
   const renderValue = (value) => {
     if (value === null || value === undefined || value === "") return "Not provided";
     if (typeof value === "object" && value.url) return <a href={value.url} target="_blank" rel="noreferrer"><img src={value.url} alt="Submitted" style={{width:90,height:70,objectFit:"cover",borderRadius:8}} /></a>;
-    if (Array.isArray(value)) return value.map((item) => typeof item === "object" ? JSON.stringify(item) : String(item)).join(", ");
+    if (Array.isArray(value)) {
+      if (value.some((item) => item && typeof item === "object" && item.url)) {
+        return <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>{value.map((item,index) => item?.url ? <a href={item.url} target="_blank" rel="noreferrer" key={index}><img src={item.url} alt={`Submitted ${index+1}`} style={{width:90,height:70,objectFit:"cover",borderRadius:8}} /></a> : <span key={index}>{typeof item === "object" ? JSON.stringify(item) : String(item)}</span>)}</div>;
+      }
+      return value.map((item) => typeof item === "object" ? JSON.stringify(item) : String(item)).join(", ");
+    }
     if (typeof value === "object") return JSON.stringify(value);
     return String(value);
   };
