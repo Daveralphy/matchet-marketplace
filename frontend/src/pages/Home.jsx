@@ -1411,8 +1411,9 @@ export default function Home({ isAuthenticated = false, userName }) {
   const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
   const [marketplace, setMarketplace] = useState({
+    products: [],
+    services: [],
     featured: [],
-    picked: [],
     popularNearby: [],
     continueExploring: [],
   });
@@ -1432,8 +1433,9 @@ export default function Home({ isAuthenticated = false, userName }) {
         const serviceSize = Math.min(8, serviceItems.length);
 
         setMarketplace({
-          featured: [...productItems.slice(0, productSize), ...serviceItems.slice(0, serviceSize)].slice(0, 8),
-          picked: [...productItems.slice(0, productSize), ...serviceItems.slice(0, serviceSize)].slice(0, 8),
+          products: productItems.slice(0, 8),
+          services: serviceItems.slice(0, 8),
+          featured: productItems.slice(0, 8),
           popularNearby: [...productItems, ...serviceItems].filter((item) => item.location).slice(0, 8),
           continueExploring: [...productItems, ...serviceItems].slice(0, 8),
         });
@@ -1522,19 +1524,21 @@ export default function Home({ isAuthenticated = false, userName }) {
       </section>
 
       <MarketplaceSection
-        eyebrow="FEATURED ON MATCHET"
-        title="Featured on"
-        accent="Matchet"
-        subtitle="Popular products and services from trusted providers."
-        items={marketplace.featured}
+        eyebrow="FEATURED PRODUCTS"
+        title="Products"
+        accent="for you"
+        subtitle="Products currently published by approved sellers on Matchet."
+        items={marketplace.products}
+        viewPath="/products"
       />
 
       <MarketplaceSection
-        eyebrow="PICKED FOR YOU"
-        title="Picked"
-        accent="for you"
-        subtitle="Matches based on what you browse, save, and buy."
-        items={marketplace.picked}
+        eyebrow="POPULAR SERVICES"
+        title="Services"
+        accent="you can book"
+        subtitle="Services currently published by approved providers on Matchet."
+        items={marketplace.services}
+        viewPath="/services"
       />
       <NearbyMarketplaceSection isAuthenticated={isAuthenticated} items={isAuthenticated ? marketplace.continueExploring : marketplace.popularNearby} />
       <MatchingSection isAuthenticated={isAuthenticated} userName={userName} />
