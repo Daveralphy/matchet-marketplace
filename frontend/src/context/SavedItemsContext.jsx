@@ -68,7 +68,7 @@ export function SavedItemsProvider({ children }) {
   );
 
   const value = useMemo(
-    () => ({ items, loading, isSaved, toggleSaved, refreshSavedItems: loadSavedItems }),
+    () => ({ items, loading, isSaved, toggleSaved, refreshSavedItems: loadSavedItems, isAuthenticated: Boolean(user) }),
     [items, loading, isSaved, toggleSaved, loadSavedItems],
   );
 
