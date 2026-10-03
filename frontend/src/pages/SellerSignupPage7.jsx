@@ -577,7 +577,7 @@ export default function SellerSignupPageSeven() {
 
           <button
             type="button"
-            onClick={() => navigate("/register/page6")}
+            onClick={() => navigate("/register/page5")}
             className="back-button"
           >
             ← Back
@@ -592,7 +592,7 @@ export default function SellerSignupPageSeven() {
                 await submitSellerOnboarding(formData);
                 await refreshUser();
                 clearForm();
-                navigate("/register/page8");
+                navigate("/register/page7");
               } catch (error) {
                 setSubmitError(error.message || "Unable to submit your seller application.");
               } finally {
