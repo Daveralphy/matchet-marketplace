@@ -1289,15 +1289,6 @@ const sellerStepRequirements = [
     ["businessPhoneNumber", onboardingHasValue(data.businessPhoneNumber)],
   ],
   (data) => [
-    ["productName", onboardingHasValue(data.productName)],
-    ["productCat", onboardingHasValue(data.productCat)],
-    ["productPrice", data.productPrice !== undefined && data.productPrice !== ""],
-    ["productStock", data.productStock !== undefined && data.productStock !== ""],
-    ["productDesc", onboardingHasValue(data.productDesc)],
-    ["productCondition", onboardingHasValue(data.productCondition)],
-    ["productImages", Array.isArray(data.productImages) && data.productImages.some(onboardingHasFile)],
-  ],
-  (data) => [
     ["shippingOptions", onboardingHasValue(data.shippingOptions)],
     ["shippingRegions", onboardingHasValue(data.shippingRegions)],
     ["shippingFee", onboardingHasValue(data.shippingFee)],
