@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
+import { useSavedItems } from "../context/SavedItemsContext";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
 import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
@@ -547,9 +548,12 @@ function ProductImage({ product }) {
 
 function ProductCatalogueCard({ product }) {
   const { addItem, items: cartItems } = useCart();
+  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
   const [added, setAdded] = useState(false);
   const [cartBusy, setCartBusy] = useState(false);
   const alreadyInCart = cartItems.some((item) => String(item.id || item.productId || item.product?._id) === String(product.id));
+  const saved = isSaved("product", product.id);
+  const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved("product", product.id); };
 
   const handleAddToCart = async (event) => {
     event.preventDefault();
@@ -572,12 +576,12 @@ function ProductCatalogueCard({ product }) {
         <ProductImage product={product} />
         <button
           type="button"
-          aria-label={alreadyInCart ? `${product.title} is in cart` : `Add ${product.title} to cart`}
-          onClick={handleAddToCart}
-          disabled={alreadyInCart || cartBusy}
-          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 ${alreadyInCart ? "cursor-not-allowed bg-[#eaf9ee] text-[#07863a]" : added ? "scale-110 bg-[#eaf9ee] text-[#07863a]" : "bg-white text-[#07863a]"}`}
+          aria-label={saved ? "Unsave " + product.title : "Save " + product.title}
+          aria-pressed={saved}
+          onClick={handleSave}
+          className={saved ? "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#07863a] text-white shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 scale-105" : "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200"}
         >
-          <span className={added ? "animate-[pulse_0.45s_ease-out]" : ""}><Icon name="cart" size={16} /></span>
+          <Icon name="heart" size={16} />
         </button>
       </div>
 
