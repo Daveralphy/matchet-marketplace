@@ -483,6 +483,7 @@ const router = createBrowserRouter([
   {
     path: "/saved-items",
     element: <RequireAuth><MarketplaceLayout><SavedItems /></MarketplaceLayout></RequireAuth>,
+  },
   {
     path: "/bookings",
     element: <RequireAuth><MarketplaceLayout><BuyerBookings /></MarketplaceLayout></RequireAuth>,
@@ -490,7 +491,6 @@ const router = createBrowserRouter([
   {
     path: "/account/settings",
     element: <RequireAuth><MarketplaceLayout><AccountSettings /></MarketplaceLayout></RequireAuth>,
-  },
   },
   {
     path: "/safety",
