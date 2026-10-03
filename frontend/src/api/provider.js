@@ -132,7 +132,7 @@ export function getProviderReviews() {
 }
 
 export function getProviderProfile() {
-  return request("/api/provider/profile");
+  return request("/api/provider/profile", { cache: false });
 }
 
 export function getProviderSettings() {
