@@ -443,7 +443,7 @@ function MarketplaceCard({ item, compact = false }) {
           aria-label={saved ? `Unsave ${item.title}` : `Save ${item.title}`}
           aria-pressed={saved}
           onClick={handleSave}
-          className={`absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_3px_10px_rgba(16,24,63,0.12)] transition-all ${saved ? "bg-[#eaf9ee] text-[#07863a] scale-105" : "bg-white text-[#10183f] hover:text-[#07983f]"}`}
+          className={`absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_3px_10px_rgba(16,24,63,0.12)] transition-all ${saved ? "bg-[#10183f] text-white scale-105" : "bg-white text-[#10183f] hover:text-[#07983f]"}`}
         >
           <HeartIcon size={17} />
         </button>
