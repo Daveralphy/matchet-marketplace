@@ -42,6 +42,30 @@ function normalizeOnboardingData(values) {
       typeof value === "string" || typeof value === "number" ? String(value) : String(value?.value ?? value?.label ?? "")
     ).filter(Boolean);
   }
+  const normalizeAssets = (value) => {
+    if (!Array.isArray(value)) return [];
+    return value.map((item) => {
+      if (!item) return null;
+      if (typeof item === "string") return item;
+      if (typeof File !== "undefined" && item instanceof File) return item;
+      if (typeof item === "object") {
+        if (item.url || item.publicId) {
+          return {
+            url: item.url || "",
+            publicId: item.publicId || "",
+            isPrimary: Boolean(item.isPrimary),
+            name: item.name || "",
+            mimeType: item.mimeType || item.type || "",
+          };
+        }
+      }
+      return null;
+    }).filter(Boolean);
+  };
+
+  next.providerServiceImages = normalizeAssets(next.providerServiceImages);
+  next.providerPortfolioMedia = normalizeAssets(next.providerPortfolioMedia);
+
   if (!Array.isArray(next.productTags)) next.productTags = next.productTags ? [next.productTags] : [];
   return next;
 }
