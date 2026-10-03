@@ -592,7 +592,7 @@ function MiniBookingVisual() {
       <p className="text-[8px] font-semibold text-[#10183f]">Select a date</p>
       <div className="mt-2 grid grid-cols-4 gap-1.5">
         {["Mon", "Tue", "Wed", "Thu"].map((day, i) => (
-          <div key={day} className={`rounded-[6px] border px-1 py-2 text-center ${i === 1 ? "border-[#07863a] bg-[#07863a] text-white" : "border-[#edf0f3] bg-white text-[#27335f]"}`}>
+          <div key={day} className={`rounded-[6px] border px-1 py-2 text-center ${i === 1 ? "border-[#07863a] bg-[#eaf9ee] text-[#07863a]" : "border-[#edf0f3] bg-white text-[#27335f]"}`}>
             <span className="block text-[7px]">{day}</span>
             <span className="mt-1 block text-[8px] font-semibold">{12 + i}</span>
           </div>
