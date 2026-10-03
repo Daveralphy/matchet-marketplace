@@ -753,7 +753,7 @@ function ProductCatalogue({ isAuthenticated }) {
     try { return JSON.parse(sessionStorage.getItem("matchet_products_ui") || "{}"); } catch { return {}; }
   })();
   const initialSearch = searchParams.get("q") || "";
-  const initialLocation = searchParams.get("location") || localStorage.getItem("matchet_location") || "";
+  const initialLocation = searchParams.get("location") || "";
   const [products, setProducts] = useState([]);
   const [view, setView] = useState(savedUiState.view || "grid");
   const [sort, setSort] = useState(savedUiState.sort || "recommended");
