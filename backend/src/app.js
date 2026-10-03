@@ -60,6 +60,24 @@ app.use(
 );
 
 app.use(
+  "/api/orders",
+  requireDatabase("Matchet is temporarily unable to reach the orders database. Please try again in a moment."),
+  orderRoutes,
+);
+
+app.use(
+  "/api/bookings",
+  requireDatabase("Matchet is temporarily unable to reach the bookings database. Please try again in a moment."),
+  bookingRoutes,
+);
+
+app.use(
+  "/api/saved-items",
+  requireDatabase("Matchet is temporarily unable to reach the saved items database. Please try again in a moment."),
+  savedItemRoutes,
+);
+
+app.use(
   "/api/provider",
   requireDatabase("Matchet is temporarily unable to reach the provider database. Please try again in a moment."),
   providerRoutes,
