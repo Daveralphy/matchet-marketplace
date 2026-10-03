@@ -580,7 +580,7 @@ function ProductCatalogueCard({ product }) {
           aria-label={saved ? "Unsave " + product.title : "Save " + product.title}
           aria-pressed={saved}
           onClick={handleSave}
-          className={saved ? "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#eaf9ee] text-[#07863a] shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 scale-105" : "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200"}
+          className={saved ? "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#10183f] text-white shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 scale-105" : "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200"}
         >
           <Icon name="heart" size={16} />
         </button>
