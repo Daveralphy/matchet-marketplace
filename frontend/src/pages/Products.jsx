@@ -660,7 +660,7 @@ function ProductFilters({ products, filters, setFilters }) {
     .map((item) => Number(item.priceValue ?? String(item.price).replace(/[^\d]/g, "")))
     .filter((value) => Number.isFinite(value) && value >= 0);
   const observedMaxPrice = prices.length ? Math.max(...prices) : 0;
-  const maxPrice = Math.max(1000, Math.ceil(observedMaxPrice / 10000) * 10000);
+  const maxPrice = Math.max(1000, Math.ceil(observedMaxPrice / 1000) * 1000);
   const selectedMaxPrice = filters.maxPrice == null ? maxPrice : Math.min(Math.max(Number(filters.maxPrice), 0), maxPrice);
 
   return (
@@ -775,17 +775,16 @@ function ProductCatalogue({ isAuthenticated }) {
   const [sort, setSort] = useState(savedUiState.sort || "recommended");
   const [location, setLocation] = useState(initialLocation);
   const [search, setSearch] = useState(initialSearch || savedUiState.search || "");
-  const [filters, setFilters] = useState(savedUiState.filters || {
-    category: "",
-    maxPrice: null,
-    rating: 0,
-    condition: "",
-    availability: "",
-    sellerType: "",
+  const [filters, setFilters] = useState(() => {
+    const savedFilters = savedUiState.filters;
+    if (!savedFilters || savedUiState.filtersVersion !== 2) {
+      return { category: "", maxPrice: null, rating: 0, condition: "", availability: "", sellerType: "" };
+    }
+    return savedFilters;
   });
 
   useEffect(() => {
-    sessionStorage.setItem("matchet_products_ui", JSON.stringify({ view, sort, location, search, filters }));
+    sessionStorage.setItem("matchet_products_ui", JSON.stringify({ view, sort, location, search, filters, filtersVersion: 2 }));
   }, [view, sort, location, search, filters]);
 
   useEffect(() => {
@@ -798,7 +797,7 @@ function ProductCatalogue({ isAuthenticated }) {
         .map((item) => Number(item.priceValue ?? String(item.price).replace(/[^\d]/g, "")))
         .filter((value) => Number.isFinite(value) && value >= 0);
       const observedMax = prices.length ? Math.max(...prices) : 0;
-      const ceiling = Math.max(1000, Math.ceil(observedMax / 10000) * 10000);
+      const ceiling = Math.max(1000, Math.ceil(observedMax / 1000) * 1000);
       setFilters((current) => ({
         ...current,
         maxPrice: current.maxPrice == null ? ceiling : Math.min(Number(current.maxPrice), ceiling),
@@ -820,9 +819,14 @@ function ProductCatalogue({ isAuthenticated }) {
       (!filters.category || product.category === filters.category) &&
       (filters.maxPrice == null || price <= filters.maxPrice) &&
       (!filters.rating || rating >= filters.rating) &&
-      (!filters.condition || product.condition === filters.condition) &&
-      (!filters.availability || product.availability === filters.availability) &&
-      (!filters.sellerType || (filters.sellerType === "Verified sellers" ? product.sellerVerified : product.sellerType === filters.sellerType))
+      (!filters.condition || String(product.condition || "").toLowerCase() === filters.condition.toLowerCase()) &&
+      (!filters.availability ||
+        (filters.availability === "In stock" ? Number(product.inventory || 0) > 0 :
+          filters.availability === "Fast delivery" ? Boolean(product.fastDelivery) : true)) &&
+      (!filters.sellerType ||
+        (filters.sellerType === "Verified sellers"
+          ? Boolean(product.sellerVerified)
+          : String(product.sellerType || "").toLowerCase() === filters.sellerType.toLowerCase().replace(/s$/, "")))
     );
   });
 
