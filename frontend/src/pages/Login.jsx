@@ -135,6 +135,23 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const requestedSource = location.state?.from || new URLSearchParams(location.search).get("returnTo") || "/";
+  const breadcrumbPath = requestedSource.startsWith("/") && !requestedSource.startsWith("//") ? requestedSource.split("?")[0] : "/";
+  const breadcrumbLabel = breadcrumbPath === "/"
+    ? "Home"
+    : breadcrumbPath.startsWith("/for-providers")
+      ? "For Providers"
+      : breadcrumbPath.startsWith("/products")
+        ? "Products"
+        : breadcrumbPath.startsWith("/services")
+          ? "Services"
+          : breadcrumbPath.startsWith("/explore")
+            ? "Explore"
+            : breadcrumbPath.startsWith("/cart")
+              ? "Cart"
+              : breadcrumbPath.startsWith("/checkout")
+                ? "Checkout"
+                : "Previous page";
 
   const handleBlur = (field) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -206,16 +223,22 @@ const Login = () => {
 
           {/* Right login panel */}
           <div className="login-scrollbar-hidden flex min-h-screen min-w-0 flex-1 flex-col overflow-y-auto px-5 py-6 sm:px-8 sm:py-7 lg:h-full lg:min-h-0 lg:basis-1/2 lg:flex-none lg:px-12 xl:px-14">
-            {/* Create account */}
-            <div className="flex shrink-0 justify-end text-[13px] text-[#24305f]">
-              <span>Don&apos;t have an account?</span>
-
-              <Link
-                to="/create-account"
-                className="ml-2 font-semibold text-[#07983f] transition-colors hover:text-[#068936]"
-              >
-                Create account
-              </Link>
+            <div className="flex shrink-0 items-center justify-between gap-4 text-[13px] text-[#24305f]">
+              <div className="flex min-w-0 items-center gap-1.5">
+                {breadcrumbPath === "/" ? (
+                  <Link to="/" className="font-medium text-[#6670ad] hover:text-[#10183f]">Home</Link>
+                ) : (
+                  <>
+                    <Link to="/" className="font-medium text-[#6670ad] hover:text-[#10183f]">Home</Link>
+                    <span className="text-[#a4abc5]">/</span>
+                    <Link to={breadcrumbPath} className="truncate font-semibold text-[#10183f] hover:text-[#07983f]">{breadcrumbLabel}</Link>
+                  </>
+                )}
+              </div>
+              <div className="flex shrink-0 items-center">
+                <span>Don&apos;t have an account?</span>
+                <Link to="/create-account" state={{ from: breadcrumbPath }} className="ml-2 font-semibold text-[#07983f] transition-colors hover:text-[#068936]">Create account</Link>
+              </div>
             </div>
 
             {/* Login content */}
