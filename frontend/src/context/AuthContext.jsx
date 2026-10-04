@@ -2,6 +2,27 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from "../api/auth";
 
 const API_BASE_URL = window.location.hostname === "matchet-staging.vercel.app" ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000");
+const USER_CACHE_KEY = "matchet_cache_user_data";
+const USER_HINT_KEY = "matchet_cache_user";
+
+function readCachedUser() {
+  try {
+    const cached = sessionStorage.getItem(USER_CACHE_KEY);
+    return cached ? JSON.parse(cached) : null;
+  } catch {
+    return null;
+  }
+}
+
+function cacheUser(account) {
+  sessionStorage.setItem(USER_HINT_KEY, account.id || account.email || "account");
+  sessionStorage.setItem(USER_CACHE_KEY, JSON.stringify(account));
+}
+
+function clearCachedUser() {
+  sessionStorage.removeItem(USER_HINT_KEY);
+  sessionStorage.removeItem(USER_CACHE_KEY);
+}
 
 async function getNotificationsFromServer() {
   const response = await fetch(API_BASE_URL + "/api/notifications", { credentials: "include" });
@@ -21,8 +42,8 @@ async function markServerNotificationsRead() {
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => readCachedUser());
+  const [loading, setLoading] = useState(() => Boolean(sessionStorage.getItem(USER_HINT_KEY)));
   const [notifications, setNotifications] = useState([]);
 
   const notificationKey = (account) => account ? `matchet_notifications:${account.id || account.email}` : "matchet_notifications:anonymous";
@@ -57,21 +78,25 @@ export function AuthProvider({ children }) {
     try {
       const response = await getCurrentUser();
       setUser(response.user);
-      sessionStorage.setItem("matchet_cache_user", response.user.id || response.user.email || "account");
+      cacheUser(response.user);
       loadNotifications(response.user);
       return response.user;
-    } catch {
-      setUser(null);
-      setNotifications([]);
-      return null;
+    } catch (error) {
+      if (error.status === 401) {
+        setUser(null);
+        setNotifications([]);
+        clearCachedUser();
+        return null;
+      }
+
+      return user;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    const authHint = sessionStorage.getItem("matchet_cache_user");
-    if (!authHint) {
+    if (!sessionStorage.getItem(USER_HINT_KEY)) {
       setLoading(false);
       return;
     }
@@ -81,7 +106,7 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (credentials) => {
     const response = await loginRequest(credentials);
     setUser(response.user);
-    sessionStorage.setItem("matchet_cache_user", response.user.id || response.user.email || "account");
+    cacheUser(response.user);
     await loadNotifications(response.user);
     addNotification(response.user, { type: "login", title: "New login", message: "Your Matchet account was just signed in." });
     return response.user;
@@ -90,7 +115,7 @@ export function AuthProvider({ children }) {
   const register = useCallback(async (details) => {
     const response = await registerRequest(details);
     setUser(response.user);
-    sessionStorage.setItem("matchet_cache_user", response.user.id || response.user.email || "account");
+    cacheUser(response.user);
     await loadNotifications(response.user);
     addNotification(response.user, { type: "welcome", title: "Welcome to Matchet", message: "Your account is ready. Start exploring products and services." });
     return response.user;
@@ -101,7 +126,7 @@ export function AuthProvider({ children }) {
       await logoutRequest();
     } finally {
       setUser(null);
-      sessionStorage.removeItem("matchet_cache_user");
+      clearCachedUser();
       Object.keys(sessionStorage).filter((key) => key.startsWith("matchet_provider_cache:")).forEach((key) => sessionStorage.removeItem(key));
     }
   }, []);
