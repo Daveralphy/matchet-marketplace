@@ -22,7 +22,9 @@ async function request(path, options = {}) {
         payload = null;
       }
 
-      if (response.ok) return payload || {};
+      if (response.ok) {
+        return payload && typeof payload === "object" ? payload : {};
+      }
 
       const retryable = [502, 503, 504].includes(response.status);
       if (retryable && attempt < maxAttempts) {
@@ -46,17 +48,17 @@ async function request(path, options = {}) {
 
 export async function getMarketplaceProducts() {
   const payload = await request("/api/marketplace/products");
-  return Array.isArray(payload?.products) ? payload.products : [];
+  return Array.isArray(payload.products) ? payload.products : [];
 }
 
 export async function getMarketplaceServices() {
   const payload = await request("/api/marketplace/services");
-  return Array.isArray(payload?.services) ? payload.services : [];
+  return Array.isArray(payload.services) ? payload.services : [];
 }
 
 export async function getMarketplaceProviders() {
   const payload = await request("/api/marketplace/providers");
-  return Array.isArray(payload?.providers) ? payload.providers : [];
+  return Array.isArray(payload.providers) ? payload.providers : [];
 }
 
 export async function getMarketplaceProductById(id) {
