@@ -51,21 +51,29 @@ export function SavedItemsProvider({ children }) {
         return item.itemType === itemType && String(refId) === String(itemId);
       });
 
-      if (existing) {
-        await removeSavedItem(existing._id);
-        setItems((current) => current.filter((item) => item._id !== existing._id));
-        return { saved: false };
-      }
+      try {
+        if (existing) {
+          await removeSavedItem(existing._id);
+          setItems((current) => current.filter((item) => item._id !== existing._id));
+          return { saved: false };
+        }
 
-      const item = await saveItem(
-        itemType === "product"
-          ? { itemType, productId: itemId }
-          : { itemType, serviceId: itemId },
-      );
-      setItems((current) => [...current, item]);
-      return { saved: true };
+        const item = await saveItem(
+          itemType === "product"
+            ? { itemType, productId: itemId }
+            : { itemType, serviceId: itemId },
+        );
+        setItems((current) => [...current, item]);
+        return { saved: true };
+      } catch (error) {
+        if (error?.status === 401) {
+          await refreshUser();
+          return { requiresAuth: true };
+        }
+        throw error;
+      }
     },
-    [items, user],
+    [items, user, refreshUser],
   );
 
   const value = useMemo(
