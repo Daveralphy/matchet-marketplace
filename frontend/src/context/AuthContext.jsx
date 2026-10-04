@@ -89,11 +89,11 @@ export function AuthProvider({ children }) {
         return null;
       }
 
-      return user;
+      return null;
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     if (!sessionStorage.getItem(USER_HINT_KEY)) {
