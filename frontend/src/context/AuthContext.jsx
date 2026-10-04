@@ -70,6 +70,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    const authHint = sessionStorage.getItem("matchet_cache_user");
+    if (!authHint) {
+      setLoading(false);
+      return;
+    }
     refreshUser();
   }, [refreshUser]);
 
