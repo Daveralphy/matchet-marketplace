@@ -2,24 +2,32 @@ require("dotenv").config();
 
 const app = require("../src/app");
 const connectDatabase = require("../src/config/database");
+const mongoose = require("mongoose");
 
 let databasePromise;
 
 async function ensureDatabaseConnection() {
   if (databasePromise) {
-    return databasePromise;
+    const connected = await databasePromise;
+    if (connected && mongoose.connection.readyState === 1) {
+      return true;
+    }
+    databasePromise = null;
   }
 
   databasePromise = connectDatabase();
 
   try {
-    await databasePromise;
+    const connected = await databasePromise;
+    if (!connected || mongoose.connection.readyState !== 1) {
+      databasePromise = null;
+      return false;
+    }
+    return true;
   } catch (error) {
     databasePromise = null;
     throw error;
   }
-
-  return databasePromise;
 }
 
 module.exports = async (req, res) => {
