@@ -133,7 +133,11 @@ function RequireOnboardingStep({ flow, step, children }) {
   const [redirectStep, setRedirectStep] = useState(null);
   useEffect(() => {
     let active = true;
-    if (!isAuthenticated || loading) return undefined;
+    if (loading) return undefined;
+    if (!isAuthenticated) {
+      setChecking(false);
+      return undefined;
+    }
     getOnboardingProgress(flow).then((response) => {
       if (!active) return;
       const data = response?.data;
@@ -165,7 +169,11 @@ function RequireOnboardingReview({ flow, children }) {
 
   useEffect(() => {
     let active = true;
-    if (!isAuthenticated || loading) return undefined;
+    if (loading) return undefined;
+    if (!isAuthenticated) {
+      setChecking(false);
+      return undefined;
+    }
     getOnboardingProgress(flow)
       .then((response) => {
         if (!active) return;
@@ -262,7 +270,11 @@ function RequireSeller({ children }) {
   const [state, setState] = useState("missing");
   useEffect(() => {
     let active = true;
-    if (!isAuthenticated || loading) return undefined;
+    if (loading) return undefined;
+    if (!isAuthenticated) {
+      setChecking(false);
+      return undefined;
+    }
     getSellerProfile().then((response) => {
       if (!active) return;
       const store = response?.data?.store;
@@ -273,8 +285,9 @@ function RequireSeller({ children }) {
     }).catch(() => active && setState("missing")).finally(() => active && setChecking(false));
     return () => { active = false; };
   }, [isAuthenticated, loading]);
-  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (loading) return <main className="min-h-[60vh] w-full" />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (checking) return <main className="min-h-[60vh] w-full" />;
   if (state !== "active") return <SellerAccessPage state={state} />;
   return children;
 }
@@ -285,7 +298,11 @@ function RequireProvider({ children }) {
   const [state, setState] = useState("missing");
   useEffect(() => {
     let active = true;
-    if (!isAuthenticated || loading) return undefined;
+    if (loading) return undefined;
+    if (!isAuthenticated) {
+      setChecking(false);
+      return undefined;
+    }
     getProviderProfile().then((response) => {
       if (!active) return;
       const profile = response?.data?.profile;
@@ -297,8 +314,9 @@ function RequireProvider({ children }) {
     }).catch(() => active && setState("missing")).finally(() => active && setChecking(false));
     return () => { active = false; };
   }, [isAuthenticated, loading]);
-  if (loading || checking) return <main className="min-h-[60vh] w-full" />;
+  if (loading) return <main className="min-h-[60vh] w-full" />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (checking) return <main className="min-h-[60vh] w-full" />;
   if (state !== "active") return <ProviderAccessPage state={state} />;
   return children;
 }
