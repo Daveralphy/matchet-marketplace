@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 const SavedItemsContext = createContext(null);
 
 export function SavedItemsProvider({ children }) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, refreshUser } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,12 +19,13 @@ export function SavedItemsProvider({ children }) {
     setLoading(true);
     try {
       setItems(await getSavedItems());
-    } catch {
+    } catch (error) {
       setItems([]);
+      if (error?.status === 401) await refreshUser();
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, refreshUser]);
 
   useEffect(() => {
     if (!authLoading) loadSavedItems();
