@@ -1,30 +1,47 @@
 const API_BASE_URL = (window.location.hostname === "matchet-staging.vercel.app" ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000")).replace(/\/$/, "");
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
+  const method = String(options.method || "GET").toUpperCase();
+  const maxAttempts = method === "GET" ? 3 : 1;
 
-  let payload = null;
-  try {
-    payload = await response.json();
-  } catch {
-    payload = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(`${API_BASE_URL}${path}`, {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {}),
+        },
+        ...options,
+      });
+
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+
+      if (response.ok) return payload;
+
+      const retryable = [502, 503, 504].includes(response.status);
+      if (retryable && attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 800));
+        continue;
+      }
+
+      const error = new Error(payload?.message || "Marketplace request failed.");
+      error.status = response.status;
+      error.code = payload?.code;
+      throw error;
+    } catch (error) {
+      if (attempt < maxAttempts && !error.status) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 800));
+        continue;
+      }
+      throw error;
+    }
   }
-
-  if (!response.ok) {
-    const error = new Error(payload?.message || "Marketplace request failed.");
-    error.status = response.status;
-    error.code = payload?.code;
-    throw error;
-  }
-
-  return payload;
 }
 
 export async function getMarketplaceProducts() {
