@@ -4,6 +4,7 @@
 import { cloneElement, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { SavedItemsProvider } from "../../context/SavedItemsContext";
 import Header from "./Header";
 import Footer from "./Footer";
 
@@ -65,26 +66,28 @@ export default function MarketplaceLayout({ children }) {
   });
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <Header
-        isAuthenticated={isAuthenticated}
-        username={userName}
-        avatarSrc={user?.avatar?.url || ""}
-        onLogout={logout}
-      />
+    <SavedItemsProvider>
+      <div className="flex min-h-screen flex-col bg-white">
+        <Header
+          isAuthenticated={isAuthenticated}
+          username={userName}
+          avatarSrc={user?.avatar?.url || ""}
+          onLogout={logout}
+        />
 
-      <main className="relative flex-1 overflow-visible">
-        <div className={`transition-opacity duration-300 ease-out ${pageLoading ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
-          {content}
-        </div>
-        {pageLoading && (
-          <div className="absolute inset-0 z-10 bg-white pointer-events-none">
-            <MarketplaceSkeleton />
+        <main className="relative flex-1 overflow-visible">
+          <div className={`transition-opacity duration-300 ease-out ${pageLoading ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+            {content}
           </div>
-        )}
-      </main>
+          {pageLoading && (
+            <div className="absolute inset-0 z-10 bg-white pointer-events-none">
+              <MarketplaceSkeleton />
+            </div>
+          )}
+        </main>
 
-      <Footer isAuthenticated={isAuthenticated} />
-    </div>
+        <Footer isAuthenticated={isAuthenticated} />
+      </div>
+    </SavedItemsProvider>
   );
 }
