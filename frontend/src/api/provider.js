@@ -1,5 +1,5 @@
 import { uploadFiles } from "./uploads";
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE_URL = window.location.hostname === "matchet-staging.vercel.app" ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000");
 
 const CACHE_PREFIX = "matchet_provider_cache:";
 const CACHE_TTL = 5 * 60 * 1000;
