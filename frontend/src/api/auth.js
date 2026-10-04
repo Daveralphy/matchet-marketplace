@@ -40,8 +40,18 @@ export function getCurrentUser() {
   return request("/api/auth/me");
 }
 
-export function logout() {
-  return request("/api/auth/logout", { method: "POST" });
+export async function logout() {
+  const results = await Promise.allSettled([
+    request("/api/auth/logout", { method: "POST" }),
+    fetch("https://matchet-api-staging.vercel.app/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    }),
+  ]);
+
+  const primary = results[0];
+  if (primary.status === "rejected") throw primary.reason;
+  return primary.value;
 }
 
 
