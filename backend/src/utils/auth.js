@@ -7,7 +7,7 @@ function cookieOptions() {
   return {
     httpOnly: true,
     secure: production,
-    sameSite: "lax",
+    sameSite: production ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: "/",
   };
