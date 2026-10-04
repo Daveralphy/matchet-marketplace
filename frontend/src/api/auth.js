@@ -1,4 +1,4 @@
-const API_BASE_URL = window.location.hostname === "matchet-staging.vercel.app" ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000");
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 const TRANSIENT_STATUSES = new Set([502, 503, 504]);
 
@@ -67,19 +67,8 @@ export function getCurrentUser() {
 }
 
 export async function logout() {
-  const results = await Promise.allSettled([
-    request("/api/auth/logout", { method: "POST" }),
-    fetch("https://matchet-api-staging.vercel.app/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    }),
-  ]);
-
-  const primary = results[0];
-  if (primary.status === "rejected") throw primary.reason;
-  return primary.value;
+  return request("/api/auth/logout", { method: "POST" });
 }
-
 export function updateCurrentUser(data) {
   return request("/api/auth/me", { method: "PATCH", body: JSON.stringify(data) });
 }
