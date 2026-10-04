@@ -883,11 +883,11 @@ function ProductCatalogue({ isAuthenticated }) {
           </div>
 
           <div className={`mt-4 grid gap-3 ${view === "grid" ? "grid-cols-2 xl:grid-cols-5" : "grid-cols-1"}`}>
-            {sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} />) : (
+            {sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} />) : products.length === 0 ? (
               <div className="col-span-full flex min-h-[260px] items-center justify-center rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 text-center">
                 <div><p className="text-[13px] font-semibold text-[#10183f]">No products available yet</p><p className="mt-1 text-[11px] text-[#69739a]">Live products will appear here when sellers publish active listings.</p></div>
               </div>
-            )}
+            ) : null}
           </div>
 
           {!sorted.length && (
