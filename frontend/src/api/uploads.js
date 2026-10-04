@@ -1,4 +1,4 @@
-const API_BASE_URL = (window.location.hostname === "matchet-staging.vercel.app" ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000")).replace(/\/$/, "");
+const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 export function fileToDataUrl(file) {
   if (!(file instanceof File)) return Promise.resolve(null);
