@@ -106,7 +106,11 @@ function RequireOnboardingSubmitted({ flow, children }) {
   const [submitted, setSubmitted] = useState(false);
   useEffect(() => {
     let active = true;
-    if (!isAuthenticated || loading) return undefined;
+    if (loading) return undefined;
+    if (!isAuthenticated) {
+      setChecking(false);
+      return undefined;
+    }
     getOnboardingProgress(flow).then((response) => {
       if (active) setSubmitted(Boolean(response?.data?.submitted));
     }).catch(() => {
