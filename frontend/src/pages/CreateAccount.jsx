@@ -2,7 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import loginHero from "../assets/inspirations/authentication/login1.png";
 
@@ -247,6 +247,24 @@ const CreateAccount = () => {
   const [formError, setFormError] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const requestedSource = location.state?.from || "/";
+  const breadcrumbPath = requestedSource.startsWith("/") && !requestedSource.startsWith("//") ? requestedSource.split("?")[0] : "/";
+  const breadcrumbLabel = breadcrumbPath === "/"
+    ? "Home"
+    : breadcrumbPath.startsWith("/for-providers")
+      ? "For Providers"
+      : breadcrumbPath.startsWith("/products")
+        ? "Products"
+        : breadcrumbPath.startsWith("/services")
+          ? "Services"
+          : breadcrumbPath.startsWith("/explore")
+            ? "Explore"
+            : breadcrumbPath.startsWith("/cart")
+              ? "Cart"
+              : breadcrumbPath.startsWith("/checkout")
+                ? "Checkout"
+                : "Previous page";
 
   const formValues = {
     firstName,
@@ -334,16 +352,22 @@ const CreateAccount = () => {
 
           {/* Right create account panel */}
           <div className="login-scrollbar-hidden flex min-h-screen min-w-0 flex-1 flex-col overflow-y-auto px-5 py-6 sm:px-8 sm:py-7 lg:h-full lg:min-h-0 lg:basis-1/2 lg:flex-none lg:px-12 xl:px-14">
-            {/* Login link */}
-            <div className="flex shrink-0 justify-end text-[13px] text-[#24305f]">
-              <span>Already have an account?</span>
-
-              <Link
-                to="/login"
-                className="ml-2 font-semibold text-[#07983f] transition-colors hover:text-[#068936]"
-              >
-                Log in
-              </Link>
+            <div className="flex shrink-0 items-center justify-between gap-4 text-[13px] text-[#24305f]">
+              <div className="flex min-w-0 items-center gap-1.5">
+                {breadcrumbPath === "/" ? (
+                  <Link to="/" className="font-medium text-[#6670ad] hover:text-[#10183f]">Home</Link>
+                ) : (
+                  <>
+                    <Link to="/" className="font-medium text-[#6670ad] hover:text-[#10183f]">Home</Link>
+                    <span className="text-[#a4abc5]">/</span>
+                    <Link to={breadcrumbPath} className="truncate font-semibold text-[#10183f] hover:text-[#07983f]">{breadcrumbLabel}</Link>
+                  </>
+                )}
+              </div>
+              <div className="flex shrink-0 items-center">
+                <span>Already have an account?</span>
+                <Link to="/login" state={{ from: breadcrumbPath }} className="ml-2 font-semibold text-[#07983f] transition-colors hover:text-[#068936]">Log in</Link>
+              </div>
             </div>
 
             {/* Create account content */}
