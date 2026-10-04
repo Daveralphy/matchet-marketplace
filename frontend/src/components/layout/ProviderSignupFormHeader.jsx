@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "../../context/FormContext";
 import { saveProviderOnboardingDraft } from "../../api/provider";
 
@@ -28,7 +28,7 @@ function ProviderSignupFormHeader({ step }) {
   return (
     <header className="provider-signup-form-header">
       <div className="provider-signup-form-heading-row">
-        <a href="/for-providers" className="provider-signup-breadcrumb"><span aria-hidden="true">←</span><span>For Providers</span></a>
+        <Link to="/for-providers" className="provider-signup-breadcrumb"><span aria-hidden="true">←</span><span>For Providers</span></Link>
         <button type="button" className="provider-signup-save-and-exit" onClick={async () => {
           try {
             await saveProviderOnboardingDraft(formData);
