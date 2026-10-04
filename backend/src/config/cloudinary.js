@@ -75,7 +75,7 @@ async function deleteFromCloudinary({ publicId, resourceType = "image", accessTy
   const safeAccessType = ["upload", "private", "authenticated"].includes(accessType) ? accessType : "upload";
   const timestamp = Math.floor(Date.now() / 1000);
   const crypto = require("crypto");
-  const signatureBase = `public_id=${publicId}&timestamp=${timestamp}`;
+  const signatureBase = `public_id=${publicId}&timestamp=${timestamp}&type=${safeAccessType}`;
   const signature = crypto.createHash("sha1").update(signatureBase + CLOUDINARY_API_SECRET).digest("hex");
 
   const endpoint = `https://api.cloudinary.com/v1_1/${encodeURIComponent(CLOUDINARY_CLOUD_NAME)}/${safeResourceType}/destroy`;
