@@ -76,12 +76,27 @@ function BlankPage() {
   return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
 }
 
+function AccessDeniedPage({ title = "You do not have access to this page.", message = "Your account does not have the required access for this area." }) {
+  return (
+    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
+      <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
+        <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
+        <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
+        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
+          <a href="/login" style={{ padding: "12px 20px", borderRadius: "8px", background: "#10183f", color: "#fff", textDecoration: "none", fontWeight: 600 }}>Log in</a>
+          <a href="/" style={{ padding: "12px 20px", borderRadius: "8px", border: "1px solid #dfe3ec", color: "#10183f", textDecoration: "none", fontWeight: 600 }}>Back to marketplace</a>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function RequireAdmin({ children }) {
   const { user, loading, isAuthenticated } = useAuth();
   const location = useLocation();
   if (loading) return <main className="min-h-[60vh] w-full" />;
   if (!isAuthenticated) return <Navigate to={"/login?returnTo=" + encodeURIComponent(location.pathname)} replace />;
-  if (user?.role !== "admin") return <Navigate to="/" replace />;
+  if (user?.role !== "admin") return <AccessDeniedPage title="Admin access required" message="Your account does not have permission to access the admin area." />;
   return children;
 }
 
@@ -205,8 +220,11 @@ function ProviderAccessPage({ state }) {
       <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
         <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
         <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
-        {state === "missing" || state === "incomplete" ? <a href="/provider/onboarding">Continue application</a> : <a href="/provider/application-status">View application status</a>}
-        <div style={{ marginTop: "16px" }}><a href="/">Return to marketplace</a></div>
+        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
+          {state === "missing" || state === "incomplete" ? <a href="/provider/onboarding">Continue application</a> : <a href="/provider/application-status">View application status</a>}
+          <a href="/login">Log in</a>
+          <a href="/">Back to marketplace</a>
+        </div>
       </section>
     </main>
   );
@@ -224,8 +242,11 @@ function SellerAccessPage({ state }) {
       <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
         <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
         <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
-        {state === "missing" && <a href="/register">Start seller onboarding</a>}
-        <div style={{ marginTop: "16px" }}><a href="/">Return to marketplace</a></div>
+        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
+          {state === "missing" && <a href="/register">Start seller onboarding</a>}
+          <a href="/login">Log in</a>
+          <a href="/">Back to marketplace</a>
+        </div>
       </section>
     </main>
   );
@@ -546,7 +567,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/seller/orders/:orderId",
-    element: <RequireAuth><SellerOrderDetail /></RequireAuth>,
+    element: <RequireSeller><SellerOrderDetail /></RequireSeller>,
   },
   {
     path: "/seller/messages",
@@ -630,7 +651,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/listings",
-    element: <RequireAuth><MarketplaceLayout><Placeholder name="Provider Listings" /></MarketplaceLayout></RequireAuth>,
+    element: <RequireProvider><MarketplaceLayout><Placeholder name="Provider Listings" /></MarketplaceLayout></RequireProvider>,
   },
 ]);
 
