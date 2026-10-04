@@ -1134,6 +1134,7 @@ export default function Header({
             <>
               <Link
                 to="/login"
+                state={{ from: location.pathname + location.search }}
                 onClick={closeOverlays}
                 className="hidden h-11 items-center rounded-lg border border-slate-200 px-5 text-[13px] font-medium text-[#071449] transition-colors hover:border-slate-300 hover:bg-slate-50 min-[1160px]:flex"
               >
@@ -1142,6 +1143,7 @@ export default function Header({
 
               <Link
                 to="/create-account"
+                state={{ from: location.pathname + location.search }}
                 onClick={closeOverlays}
                 className="hidden h-11 items-center rounded-lg bg-[#07983f] px-5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-[#068936] min-[1160px]:flex"
               >
