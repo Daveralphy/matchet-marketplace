@@ -22,7 +22,7 @@ async function request(path, options = {}) {
         payload = null;
       }
 
-      if (response.ok) return payload;
+      if (response.ok) return payload || {};
 
       const retryable = [502, 503, 504].includes(response.status);
       if (retryable && attempt < maxAttempts) {
@@ -46,23 +46,23 @@ async function request(path, options = {}) {
 
 export async function getMarketplaceProducts() {
   const payload = await request("/api/marketplace/products");
-  return payload.products ?? [];
+  return Array.isArray(payload?.products) ? payload.products : [];
 }
 
 export async function getMarketplaceServices() {
   const payload = await request("/api/marketplace/services");
-  return payload.services ?? [];
+  return Array.isArray(payload?.services) ? payload.services : [];
 }
 
 export async function getMarketplaceProviders() {
   const payload = await request("/api/marketplace/providers");
-  return payload.providers ?? [];
+  return Array.isArray(payload?.providers) ? payload.providers : [];
 }
 
 export async function getMarketplaceProductById(id) {
   try {
     const payload = await request(`/api/marketplace/products/${encodeURIComponent(id)}`);
-    return payload.product ?? null;
+    return payload?.product ?? null;
   } catch (error) {
     if (error.status === 404) return null;
     throw error;
@@ -72,7 +72,7 @@ export async function getMarketplaceProductById(id) {
 export async function getMarketplaceServiceById(id) {
   try {
     const payload = await request(`/api/marketplace/services/${encodeURIComponent(id)}`);
-    return payload.service ?? null;
+    return payload?.service ?? null;
   } catch (error) {
     if (error.status === 404) return null;
     throw error;
