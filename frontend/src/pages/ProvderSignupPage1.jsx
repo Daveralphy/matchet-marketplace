@@ -89,12 +89,6 @@ export default function ProviderSignupPageOne() {
   }, [formData.providerCountryCode]);
 
   useEffect(() => {
-    if (!userEditedStepOneRef.current && formData.providerBio) {
-      setShortBio(formData.providerBio);
-    }
-  }, [formData.providerBio]);
-
-  useEffect(() => {
     setLocationQuery(formData.providerLocation || "");
   }, [formData.providerLocation]);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
@@ -347,7 +341,7 @@ export default function ProviderSignupPageOne() {
                     rows="4"
                     maxLength="500"
                     placeholder="Tell customers a bit about yourself, your background, and what you do."
-                    value={shortBio}
+                    defaultValue={formData.providerBio || ""}
                     onChange={(event) => {
                       const value = event.target.value;
                       userEditedStepOneRef.current = true;
