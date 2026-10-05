@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 const SavedItemsContext = createContext(null);
 
 export function SavedItemsProvider({ children }) {
-  const { user, loading: authLoading, refreshUser } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +21,6 @@ export function SavedItemsProvider({ children }) {
       setItems(await getSavedItems());
     } catch (error) {
       setItems([]);
-      if (error?.status === 401) await refreshUser();
     } finally {
       setLoading(false);
     }
