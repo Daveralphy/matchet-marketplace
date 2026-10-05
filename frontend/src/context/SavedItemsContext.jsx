@@ -66,7 +66,6 @@ export function SavedItemsProvider({ children }) {
         return { saved: true };
       } catch (error) {
         if (error?.status === 401) {
-          await refreshUser();
           return { requiresAuth: true };
         }
         throw error;
