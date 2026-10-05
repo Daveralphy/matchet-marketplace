@@ -71,7 +71,14 @@ export default function ProviderSignupPageOne() {
     }
   }, [user, formData.providerFirstName, formData.providerLastName, formData.providerEmail, formData.providerPhoneNumber, formData.providerProfileImage, formData.providerLocation, updateField]);
   const [profilePreview, setProfilePreview] = useState(null);
+  const [selectedProviderType, setSelectedProviderType] = useState(formData.providerType || "");
   const [locationQuery, setLocationQuery] = useState(formData.providerLocation || "");
+
+  useEffect(() => {
+    if (!userEditedStepOneRef.current && formData.providerType) {
+      setSelectedProviderType(formData.providerType);
+    }
+  }, [formData.providerType]);
 
   useEffect(() => {
     setLocationQuery(formData.providerLocation || "");
@@ -131,6 +138,9 @@ export default function ProviderSignupPageOne() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     userEditedStepOneRef.current = true;
+    if (name === "providerType") {
+      setSelectedProviderType(value);
+    }
     updateField(name, value);
   };
 
@@ -225,13 +235,13 @@ export default function ProviderSignupPageOne() {
                 {providerTypes.map((type) => (
                   <label
                     key={type.value}
-                    className={`provider-signup-provider-type ${formData.providerType === type.value ? "is-selected" : ""}`}
+                    className={`provider-signup-provider-type ${selectedProviderType === type.value ? "is-selected" : ""}`}
                   >
                     <input
                       type="radio"
                       name="providerType"
                       value={type.value}
-                      checked={formData.providerType === type.value}
+                      checked={selectedProviderType === type.value}
                       onChange={handleChange}
                       required
                     />
