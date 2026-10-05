@@ -12,6 +12,7 @@ import HelpSupport from "./pages/HelpSupport";
 import MyProfile from "./pages/MyProfile";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
+import SellerSignupPageThree from "./pages/SellerSignupPage3";
 import SellerSignupPageFour from "./pages/SellerSignupPage4";
 import SellerSignupPageFive from "./pages/SellerSignupPage5";
 import SellerSignupPageSix from "./pages/SellerSignupPage6";
