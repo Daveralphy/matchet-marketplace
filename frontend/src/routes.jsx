@@ -380,7 +380,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/register/page3",
-    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageFour /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageThree /></RequireOnboardingStep>,
   },
   {
     path: "/register/page4",
