@@ -72,6 +72,7 @@ export default function ProviderSignupPageOne() {
   }, [user, formData.providerFirstName, formData.providerLastName, formData.providerEmail, formData.providerPhoneNumber, formData.providerProfileImage, formData.providerLocation, updateField]);
   const [profilePreview, setProfilePreview] = useState(null);
   const [selectedProviderType, setSelectedProviderType] = useState(formData.providerType || "");
+  const [selectedProviderCountryCode, setSelectedProviderCountryCode] = useState(formData.providerCountryCode || "");
   const [locationQuery, setLocationQuery] = useState(formData.providerLocation || "");
 
   useEffect(() => {
@@ -79,6 +80,12 @@ export default function ProviderSignupPageOne() {
       setSelectedProviderType(formData.providerType);
     }
   }, [formData.providerType]);
+
+  useEffect(() => {
+    if (!userEditedStepOneRef.current && formData.providerCountryCode) {
+      setSelectedProviderCountryCode(formData.providerCountryCode);
+    }
+  }, [formData.providerCountryCode]);
 
   useEffect(() => {
     setLocationQuery(formData.providerLocation || "");
@@ -216,7 +223,18 @@ export default function ProviderSignupPageOne() {
               <fieldset className="phone-fieldset">
                 <legend>Phone number</legend>
                 <div className="phone-input-container">
-                  <select id="providerCountryCode" name="providerCountryCode" value={formData.providerCountryCode || ""} onChange={handleChange} required>
+                  <select
+                    id="providerCountryCode"
+                    name="providerCountryCode"
+                    value={selectedProviderCountryCode}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      userEditedStepOneRef.current = true;
+                      setSelectedProviderCountryCode(value);
+                      updateField("providerCountryCode", value);
+                    }}
+                    required
+                  >
                     <option value="" disabled>Country</option>
                     <option value="+234">🇳🇬 +234</option>
                     <option value="+1">🇺🇸 +1</option>
