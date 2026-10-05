@@ -1745,3 +1745,20 @@
     padding-right: 14px !important;
   }
 }
+
+/* Keep radio selection cards visibly selected across seller onboarding. */
+.seller-signup-form-page1 fieldset label:has(input[type="radio"]:checked),
+.seller-signup-form-page4 fieldset > label:has(input[type="radio"]:checked) {
+  border-color:#07983f!important;
+  background:#07983f!important;
+  color:#fff!important;
+  box-shadow:0 0 0 2px rgba(7,152,63,.12);
+}
+.seller-signup-form-page1 fieldset label:has(input[type="radio"]:checked) .sub-text,
+.seller-signup-form-page4 fieldset > label:has(input[type="radio"]:checked) .sub-text {
+  color:rgba(255,255,255,.9)!important;
+}
+.seller-signup-form-page1 fieldset label:has(input[type="radio"]:checked) input[type="radio"],
+.seller-signup-form-page4 fieldset > label:has(input[type="radio"]:checked) input[type="radio"] {
+  accent-color:#fff;
+}
