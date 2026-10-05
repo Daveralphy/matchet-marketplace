@@ -46,7 +46,15 @@
 .provider-signup-provider-type{position:relative;display:grid!important;grid-template-columns:20px 28px minmax(0,1fr);align-items:start;gap:10px;min-height:88px;padding:15px 14px;box-sizing:border-box;border:1px solid #dce2ef;border-radius:7px;cursor:pointer;font-size:14px!important;line-height:1.2!important}
 .provider-signup-provider-type.is-selected{
   border-color:#07983f;
+  background:#07983f;
   box-shadow:none;
+}
+.provider-signup-provider-type.is-selected svg{
+  color:#fff;
+}
+.provider-signup-provider-type.is-selected .provider-signup-provider-type-copy strong,
+.provider-signup-provider-type.is-selected .provider-signup-provider-type-copy small{
+  color:#fff;
 }
 .provider-signup-provider-type input{
   width:20px!important;
