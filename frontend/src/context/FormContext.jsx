@@ -1,7 +1,7 @@
 // Got help from Google Gemini. I typed everything myself and did not provide any code to the chat. Everything was a generic example and I adapted to this project.
 // Consider modifying form field names to match names from database schema
 
-import { createContext, useState, useContext, useCallback } from "react";
+import { createContext, useState, useContext, useCallback, useEffect, useRef } from "react";
 
 // Create the context
 const FormContext = createContext();
@@ -189,15 +189,30 @@ export function FormProvider({ children }) {
     setFormData((prev) => { const next = { ...prev }; const isService = currentFlow === "service"; Object.keys(next).forEach((key) => { if (isService ? key.startsWith("provider") : !key.startsWith("provider")) next[key] = Array.isArray(next[key]) ? [] : key === "providerProfileImage" ? null : key === "providerAvailability" ? { monday:{enabled:false,startTime:"",endTime:""},tuesday:{enabled:false,startTime:"",endTime:""},wednesday:{enabled:false,startTime:"",endTime:""},thursday:{enabled:false,startTime:"",endTime:""},friday:{enabled:false,startTime:"",endTime:""},saturday:{enabled:false,startTime:"",endTime:""},sunday:{enabled:false,startTime:"",endTime:""} } : ""; }); return next; });
   }, []);
 
-  // Function to update a single field's value
-  const updateField = (name, value) => {
-    setFormData((prevData) => {
-      const next = normalizeOnboardingData({ ...prevData, [name]: value });
+  const persistTimerRef = useRef(null);
+
+  const schedulePersist = useCallback((next, flow) => {
+    if (persistTimerRef.current) window.clearTimeout(persistTimerRef.current);
+    persistTimerRef.current = window.setTimeout(() => {
       try {
         const all = loadStoredForms();
-        const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
         sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({ ...all, [flow]: next }));
       } catch {}
+    }, 250);
+  }, []);
+
+  useEffect(() => () => {
+    if (persistTimerRef.current) window.clearTimeout(persistTimerRef.current);
+  }, []);
+
+  // Update only the field being edited. The previous implementation normalized
+  // and serialized the entire onboarding form on every keystroke, which made
+  // controlled inputs lag and occasionally miss characters.
+  const updateField = (name, value) => {
+    setFormData((prevData) => {
+      const next = { ...prevData, [name]: value };
+      const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+      schedulePersist(next, flow);
       return next;
     });
   };
