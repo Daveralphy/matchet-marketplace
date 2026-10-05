@@ -168,16 +168,32 @@ export default function ProviderSignupPageOne() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!event.currentTarget.checkValidity()) {
-      event.currentTarget.reportValidity();
+
+    const form = event.currentTarget;
+    if (!form.checkValidity()) {
+      form.reportValidity();
       return;
     }
+
     try {
-      const response = await saveProviderOnboardingDraft(formData, 1);
+      const submittedFormData = {
+        ...formData,
+        providerFirstName: form.elements.providerFirstName?.value || "",
+        providerLastName: form.elements.providerLastName?.value || "",
+        providerCountryCode: form.elements.providerCountryCode?.value || "",
+        providerPhoneNumber: form.elements.providerPhoneNumber?.value || "",
+        providerType: selectedProviderType,
+        providerLocation: form.elements.providerLocation?.value || "",
+        providerBio: form.elements.providerBio?.value || "",
+      };
+
+      const response = await saveProviderOnboardingDraft(submittedFormData, 1);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page2");
     } catch (error) {
-      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
+      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) {
+        highlightOnboardingFields(error.missingFields);
+      }
       alert(error.message || "Please complete the highlighted fields before continuing.");
     }
   };
