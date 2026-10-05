@@ -40,13 +40,19 @@ export default async function handler(req, res) {
 
     res.status(response.status);
     response.headers.forEach((value, key) => {
-      if (key.toLowerCase() === "set-cookie") {
-        res.setHeader("set-cookie", value);
-        return;
-      }
+      if (key.toLowerCase() === "set-cookie") return;
       if (["transfer-encoding", "connection", "content-encoding"].includes(key.toLowerCase())) return;
       res.setHeader(key, value);
     });
+
+    const setCookies =
+      typeof response.headers.getSetCookie === "function"
+        ? response.headers.getSetCookie()
+        : response.headers.get("set-cookie");
+
+    if (setCookies && setCookies.length) {
+      res.setHeader("set-cookie", setCookies);
+    }
 
     return res.end(Buffer.from(await response.arrayBuffer()));
   } catch (error) {
