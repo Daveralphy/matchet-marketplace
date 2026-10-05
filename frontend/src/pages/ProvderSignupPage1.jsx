@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
-import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, searchProviderLocations } from "../api/provider";
+import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, searchProviderLocations, highlightOnboardingFields } from "../api/provider";
 import { uploadFile } from "../api/uploads";
 import { useAuth } from "../context/AuthContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
