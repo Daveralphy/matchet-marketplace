@@ -57,14 +57,34 @@
   padding: 18px 44px 0;
 }
 
-.seller-signup-form-heading-row {
+ .seller-signup-form-heading-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 20px;
 }
 
-.seller-signup-form-heading-row h1 {
+.seller-signup-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #6670ad;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.seller-signup-breadcrumb:hover {
+  color: #07983f;
+}
+
+.seller-signup-form-heading-copy {
+  margin-top: 18px;
+}
+
+.seller-signup-form-heading-copy h1 {
   margin: 0;
   color: #10183f;
   font-size: 22px;
@@ -73,7 +93,7 @@
   letter-spacing: -0.04em;
 }
 
-.seller-signup-form-heading-row p {
+.seller-signup-form-heading-copy p {
   margin: 4px 0 0;
   color: #6670ad;
   font-size: 15px;
@@ -902,15 +922,15 @@
 
 @media (max-width: 520px) {
   .seller-signup-form-heading-row {
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    gap: 10px;
   }
 
   .seller-signup-save-and-exit {
-    align-self: flex-end;
+    margin-top: 0;
   }
 
-  .seller-signup-form-heading-row h1 {
+  .seller-signup-form-heading-copy h1 {
     font-size: 20px;
   }
 

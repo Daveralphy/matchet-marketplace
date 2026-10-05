@@ -1,51 +1,70 @@
-const API_BASE_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
+const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 async function request(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-    ...options,
-  });
+  const method = String(options.method || "GET").toUpperCase();
+  const maxAttempts = method === "GET" ? 3 : 1;
 
-  let payload = null;
-  try {
-    payload = await response.json();
-  } catch {
-    payload = null;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(`${API_BASE_URL}${path}`, {
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...(options.headers || {}),
+        },
+        ...options,
+      });
+
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+
+      if (response.ok) {
+        return payload && typeof payload === "object" ? payload : {};
+      }
+
+      const retryable = [502, 503, 504].includes(response.status);
+      if (retryable && attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 800));
+        continue;
+      }
+
+      const error = new Error(payload?.message || "Marketplace request failed.");
+      error.status = response.status;
+      error.code = payload?.code;
+      throw error;
+    } catch (error) {
+      if (attempt < maxAttempts && !error.status) {
+        await new Promise((resolve) => setTimeout(resolve, attempt * 800));
+        continue;
+      }
+      throw error;
+    }
   }
-
-  if (!response.ok) {
-    const error = new Error(payload?.message || "Marketplace request failed.");
-    error.status = response.status;
-    error.code = payload?.code;
-    throw error;
-  }
-
-  return payload;
 }
 
 export async function getMarketplaceProducts() {
   const payload = await request("/api/marketplace/products");
-  return payload.products ?? [];
+  return Array.isArray(payload.products) ? payload.products : [];
 }
 
 export async function getMarketplaceServices() {
   const payload = await request("/api/marketplace/services");
-  return payload.services ?? [];
+  return Array.isArray(payload.services) ? payload.services : [];
 }
 
 export async function getMarketplaceProviders() {
   const payload = await request("/api/marketplace/providers");
-  return payload.providers ?? [];
+  return Array.isArray(payload.providers) ? payload.providers : [];
 }
 
 export async function getMarketplaceProductById(id) {
   try {
     const payload = await request(`/api/marketplace/products/${encodeURIComponent(id)}`);
-    return payload.product ?? null;
+    return payload?.product ?? null;
   } catch (error) {
     if (error.status === 404) return null;
     throw error;
@@ -55,7 +74,7 @@ export async function getMarketplaceProductById(id) {
 export async function getMarketplaceServiceById(id) {
   try {
     const payload = await request(`/api/marketplace/services/${encodeURIComponent(id)}`);
-    return payload.service ?? null;
+    return payload?.service ?? null;
   } catch (error) {
     if (error.status === 404) return null;
     throw error;

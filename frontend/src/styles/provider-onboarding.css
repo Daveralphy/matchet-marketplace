@@ -7,8 +7,11 @@
 .provider-signup-right-section{min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;background:#fff;scrollbar-width:none;-ms-overflow-style:none}
 .provider-signup-right-section::-webkit-scrollbar{display:none}
 .provider-signup-form-header{padding:18px 44px 0}
-.provider-signup-form-heading-row{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-.provider-signup-form-heading-row h1{margin:0;color:#10183f;font-size:22px;line-height:1.15;font-weight:800;letter-spacing:-.04em}
+.provider-signup-form-heading-row{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.provider-signup-breadcrumb{display:inline-flex;align-items:center;gap:7px;color:#6670ad;font-size:13px;line-height:1.2;font-weight:600;text-decoration:none;white-space:nowrap}
+.provider-signup-breadcrumb:hover{color:#07983f}
+.provider-signup-form-heading-copy{margin-top:18px}
+.provider-signup-form-heading-copy h1{margin:0;color:#10183f;font-size:22px;line-height:1.15;font-weight:800;letter-spacing:-.04em}
 .provider-signup-form-header-caption{margin:4px 0 0;color:#6670ad;font-size:15px;line-height:1.4}
 .provider-signup-save-and-exit{display:inline-flex;align-items:center;gap:8px;margin-top:4px;border:0;background:transparent;color:#10183f;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
 .provider-signup-save-and-exit svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}

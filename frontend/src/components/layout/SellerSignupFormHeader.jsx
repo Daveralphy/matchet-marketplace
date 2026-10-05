@@ -34,15 +34,16 @@ export default function SellerSignupFormHeader({ step }) {
   return (
     <header className="seller-signup-form-header">
       <div className="seller-signup-form-heading-row">
-        <div>
-          <h1>Become a provider</h1>
-          <p>Set up your seller profile and start selling your products on Matchet.</p>
-        </div>
-
+        <Link to="/for-providers" className="seller-signup-breadcrumb"><span aria-hidden="true">←</span><span>For Providers</span></Link>
         <Link to="/for-providers" className="seller-signup-save-and-exit">
           <SaveIcon />
           <span>Save and exit</span>
         </Link>
+      </div>
+
+      <div className="seller-signup-form-heading-copy">
+        <h1>Become a provider</h1>
+        <p>Set up your seller profile and start selling your products on Matchet.</p>
       </div>
 
       <div className="seller-signup-stepper">

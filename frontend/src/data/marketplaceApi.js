@@ -2,11 +2,25 @@ import { getMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders
 import { marketplaceContent } from "./marketplaceContent";
 
 async function loadMarketplace() {
-  const [products, services] = await Promise.all([
+  const results = await Promise.allSettled([
     getMarketplaceProducts(),
     getMarketplaceServices(),
   ]);
-  return { products, services };
+
+  const products = results[0].status === "fulfilled" ? results[0].value : [];
+  const services = results[1].status === "fulfilled" ? results[1].value : [];
+
+  if (results[0].status === "rejected") {
+    console.error("Marketplace products loading failed:", results[0].reason);
+  }
+  if (results[1].status === "rejected") {
+    console.error("Marketplace services loading failed:", results[1].reason);
+  }
+
+  return {
+    products: Array.isArray(products) ? products : [],
+    services: Array.isArray(services) ? services : [],
+  };
 }
 
 function withProductUiFields(product) {
@@ -67,8 +81,8 @@ function withServiceUiFields(service) {
 export async function getMarketplaceData() {
   const data = await loadMarketplace();
   return {
-    products: data.products.map(withProductUiFields),
-    services: data.services.map(withServiceUiFields),
+    products: data.products.map(withProductUiFields).filter(Boolean),
+    services: data.services.map(withServiceUiFields).filter(Boolean),
   };
 }
 

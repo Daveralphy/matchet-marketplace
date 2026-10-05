@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "../../context/FormContext";
 import { saveProviderOnboardingDraft } from "../../api/provider";
 
@@ -28,12 +28,7 @@ function ProviderSignupFormHeader({ step }) {
   return (
     <header className="provider-signup-form-header">
       <div className="provider-signup-form-heading-row">
-        <div>
-          <h1>Become a provider</h1>
-          <p className="provider-signup-form-header-caption">
-            Set up your provider profile and start offering your services on Matchet.
-          </p>
-        </div>
+        <Link to="/for-providers" className="provider-signup-breadcrumb"><span aria-hidden="true">←</span><span>For Providers</span></Link>
         <button type="button" className="provider-signup-save-and-exit" onClick={async () => {
           try {
             await saveProviderOnboardingDraft(formData);
@@ -45,6 +40,13 @@ function ProviderSignupFormHeader({ step }) {
           <SaveIcon />
           Save and exit
         </button>
+      </div>
+
+      <div className="provider-signup-form-heading-copy">
+        <h1>Become a provider</h1>
+        <p className="provider-signup-form-header-caption">
+          Set up your provider profile and start offering your services on Matchet.
+        </p>
       </div>
 
       <div className="provider-signup-stepper" aria-label="Provider onboarding progress">

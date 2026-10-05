@@ -145,7 +145,7 @@ export function ProviderShell({ children, mode = "provider" }) {
 
       <aside className="provider-sidebar" aria-label={sellerMode ? "Seller navigation" : "Provider navigation"}>
         <div className="provider-brand-row">
-          <Link to="/" className="provider-brand" aria-label="Matchet home"><img src={logo} alt="Matchet" /></Link>
+          <Link to="/for-providers" className="provider-brand" aria-label="Matchet for providers"><img src={logo} alt="Matchet" /></Link>
           <button type="button" className="provider-sidebar-toggle" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
             <Icon name={collapsed ? "chevronRight" : "chevronLeft"} size={18} />
           </button>
