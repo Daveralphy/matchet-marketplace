@@ -1,7 +1,7 @@
 // Created by: Blake Ostler
 // Edited by: Raphael Daveal
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
 import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, searchProviderLocations } from "../api/provider";
@@ -20,6 +20,7 @@ function ProviderIcon({ type }) {
 export default function ProviderSignupPageOne() {
   const { formData, updateField, mergeFormData, setOnboardingFlow } = useForm();
   const { user } = useAuth();
+  const userEditedStepOneRef = useRef(false);
   const navigate = useNavigate();
   useEffect(() => {
     setOnboardingFlow("service");
@@ -28,7 +29,11 @@ export default function ProviderSignupPageOne() {
         const state = capabilityResponse?.data?.service;
         const draft = draftResponse?.data;
 
-        if (draft?.formData) mergeFormData(draft.formData);
+        // Do not let a late draft response overwrite a selection the user
+        // has already made while Step 1 is loading.
+        if (draft?.formData && !userEditedStepOneRef.current) {
+          mergeFormData(draft.formData);
+        }
 
         if (state?.status === "active" && state?.verificationStatus === "verified" && state?.applicationSubmittedAt) {
           navigate("/provider/dashboard", { replace: true });
@@ -125,6 +130,7 @@ export default function ProviderSignupPageOne() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    userEditedStepOneRef.current = true;
     updateField(name, value);
   };
 
@@ -254,6 +260,7 @@ export default function ProviderSignupPageOne() {
                     autoComplete="off"
                     onChange={(event) => {
                       const value = event.target.value;
+                      userEditedStepOneRef.current = true;
                       setLocationQuery(value);
                       if (value !== formData.providerLocation) updateField("providerLocation", "");
                     }}
@@ -268,6 +275,7 @@ export default function ProviderSignupPageOne() {
                           type="button"
                           style={{ display: "block", width: "100%", border: 0, background: "#fff", padding: "10px 12px", textAlign: "left", cursor: "pointer" }}
                           onClick={() => {
+                            userEditedStepOneRef.current = true;
                             setLocationQuery(location.label);
                             updateField("providerLocation", location.label);
                             updateField("providerLocationData", location);
