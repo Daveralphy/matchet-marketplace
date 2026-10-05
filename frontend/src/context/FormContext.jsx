@@ -208,14 +208,14 @@ export function FormProvider({ children }) {
   // Update only the field being edited. The previous implementation normalized
   // and serialized the entire onboarding form on every keystroke, which made
   // controlled inputs lag and occasionally miss characters.
-  const updateField = (name, value) => {
+  const updateField = useCallback((name, value) => {
     setFormData((prevData) => {
       const next = { ...prevData, [name]: value };
       const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
       schedulePersist(next, flow);
       return next;
     });
-  };
+  }, [schedulePersist]);
 
   const mergeFormData = useCallback((values) => {
     if (!values || typeof values !== "object") return;
