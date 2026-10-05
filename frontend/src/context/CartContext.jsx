@@ -10,7 +10,7 @@ function normalizeItems(items) {
 }
 
 export function CartProvider({ children }) {
-  const { user, loading: authLoading, refreshUser } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [items, setItems] = useState([]);
   const [cartLoading, setCartLoading] = useState(true);
 
@@ -26,7 +26,6 @@ export function CartProvider({ children }) {
       setItems(normalizeItems(serverItems));
     } catch (error) {
       setItems([]);
-      if (error?.status === 401) await refreshUser();
     } finally {
       setCartLoading(false);
     }
