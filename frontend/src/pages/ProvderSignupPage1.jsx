@@ -357,7 +357,7 @@ export default function ProviderSignupPageOne() {
                     required
                   />
                 </label>
-                <span className="provider-signup-character-count">{(formData.providerBio || "").length}/500</span>
+                <span className="provider-signup-character-count">{shortBio.length}/500</span>
               </div>
             </div>
 
