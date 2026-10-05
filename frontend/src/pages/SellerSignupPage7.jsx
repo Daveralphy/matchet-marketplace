@@ -592,7 +592,7 @@ export default function SellerSignupPageSeven() {
                 await submitSellerOnboarding(formData);
                 await refreshUser();
                 clearForm();
-                navigate("/register/page7");
+                navigate("/register/page8");
               } catch (error) {
                 setSubmitError(error.message || "Unable to submit your seller application.");
               } finally {
