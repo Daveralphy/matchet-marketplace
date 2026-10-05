@@ -54,6 +54,7 @@ export default function SellerSignupPageFive() {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
+      e.target.reportValidity();
       return;
     }
 
