@@ -73,6 +73,7 @@ export default function ProviderSignupPageOne() {
   const [profilePreview, setProfilePreview] = useState(null);
   const [selectedProviderType, setSelectedProviderType] = useState(formData.providerType || "");
   const [selectedProviderCountryCode, setSelectedProviderCountryCode] = useState(formData.providerCountryCode || "");
+  const [shortBio, setShortBio] = useState(formData.providerBio || "");
   const [locationQuery, setLocationQuery] = useState(formData.providerLocation || "");
 
   useEffect(() => {
@@ -86,6 +87,12 @@ export default function ProviderSignupPageOne() {
       setSelectedProviderCountryCode(formData.providerCountryCode);
     }
   }, [formData.providerCountryCode]);
+
+  useEffect(() => {
+    if (!userEditedStepOneRef.current && formData.providerBio) {
+      setShortBio(formData.providerBio);
+    }
+  }, [formData.providerBio]);
 
   useEffect(() => {
     setLocationQuery(formData.providerLocation || "");
@@ -334,7 +341,21 @@ export default function ProviderSignupPageOne() {
               <div className="provider-signup-bio-field">
                 <label htmlFor="providerBio">
                   Short bio
-                  <textarea id="providerBio" name="providerBio" rows="4" maxLength="500" placeholder="Tell customers a bit about yourself, your background, and what you do." value={formData.providerBio || ""} onChange={handleChange} required />
+                  <textarea
+                    id="providerBio"
+                    name="providerBio"
+                    rows="4"
+                    maxLength="500"
+                    placeholder="Tell customers a bit about yourself, your background, and what you do."
+                    value={shortBio}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      userEditedStepOneRef.current = true;
+                      setShortBio(value);
+                      updateField("providerBio", value);
+                    }}
+                    required
+                  />
                 </label>
                 <span className="provider-signup-character-count">{(formData.providerBio || "").length}/500</span>
               </div>
