@@ -385,18 +385,22 @@ const router = createBrowserRouter([
   },
   {
     path: "/register/page4",
-    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFive /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFour /></RequireOnboardingStep>,
   },
   {
     path: "/register/page5",
-    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageSix /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/register/page6",
-    element: <RequireOnboardingReview flow="seller"><SellerSignupPageSeven /></RequireOnboardingReview>,
+    element: <RequireOnboardingStep flow="seller" step={6}><SellerSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/register/page7",
+    element: <RequireOnboardingReview flow="seller"><SellerSignupPageSeven /></RequireOnboardingReview>,
+  },
+  {
+    path: "/register/page8",
     element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
   },
   {
