@@ -29,7 +29,7 @@ export function CartProvider({ children }) {
     } finally {
       setCartLoading(false);
     }
-  }, [user, refreshUser]);
+  }, [user]);
 
   useEffect(() => {
     if (!authLoading) loadCart();
