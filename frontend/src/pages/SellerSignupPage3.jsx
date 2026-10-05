@@ -77,6 +77,7 @@ export default function SellerSignupPageThree() {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
+      e.target.reportValidity();
       return;
     }
 
