@@ -226,13 +226,19 @@ export default function ProviderSignupPageOne() {
                   <label
                     key={type.value}
                     className={`provider-signup-provider-type ${formData.providerType === type.value ? "is-selected" : ""}`}
-                    style={formData.providerType === type.value ? {
-                      borderColor: "#07983f",
-                      backgroundColor: "#07983f",
-                    } : undefined}
                   >
-                    <input type="radio" name="providerType" value={type.value} checked={formData.providerType === type.value} onChange={handleChange} required />
-                    <ProviderIcon type={type.value} />
+                    <input
+                      type="radio"
+                      name="providerType"
+                      value={type.value}
+                      checked={formData.providerType === type.value}
+                      onChange={handleChange}
+                      required
+                    />
+                    <span className="provider-signup-provider-type-radio" aria-hidden="true" />
+                    <span className="provider-signup-provider-type-icon">
+                      <ProviderIcon type={type.value} />
+                    </span>
                     <span className="provider-signup-provider-type-copy">
                       <strong>{type.title}</strong>
                       <small>{type.description}</small>
