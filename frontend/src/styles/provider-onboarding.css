@@ -44,7 +44,10 @@
 .provider-signup-form-page1 .phone-input-container{display:grid;grid-template-columns:152px minmax(0,1fr);gap:8px}
 .provider-signup-provider-types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .provider-signup-provider-type{position:relative;display:grid!important;grid-template-columns:20px 28px minmax(0,1fr);align-items:start;gap:10px;min-height:88px;padding:15px 14px;box-sizing:border-box;border:1px solid #dce2ef;border-radius:7px;cursor:pointer;font-size:14px!important;line-height:1.2!important}
-.provider-signup-provider-type.is-selected{border-color:#07983f;box-shadow:inset 0 0 0 1px #07983f}
+.provider-signup-provider-type.is-selected{
+  border-color:#07983f;
+  box-shadow:none;
+}
 .provider-signup-provider-type input{
   width:20px!important;
   height:20px!important;
