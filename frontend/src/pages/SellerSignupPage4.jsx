@@ -19,6 +19,7 @@ export default function SellerSignupPageFour() {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
+      e.target.reportValidity();
       return;
     }
 
