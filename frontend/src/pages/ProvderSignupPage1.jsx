@@ -223,7 +223,14 @@ export default function ProviderSignupPageOne() {
 
               <fieldset className="provider-signup-provider-types">
                 {providerTypes.map((type) => (
-                  <label key={type.value} className={`provider-signup-provider-type ${formData.providerType === type.value ? "is-selected" : ""}`}>
+                  <label
+                    key={type.value}
+                    className={`provider-signup-provider-type ${formData.providerType === type.value ? "is-selected" : ""}`}
+                    style={formData.providerType === type.value ? {
+                      borderColor: "#07983f",
+                      backgroundColor: "#07983f",
+                    } : undefined}
+                  >
                     <input type="radio" name="providerType" value={type.value} checked={formData.providerType === type.value} onChange={handleChange} required />
                     <ProviderIcon type={type.value} />
                     <span className="provider-signup-provider-type-copy">
