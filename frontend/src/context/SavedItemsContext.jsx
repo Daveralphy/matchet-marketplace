@@ -24,7 +24,7 @@ export function SavedItemsProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [user, refreshUser]);
+  }, [user]);
 
   useEffect(() => {
     if (!authLoading) loadSavedItems();
@@ -71,7 +71,7 @@ export function SavedItemsProvider({ children }) {
         throw error;
       }
     },
-    [items, user, refreshUser],
+    [items, user],
   );
 
   const value = useMemo(
