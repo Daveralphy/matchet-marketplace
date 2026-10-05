@@ -16,6 +16,7 @@ export default function SellerSignupPageOne() {
   const navigate = useNavigate();
   const [photoPreview, setPhotoPreview] = useState(null);
   const photoSelectionRef = useRef(false);
+  const userEditedSellerStepOneRef = useRef(false);
 
   useEffect(() => {
     setOnboardingFlow("seller");
@@ -37,7 +38,7 @@ export default function SellerSignupPageOne() {
 
     getSellerOnboardingDraft().then((response) => {
       const draft = response?.data;
-      if (draft?.formData) mergeFormData(draft.formData);
+      if (draft?.formData && !userEditedSellerStepOneRef.current) mergeFormData(draft.formData);
       if (draft?.onboardingStatus === "submitted") {
         navigate("/seller/dashboard", { replace: true });
       }
@@ -62,6 +63,7 @@ export default function SellerSignupPageOne() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    userEditedSellerStepOneRef.current = true;
     updateField(name, value);
   };
 
@@ -641,6 +643,7 @@ export default function SellerSignupPageOne() {
                         return;
                       }
                       photoSelectionRef.current = true;
+                      userEditedSellerStepOneRef.current = true;
                       uploadFile(file, "matchet/profiles").then((uploaded) => {
                         if (!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
                         updateField("profileImage", uploaded);
