@@ -26,7 +26,7 @@ export default function SellerSignupPageFour() {
     try {
       const response = await saveSellerOnboardingDraft(formData, 4);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/register/page4");
+      navigate("/register/page5");
     } catch (error) {
       if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
       alert(error.message || "Please complete the highlighted fields before continuing.");
