@@ -74,7 +74,8 @@ function normalizeOnboardingData(values) {
 export function FormProvider({ children }) {
   const stored = loadStoredForms();
   const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
-  const [formData, setFormData] = useState(() => ({
+  const [formData, setFormData] = useState(() => {
+    const initialFormData = ({
     // Initialize from fields here
     onboardingUserId: "",
      firstName: "",
@@ -173,8 +174,14 @@ export function FormProvider({ children }) {
     providerAccountType: "",
     providerBvn: "",
     providerTin: "",
-  }));
-  if (stored[flow]) Object.assign(formData, normalizeOnboardingData(stored[flow]));
+    });
+
+    if (stored[flow]) {
+      return { ...initialFormData, ...normalizeOnboardingData(stored[flow]) };
+    }
+
+    return initialFormData;
+  });
 
   const setOnboardingFlow = useCallback((nextFlow) => {
     const safeFlow = nextFlow === "service" ? "service" : "seller";
