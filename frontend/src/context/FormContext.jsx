@@ -42,29 +42,55 @@ function normalizeOnboardingData(values) {
       typeof value === "string" || typeof value === "number" ? String(value) : String(value?.value ?? value?.label ?? "")
     ).filter(Boolean);
   }
-  const normalizeAssets = (value) => {
-    if (!Array.isArray(value)) return [];
-    return value.map((item) => {
-      if (!item) return null;
-      if (typeof item === "string") return item;
-      if (typeof File !== "undefined" && item instanceof File) return item;
-      if (typeof item === "object") {
-        if (item.url || item.publicId) {
-          return {
-            url: item.url || "",
-            publicId: item.publicId || "",
-            isPrimary: Boolean(item.isPrimary),
-            name: item.name || "",
-            mimeType: item.mimeType || item.type || "",
-          };
-        }
-      }
-      return null;
-    }).filter(Boolean);
+  // Uploaded assets use the same shape everywhere in the onboarding flow.
+  // This keeps Cloudinary URLs intact when data is restored from sessionStorage
+  // or from a saved backend draft, while still allowing a File object before upload.
+  const normalizeAsset = (item) => {
+    if (!item) return null;
+    if (typeof item === "string") return item;
+    if (typeof File !== "undefined" && item instanceof File) return item;
+    if (typeof item === "object" && (item.url || item.publicId)) {
+      return {
+        url: item.url || "",
+        publicId: item.publicId || "",
+        isPrimary: Boolean(item.isPrimary),
+        name: item.name || "",
+        mimeType: item.mimeType || item.type || "",
+        type: item.type || item.mimeType || "",
+        resourceType: item.resourceType || "",
+      };
+    }
+    return null;
   };
 
-  next.providerServiceImages = normalizeAssets(next.providerServiceImages);
-  next.providerPortfolioMedia = normalizeAssets(next.providerPortfolioMedia);
+  const normalizeAssets = (value) => {
+    if (!Array.isArray(value)) return [];
+    return value.map(normalizeAsset).filter(Boolean);
+  };
+
+  // Normalize every uploaded image/document field, not just provider galleries.
+  // This gives seller and provider onboarding the same restore/preview behavior.
+  [
+    "profileImage",
+    "businessLogo",
+    "idImageFront",
+    "idImageBack",
+    "selfieImage",
+    "providerProfileImage",
+    "providerIdImageFront",
+    "providerIdImageBack",
+    "providerSelfieImage",
+  ].forEach((key) => {
+    if (next[key]) next[key] = normalizeAsset(next[key]);
+  });
+
+  [
+    "productImages",
+    "providerServiceImages",
+    "providerPortfolioMedia",
+  ].forEach((key) => {
+    next[key] = normalizeAssets(next[key]);
+  });
 
   if (!Array.isArray(next.productTags)) next.productTags = next.productTags ? [next.productTags] : [];
   return next;
@@ -187,7 +213,7 @@ export function FormProvider({ children }) {
     const safeFlow = nextFlow === "service" ? "service" : "seller";
     sessionStorage.setItem("matchet_onboarding_flow", safeFlow);
     const saved = loadStoredForms()[safeFlow];
-    setFormData((prev) => saved ? { ...prev, ...saved } : prev);
+    setFormData((prev) => saved ? normalizeOnboardingData({ ...prev, ...saved }) : prev);
   }, []);
 
   const clearForm = useCallback(() => {
