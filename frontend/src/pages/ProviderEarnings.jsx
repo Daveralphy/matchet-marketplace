@@ -8,7 +8,7 @@ function money(value, currency = "NGN") {
 }
 function shortMoney(value, currency = "NGN") {
   const amount = Number(value || 0);
-  const symbol = currency === "NGN" ? "₦" : currency + " ";
+  const symbol = new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 0 }).format(1).replace(/[\d\s.,]/g, "");
   if (amount >= 1000000) return symbol + (amount / 1000000).toFixed(1) + "M";
   if (amount >= 1000) return symbol + Math.round(amount / 1000) + "K";
   return money(amount, currency);
