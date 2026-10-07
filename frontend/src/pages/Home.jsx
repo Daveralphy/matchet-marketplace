@@ -2,7 +2,6 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
 import { getMarketplaceData } from "../data/marketplaceApi";
@@ -1323,8 +1322,6 @@ export default function Home({ isAuthenticated = false, userName }) {
     continueExploring: [],
   });
 
-  const locationRef = useRef(null);
-
   useEffect(() => {
     let active = true;
 
@@ -1353,24 +1350,6 @@ export default function Home({ isAuthenticated = false, userName }) {
       active = false;
     };
   }, [selectedLocation]);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (
-        locationOpen &&
-        locationRef.current &&
-        !locationRef.current.contains(event.target)
-      ) {
-        setLocationOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [locationOpen]);
 
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
