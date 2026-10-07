@@ -822,8 +822,8 @@ function ServiceListingCard({ service }) {
         </p>
 
         <div className="mt-4 flex items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef1f3] text-[11px] font-semibold text-[#10183f]">
-            {service.sellerInitial}
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#eef1f3] text-[11px] font-semibold text-[#10183f]">
+            {service.sellerImage ? <img src={service.sellerImage} alt={service.seller || ""} className="h-full w-full object-cover" /> : service.sellerInitial}
           </span>
           <div className="min-w-0">
             <p className="flex items-center gap-1 truncate text-[11px] font-semibold text-[#10183f]">
