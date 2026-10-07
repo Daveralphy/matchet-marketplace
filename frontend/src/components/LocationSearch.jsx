@@ -58,6 +58,7 @@ export default function LocationSearch({
         disabled={disabled}
         autoComplete="off"
         placeholder={placeholder}
+        className="box-border w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#10183f] outline-none transition focus:border-[#07983f] focus:ring-2 focus:ring-[#07983f]/10"
         onChange={(event) => {
           const next = event.target.value;
           setQuery(next);
