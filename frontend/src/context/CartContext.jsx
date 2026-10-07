@@ -87,8 +87,12 @@ export function parsePrice(value) {
   return Number(String(value || "").replace(/[^0-9]/g, "")) || 0;
 }
 
+export function formatCurrency(value, currency = "NGN") {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
+}
+
 export function formatNaira(value) {
-  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(value).replace("NGN", "₦");
+  return formatCurrency(value, "NGN");
 }
 
 export async function getCheckoutProduct(id) {
