@@ -180,10 +180,11 @@ async function findServices(query = {}) {
 
 async function getProducts(req, res) {
   try {
-    const approvedStores = await StoreProfile.find({
-      status: "active",
-      verificationStatus: "verified",
-    }).select("userId").lean();
+    const sellerType = clean(req.query.sellerType);
+    const storeFilter = { status: "active", verificationStatus: "verified" };
+    if (sellerType === "Businesses") storeFilter["businessDetails.sellerType"] = /business/i;
+    if (sellerType === "Individuals") storeFilter["businessDetails.sellerType"] = /individual/i;
+    const approvedStores = await StoreProfile.find(storeFilter).select("userId").lean();
     const approvedSellerIds = approvedStores.map((store) => store.userId).filter(Boolean);
     const filter = {
       status: "active",
