@@ -720,15 +720,20 @@ export default function Header({
                     />
                   </button>
 
-                  <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-[280px] rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_30px_rgba(16,24,63,0.12)]">
+                  {locationOpen && (
+                    <div className="absolute right-0 top-[calc(100%+8px)] z-[90] w-[320px] rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_30px_rgba(16,24,63,0.12)]">
                       <LocationSearch
                         value={selectedLocation}
                         onChange={(value) => persistLocation(value)}
-                        onSelect={(location) => persistLocation(location.label)}
+                        onSelect={(location) => {
+                          persistLocation(location.label);
+                          setLocationOpen(false);
+                        }}
                         placeholder="Search for a city, state, or country..."
                       />
                     </div>
-                  </div>
+                  )}
+                </div>
 
                 <button
                   type="button"
