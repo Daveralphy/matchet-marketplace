@@ -1323,6 +1323,12 @@ export default function Home({ isAuthenticated = false, userName }) {
   });
 
   useEffect(() => {
+    const handleLocationChange = (event) => setSelectedLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
+  }, []);
+
+  useEffect(() => {
     let active = true;
 
     getMarketplaceData(selectedLocation)
