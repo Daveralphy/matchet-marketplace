@@ -89,7 +89,6 @@ async function searchProviderLocations(req, res) {
     url.searchParams.set("count", "8");
     url.searchParams.set("language", "en");
     url.searchParams.set("format", "json");
-    url.searchParams.set("countryCode", "NG");
 
     const response = await fetch(url);
     if (!response.ok) throw new Error("Location service unavailable.");
