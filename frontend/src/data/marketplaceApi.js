@@ -122,6 +122,33 @@ export async function getMarketplaceData(location = "") {
   };
 }
 
+export function recordMarketplaceView(item) {
+  if (!item?.id || !item?.type) return;
+  try {
+    const key = "matchet_view_history";
+    const history = JSON.parse(window.localStorage.getItem(key) || "[]");
+    const next = history.filter((entry) => !(entry.id === String(item.id) && entry.type === item.type));
+    next.unshift({
+      id: String(item.id),
+      type: item.type,
+      category: item.category || "",
+      viewedAt: Date.now(),
+    });
+    window.localStorage.setItem(key, JSON.stringify(next.slice(0, 30)));
+  } catch {
+    // Recommendations should never block browsing.
+  }
+}
+
+export function getMarketplaceViewHistory() {
+  try {
+    const history = JSON.parse(window.localStorage.getItem("matchet_view_history") || "[]");
+    return Array.isArray(history) ? history : [];
+  } catch {
+    return [];
+  }
+}
+
 export async function getMarketplaceProducts({ sellerType = "", location = "" } = {}) {
   const products = await fetchMarketplaceProducts({ location });
   const normalized = Array.isArray(products) ? products.map(withProductUiFields).filter(Boolean) : [];
