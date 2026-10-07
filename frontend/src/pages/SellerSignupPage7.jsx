@@ -338,7 +338,7 @@ export default function SellerSignupPageSeven() {
         </section>
 
         <section className="seller-signup-right-section">
-          <SellerSignupFormHeader step={7} />
+          <SellerSignupFormHeader step={5} />
 
           <h2 className="seller-signup-step-header">
             Review and submit
@@ -421,87 +421,12 @@ export default function SellerSignupPageSeven() {
           </div>
 
           <div className="seller-signup-verification-card">
-            <h3 className="seller-signup-verification-card-products-heading">
-              Products
-            </h3>
-
-            <Link
-              to="/register/page3"
-              className="seller-signup-verification-card-edit-link"
-            >
-              Edit
-            </Link>
-
-            <p>{formData.productName}</p>
-
-            <p>
-              {formData.productPrice} | {formData.productStock} in stock
-            </p>
-
-            <div className="seller-signup-review-thumbs">
-              {Array.isArray(formData.productImages) && formData.productImages.length > 0
-                ? formData.productImages.slice(0, 6).map((image, imageIndex) => (
-                    image?.url ? (
-                      <img
-                        key={image.publicId || image.url || imageIndex}
-                        src={image.url}
-                        alt={`Product ${imageIndex + 1}`}
-                        style={{ width: 58, height: 58, objectFit: "cover", borderRadius: 7, border: "1px solid #e1e6f0" }}
-                      />
-                    ) : (
-                      <span key={imageIndex}>Image</span>
-                    )
-                  ))
-                : <span>No images</span>}
-            </div>
-          </div>
-
-          <div className="seller-signup-verification-card">
-            <h3 className="seller-signup-verification-card-shipping-details-heading">
-              Shipping & delivery
-            </h3>
-
-            <Link
-              to="/register/page4"
-              className="seller-signup-verification-card-edit-link"
-            >
-              Edit
-            </Link>
-
-            <table>
-              <tbody>
-                <tr>
-                  <td>Shipping option</td>
-                  <td>{formData.shippingOptions}</td>
-                </tr>
-
-                <tr>
-                  <td>Shipping regions</td>
-                  <td>{formData.shippingRegions}</td>
-                </tr>
-
-                <tr>
-                  <td>Shipping fee</td>
-                  <td>
-                    {formData.shippingFee} - {formData.shippingFeeAmount}
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>Processing time</td>
-                  <td>{formData.processingTime}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="seller-signup-verification-card">
             <h3 className="seller-signup-verification-card-id-verification-heading">
               Identity verification
             </h3>
 
             <Link
-              to="/register/page5"
+              to="/register/page4"
               className="seller-signup-verification-card-edit-link"
             >
               Edit
@@ -535,7 +460,7 @@ export default function SellerSignupPageSeven() {
             </h3>
 
             <Link
-              to="/register/page6"
+              to="/register/page4"
               className="seller-signup-verification-card-edit-link"
             >
               Edit
@@ -577,7 +502,7 @@ export default function SellerSignupPageSeven() {
 
           <button
             type="button"
-            onClick={() => navigate("/register/page5")}
+            onClick={() => navigate("/register/page4")}
             className="back-button"
           >
             ← Back
@@ -592,7 +517,7 @@ export default function SellerSignupPageSeven() {
                 await submitSellerOnboarding(formData);
                 await refreshUser();
                 clearForm();
-                navigate("/register/page8");
+                navigate("/register/page6");
               } catch (error) {
                 setSubmitError(error.message || "Unable to submit your seller application.");
               } finally {
