@@ -43,7 +43,7 @@ export default function ProviderSignupPageSeven() {
       await submitProviderOnboarding(formData);
       await refreshUser();
       clearForm();
-      navigate("/provider/onboarding/success");
+      navigate("/provider/onboarding/page6");
     } catch (error) {
       setSubmitError(error.message || "Unable to submit your application.");
     } finally {
@@ -146,35 +146,7 @@ export default function ProviderSignupPageSeven() {
             </section>
 
             <section className="provider-review-card">
-              <div className="provider-review-card-heading"><Icon name="document" /><h3>Experience &amp; portfolio</h3><EditLink to="/provider/onboarding/page3" /></div>
-              <div className="provider-review-experience"><strong>{formData.providerYearsofExperience || "0"} years of experience</strong><span>Specialized in {formData.providerAreasofExpertise || "Not specified"}.</span></div>
-              {portfolioPreviews.length > 0 ? <div className="provider-review-portfolio">
-                {portfolioPreviews.map(({ file, url }, index) => file?.type?.startsWith("video/") ? <div className="provider-review-portfolio-video" key={index}>Video</div> : <img key={index} src={url} alt={"Portfolio " + (index + 1)} />)}
-                {(formData.providerPortfolioMedia || []).length > 3 && <div className="provider-review-more">+{formData.providerPortfolioMedia.length - 3}<small>more</small></div>}
-              </div> : <span className="provider-review-muted">No portfolio media uploaded.</span>}
-            </section>
-
-            <section className="provider-review-card">
-              <div className="provider-review-card-heading"><Icon name="calendar" /><h3>Availability &amp; service area</h3><EditLink to="/provider/onboarding/page4" /></div>
-              <div className="provider-review-two-column">
-                <div className="provider-review-schedule-row"><Icon name="clock" /><div><strong>Mon - Fri</strong><span>{weekdaySummary}</span><strong>Saturday</strong><span>{weekendSummary("saturday")}</span><strong>Sunday</strong><span>{weekendSummary("sunday")}</span></div></div>
-                <div className="provider-review-service-area">
-                  <div><Icon name="location" /><div><strong>Service areas</strong><span>{serviceAreaDescription}</span></div></div>
-                  <div><Icon name="map" /><div><strong>Service type</strong><span>{serviceAreaLabel}</span></div></div>
-                </div>
-              </div>
-            </section>
-
-            <section className="provider-review-card">
-              <div className="provider-review-card-heading"><Icon name="shield" /><h3>Identity verification</h3><EditLink to="/provider/onboarding/page5" /></div>
-              <div className="provider-review-verification">
-                <div><strong>{formData.providerIdType || "ID type not provided"}</strong><span className="provider-review-status">Submitted</span><small>ID ending in {formData.providerIdNumber ? formData.providerIdNumber.slice(-4) : "----"}</small></div>
-                <div><strong>Selfie</strong><span className="provider-review-status">{formData.providerSelfieImage ? "Submitted" : "Not submitted"}</span></div>
-              </div>
-            </section>
-
-            <section className="provider-review-card">
-              <div className="provider-review-card-heading"><Icon name="card" /><h3>Payment details</h3><EditLink to="/provider/onboarding/page6" /></div>
+              <div className="provider-review-card-heading"><Icon name="card" /><h3>Payment details</h3><EditLink to="/provider/onboarding/page4" /></div>
               <div className="provider-review-payment"><div><strong>{formData.providerBankName || "Bank not provided"}</strong><span>{formData.providerAccountName || [formData.providerFirstName, formData.providerLastName].filter(Boolean).join(" ") || "Account name will be verified"}</span><small>{maskAccount(formData.providerAccountNumber)}</small></div><span className="provider-review-status">Ready for verification</span></div>
             </section>
           </div>
