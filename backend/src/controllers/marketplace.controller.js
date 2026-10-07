@@ -201,39 +201,44 @@ async function getProducts(req, res) {
     const storeFilter = { status: "active", verificationStatus: "verified" };
     if (sellerType === "Businesses") storeFilter["businessDetails.sellerType"] = /business/i;
     if (sellerType === "Individuals") storeFilter["businessDetails.sellerType"] = /individual/i;
-    const approvedStores = await StoreProfile.find(storeFilter).select("userId").lean();
+
+    const approvedStores = await StoreProfile.find(storeFilter).select("userId location").lean();
     const approvedSellerIds = approvedStores.map((store) => store.userId).filter(Boolean);
+
     const filter = {
       status: "active",
       sellerId: { $in: approvedSellerIds },
     };
+
     if (clean(req.query.category)) filter.category = clean(req.query.category);
-    if (clean(req.query.providerId) && mongoose.isValidObjectId(req.query.providerId)) filter.providerId = req.query.providerId;
-    const locationQuery = locationFilter(req.query.location);
-    if (locationQuery) {
-      const parts = locationQuery.$and;
-      const matchingStores = await StoreProfile.find({
-        status: "active",
-        verificationStatus: "verified",
-        $and: parts.map((condition) => ({
-          $or: [
-            { "location.city": condition.$or[0]["location.city"] },
-            { "location.state": condition.$or[1]["location.state"] },
-            { "location.country": condition.$or[2]["location.country"] },
-          ],
-        })),
-      }).select("userId").lean();
-      const matchingSellerIds = matchingStores.map((store) => store.userId).filter(Boolean);
+
+    const requestedLocation = clean(req.query.location);
+    if (requestedLocation) {
+      const locationParts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
+
+      const productLocationConditions = locationParts.flatMap((part) => ([
+        { "location.city": { $regex: part, $options: "i" } },
+        { "location.state": { $regex: part, $options: "i" } },
+        { "location.country": { $regex: part, $options: "i" } },
+      ]));
+
+      const matchingSellerIds = approvedStores
+        .filter((store) => {
+          const location = store.location || {};
+          const haystack = [location.city, location.state, location.country].filter(Boolean).join(" ").toLowerCase();
+          return locationParts.some((part) => haystack.includes(part.toLowerCase()));
+        })
+        .map((store) => store.userId)
+        .filter(Boolean);
+
       filter.$or = [
-        { $and: parts },
-        {
-          $and: [
-            { $or: [{ "location.city": { $exists: false } }, { "location.state": { $exists: false } }, { "location.country": { $exists: false } }] },
-            { sellerId: { $in: matchingSellerIds } },
-          ],
-        },
+        ...(productLocationConditions.length ? [{ $or: productLocationConditions }] : []),
+        ...(matchingSellerIds.length ? [{ sellerId: { $in: matchingSellerIds } }] : []),
       ];
+
+      if (!filter.$or.length) filter.$or = [{ _id: null }];
     }
+
     const products = await findProducts(filter);
     return res.json({ success: true, products: products.map(productResponse) });
   } catch (error) {
@@ -241,7 +246,6 @@ async function getProducts(req, res) {
     return res.status(500).json({ success: false, message: "Unable to load products right now." });
   }
 }
-
 async function getProductById(req, res) {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
