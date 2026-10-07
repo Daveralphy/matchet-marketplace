@@ -2480,3 +2480,13 @@
   font-weight: 600;
   margin-bottom: 8px;
 }
+
+/* Keep native scrolling available while revealing the scrollbar only when needed. */
+.provider-signup-right-section { scrollbar-width: thin; scrollbar-color: transparent transparent; }
+.provider-signup-right-section::-webkit-scrollbar { width: 8px; }
+.provider-signup-right-section::-webkit-scrollbar-track { background: transparent; }
+.provider-signup-right-section::-webkit-scrollbar-thumb { background: transparent; border-radius: 999px; }
+.provider-signup-right-section:hover::-webkit-scrollbar-thumb,
+.provider-signup-right-section.is-scrolling::-webkit-scrollbar-thumb { background: rgba(16,24,63,.28); }
+.provider-signup-right-section:hover { scrollbar-color: rgba(16,24,63,.28) transparent; }
+.provider-signup-right-section.is-scrolling { scrollbar-color: rgba(16,24,63,.28) transparent; }
