@@ -115,7 +115,7 @@ export default function ProviderSignupPageSeven() {
       </section>
 
       <section className="provider-signup-right-section">
-        <ProviderSignupFormHeader step={7} />
+        <ProviderSignupFormHeader step={5} />
 
         <div className="provider-signup-form-page7">{submitError && <div className="provider-message-error" role="alert">{submitError}</div>}
           <h2 className="provider-signup-step-header">Review and submit</h2>
@@ -184,7 +184,7 @@ export default function ProviderSignupPageSeven() {
           <div className="provider-review-terms"><Icon name="info" /><span>By submitting, you agree to Matchet's <Link to="#">Provider Terms and Conditions</Link>. We will review your application and notify you once your provider profile has been approved.</span></div>
 
           <div className="provider-signup-page7-actions">
-            <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding/page6")}>←&nbsp;&nbsp;Back</button>
+            <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding/page4")}>←&nbsp;&nbsp;Back</button>
             <button type="button" className="provider-signup-save-continue-button" onClick={handleSubmit} disabled={submitting}>{submitting ? "Submitting..." : <>Submit for review&nbsp;&nbsp;→</>}</button>
           </div>
         </div>
