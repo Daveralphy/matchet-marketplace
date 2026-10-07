@@ -333,53 +333,68 @@ function HeartButton({ item }) {
 
 function ProviderCard({ provider }) {
   return (
-    <article className="overflow-hidden rounded-[12px] border border-[#e4e9f0] bg-white shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
-      <div className="relative h-[150px]">
-        <div className={`relative flex h-full w-full items-center justify-center ${provider.imageTone}`}>
-          {provider.image ? <img src={provider.image} alt={provider.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
-          <span className={provider.image ? "hidden" : "text-[#10183f]/60"}><Icon name="provider" size={72} strokeWidth={1.2} /></span>
+    <article className="rounded-[12px] border border-[#e4e9f0] bg-white p-3 shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
+      <div className="flex items-start gap-3">
+        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#eef1ef]">
+          {provider.image ? (
+            <img
+              src={provider.image}
+              alt={provider.name || ""}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center text-[14px] font-semibold text-[#69739a]">
+              {provider.initials}
+            </span>
+          )}
+          {provider.verified && (
+            <span className="absolute bottom-0 right-0 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-[#07983f] text-[8px] font-bold text-white">
+              ✓
+            </span>
+          )}
         </div>
-        {provider.match && (
-          <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[9px] font-semibold text-[#07863a] shadow-sm">
-            ✦ {provider.match}
-          </span>
-        )}
-        <button
-          type="button"
-          aria-label={`Save ${provider.name}`}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-sm"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
-          </svg>
-        </button>
-      </div>
 
-      <div className="px-3 pb-3 pt-2.5">
-        <div className="flex items-center gap-2.5">
-          <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[14px] font-semibold ${provider.logoTone}`}>
-            {provider.initials}
-          </span>
-          <div className="min-w-0">
-            <h3 className="truncate text-[13px] font-semibold text-[#10183f]">
-              {provider.name} <span className="text-[#2682e9]">●</span>
-            </h3>
-            <p className="mt-0.5 truncate text-[10px] text-[#747d9e]">{provider.category}</p>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h3 className="truncate text-[13px] font-semibold leading-5 text-[#10183f]">
+                {provider.name}
+              </h3>
+              <p className="mt-0.5 truncate text-[10px] text-[#69739a]">
+                {provider.businessName || provider.category}
+              </p>
+            </div>
+
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#fff8e6] px-2 py-1 text-[9px] font-semibold text-[#10183f]">
+              <span className="text-[#f4b400]">★</span>
+              {provider.rating > 0 ? provider.rating.toFixed(1) : "New"}
+            </span>
           </div>
         </div>
-
-        <div className="mt-3 space-y-2 text-[10px] text-[#27335f]">
-          <p><span className="mr-2 text-[#f4b400]">★</span><strong>{provider.rating || "New"}</strong> <span className="text-[#7b84a3]">({provider.reviews} reviews)</span></p>
-          <p><span className="mr-2 text-[#10183f]">⌖</span>{provider.location}</p>
-          <p><span className="mr-2 text-[#10183f]">▱</span>{provider.listings} active services</p>
-          {provider.experience && <p className="line-clamp-2 text-[9px] leading-4 text-[#69739a]">{provider.experience}</p>}
-          {provider.bio && <p className="line-clamp-2 text-[9px] leading-4 text-[#69739a]">{provider.bio}</p>}
-        </div>
-
-        <button type="button" className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#e9f9ed] text-[11px] font-semibold text-[#07863a]">
-          Check profile <span className="text-[16px]">→</span>
-        </button>
       </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#edf0f3] pt-3 text-[9px] text-[#69739a]">
+        <div>
+          <span className="block font-semibold text-[#10183f]">{provider.category}</span>
+          <span>Specialty</span>
+        </div>
+        <div>
+          <span className="block font-semibold text-[#10183f]">{provider.listings || 0}</span>
+          <span>Active services</span>
+        </div>
+        <div className="col-span-2 flex items-center gap-1 truncate">
+          <span className="text-[#07863a]">⌖</span>
+          <span className="truncate">{provider.location}</span>
+          {provider.reviews > 0 && <span className="shrink-0">· {provider.reviews} reviews</span>}
+        </div>
+      </div>
+
+      <Link
+        to={`/services?q=${encodeURIComponent(provider.name || "")}&location=${encodeURIComponent(provider.location || "")}`}
+        className="mt-3 flex h-9 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[10px] font-semibold text-[#07863a] transition-colors hover:bg-[#dff7e7]"
+      >
+        View services <span className="ml-1 text-[14px]">→</span>
+      </Link>
     </article>
   );
 }
