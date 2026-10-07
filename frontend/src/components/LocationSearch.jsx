@@ -84,7 +84,7 @@ export default function LocationSearch({
           if (event.key === "Escape") {
             setSuggestions([]);
           }
-        }
+        }}
         onFocus={() => {
           if (query.trim().length >= 2) setSuggestions((items) => items);
         }}
