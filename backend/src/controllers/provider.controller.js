@@ -1367,13 +1367,20 @@ async function submitSellerOnboarding(req, res) {
     const existing = await StoreProfile.findOne({ slug: { $regex: new RegExp("^" + baseSlug + "(?:-[0-9]+)?$") }, userId: { $ne: userId } }).sort({ createdAt: -1 }).lean();
     const slug = existing ? baseSlug + "-" + String(Date.now()).slice(-6) : baseSlug;
 
-    const normalizedLocation = String(input.location || "").toLowerCase() === "lagos-nigeria"
-      ? { city: "Lagos", state: "Lagos", country: "Nigeria" }
-      : {
-          city: input.location || "",
-          state: input.businessState || "",
-          country: input.businessCountry || "",
-        };
+    const selectedLocation = input.locationData && typeof input.locationData === "object" ? input.locationData : null;
+    const normalizedLocation = selectedLocation
+      ? {
+          city: selectedLocation.city || "",
+          state: selectedLocation.state || "",
+          country: selectedLocation.country || "",
+        }
+      : String(input.location || "").toLowerCase() === "lagos-nigeria"
+        ? { city: "Lagos", state: "Lagos", country: "Nigeria" }
+        : {
+            city: input.location || "",
+            state: input.businessState || "",
+            country: input.businessCountry || "",
+          };
 
     // Do not send an empty GeoJSON coordinates array to MongoDB's 2dsphere index.
     if (!normalizedLocation.city && !normalizedLocation.state && !normalizedLocation.country) {
