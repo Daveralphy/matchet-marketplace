@@ -11,6 +11,7 @@ const {
   getServiceById,
   getProviders,
   getProviderProfile,
+  getPublicProviderProfile,
   getStoreProfile,
   upsertProviderProfile,
   upsertStoreProfile,
@@ -24,6 +25,7 @@ router.get("/products", getProducts);
 router.get("/products/:id", getProductById);
 router.get("/services", getServices);
 router.get("/providers", getProviders);
+router.get("/providers/:id", getPublicProviderProfile);
 router.get("/services/:id", getServiceById);
 
 router.get("/provider/profile", requireAuth, getProviderProfile);
