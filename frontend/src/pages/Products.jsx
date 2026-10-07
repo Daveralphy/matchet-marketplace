@@ -713,8 +713,7 @@ function ProductCatalogue({ isAuthenticated }) {
 
     return (
       (!normalizedSearch || [product.title, product.category, product.seller, product.location].join(" ").toLowerCase().includes(normalizedSearch)) &&
-      (!location || [String(product.location || "").toLowerCase(), String(location || "").toLowerCase()].every((value) => value ? value.includes(String(location || "").toLowerCase()) || String(location || "").toLowerCase().includes(value) : true)) &&
-      (!filters.category || product.category === filters.category) &&
+(!filters.category || product.category === filters.category) &&
       (filters.maxPrice == null || price <= filters.maxPrice) &&
       (!filters.rating || rating >= filters.rating) &&
       (!filters.condition || String(product.condition || "").toLowerCase() === filters.condition.toLowerCase()) &&
