@@ -17,9 +17,7 @@ import SellerSignupPageSix from "./pages/SellerSignupPage6";
 import SellerSignupPageSeven from "./pages/SellerSignupPage7";
 import SellerSignupPageEight from "./pages/SellerSignupPage8";
 import ProviderSignupPageOne from "./pages/ProvderSignupPage1";
-import ProviderSignupPageTwo from "./pages/ProviderSignupPage2";
 import ProviderSignupPageThree from "./pages/ProviderSignupPage3";
-import ProviderSignupPageFour from "./pages/ProviderSignupPage4";
 import ProviderSignupPageFive from "./pages/ProviderSignupPage5";
 import ProviderSignupPageSix from "./pages/ProviderSignupPage6";
 import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
@@ -643,23 +641,23 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/onboarding/page2",
-    element: <RequireOnboardingStep flow="service" step={2}><ProviderSignupPageTwo /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="service" step={2}><ProviderSignupPageThree /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page3",
-    element: <RequireOnboardingStep flow="service" step={3}><ProviderSignupPageThree /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="service" step={3}><ProviderSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page4",
-    element: <RequireOnboardingStep flow="service" step={4}><ProviderSignupPageFour /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="service" step={4}><ProviderSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page5",
-    element: <RequireOnboardingStep flow="service" step={5}><ProviderSignupPageFive /></RequireOnboardingStep>,
+    element: <RequireOnboardingReview flow="service"><ProviderSignupPageSeven /></RequireOnboardingReview>,
   },
   {
     path: "/provider/onboarding/page6",
-    element: <RequireOnboardingStep flow="service" step={6}><ProviderSignupPageSix /></RequireOnboardingStep>,
+    element: <RequireOnboardingReview flow="service"><ProviderSignupPageSeven /></RequireOnboardingReview>,
   },
   {
     path: "/provider/onboarding/page7",
