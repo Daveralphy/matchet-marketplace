@@ -1368,7 +1368,7 @@ export default function Home({ isAuthenticated = false, userName }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [selectedLocation]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
