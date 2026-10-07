@@ -623,9 +623,10 @@ function ExploreResultsSection({ isAuthenticated }) {
   useEffect(() => {
     let active = true;
 
-    getMarketplaceData(selectedLocation).then(({ products, services }) => {
+    getMarketplaceData(selectedLocation).then(({ products, services, providers }) => {
       if (!active) return;
       setSourceItems([...products, ...services]);
+      setProviderItems(Array.isArray(providers) ? providers : []);
     });
 
     return () => {
@@ -653,7 +654,8 @@ function ExploreResultsSection({ isAuthenticated }) {
 
   const normalizedSearch = search.trim().toLowerCase();
 
-  const filteredItems = sourceItems
+  const baseItems = activeTab === "providers" ? providerItems : sourceItems;
+  const filteredItems = baseItems
     .filter((item) => {
       if (activeTab === "products") return item.type === "product";
       if (activeTab === "services") return item.type === "service";
@@ -662,8 +664,8 @@ function ExploreResultsSection({ isAuthenticated }) {
     })
     .filter((item) => {
       if (!normalizedSearch) return true;
-      return [item.title, item.category, item.seller, item.location]
-        .join(" ")
+      return [item.title, item.name, item.businessName, item.category, ...(item.categories || []), item.seller, item.location, item.bio, item.experience]
+        .filter(Boolean).join(" ")
         .toLowerCase()
         .includes(normalizedSearch);
     })
@@ -768,10 +770,10 @@ function ExploreResultsSection({ isAuthenticated }) {
           className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
           aria-label="Location"
         >
-          <option value="Lagos">Lagos</option>
-          <option value="Abuja">Abuja</option>
-          <option value="Port Harcourt">Port Harcourt</option>
-          <option value="Kano">Kano</option>
+          <option value="Lagos, Nigeria">Lagos, Nigeria</option>
+          <option value="Abuja, Nigeria">Abuja, Nigeria</option>
+          <option value="Port Harcourt, Nigeria">Port Harcourt, Nigeria</option>
+          <option value="Kano, Nigeria">Kano, Nigeria</option>
         </select>
 
         <ResultsControl icon="grid">Filters</ResultsControl>
