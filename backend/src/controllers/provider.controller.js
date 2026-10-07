@@ -1237,42 +1237,11 @@ const providerStepRequirements = [
     ["providerBio", onboardingHasValue(data.providerBio)],
   ],
   (data) => [
-    ["providerServiceCat", onboardingHasValue(data.providerServiceCat)],
     ["providerServiceName", onboardingHasValue(data.providerServiceName)],
     ["providerServiceDesc", onboardingHasValue(data.providerServiceDesc)],
-    ["providerServiceType", onboardingHasValue(data.providerServiceType)],
-    ["providerServicePrice", data.providerServicePrice !== undefined && data.providerServicePrice !== ""],
-    ["providerServiceDuration", onboardingHasValue(data.providerServiceDuration)],
-    ["providerAreasServed", onboardingHasValue(data.providerAreasServed)],
-    ["providerServiceImages", Array.isArray(data.providerServiceImages) && data.providerServiceImages.some(onboardingHasFile)],
-  ],
-  (data) => [
-    ["providerYearsofExperience", data.providerYearsofExperience !== undefined && data.providerYearsofExperience !== ""],
+    ["providerYearsofExperience", onboardingHasValue(data.providerYearsofExperience)],
     ["providerAreasofExpertise", onboardingHasValue(data.providerAreasofExpertise)],
-    ["providerPortfolioMedia",
-      (Array.isArray(data.providerPortfolioMedia) && data.providerPortfolioMedia.some(onboardingHasFile)) ||
-      onboardingHasValue(data.providerPortfolioLink),
-    ],
   ],
-  (data) => {
-    const availability = data.providerAvailability || {};
-    const hasAvailability = Object.values(availability).some((day) =>
-      day?.enabled && onboardingHasValue(day.startTime) && onboardingHasValue(day.endTime)
-    );
-    const area = data.providerServiceArea;
-    const areaComplete =
-      area === "remote" ||
-      (area === "radius" && onboardingHasValue(data.providerServiceAreaRadius)) ||
-      (area === "specificLocations" && Array.isArray(data.providerServiceAreaSpecificLocations) && data.providerServiceAreaSpecificLocations.length > 0);
-    return [
-      ["providerAvailability", hasAvailability],
-      ["providerMinimumNoticeRequired", onboardingHasValue(data.providerMinimumNoticeRequired)],
-      ["providerMaximumAdvanceBooking", onboardingHasValue(data.providerMaximumAdvanceBooking)],
-      ["providerResponseTime", onboardingHasValue(data.providerResponseTime)],
-      ["providerServiceArea", onboardingHasValue(area)],
-      ["providerServiceAreaDetails", areaComplete],
-    ];
-  },
   (data) => [
     ["providerIdType", onboardingHasValue(data.providerIdType)],
     ["providerIdNumber", onboardingHasValue(data.providerIdNumber)],
