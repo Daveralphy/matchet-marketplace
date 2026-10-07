@@ -5,10 +5,12 @@ async function loadMarketplace(location = "") {
   const results = await Promise.allSettled([
     fetchMarketplaceProducts({ location }),
     getMarketplaceServices({ location }),
+    getMarketplaceProviders({ location }),
   ]);
 
   const products = results[0].status === "fulfilled" ? results[0].value : [];
   const services = results[1].status === "fulfilled" ? results[1].value : [];
+  const providers = results[2].status === "fulfilled" ? results[2].value : [];
 
   if (results[0].status === "rejected") {
     console.error("Marketplace products loading failed:", results[0].reason);
@@ -16,10 +18,14 @@ async function loadMarketplace(location = "") {
   if (results[1].status === "rejected") {
     console.error("Marketplace services loading failed:", results[1].reason);
   }
+  if (results[2].status === "rejected") {
+    console.error("Marketplace providers loading failed:", results[2].reason);
+  }
 
   return {
     products: Array.isArray(products) ? products : [],
     services: Array.isArray(services) ? services : [],
+    providers: Array.isArray(providers) ? providers : [],
   };
 }
 
@@ -78,11 +84,37 @@ function withServiceUiFields(service) {
   };
 }
 
+function withProviderUiFields(provider) {
+  if (!provider) return null;
+  const name = provider.name || "Provider";
+  return {
+    ...provider,
+    type: "provider",
+    name,
+    title: name,
+    businessName: provider.businessName || "",
+    categories: Array.isArray(provider.categories) ? provider.categories : [],
+    category: provider.category || provider.categories?.[0] || "Service provider",
+    bio: provider.bio || "",
+    experience: provider.experience || "",
+    location: provider.location || "",
+    rating: Number(provider.rating ?? 0),
+    reviews: Number(provider.reviews ?? 0),
+    listings: Number(provider.listings ?? 0),
+    image: provider.image || "",
+    verified: Boolean(provider.verified),
+    initials: name.trim().split(/\\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "P",
+    imageTone: provider.image ? "" : "bg-[#eef1ef]",
+    logoTone: "bg-[#e8f0f8] text-[#2682e9]",
+  };
+}
+
 export async function getMarketplaceData(location = "") {
   const data = await loadMarketplace(location);
   return {
     products: data.products.map(withProductUiFields).filter(Boolean),
     services: data.services.map(withServiceUiFields).filter(Boolean),
+    providers: data.providers.map(withProviderUiFields).filter(Boolean),
   };
 }
 
@@ -128,13 +160,29 @@ export async function getMarketplaceCollection(collection) {
 }
 
 export async function searchMarketplace({ type = "all", query = "", location = "" } = {}) {
-  const { products, services } = await getMarketplaceData(location);
-  let items = type === "products" ? products : type === "services" ? services : [...products, ...services];
+  const { products, services, providers } = await getMarketplaceData(location);
+  let items = type === "products"
+    ? products
+    : type === "services"
+      ? services
+      : type === "providers"
+        ? providers
+        : [...products, ...services, ...providers];
   const normalizedQuery = query.trim().toLowerCase();
   const normalizedLocation = location.trim().toLowerCase();
 
   return items.filter((item) => {
-    const haystack = [item.title, item.category, item.seller, item.location].filter(Boolean).join(" ").toLowerCase();
+    const haystack = [
+      item.title,
+      item.name,
+      item.businessName,
+      item.category,
+      ...(item.categories || []),
+      item.seller,
+      item.location,
+      item.bio,
+      item.experience,
+    ].filter(Boolean).join(" ").toLowerCase();
     const itemLocation = String(item.location || "").toLowerCase();
     const locationMatches = !normalizedLocation
       || itemLocation.includes(normalizedLocation)
