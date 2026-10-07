@@ -1330,7 +1330,7 @@ function CommunitySection({ isAuthenticated }) {
 }
 
 export default function Home({ isAuthenticated = false, userName }) {
-  const [selectedLocation, setSelectedLocation] = useState("Lagos, Nigeria");
+  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
   const [locationOpen, setLocationOpen] = useState(false);
   const [marketplace, setMarketplace] = useState({
     products: [],
