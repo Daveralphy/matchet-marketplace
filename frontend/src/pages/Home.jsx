@@ -2,6 +2,7 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
+import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
 import { getMarketplaceData } from "../data/marketplaceApi";
@@ -119,8 +120,6 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
 
   return <svg {...common}>{paths[name]}</svg>;
 }
-
-import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 
 function SearchBar({
   selectedLocation,
