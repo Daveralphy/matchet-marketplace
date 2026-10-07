@@ -335,7 +335,7 @@ export default function SellerSignupPageSix() {
         </section>
 
         <section className="seller-signup-right-section">
-          <SellerSignupFormHeader step={6} />
+          <SellerSignupFormHeader step={4} />
 
           <h2 className="seller-signup-step-header">
             Set up your payment details
