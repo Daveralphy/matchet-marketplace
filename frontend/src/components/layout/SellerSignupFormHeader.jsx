@@ -1,6 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const steps = [
@@ -29,6 +30,23 @@ function SaveIcon() {
 }
 
 export default function SellerSignupFormHeader({ step }) {
+  useEffect(() => {
+    const scroller = document.querySelector(".seller-signup-right-section");
+    if (!scroller) return undefined;
+    let timer;
+    const handleScroll = () => {
+      scroller.classList.add("is-scrolling");
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => scroller.classList.remove("is-scrolling"), 700);
+    };
+    scroller.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      scroller.removeEventListener("scroll", handleScroll);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+
   return (
     <header className="seller-signup-form-header">
       <div className="seller-signup-form-heading-row">
