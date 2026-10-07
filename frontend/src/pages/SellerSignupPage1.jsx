@@ -677,6 +677,7 @@ export default function SellerSignupPageOne() {
                 }}
                 placeholder="Search for your city, state, or country..."
                 className="seller-location-search"
+                required
               />
 
               <label htmlFor="sellerBio">
