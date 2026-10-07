@@ -2,6 +2,7 @@
 // Edited by: Brigham
 
 import { useEffect, useState } from "react";
+import LocationSearch from "../components/LocationSearch";
 import { useAuth } from "../context/AuthContext";
 import { getCurrentUser, updateCurrentUser } from "../api/auth";
 import { uploadFile } from "../api/uploads";
@@ -330,7 +331,7 @@ function MyProfile() {
     event.preventDefault(); setSaving(true); setMessage(""); setError("");
     const form = new FormData(event.currentTarget);
     try {
-      const response = await updateCurrentUser({ firstName: form.get("firstName"), lastName: form.get("lastName"), phone: form.get("phone"), location: { city: form.get("city"), state: form.get("state"), country: form.get("country") } });
+      const response = await updateCurrentUser({ firstName: form.get("firstName"), lastName: form.get("lastName"), phone: form.get("phone"), location: { ...profile?.location, ...(form.get("location") ? { city: form.get("location").split(",")[0]?.trim(), state: form.get("location").split(",")[1]?.trim() || "", country: form.get("location").split(",").slice(-1)[0]?.trim() || "" } : {}) } });
       setProfile(response.user); await refreshUser(); setEditing(false); setMessage("Your profile has been updated.");
     } catch (e) { setError(e.message || "Unable to update your profile."); } finally { setSaving(false); }
   };
@@ -447,7 +448,7 @@ function MyProfile() {
         </section>
 
 
-        {editing && <form className="profile-edit-form profile-section" onSubmit={saveProfile}><div className="profile-section-header"><h2>Edit your information</h2><p>Update the details connected to your Matchet account.</p></div><div className="profile-edit-grid"><label>First name<input name="firstName" defaultValue={profile?.firstName || ""} required /></label><label>Last name<input name="lastName" defaultValue={profile?.lastName || ""} required /></label><label>Phone number<input name="phone" defaultValue={profile?.phone || ""} /></label><label>City<input name="city" defaultValue={profile?.location?.city || ""} /></label><label>State<input name="state" defaultValue={profile?.location?.state || ""} /></label><label>Country<input name="country" defaultValue={profile?.location?.country || ""} /></label></div><button className="profile-save-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button></form>}
+        {editing && <form className="profile-edit-form profile-section" onSubmit={saveProfile}><div className="profile-section-header"><h2>Edit your information</h2><p>Update the details connected to your Matchet account.</p></div><div className="profile-edit-grid"><label>First name<input name="firstName" defaultValue={profile?.firstName || ""} required /></label><label>Last name<input name="lastName" defaultValue={profile?.lastName || ""} required /></label><label>Phone number<input name="phone" defaultValue={profile?.phone || ""} /></label><label className="location-field">Location<LocationSearch value={[profile?.location?.city,profile?.location?.state,profile?.location?.country].filter(Boolean).join(", ")} onSelect={(location)=>{ const input=document.querySelector("input[name=location]"); if(input) input.value=location.label; }} placeholder="Search for your city, state, or country..." /></label><input type="hidden" name="location" defaultValue={[profile?.location?.city,profile?.location?.state,profile?.location?.country].filter(Boolean).join(", ")} /></div><button className="profile-save-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button></form>}
 
         {/* Personal Information */}
 
