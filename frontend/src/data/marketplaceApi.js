@@ -183,8 +183,8 @@ export async function getCategoryCollections() {
   };
 }
 
-export async function getServiceCollection() {
-  const { services } = await getMarketplaceData();
+export async function getServiceCollection(location = "") {
+  const { services } = await getMarketplaceData(location);
   return services;
 }
 
