@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
-import { getCategoryCollections, getMarketplaceData, getProviderCollection, searchMarketplace } from "../data/marketplaceApi";
+import { getCategoryCollections, getMarketplaceData, getMarketplaceViewHistory, getProviderCollection, searchMarketplace } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
 
 function Icon({ name, size = 18, strokeWidth = 1.9 }) {
@@ -660,6 +660,7 @@ function ExploreResultsSection({ isAuthenticated }) {
   const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
   const [sortBy, setSortBy] = useState("relevance");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [viewHistory, setViewHistory] = useState(() => getMarketplaceViewHistory());
   const [listView, setListView] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
 
@@ -696,11 +697,18 @@ function ExploreResultsSection({ isAuthenticated }) {
   ];
 
   const normalizedSearch = search.trim().toLowerCase();
+  const viewedCategories = new Map();
+  viewHistory.forEach((entry) => viewedCategories.set(entry.category, (viewedCategories.get(entry.category) || 0) + 1));
+  const hasRecommendationHistory = viewHistory.length >= 3;
+  const recommendedItems = [...sourceItems, ...providerItems]
+    .map((item) => ({ item, score: (viewedCategories.get(item.category) || 0) * 100 + Math.min(Number(item.viewCount || 0), 1000) }))
+    .sort((a, b) => b.score - a.score)
+    .map(({ item }) => item);
 
   const baseItems = activeTab === "providers"
     ? providerItems
     : activeTab === "recommended"
-      ? [...sourceItems, ...providerItems]
+      ? recommendedItems
       : sourceItems;
   const filteredItems = baseItems
     .filter((item) => {
@@ -733,6 +741,10 @@ function ExploreResultsSection({ isAuthenticated }) {
     });
 
   const visibleItems = filteredItems.slice(0, visibleCount);
+
+  useEffect(() => {
+    setViewHistory(getMarketplaceViewHistory());
+  }, [activeTab]);
 
   const updateTab = (tab) => {
     setActiveTab(tab);
@@ -852,16 +864,24 @@ function ExploreResultsSection({ isAuthenticated }) {
         </select>
       </div>
 
-      <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"}>
-        {visibleItems.length ? visibleItems.map((item) => (
-          <ExploreProductCard key={item.title} item={item} listView={listView} />
-        )) : (
-          <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-14 text-center">
-            <p className="text-[13px] font-semibold text-[#10183f]">Nothing matches your search</p>
-            <p className="mt-1 text-[11px] text-[#69739a]">There are no active products or services matching the current filters.</p>
-          </div>
-        )}
-      </div>
+{activeTab === "recommended" && !hasRecommendationHistory ? (
+        <div className="mt-6 rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
+          <p className="text-[13px] font-semibold text-[#10183f]">We are still learning what matches you.</p>
+          <p className="mx-auto mt-1 max-w-[480px] text-[11px] leading-5 text-[#69739a]">Keep viewing products and services you are interested in. As you explore more, Matchet will learn your interests and recommend more relevant options here.</p>
+          <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">Start exploring</Link>
+        </div>
+      ) : (
+        <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"}>
+          {visibleItems.length ? visibleItems.map((item) => (
+            <ExploreProductCard key={item.id + item.type} item={item} listView={listView} />
+          )) : (
+            <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-14 text-center">
+              <p className="text-[13px] font-semibold text-[#10183f]">Nothing matches your search</p>
+              <p className="mt-1 text-[11px] text-[#69739a]">There are no active products or services matching the current filters.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {visibleItems.length === 0 && (
         <div className="mt-5 rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-12 text-center text-[12px] text-[#69739a]">
