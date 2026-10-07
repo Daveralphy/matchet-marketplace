@@ -13,6 +13,7 @@ function SaveIcon() {
 }
 
 function ProviderSignupFormHeader({ step }) {
+  useEffect(() => { const labels = ["Your Details","About Your Work","Verification","Payment","Review"]; document.title = `${labels[step - 1] || "Provider Application"} | Matchet`; }, [step]);
   useEffect(() => {
     const scroller = document.querySelector(".provider-signup-right-section");
     if (!scroller) return undefined;
