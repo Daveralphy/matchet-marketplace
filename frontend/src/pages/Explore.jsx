@@ -2,7 +2,6 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
 import { getCategoryCollections, getMarketplaceData, getProviderCollection, searchMarketplace } from "../data/marketplaceApi";
@@ -816,8 +815,6 @@ function ExploreResultsSection({ isAuthenticated }) {
 export default function Explore({ isAuthenticated = false }) {
   const [searchParams] = useSearchParams();
 
-  const [locationOpen, setLocationOpen] = useState(false);
-
   useEffect(() => {
     const query = searchParams.get("q") || "";
     if (query) {
@@ -825,8 +822,6 @@ export default function Explore({ isAuthenticated = false }) {
       window.dispatchEvent(event);
     }
   }, [searchParams]);
-
-  const locationRef = useRef(null);
 
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
