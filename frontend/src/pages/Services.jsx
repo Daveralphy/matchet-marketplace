@@ -865,7 +865,7 @@ function ServicesListingSection({ isAuthenticated }) {
     let active = true;
 
     getServiceCollection(selectedLocation).then((items) => {
-      if (active) setServices(items.filter((item) => (!search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())) && (!selectedLocation || item.location === selectedLocation)));
+      if (active) setServices(items.filter((item) => !search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())));
     });
 
     return () => {
