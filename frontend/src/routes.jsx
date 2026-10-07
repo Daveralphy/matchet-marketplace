@@ -61,6 +61,7 @@ import ProductDetailsPage from "./pages/ProductDetails";
 import ServiceDetailsPage from "./pages/ServiceDetails";
 import Explore from "./pages/Explore";
 import Services from "./pages/Services";
+import PublicProviderServices from "./pages/PublicProviderServices";
 import ForProviders from "./pages/ForProviders";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -408,6 +409,14 @@ const router = createBrowserRouter([
     element: (
       <MarketplaceLayout>
         <ProductDetailsPage />
+      </MarketplaceLayout>
+    ),
+  },
+  {
+    path: "/providers/:id",
+    element: (
+      <MarketplaceLayout>
+        <PublicProviderServices />
       </MarketplaceLayout>
     ),
   },
