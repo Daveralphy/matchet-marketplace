@@ -842,18 +842,15 @@ function ServiceListingCard({ service }) {
 
 function ServicesListingSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
-  const savedSearch = sessionStorage.getItem("matchet_services_search") || "";
-  const [search, setSearch] = useState(() => searchParams.get("q") || savedSearch);
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [services, setServices] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
-
-  useEffect(() => { sessionStorage.setItem("matchet_services_search", search); }, [search]);
 
   useEffect(() => {
     let active = true;
 
     getServiceCollection(selectedLocation).then((items) => {
-      if (active) setServices(items.filter((item) => !search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())));
+      if (active) setServices(items.filter((item) => !search || [item.title, item.category, item.seller, item.businessName, item.location].join(" ").toLowerCase().includes(search.toLowerCase())));
     });
 
     return () => {
