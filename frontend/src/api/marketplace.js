@@ -61,8 +61,9 @@ export async function getMarketplaceServices({ location = "" } = {}) {
   return Array.isArray(payload.services) ? payload.services : [];
 }
 
-export async function getMarketplaceProviders() {
-  const payload = await request("/api/marketplace/providers");
+export async function getMarketplaceProviders({ location = "" } = {}) {
+  const query = location ? "?location=" + encodeURIComponent(location) : "";
+  const payload = await request("/api/marketplace/providers" + query);
   return Array.isArray(payload.providers) ? payload.providers : [];
 }
 
