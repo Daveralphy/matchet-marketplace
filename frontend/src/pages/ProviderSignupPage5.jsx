@@ -124,9 +124,9 @@ export default function ProviderSignupPageFive() {
       return;
     }
     try {
-      const response = await saveProviderOnboardingDraft(formData, 5);
+      const response = await saveProviderOnboardingDraft(formData, 3);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/provider/onboarding/page6");
+      navigate("/provider/onboarding/page4");
     } catch (error) {
       if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
       alert(error.message || "Please complete the highlighted fields before continuing.");
