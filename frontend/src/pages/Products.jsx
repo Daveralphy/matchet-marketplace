@@ -2,7 +2,6 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getMarketplaceData, getMarketplaceProducts, getProductExperience } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
