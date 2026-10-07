@@ -539,7 +539,7 @@ export default function SellerSignupPageFive() {
         </section>
 
         <section className="seller-signup-right-section">
-          <SellerSignupFormHeader step={5} />
+          <SellerSignupFormHeader step={3} />
 
           <h2 className="seller-signup-step-header">
             Verify your identity
