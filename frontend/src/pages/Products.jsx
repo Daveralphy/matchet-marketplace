@@ -815,7 +815,7 @@ function ProductCatalogue({ isAuthenticated }) {
 
     return (
       (!normalizedSearch || [product.title, product.category, product.seller, product.location].join(" ").toLowerCase().includes(normalizedSearch)) &&
-      (!location || product.location === location) &&
+      (!location || [String(product.location || "").toLowerCase(), String(location || "").toLowerCase()].every((value) => value ? value.includes(String(location || "").toLowerCase()) || String(location || "").toLowerCase().includes(value) : true)) &&
       (!filters.category || product.category === filters.category) &&
       (filters.maxPrice == null || price <= filters.maxPrice) &&
       (!filters.rating || rating >= filters.rating) &&
@@ -826,7 +826,7 @@ function ProductCatalogue({ isAuthenticated }) {
       (!filters.sellerType ||
         (filters.sellerType === "Verified sellers"
           ? Boolean(product.sellerVerified)
-          : String(product.sellerType || "").toLowerCase() === filters.sellerType.toLowerCase().replace(/s$/, "")))
+          : (() => { const type = String(product.sellerType || "").toLowerCase(); const selected = filters.sellerType.toLowerCase(); return selected === "businesses" ? type.includes("business") : selected === "individuals" ? type.includes("individual") : type === selected.replace(/s$/, ""); })()))
     );
   });
 
