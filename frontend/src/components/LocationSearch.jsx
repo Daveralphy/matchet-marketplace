@@ -8,6 +8,7 @@ export default function LocationSearch({
   placeholder = "Search for a city, state, or country...",
   className = "",
   disabled = false,
+  required = false,
 }) {
   const [query, setQuery] = useState(value || "");
   const [suggestions, setSuggestions] = useState([]);
@@ -56,6 +57,7 @@ export default function LocationSearch({
         type="text"
         value={query}
         disabled={disabled}
+        required={required}
         autoComplete="off"
         placeholder={placeholder}
         className="box-border w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#10183f] outline-none transition focus:border-[#07983f] focus:ring-2 focus:ring-[#07983f]/10"
