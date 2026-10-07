@@ -384,17 +384,25 @@ function ProviderCard({ provider }) {
 
 function ProvidersSection({ isAuthenticated }) {
   const [providers, setProviders] = useState([]);
+  const [location, setLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+
+  useEffect(() => {
+    const handleLocationChange = (event) => {
+      setLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+    };
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
+  }, []);
 
   useEffect(() => {
     let active = true;
-    const location = localStorage.getItem("matchet_location") || "Lagos, Nigeria";
     getProviderCollection(location).then((items) => {
       if (active) setProviders(items);
     });
     return () => {
       active = false;
     };
-  }, [isAuthenticated, selectedLocation]);
+  }, [location]);
 
   const title = isAuthenticated ? (
     <>People <span className="text-[#07863a]">worth knowing.</span></>
