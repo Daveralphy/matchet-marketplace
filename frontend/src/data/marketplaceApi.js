@@ -86,8 +86,8 @@ export async function getMarketplaceData(location = "") {
   };
 }
 
-export async function getMarketplaceProducts({ sellerType = "" } = {}) {
-  const products = await fetchMarketplaceProducts();
+export async function getMarketplaceProducts({ sellerType = "", location = "" } = {}) {
+  const products = await fetchMarketplaceProducts({ location });
   const normalized = Array.isArray(products) ? products.map(withProductUiFields).filter(Boolean) : [];
   if (!sellerType || sellerType === "Verified sellers") return normalized;
   const selected = String(sellerType).toLowerCase();
