@@ -123,8 +123,12 @@ export async function searchMarketplace({ type = "all", query = "", location = "
   return items.filter((item) => {
     const haystack = [item.title, item.category, item.seller, item.location].filter(Boolean).join(" ").toLowerCase();
     const itemLocation = String(item.location || "").toLowerCase();
+    const locationMatches = !normalizedLocation
+      || itemLocation.includes(normalizedLocation)
+      || normalizedLocation.includes(itemLocation)
+      || normalizedLocation.split(",").map((part) => part.trim()).filter(Boolean).some((part) => itemLocation.includes(part));
     return (!normalizedQuery || haystack.includes(normalizedQuery))
-      && (!normalizedLocation || itemLocation === normalizedLocation);
+      && locationMatches;
   });
 }
 
