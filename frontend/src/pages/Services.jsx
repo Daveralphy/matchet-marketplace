@@ -136,13 +136,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function SearchBar({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
+function SearchBar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
@@ -152,7 +146,7 @@ function SearchBar({
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await getServiceCollection("featured").then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
+      const results = await getServiceCollection(localStorage.getItem("matchet_location") || "Lagos, Nigeria").then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
@@ -161,7 +155,7 @@ function SearchBar({
   const submitSearch = () => {
     const value = query.trim();
     if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+    navigate(`/explore?q=${encodeURIComponent(value)}`);
   };
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
@@ -863,14 +857,14 @@ function ServicesListingSection({ isAuthenticated }) {
   const savedSearch = sessionStorage.getItem("matchet_services_search") || "";
   const [search, setSearch] = useState(() => searchParams.get("q") || savedSearch);
   const [services, setServices] = useState([]);
-  const selectedLocation = searchParams.get("location") || "";
+  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
 
   useEffect(() => { sessionStorage.setItem("matchet_services_search", search); }, [search]);
 
   useEffect(() => {
     let active = true;
 
-    getServiceCollection().then((items) => {
+    getServiceCollection(selectedLocation).then((items) => {
       if (active) setServices(items.filter((item) => (!search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())) && (!selectedLocation || item.location === selectedLocation)));
     });
 
@@ -878,6 +872,12 @@ function ServicesListingSection({ isAuthenticated }) {
       active = false;
     };
   }, [isAuthenticated, search, selectedLocation]);
+
+  useEffect(() => {
+    const handleLocationChange = (event) => setSelectedLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
+  }, []);
 
   return (
     <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
@@ -930,29 +930,6 @@ function ServicesListingSection({ isAuthenticated }) {
 }
 
 export default function Services({ isAuthenticated = false }) {
-  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "");
-  const [locationOpen, setLocationOpen] = useState(false);
-
-  const locationRef = useRef(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (
-        locationOpen &&
-        locationRef.current &&
-        !locationRef.current.contains(event.target)
-      ) {
-        setLocationOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [locationOpen]);
-
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
       <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#f5fbf5] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
