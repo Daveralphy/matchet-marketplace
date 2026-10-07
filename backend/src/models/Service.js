@@ -42,6 +42,7 @@ const serviceSchema = new mongoose.Schema({
   location: { type: locationSchema },
   availability: { type: availabilitySchema },
   status: { type: String, enum: ["draft", "active", "paused", "archived"], default: "draft", index: true },
+  viewCount: { type: Number, min: 0, default: 0 },
 }, { timestamps: true });
 
 serviceSchema.index({ "location.coordinates": "2dsphere" });
