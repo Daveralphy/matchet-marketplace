@@ -1344,7 +1344,7 @@ export default function Home({ isAuthenticated = false, userName }) {
   useEffect(() => {
     let active = true;
 
-    getMarketplaceData()
+    getMarketplaceData(selectedLocation)
       .then(({ products, services }) => {
         if (!active) return;
 
