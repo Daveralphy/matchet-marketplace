@@ -1,10 +1,10 @@
 import { getMarketplaceProducts as fetchMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
 import { marketplaceContent } from "./marketplaceContent";
 
-async function loadMarketplace() {
+async function loadMarketplace(location = "") {
   const results = await Promise.allSettled([
-    fetchMarketplaceProducts(),
-    getMarketplaceServices(),
+    fetchMarketplaceProducts({ location }),
+    getMarketplaceServices({ location }),
   ]);
 
   const products = results[0].status === "fulfilled" ? results[0].value : [];
@@ -78,8 +78,8 @@ function withServiceUiFields(service) {
   };
 }
 
-export async function getMarketplaceData() {
-  const data = await loadMarketplace();
+export async function getMarketplaceData(location = "") {
+  const data = await loadMarketplace(location);
   return {
     products: data.products.map(withProductUiFields).filter(Boolean),
     services: data.services.map(withServiceUiFields).filter(Boolean),
@@ -128,7 +128,7 @@ export async function getMarketplaceCollection(collection) {
 }
 
 export async function searchMarketplace({ type = "all", query = "", location = "" } = {}) {
-  const { products, services } = await getMarketplaceData();
+  const { products, services } = await getMarketplaceData(location);
   let items = type === "products" ? products : type === "services" ? services : [...products, ...services];
   const normalizedQuery = query.trim().toLowerCase();
   const normalizedLocation = location.trim().toLowerCase();
