@@ -123,6 +123,11 @@ export default function ProviderSignupPageSeven() {
 
           <div className="provider-review-grid">
             <section className="provider-review-card">
+              <div className="provider-review-card-heading"><Icon name="shield" /><h3>Identity verification</h3><EditLink to="/provider/onboarding/page3" /></div>
+              <div className="provider-review-verification"><div><strong>{formData.providerIdType || "ID type not provided"}</strong><span>{formData.providerIdNumber ? "ID number provided" : "ID number not provided"}</span></div><span className="provider-review-status">Ready for review</span></div>
+            </section>
+
+            <section className="provider-review-card">
               <div className="provider-review-card-heading"><Icon name="user" /><h3>Your details</h3><EditLink to="/provider/onboarding" /></div>
               <div className="provider-review-details">
                 {profilePreview ? <img className="provider-review-avatar" src={profilePreview} alt="Provider profile" /> : <div className="provider-review-avatar provider-review-avatar-placeholder"><Icon name="user" /></div>}
@@ -146,21 +151,10 @@ export default function ProviderSignupPageSeven() {
             </section>
 
             <section className="provider-review-card">
-              <div className="provider-review-card-heading"><Icon name="card" /><h3>Payment details</h3><EditLink to="/provider/onboarding/page4" /></div>
-              <div className="provider-review-payment"><div><strong>{formData.providerBankName || "Bank not provided"}</strong><span>{formData.providerAccountName || [formData.providerFirstName, formData.providerLastName].filter(Boolean).join(" ") || "Account name will be verified"}</span><small>{maskAccount(formData.providerAccountNumber)}</small></div><span className="provider-review-status">Ready for verification</span></div>
+              <div className="provider-review-card-heading"><Icon name="briefcase" /><h3>About your work</h3><EditLink to="/provider/onboarding/page2" /></div>
+              <div className="provider-review-service">
+                <div className="provider-review-service-copy"><strong>{formData.providerServiceName || "Work description not provided"}</strong><span>{formData.providerServiceDesc || "No work description provided."}</span><span>{formData.providerYearsofExperience || "Experience not provided"} years of experience · {formData.providerAreasofExpertise || "Areas of expertise not provided"}</span></div>
+              </div>
             </section>
-          </div>
 
-          {submitError && <div className="provider-review-submit-error" role="alert">{submitError}</div>}
-
-          <div className="provider-review-terms"><Icon name="info" /><span>By submitting, you agree to Matchet's <Link to="#">Provider Terms and Conditions</Link>. We will review your application and notify you once your provider profile has been approved.</span></div>
-
-          <div className="provider-signup-page7-actions">
-            <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding/page4")}>←&nbsp;&nbsp;Back</button>
-            <button type="button" className="provider-signup-save-continue-button" onClick={handleSubmit} disabled={submitting}>{submitting ? "Submitting..." : <>Submit for review&nbsp;&nbsp;→</>}</button>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
+            
