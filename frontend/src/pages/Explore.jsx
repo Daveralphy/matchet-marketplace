@@ -661,7 +661,7 @@ function ExploreResultsSection({ isAuthenticated }) {
     .filter((item) => {
       if (activeTab === "products") return item.type === "product";
       if (activeTab === "services") return item.type === "service";
-      if (activeTab === "providers") return false;
+      if (activeTab === "providers") return true;
       return true;
     })
     .filter((item) => {
