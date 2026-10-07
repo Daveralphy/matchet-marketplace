@@ -42,6 +42,22 @@ export default function MarketplaceLayout({ children }) {
   }, [location.key]);
 
   useEffect(() => {
+    const labels = {
+      "/": "Home | Matchet",
+      "/explore": "Explore | Matchet",
+      "/products": "Products | Matchet",
+      "/services": "Services | Matchet",
+      "/for-providers": "For Provider | Matchet",
+      "/cart": "Cart | Matchet",
+      "/checkout": "Checkout | Matchet",
+    };
+    const title = labels[location.pathname]
+      || (location.pathname.startsWith("/products/") ? "Product Details | Matchet" : "")
+      || (location.pathname.startsWith("/services/") ? "Service Details | Matchet" : "");
+    if (title) document.title = title;
+  }, [location.pathname]);
+
+  useEffect(() => {
     const key = `matchet_scroll:${location.pathname}`;
     const saved = sessionStorage.getItem(key);
     const restore = () => {
