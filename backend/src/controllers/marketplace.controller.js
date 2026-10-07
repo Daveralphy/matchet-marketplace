@@ -236,10 +236,21 @@ async function getProductById(req, res) {
 
 async function getProviders(req, res) {
   try {
-    const profiles = await ProviderProfile.find({
+    const providerFilter = {
       status: "active",
       verificationStatus: "verified",
-    })
+    };
+    const locationQuery = locationFilter(req.query.location);
+    if (locationQuery) {
+      providerFilter.$and = locationQuery.$and.map((condition) => ({
+        $or: [
+          { "serviceArea.city": condition.$or[0]["location.city"] },
+          { "serviceArea.state": condition.$or[1]["location.state"] },
+          { "serviceArea.country": condition.$or[2]["location.country"] },
+        ],
+      }));
+    }
+    const profiles = await ProviderProfile.find(providerFilter)
       .populate({ path: "userId", select: "firstName lastName username email avatar" })
       .sort({ createdAt: -1 })
       .lean();
