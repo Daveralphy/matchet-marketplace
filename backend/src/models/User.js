@@ -24,6 +24,11 @@ const locationSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    addressLine1: {
+      type: String,
+      trim: true,
+      maxlength: 300,
+    },
   },
   { _id: false },
 );
