@@ -143,7 +143,7 @@ function SearchBar({
 
       <div className="h-px w-full bg-slate-100 sm:h-[34px] sm:w-px" />
 
-      <LocationSelect
+      <MarketplaceLocationSelect
         selectedLocation={selectedLocation}
         setSelectedLocation={setSelectedLocation}
         locationOpen={locationOpen}
