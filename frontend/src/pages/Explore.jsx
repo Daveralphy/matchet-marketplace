@@ -104,13 +104,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function SearchBar({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
+function SearchBar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -128,7 +122,7 @@ function SearchBar({
 
   const submitSearch = () => {
     if (!query.trim()) return;
-    navigate(`/explore?q=${encodeURIComponent(query.trim())}&location=${encodeURIComponent(selectedLocation)}`);
+    navigate(`/explore?q=${encodeURIComponent(query.trim())}`);
   };
 
   return (
@@ -615,7 +609,7 @@ function ExploreResultsSection({ isAuthenticated }) {
   const [sourceItems, setSourceItems] = useState([]);
   const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
-  const [selectedLocation, setSelectedLocation] = useState(() => searchParams.get("location") || "");
+  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
   const [sortBy, setSortBy] = useState("relevance");
   const [listView, setListView] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
@@ -623,7 +617,7 @@ function ExploreResultsSection({ isAuthenticated }) {
   useEffect(() => {
     let active = true;
 
-    getMarketplaceData().then(({ products, services }) => {
+    getMarketplaceData(selectedLocation).then(({ products, services }) => {
       if (!active) return;
       setSourceItems([...products, ...services]);
     });
@@ -631,13 +625,11 @@ function ExploreResultsSection({ isAuthenticated }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [selectedLocation]);
 
   useEffect(() => {
     const query = searchParams.get("q") || "";
-    const location = searchParams.get("location") || "";
     setSearch(query);
-    setSelectedLocation(location);
   }, [searchParams]);
 
   const tabs = [
@@ -663,7 +655,7 @@ function ExploreResultsSection({ isAuthenticated }) {
         .toLowerCase()
         .includes(normalizedSearch);
     })
-    .filter((item) => !selectedLocation || item.location === selectedLocation)
+
     .sort((a, b) => {
       if (sortBy === "price-low") {
         return Number(a.priceValue ?? String(a.price).replace(/[^0-9]/g, "")) - Number(b.priceValue ?? String(b.price).replace(/[^0-9]/g, ""));
@@ -819,7 +811,7 @@ function ExploreResultsSection({ isAuthenticated }) {
 
 export default function Explore({ isAuthenticated = false }) {
   const [searchParams] = useSearchParams();
-  const [selectedLocation, setSelectedLocation] = useState(() => searchParams.get("location") || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+
   const [locationOpen, setLocationOpen] = useState(false);
 
   useEffect(() => {
@@ -831,24 +823,6 @@ export default function Explore({ isAuthenticated = false }) {
   }, [searchParams]);
 
   const locationRef = useRef(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (
-        locationOpen &&
-        locationRef.current &&
-        !locationRef.current.contains(event.target)
-      ) {
-        setLocationOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [locationOpen]);
 
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
