@@ -365,8 +365,8 @@ function MarketplaceCard({ item, compact = false }) {
         </p>
 
         <div className="mt-3 flex min-w-0 items-center gap-2">
-          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${item.avatarTone}`}>
-            {item.sellerInitial}
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full text-[11px] font-semibold ${item.avatarTone}`}>
+            {item.sellerImage ? <img src={item.sellerImage} alt={item.seller || ""} className="h-full w-full object-cover" /> : item.sellerInitial}
           </span>
 
           <div className="min-w-0">
