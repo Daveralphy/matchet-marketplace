@@ -987,13 +987,7 @@ export default function Services({ isAuthenticated = false }) {
             </p>
 
             <div className="mt-6">
-              <SearchBar
-                selectedLocation={selectedLocation}
-                setSelectedLocation={setSelectedLocation}
-                locationOpen={locationOpen}
-                setLocationOpen={setLocationOpen}
-                locationRef={locationRef}
-              />
+              <SearchBar />
             </div>
 
             <div className="mt-4">
