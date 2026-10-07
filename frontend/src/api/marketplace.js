@@ -46,8 +46,9 @@ async function request(path, options = {}) {
   }
 }
 
-export async function getMarketplaceProducts() {
-  const payload = await request("/api/marketplace/products");
+export async function getMarketplaceProducts({ sellerType = "" } = {}) {
+  const params = sellerType && sellerType !== "Verified sellers" ? `?sellerType=${encodeURIComponent(sellerType)}` : "";
+  const payload = await request("/api/marketplace/products" + params);
   return Array.isArray(payload.products) ? payload.products : [];
 }
 
