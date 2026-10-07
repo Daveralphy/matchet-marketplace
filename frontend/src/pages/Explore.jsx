@@ -619,6 +619,7 @@ function ExploreResultsSection({ isAuthenticated }) {
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
   const [sortBy, setSortBy] = useState("relevance");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [listView, setListView] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
 
@@ -656,13 +657,21 @@ function ExploreResultsSection({ isAuthenticated }) {
 
   const normalizedSearch = search.trim().toLowerCase();
 
-  const baseItems = activeTab === "providers" ? providerItems : sourceItems;
+  const baseItems = activeTab === "providers"
+    ? providerItems
+    : activeTab === "recommended"
+      ? [...sourceItems, ...providerItems]
+      : sourceItems;
   const filteredItems = baseItems
     .filter((item) => {
       if (activeTab === "products") return item.type === "product";
       if (activeTab === "services") return item.type === "service";
       if (activeTab === "providers") return true;
       return true;
+    })
+    .filter((item) => {
+      if (selectedCategory === "all") return true;
+      return String(item.category || "").toLowerCase() === selectedCategory.toLowerCase();
     })
     .filter((item) => {
       if (!normalizedSearch) return true;
@@ -778,7 +787,7 @@ function ExploreResultsSection({ isAuthenticated }) {
           <option value="Kano, Nigeria">Kano, Nigeria</option>
         </select>
 
-        <ResultsControl icon="grid">Filters</ResultsControl>
+        <select\n          value={selectedCategory}\n          onChange={(event) => { setSelectedCategory(event.target.value); setVisibleCount(12); }}\n          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"\n          aria-label="Filter by category"\n        >\n          <option value="all">All categories</option>\n          {[...new Set([...sourceItems, ...providerItems].map((item) => item.category).filter(Boolean))].sort().map((category) => (\n            <option key={category} value={category}>{category}</option>\n          ))}\n        </select>
 
         <select
           value={sortBy}
