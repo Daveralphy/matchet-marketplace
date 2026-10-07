@@ -7,14 +7,6 @@ import heroImage from "../assets/inspirations/explore/hero.png";
 import { getCategoryCollections, getMarketplaceData, getProviderCollection, searchMarketplace } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
 
-const LOCATION_OPTIONS = [
-  "Lagos, Nigeria",
-  "Abuja, Nigeria",
-  "Port Harcourt, Nigeria",
-  "Kano, Nigeria",
-  "Ibadan, Nigeria",
-];
-
 function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   const common = {
     width: size,
@@ -111,86 +103,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function LocationSelect({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
-  return (
-    <div ref={locationRef} className="relative min-w-0 flex-1">
-      <button
-        type="button"
-        onClick={() => setLocationOpen((open) => !open)}
-        className={[
-          "flex h-12 w-full min-w-0 items-center gap-2 border-l border-slate-100 px-3 text-left text-[12px] font-medium text-[#10183f] transition-colors sm:h-[54px] sm:px-4",
-          locationOpen ? "text-[#07983f]" : "",
-        ].join(" ")}
-        aria-expanded={locationOpen}
-        aria-haspopup="listbox"
-      >
-        <Icon name="pin" size={18} />
-
-        <span className="min-w-0 flex-1 truncate">
-          {selectedLocation}
-        </span>
-
-        <Icon
-          name={locationOpen ? "chevronUp" : "chevronDown"}
-          size={15}
-        />
-      </button>
-
-      {locationOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.14)] sm:left-auto sm:right-0 sm:w-[250px]">
-          <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
-            <Icon name="search" size={16} />
-
-            <input
-              type="text"
-              placeholder="Search for a city or state..."
-              className="min-w-0 w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
-            />
-          </div>
-
-          <div role="listbox" aria-label="Select location">
-            {LOCATION_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="option"
-                aria-selected={option === selectedLocation}
-                onClick={() => {
-                  setSelectedLocation(option);
-                  localStorage.setItem("matchet_location", option);
-                  setLocationOpen(false);
-                }}
-                className={[
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] transition-colors hover:bg-slate-50",
-                  option === selectedLocation
-                    ? "bg-[#effaf3] text-[#07863a]"
-                    : "",
-                ].join(" ")}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <Icon name="pin" size={15} />
-                  <span className="truncate">{option}</span>
-                </span>
-
-                {option === selectedLocation && (
-                  <span className="ml-2 shrink-0 font-semibold text-[#07983f]">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 
 function SearchBar({
   selectedLocation,
@@ -244,7 +157,7 @@ function SearchBar({
         )}
       </div>
       <div className="h-px w-full bg-slate-100 sm:h-[34px] sm:w-px" />
-      <LocationSelect selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} locationOpen={locationOpen} setLocationOpen={setLocationOpen} locationRef={locationRef} />
+      <MarketplaceLocationSelect selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} locationOpen={locationOpen} setLocationOpen={setLocationOpen} locationRef={locationRef} />
       <button type="button" onClick={submitSearch} className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]">Search</button>
     </div>
   );
