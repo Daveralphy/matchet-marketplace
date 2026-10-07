@@ -1,4 +1,4 @@
-import { getMarketplaceProducts as fetchMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
+import { getMarketplaceProducts as fetchMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById, getMarketplaceProviderById } from "../api/marketplace";
 import { marketplaceContent } from "./marketplaceContent";
 
 async function loadMarketplace(location = "") {
@@ -222,6 +222,15 @@ export async function searchMarketplace({ type = "all", query = "", location = "
     return (!normalizedQuery || haystack.includes(normalizedQuery))
       && locationMatches;
   });
+}
+
+export async function getProviderById(id) {
+  const data = await getMarketplaceProviderById(id);
+  if (!data) return null;
+  return {
+    ...withProviderUiFields(data),
+    services: (data.services || []).map(withServiceUiFields).filter(Boolean),
+  };
 }
 
 export async function getProviderCollection(location = "") {
