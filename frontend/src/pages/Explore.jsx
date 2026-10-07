@@ -456,7 +456,31 @@ function getMarketplacePlaceholderIcon(item) {
   return item.icon || "package";
 }
 
-function ExploreProductCard({ item, listView = false }) {\n  const isProvider = item.type === "provider";\n  if (isProvider) {\n    return (\n      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>\n        <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>\n          <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone || "bg-[#eef1ef]"}`}>\n            {item.image ? <img src={item.image} alt={item.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}\n            <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name="provider" size={58} strokeWidth={1.15} /></span>\n          </div>\n        </div>\n        <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "px-2.5 pb-2.5 pt-2"}>\n          <div className="flex items-center justify-between gap-1.5">\n            <span className="max-w-[150px] truncate text-[8px] font-medium text-[#6f7899]">{item.category}</span>\n            <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]"><span className="text-[#f4b400]">★</span>{item.rating}</span>\n          </div>\n          <h3 className="mt-1.5 truncate text-[11px] font-semibold leading-4 text-[#10183f]">{item.name}</h3>\n          <p className="mt-1 truncate text-[9px] text-[#69739a]">{item.businessName && item.businessName !== item.name ? item.businessName : item.category}</p>\n          <p className="mt-1 truncate text-[8px] text-[#7b84a3]">⌖ {item.location}</p>\n          <p className="mt-1 line-clamp-2 text-[8px] leading-3.5 text-[#69739a]">{item.bio || item.experience || "Service provider on Matchet."}</p>\n          <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-2 flex h-8 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[9px] font-semibold text-[#07863a]">View their services →</Link>\n        </div>\n      </article>\n    );\n  }
+function ExploreProductCard({ item, listView = false }) {
+  const isProvider = item.type === "provider";
+  if (isProvider) {
+    return (
+      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
+        <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
+          <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone || "bg-[#eef1ef]"}`}>
+            {item.image ? <img src={item.image} alt={item.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
+            <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name="provider" size={58} strokeWidth={1.15} /></span>
+          </div>
+        </div>
+        <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "px-2.5 pb-2.5 pt-2"}>
+          <div className="flex items-center justify-between gap-1.5">
+            <span className="max-w-[150px] truncate text-[8px] font-medium text-[#6f7899]">{item.category}</span>
+            <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]"><span className="text-[#f4b400]">★</span>{item.rating}</span>
+          </div>
+          <h3 className="mt-1.5 truncate text-[11px] font-semibold leading-4 text-[#10183f]">{item.name}</h3>
+          <p className="mt-1 truncate text-[9px] text-[#69739a]">{item.businessName && item.businessName !== item.name ? item.businessName : item.category}</p>
+          <p className="mt-1 truncate text-[8px] text-[#7b84a3]">⌖ {item.location}</p>
+          <p className="mt-1 line-clamp-2 text-[8px] leading-3.5 text-[#69739a]">{item.bio || item.experience || "Service provider on Matchet."}</p>
+          <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-2 flex h-8 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[9px] font-semibold text-[#07863a]">View their services →</Link>
+        </div>
+      </article>
+    );
+  }
   return (
     <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "block overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
       <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
@@ -614,7 +638,8 @@ function CategoriesSection({ isAuthenticated }) {
 
 function ExploreResultsSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
-  const [sourceItems, setSourceItems] = useState([]);\n  const [providerItems, setProviderItems] = useState([]);
+  const [sourceItems, setSourceItems] = useState([]);
+  const [providerItems, setProviderItems] = useState([]);
   const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
@@ -787,7 +812,17 @@ function ExploreResultsSection({ isAuthenticated }) {
           <option value="Kano, Nigeria">Kano, Nigeria</option>
         </select>
 
-        <select\n          value={selectedCategory}\n          onChange={(event) => { setSelectedCategory(event.target.value); setVisibleCount(12); }}\n          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"\n          aria-label="Filter by category"\n        >\n          <option value="all">All categories</option>\n          {[...new Set([...sourceItems, ...providerItems].map((item) => item.category).filter(Boolean))].sort().map((category) => (\n            <option key={category} value={category}>{category}</option>\n          ))}\n        </select>
+        <select
+          value={selectedCategory}
+          onChange={(event) => { setSelectedCategory(event.target.value); setVisibleCount(12); }}
+          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
+          aria-label="Filter by category"
+        >
+          <option value="all">All categories</option>
+          {[...new Set([...sourceItems, ...providerItems].map((item) => item.category).filter(Boolean))].sort().map((category) => (
+            <option key={category} value={category}>{category}</option>
+          ))}
+        </select>
 
         <select
           value={sortBy}
