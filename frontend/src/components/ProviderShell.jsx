@@ -83,6 +83,24 @@ export function ProviderShell({ children, mode = "provider" }) {
   );
 
   useEffect(() => {
+    const base = sellerMode ? "Seller" : "Provider";
+    const labels = {
+      dashboard: "Dashboard",
+      bookings: "Bookings",
+      orders: "Orders",
+      messages: "Messages",
+      services: "Services",
+      products: "Products",
+      earnings: "Earnings",
+      reviews: "Reviews",
+      profile: "Profile",
+      settings: "Settings",
+    };
+    const segment = location.pathname.split("/").filter(Boolean)[1] || "dashboard";
+    document.title = `${labels[segment] || base} | Matchet`;
+  }, [location.pathname, sellerMode]);
+
+  useEffect(() => {
     localStorage.setItem(sellerMode ? "matchet_seller_sidebar_collapsed" : "matchet_provider_sidebar_collapsed", String(collapsed));
   }, [collapsed]);
 
