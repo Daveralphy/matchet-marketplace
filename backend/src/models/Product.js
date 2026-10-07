@@ -35,6 +35,7 @@ const productSchema = new mongoose.Schema({
   inventory: { type: Number, required: true, min: 0, default: 0 },
   location: { type: locationSchema },
   status: { type: String, enum: ["draft", "active", "outOfStock", "archived"], default: "draft", index: true },
+  viewCount: { type: Number, min: 0, default: 0 },
 }, { timestamps: true });
 
 productSchema.index({ sellerId: 1, status: 1 });
