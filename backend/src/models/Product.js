@@ -23,6 +23,13 @@ const productSchema = new mongoose.Schema({
   details: { type: mongoose.Schema.Types.Mixed, default: {} },
   category: { type: String, required: true, trim: true, index: true },
   price: { type: Number, required: true, min: 0 },
+  currency: { type: String, trim: true, uppercase: true, default: "NGN", maxlength: 3 },
+  shipping: {
+    homeDelivery: { type: Boolean, default: true },
+    pickup: { type: Boolean, default: true },
+    deliveryFee: { type: Number, min: 0, default: 0 },
+    pickupStationRequired: { type: Boolean, default: true },
+  },
   images: { type: [imageSchema], default: [] },
   sku: { type: String, trim: true, uppercase: true, maxlength: 100 },
   inventory: { type: Number, required: true, min: 0, default: 0 },
