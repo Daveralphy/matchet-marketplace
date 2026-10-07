@@ -2,7 +2,6 @@
 // Edited by: Raphael Daveal
 
 import { useEffect, useRef, useState } from "react";
-import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/services/hero 2.png";
