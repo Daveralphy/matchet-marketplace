@@ -62,7 +62,7 @@ export default function SellerSignupPageEight() {
       </section>
 
       <section className="seller-signup-right-section">
-        <SellerSignupFormHeader step={6} />
+        <SellerSignupFormHeader step={5} />
 
         <main className="seller-signup-submission-content">
           <section className="seller-signup-submission-hero">
