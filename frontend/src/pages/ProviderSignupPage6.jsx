@@ -81,7 +81,7 @@ export default function ProviderSignupPageSix() {
       </section>
 
       <section className="provider-signup-right-section">
-        <ProviderSignupFormHeader step={6} />
+        <ProviderSignupFormHeader step={4} />
 
         <div className="provider-signup-form-page6">
           <h2 className="provider-signup-step-header">Set up your payment details</h2>
