@@ -28,13 +28,11 @@ function locationFilter(value) {
   const parts = String(value || "").split(",").map((part) => part.trim()).filter(Boolean);
   if (!parts.length) return null;
   return {
-    $and: parts.map((part) => ({
-      $or: [
-        { "location.city": { $regex: part, $options: "i" } },
-        { "location.state": { $regex: part, $options: "i" } },
-        { "location.country": { $regex: part, $options: "i" } },
-      ],
-    })),
+    $or: parts.flatMap((part) => ([
+      { "location.city": { $regex: part, $options: "i" } },
+      { "location.state": { $regex: part, $options: "i" } },
+      { "location.country": { $regex: part, $options: "i" } },
+    ])),
   };
 }
 
@@ -329,38 +327,51 @@ async function getServices(req, res) {
     const approvedProviders = await ProviderProfile.find({
       status: "active",
       verificationStatus: "verified",
-    }).select("userId").lean();
+    }).select("userId serviceArea").lean();
+
     const approvedProviderIds = approvedProviders.map((profile) => profile.userId).filter(Boolean);
     const filter = {
       status: "active",
       providerId: { $in: approvedProviderIds },
     };
+
     if (clean(req.query.category)) filter.category = clean(req.query.category);
-    const locationQuery = locationFilter(req.query.location);
-    if (locationQuery) {
-      const parts = locationQuery.$and;
-      const matchingProviders = await ProviderProfile.find({
-        status: "active",
-        verificationStatus: "verified",
-        $and: parts.map((condition) => ({
-          $or: [
-            { "serviceArea.city": condition.$or[0]["location.city"] },
-            { "serviceArea.state": condition.$or[1]["location.state"] },
-            { "serviceArea.country": condition.$or[2]["location.country"] },
-          ],
-        })),
-      }).select("userId").lean();
-      const matchingProviderIds = matchingProviders.map((profile) => profile.userId).filter(Boolean);
+
+    const requestedLocation = clean(req.query.location);
+    if (requestedLocation) {
+      const locationParts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
+
+      const locationConditions = locationParts.flatMap((part) => ([
+        { "location.city": { $regex: part, $options: "i" } },
+        { "location.state": { $regex: part, $options: "i" } },
+        { "location.country": { $regex: part, $options: "i" } },
+      ]));
+
+      const providerLocationConditions = locationParts.flatMap((part) => ([
+        { "serviceArea.city": { $regex: part, $options: "i" } },
+        { "serviceArea.state": { $regex: part, $options: "i" } },
+        { "serviceArea.country": { $regex: part, $options: "i" } },
+      ]));
+
+      const matchingProviderIds = approvedProviders
+        .filter((profile) => {
+          const area = profile.serviceArea || {};
+          const haystack = [area.city, area.state, area.country].filter(Boolean).join(" ").toLowerCase();
+          return locationParts.some((part) => haystack.includes(part.toLowerCase()));
+        })
+        .map((profile) => profile.userId)
+        .filter(Boolean);
+
       filter.$or = [
-        { $and: parts },
-        {
-          $and: [
-            { $or: [{ "location.city": { $exists: false } }, { "location.state": { $exists: false } }, { "location.country": { $exists: false } }] },
-            { providerId: { $in: matchingProviderIds } },
-          ],
-        },
+        ...(locationConditions.length ? [{ $or: locationConditions }] : []),
+        ...(matchingProviderIds.length ? [{ providerId: { $in: matchingProviderIds } }] : []),
       ];
+
+      if (!filter.$or.length) {
+        filter.$or = [{ _id: null }];
+      }
     }
+
     const services = await findServices(filter);
     return res.json({ success: true, services: services.map(serviceResponse) });
   } catch (error) {
@@ -368,7 +379,6 @@ async function getServices(req, res) {
     return res.status(500).json({ success: false, message: "Unable to load services right now." });
   }
 }
-
 async function getServiceById(req, res) {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
