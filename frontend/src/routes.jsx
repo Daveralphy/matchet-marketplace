@@ -12,7 +12,6 @@ import HelpSupport from "./pages/HelpSupport";
 import MyProfile from "./pages/MyProfile";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
-import SellerSignupPageFour from "./pages/SellerSignupPage4";
 import SellerSignupPageFive from "./pages/SellerSignupPage5";
 import SellerSignupPageSix from "./pages/SellerSignupPage6";
 import SellerSignupPageSeven from "./pages/SellerSignupPage7";
@@ -384,23 +383,22 @@ const router = createBrowserRouter([
   },
   {
     path: "/register/page3",
-    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageFour /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/register/page4",
-    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFive /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/register/page5",
-    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageSix /></RequireOnboardingStep>,
-  },
-  {
-    path: "/register/page6",
     element: <RequireOnboardingReview flow="seller"><SellerSignupPageSeven /></RequireOnboardingReview>,
   },
   {
-    path: "/register/page7",
+    path: "/register/page6",
     element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
+  },
+  {
+    
   },
   {
     path: "/account/saved-items",
