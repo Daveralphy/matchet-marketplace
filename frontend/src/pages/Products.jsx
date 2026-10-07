@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
+import { getMarketplaceData, getMarketplaceProducts, getProductExperience } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
 import { useSavedItems } from "../context/SavedItemsContext";
 import { formatCurrency } from "../context/CartContext";
@@ -684,7 +684,8 @@ function ProductCatalogue({ isAuthenticated }) {
   useEffect(() => {
     let active = true;
 
-    getMarketplaceData().then((data) => {
+    const loadProducts = filters.sellerType ? getMarketplaceProducts({ sellerType: filters.sellerType }).then((products) => ({ products })) : getMarketplaceData();
+    loadProducts.then((data) => {
       if (!active) return;
       setProducts(data.products);
       const prices = data.products
@@ -699,7 +700,7 @@ function ProductCatalogue({ isAuthenticated }) {
     });
 
     return () => { active = false; };
-  }, []);
+  }, [filters.sellerType]);
 
   const normalizedSearch = search.trim().toLowerCase();
 
