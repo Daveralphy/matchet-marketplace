@@ -9,26 +9,33 @@ function Stars({ rating }) {
 
 function ServiceCard({ service }) {
   return (
-    <Link to={`/services/${service.id}`} className="overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)] transition-shadow hover:shadow-[0_10px_26px_rgba(16,24,63,0.08)]">
-      <div className={`relative h-[190px] overflow-hidden ${service.imageTone || "bg-[#eef2ef]"}`}>
-        {service.image ? (
-          <img src={service.image} alt={service.title} className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-[#69739a]">
-            <span className="rounded-full bg-white/60 px-5 py-4 text-[11px] font-semibold">Service</span>
-          </div>
-        )}
-        <span className="absolute right-3 top-3 rounded-full bg-white px-2.5 py-1.5 text-[9px] font-semibold text-[#10183f] shadow-sm">
+    <Link to={`/services/${service.id}`} className="group block min-w-0 rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+      <div className="relative">
+        <div className={`relative h-[152px] overflow-hidden rounded-[8px] ${service.imageTone || "bg-[#eef2ef]"}`}>
+          {service.image ? (
+            <img src={service.image} alt={service.title} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-[#69739a]">
+              <span className="rounded-full bg-white/60 px-4 py-3 text-[10px] font-semibold">Service</span>
+            </div>
+          )}
+        </div>
+        <span className="absolute right-2 top-2 rounded-full bg-white px-2.5 py-1 text-[9px] font-semibold text-[#10183f] shadow-sm">
           <span className="mr-1 text-[#f4a900]">★</span>{Number(service.rating) > 0 ? Number(service.rating).toFixed(1) : "New"}
         </span>
       </div>
-      <div className="p-4">
-        <p className="text-[10px] font-medium text-[#69739a]">{service.category}</p>
-        <h2 className="mt-1 truncate text-[15px] font-semibold text-[#10183f]">{service.title}</h2>
-        <p className="mt-2 text-[15px] font-bold text-[#07863a]">{service.price}</p>
-        <p className="mt-2 text-[10px] text-[#69739a]">{service.location || "Location available on request"}</p>
-        <div className="mt-3 text-[10px] text-[#69739a]">
-          {service.reviews > 0 ? <><Stars rating={service.rating}/> <strong className="ml-1 text-[#27335f]">{Number(service.rating).toFixed(1)}</strong> <span>({service.reviews} reviews)</span></> : "No reviews yet"}
+
+      <div className="px-0.5 pb-1 pt-2">
+        <p className="truncate text-[9px] text-[#69739a]">{service.category}</p>
+        <h2 className="mt-1 truncate text-[11px] font-medium leading-4 text-[#10183f] sm:text-[12px]">{service.title}</h2>
+        <p className="mt-1 text-[13px] font-bold tracking-[-0.02em] text-[#10183f] sm:text-[14px]">{service.price}</p>
+        <div className="mt-1.5 flex h-9 items-center gap-1.5">
+          <span className="text-[13px] text-[#f4a900]">★</span>
+          <span className="text-[10px] font-medium text-[#10183f]">{service.reviews > 0 ? Number(service.rating).toFixed(1) : "New"}</span>
+          {service.reviews > 0 && <span className="text-[10px] text-[#7b84a3]">({service.reviews})</span>}
+        </div>
+        <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[9px] text-[#7b84a3]">
+          <span className="truncate">{service.location || "Location available on request"}</span>
         </div>
       </div>
     </Link>
@@ -63,7 +70,7 @@ export default function PublicProviderServices() {
         <div className="mx-auto max-w-[1470px] pt-6">
           <div className="h-4 w-48 animate-pulse rounded bg-slate-100" />
           <div className="mt-6 h-28 animate-pulse rounded-[14px] bg-slate-100" />
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-5">
             {[1,2,3,4].map((item) => <div key={item} className="h-[330px] animate-pulse rounded-[14px] bg-slate-100" />)}
           </div>
         </div>
