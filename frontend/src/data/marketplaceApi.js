@@ -1,9 +1,9 @@
-import { getMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
+import { getMarketplaceProducts as fetchMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
 import { marketplaceContent } from "./marketplaceContent";
 
 async function loadMarketplace() {
   const results = await Promise.allSettled([
-    getMarketplaceProducts(),
+    fetchMarketplaceProducts(),
     getMarketplaceServices(),
   ]);
 
@@ -84,6 +84,19 @@ export async function getMarketplaceData() {
     products: data.products.map(withProductUiFields).filter(Boolean),
     services: data.services.map(withServiceUiFields).filter(Boolean),
   };
+}
+
+export async function getMarketplaceProducts({ sellerType = "" } = {}) {
+  const products = await fetchMarketplaceProducts();
+  const normalized = Array.isArray(products) ? products.map(withProductUiFields).filter(Boolean) : [];
+  if (!sellerType || sellerType === "Verified sellers") return normalized;
+  const selected = String(sellerType).toLowerCase();
+  return normalized.filter((product) => {
+    const type = String(product.sellerType || "").toLowerCase();
+    if (selected === "businesses") return type.includes("business");
+    if (selected === "individuals") return type.includes("individual");
+    return type === selected.replace(/s$/, "");
+  });
 }
 
 export async function getProductCollection() {
