@@ -1,3 +1,13 @@
+export async function getMarketplaceProviderById(id) {
+  try {
+    const payload = await request(`/api/marketplace/providers/${encodeURIComponent(id)}`);
+    return payload?.provider ? { ...payload.provider, services: Array.isArray(payload.services) ? payload.services : [] } : null;
+  } catch (error) {
+    if (error.status === 404) return null;
+    throw error;
+  }
+}
+
 const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 async function request(path, options = {}) {
