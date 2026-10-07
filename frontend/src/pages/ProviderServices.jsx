@@ -377,18 +377,6 @@ export default function ProviderServices() {
               <label>Duration in minutes<input type="number" min="1" value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} /></label>
               <label>
                 Service images
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={(e) => {
-                    const selected = Array.from(e.target.files || []);
-                    setForm((current) => ({
-                      ...current,
-                      images: [...(current.images || []), ...selected].slice(0, 6),
-                    }));
-                    e.target.value = "";
-                  }}
-                />
                 <small className="provider-service-image-help">Add one image first. Use the + tile to add more images.</small>
               </label>
               <div className="provider-service-image-grid">
