@@ -720,48 +720,14 @@ export default function Header({
                     />
                   </button>
 
-                  {locationOpen && (
-                    <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-[246px] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.12)]">
-                      <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2">
-                        <Icon name="search" size={17} />
-
-                        <input
-                          type="text"
-                          placeholder="Search for a city or state..."
-                          className="w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
-                        />
-                      </div>
-
-                      {LOCATION_OPTIONS.map((option) => (
-                        <button
-                          key={option}
-                          type="button"
-                          onClick={() => {
-                            persistLocation(option);
-                            setLocationOpen(false);
-                          }}
-                          className={[
-                            "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] hover:bg-slate-50",
-                            option === selectedLocation
-                              ? "bg-[#effaf3]"
-                              : "",
-                          ].join(" ")}
-                        >
-                          <span className="flex items-center gap-2">
-                            <Icon name="pin" size={15} />
-                            {option}
-                          </span>
-
-                          {option === selectedLocation && (
-                            <span className="font-semibold text-[#07983f]">
-                              ✓
-                            </span>
-                          )}
-                        </button>
-                      ))}
+                  <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-[280px] rounded-xl border border-slate-100 bg-white p-3 shadow-[0_14px_30px_rgba(16,24,63,0.12)]">
+                      <LocationSearch
+                        value={selectedLocation}
+                        onChange={(value) => persistLocation(value)}
+                        onSelect={(location) => persistLocation(location.label)}
+                        placeholder="Search for a city, state, or country..."
+                      />
                     </div>
-                  )}
-                </div>
 
                 <button
                   type="button"
