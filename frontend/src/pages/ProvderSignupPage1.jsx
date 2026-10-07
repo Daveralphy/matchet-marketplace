@@ -296,14 +296,15 @@ export default function ProviderSignupPageOne() {
                 <div>
                   <label className="provider-signup-form-field-label" htmlFor="providerProfileImage">Profile photo</label>
                   <div className="provider-signup-profile-upload">
-                    <div className="provider-signup-profile-avatar">
-                      {profilePreview ? <img src={profilePreview} alt="Selected profile" /> : <span>No image</span>}
-                    </div>
-                    <div>
-                      <label className="provider-signup-change-photo" htmlFor="providerProfileImage">Change photo</label>
-                      <input type="file" id="providerProfileImage" name="providerProfileImage" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleFileChange} hidden />
-                      <p className="provider-signup-upload-note">JPG, PNG or WebP. Max 5MB.</p>
-                    </div>
+                    <label
+                      className={`provider-signup-profile-avatar provider-signup-profile-avatar-upload ${profilePreview ? "has-image" : ""}`}
+                      htmlFor="providerProfileImage"
+                    >
+                      {profilePreview ? <img src={profilePreview} alt="Selected profile" /> : <><span className="provider-profile-placeholder-icon">◎</span><strong>Upload image</strong></>}
+                    </label>
+                    <input type="file" id="providerProfileImage" name="providerProfileImage" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleFileChange} hidden />
+                    {profilePreview && <button type="button" className="provider-signup-remove-photo" onClick={() => { updateField("providerProfileImage", null); setProfilePreview(null); }}>Remove</button>}
+                    <p className="provider-signup-upload-note">JPG, PNG or WebP. Max 5MB.</p>
                   </div>
                 </div>
 
