@@ -9,6 +9,7 @@ import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 import { getProviderCapabilities, getSellerOnboardingDraft, saveSellerOnboardingDraft } from "../api/provider";
 import { uploadFile } from "../api/uploads";
+import LocationSearch from "../components/LocationSearch";
 
 export default function SellerSignupPageOne() {
   const { formData, updateField, mergeFormData, setOnboardingFlow, clearForm } = useForm();
@@ -662,23 +663,21 @@ export default function SellerSignupPageOne() {
                 </span>
               </div>
 
-              <label htmlFor="location">
-                Location
-
-                <select
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Select location
-                  </option>
-                  <option value="california-usa">California, USA</option>
-                  <option value="lagos-nigeria">Lagos, Nigeria</option>
-                </select>
-              </label>
+              <label htmlFor="location">Location *</label>
+              <LocationSearch
+                value={formData.location}
+                onChange={(value) => {
+                  userEditedSellerStepOneRef.current = true;
+                  updateField("location", value);
+                }}
+                onSelect={(location) => {
+                  userEditedSellerStepOneRef.current = true;
+                  updateField("location", location.label);
+                  updateField("locationData", location);
+                }}
+                placeholder="Search for your city, state, or country..."
+                className="seller-location-search"
+              />
 
               <label htmlFor="sellerBio">
                 Short bio (optional)
