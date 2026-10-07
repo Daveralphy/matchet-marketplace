@@ -643,7 +643,7 @@ export default function SellerSignupPageOne() {
                     hidden
                   />
                 </label>
-                {photoPreview && <button type="button" className="seller-signup-remove-photo" onClick={() => { userEditedSellerStepOneRef.current = true; updateField("profileImage", null); }}>Remove</button>
+                {photoPreview && <button type="button" className="seller-signup-remove-photo" onClick={() => { userEditedSellerStepOneRef.current = true; updateField("profileImage", null); }}>Remove</button>}
 
                 <span className="seller-signup-upload-note">
                   JPG, PNG or WebP. Max 5MB.
