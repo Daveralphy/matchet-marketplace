@@ -30,6 +30,7 @@ function SaveIcon() {
 }
 
 export default function SellerSignupFormHeader({ step }) {
+  useEffect(() => { const labels = ["Your Details","Business Info","Verification","Payment","Review"]; document.title = `${labels[step - 1] || "Seller Application"} | Matchet`; }, [step]);
   useEffect(() => {
     const scroller = document.querySelector(".seller-signup-right-section");
     if (!scroller) return undefined;
