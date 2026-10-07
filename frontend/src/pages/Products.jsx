@@ -270,8 +270,7 @@ function SearchBar() {
           </div>
         )}
       </div>
-
-      button
+      <button
         type="button"
         onClick={submitSearch}
         className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]"
