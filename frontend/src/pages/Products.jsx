@@ -7,6 +7,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
 import { useSavedItems } from "../context/SavedItemsContext";
+import { formatCurrency } from "../context/CartContext";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
 import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
@@ -593,8 +594,8 @@ function ProductFilters({ products, filters, setFilters }) {
             className="w-full accent-[#07863a]"
           />
           <div className="mt-1 flex justify-between text-[10px] text-[#69739a]">
-            <span>₦0</span>
-            <span>₦{selectedMaxPrice.toLocaleString("en-NG")}</span>
+            <span>{formatCurrency(0, products[0]?.currency || "NGN")}</span>
+            <span>{formatCurrency(selectedMaxPrice, products[0]?.currency || "NGN")}</span>
           </div>
         </div>
       </FilterSection>
