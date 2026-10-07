@@ -728,6 +728,7 @@ export default function Header({
                         placeholder="Search for a city, state, or country..."
                       />
                     </div>
+                  </div>
 
                 <button
                   type="button"
