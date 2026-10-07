@@ -32,7 +32,7 @@ export default function SellerSignupPageSix() {
       };
       const response = await saveSellerOnboardingDraft(paymentFormData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/register/page7");
+      navigate("/register/page5");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
     }
