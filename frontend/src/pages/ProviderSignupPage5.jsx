@@ -157,7 +157,7 @@ export default function ProviderSignupPageFive() {
       </section>
 
       <section className="provider-signup-right-section">
-        <ProviderSignupFormHeader step={5} />
+        <ProviderSignupFormHeader step={3} />
 
         <div className="provider-signup-form-page5">
           <h2 className="provider-signup-step-header">Verify your identity</h2>
