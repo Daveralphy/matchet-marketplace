@@ -27,7 +27,7 @@ export default function LocationSearch({
 
   useEffect(() => {
     const term = query.trim();
-    if (term.length < 2 || term === String(value || "").trim()) {
+    if (term.length < 2) {
       setSuggestions([]);
       return undefined;
     }
@@ -37,7 +37,7 @@ export default function LocationSearch({
       setLoading(true);
       try {
         const response = await searchProviderLocations(term);
-        if (active) setSuggestions(response?.data?.locations || []);
+        if (active) setSuggestions(Array.isArray(response?.data?.locations) ? response.data.locations : []);
       } catch {
         if (active) setSuggestions([]);
       } finally {
