@@ -103,7 +103,7 @@ function withProviderUiFields(provider) {
     listings: Number(provider.listings ?? 0),
     image: provider.image || "",
     verified: Boolean(provider.verified),
-    initials: name.trim().split(/\\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "P",
+    initials: name.trim().split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "P",
     imageTone: provider.image ? "" : "bg-[#eef1ef]",
     logoTone: "bg-[#e8f0f8] text-[#2682e9]",
   };
