@@ -25,7 +25,7 @@ export default function ProviderSignupPageEight() {
       </section>
 
       <section className="provider-signup-right-section">
-        <ProviderSignupFormHeader step={6} />
+        <ProviderSignupFormHeader step={5} />
 
         <div className="provider-signup-form-page8">
           <div className="provider-success-hero">
