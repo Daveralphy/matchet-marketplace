@@ -387,13 +387,14 @@ function ProvidersSection({ isAuthenticated }) {
 
   useEffect(() => {
     let active = true;
-    getProviderCollection(isAuthenticated ? "recommended" : "featured").then((items) => {
+    const location = localStorage.getItem("matchet_location") || "Lagos, Nigeria";
+    getProviderCollection(location).then((items) => {
       if (active) setProviders(items);
     });
     return () => {
       active = false;
     };
-  }, [isAuthenticated]);
+  }, [isAuthenticated, selectedLocation]);
 
   const title = isAuthenticated ? (
     <>People <span className="text-[#07863a]">worth knowing.</span></>
