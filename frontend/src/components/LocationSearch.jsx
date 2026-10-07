@@ -17,6 +17,14 @@ export default function LocationSearch({
 
   useEffect(() => setQuery(value || ""), [value]);
 
+  const selectLocation = (location) => {
+    if (!location) return;
+    setQuery(location.label);
+    setSuggestions([]);
+    onChange?.(location.label);
+    onSelect?.(location);
+  };
+
   useEffect(() => {
     const term = query.trim();
     if (term.length < 2 || term === String(value || "").trim()) {
@@ -66,6 +74,17 @@ export default function LocationSearch({
           setQuery(next);
           onChange?.(next);
         }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            if (suggestions.length > 0) {
+              selectLocation(suggestions[0]);
+            }
+          }
+          if (event.key === "Escape") {
+            setSuggestions([]);
+          }
+        }
         onFocus={() => {
           if (query.trim().length >= 2) setSuggestions((items) => items);
         }}
@@ -86,12 +105,7 @@ export default function LocationSearch({
               type="button"
               role="option"
               className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-[#24305f] hover:bg-[#f3faf5]"
-              onClick={() => {
-                setQuery(location.label);
-                setSuggestions([]);
-                onChange?.(location.label);
-                onSelect?.(location);
-              }}
+              onClick={() => selectLocation(location)}
             >
               <strong className="block truncate">{location.label}</strong>
               <span className="block truncate text-xs text-slate-400">
