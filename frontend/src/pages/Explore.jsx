@@ -369,13 +369,15 @@ function ProviderCard({ provider }) {
         </div>
 
         <div className="mt-3 space-y-2 text-[10px] text-[#27335f]">
-          <p><span className="mr-2 text-[#f4b400]">★</span><strong>{provider.rating}</strong> <span className="text-[#7b84a3]">({provider.reviews} reviews)</span></p>
+          <p><span className="mr-2 text-[#f4b400]">★</span><strong>{provider.rating || "New"}</strong> <span className="text-[#7b84a3]">({provider.reviews} reviews)</span></p>
           <p><span className="mr-2 text-[#10183f]">⌖</span>{provider.location}</p>
-          <p><span className="mr-2 text-[#10183f]">▱</span>{provider.listings} listings</p>
+          <p><span className="mr-2 text-[#10183f]">▱</span>{provider.listings} active services</p>
+          {provider.experience && <p className="line-clamp-2 text-[9px] leading-4 text-[#69739a]">{provider.experience}</p>}
+          {provider.bio && <p className="line-clamp-2 text-[9px] leading-4 text-[#69739a]">{provider.bio}</p>}
         </div>
 
         <button type="button" className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#e9f9ed] text-[11px] font-semibold text-[#07863a]">
-          View profile <span className="text-[16px]">→</span>
+          Check profile <span className="text-[16px]">→</span>
         </button>
       </div>
     </article>
