@@ -13,6 +13,23 @@ function SaveIcon() {
 }
 
 function ProviderSignupFormHeader({ step }) {
+  useEffect(() => {
+    const scroller = document.querySelector(".provider-signup-right-section");
+    if (!scroller) return undefined;
+    let timer;
+    const handleScroll = () => {
+      scroller.classList.add("is-scrolling");
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => scroller.classList.remove("is-scrolling"), 700);
+    };
+    scroller.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      scroller.removeEventListener("scroll", handleScroll);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+
   const navigate = useNavigate();
   const { formData } = useForm();
   const stepsData = [
