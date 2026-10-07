@@ -113,7 +113,9 @@ function serviceResponse(service) {
     availability: service.status === "active" ? "Available" : service.status,
     status: service.status,
     location: locationLabel(service.location || profile.serviceArea),
-    seller: profile.businessName || [provider.firstName, provider.lastName].filter(Boolean).join(" ") || provider.username || "Provider",
+    seller: [provider.firstName, provider.lastName].filter(Boolean).join(" ") || provider.username || profile.businessName || "Provider",
+    businessName: profile.businessName || "",
+    sellerImage: provider.avatar?.url || "",
     sellerVerified: profile.verificationStatus === "verified",
     providerVerified: profile.verificationStatus === "verified",
     providerId: provider._id?.toString?.() || service.providerId?.toString?.(),
@@ -187,7 +189,7 @@ async function findProducts(query = {}) {
 
 async function findServices(query = {}) {
   const services = await Service.find(query)
-    .populate({ path: "providerId", select: "firstName lastName username" })
+    .populate({ path: "providerId", select: "firstName lastName username avatar" })
     .sort({ createdAt: -1 })
     .lean();
   return attachServiceMarketplaceData(services);
