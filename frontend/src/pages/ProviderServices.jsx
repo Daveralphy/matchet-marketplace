@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import LocationSearch from "../components/LocationSearch";
+import { currencyForLocation } from "../utils/currency";
 import { createProviderService, getProviderServices, updateProviderService, deleteProviderService } from "../api/provider";
 import "../styles/provider-dashboard.css";
 
@@ -373,7 +374,7 @@ export default function ProviderServices() {
               <div className="provider-service-modal-grid"><label>Category<input required value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></label><label>Pricing<select value={form.pricingType} onChange={(e) => setForm({ ...form, pricingType: e.target.value })}><option value="fixed">Fixed price</option><option value="startingFrom">Starting from</option><option value="customQuote">Custom quote</option></select></label></div>
               {form.pricingType !== "customQuote" && <label>Price<input required type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></label>}
               {form.pricingType !== "customQuote" && <label>Currency<select value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })}><option>NGN</option><option>USD</option><option>GBP</option><option>EUR</option><option>CAD</option><option>AUD</option><option>GHS</option><option>KES</option></select></label>}
-              <label>Service location<LocationSearch value={form.location} onChange={(value) => setForm({ ...form, location: value })} onSelect={(location) => setForm({ ...form, location: location.label, locationData: location })} placeholder="Search where this service is offered..." /></label>
+              <label>Service location<LocationSearch value={form.location} onChange={(value) => setForm({ ...form, location: value })} onSelect={(location) => setForm({ ...form, location: location.label, locationData: location, currency: currencyForLocation(location, "NGN") })} placeholder="Search where this service is offered..." /></label>
               <label>Duration in minutes<input type="number" min="1" value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} /></label>
               <label>
                 Service images
