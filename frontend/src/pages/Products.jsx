@@ -224,13 +224,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function SearchBar({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
+function SearchBar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
@@ -240,7 +234,7 @@ function SearchBar({
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await getMarketplaceData().then((data) => data.products.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
+      const results = await getMarketplaceData(localStorage.getItem("matchet_location") || "Lagos, Nigeria").then((data) => data.products.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
@@ -249,7 +243,7 @@ function SearchBar({
   const submitSearch = () => {
     const value = query.trim();
     if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+    navigate(`/explore?q=${encodeURIComponent(value)}`);
   };
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
@@ -667,7 +661,7 @@ function ProductCatalogue({ isAuthenticated }) {
   const [products, setProducts] = useState([]);
   const [view, setView] = useState(savedUiState.view || "grid");
   const [sort, setSort] = useState(savedUiState.sort || "recommended");
-  const [location, setLocation] = useState(initialLocation);
+  const [location, setLocation] = useState(() => localStorage.getItem("matchet_location") || initialLocation || "Lagos, Nigeria");
   const [search, setSearch] = useState(initialSearch || savedUiState.search || "");
   const [filters, setFilters] = useState(() => {
     const savedFilters = savedUiState.filters;
@@ -684,7 +678,7 @@ function ProductCatalogue({ isAuthenticated }) {
   useEffect(() => {
     let active = true;
 
-    const loadProducts = filters.sellerType ? getMarketplaceProducts({ sellerType: filters.sellerType }).then((products) => ({ products })) : getMarketplaceData();
+    const loadProducts = filters.sellerType ? getMarketplaceProducts({ sellerType: filters.sellerType, location }).then((products) => ({ products })) : getMarketplaceData(location);
     loadProducts.then((data) => {
       if (!active) return;
       setProducts(data.products);
@@ -700,7 +694,7 @@ function ProductCatalogue({ isAuthenticated }) {
     });
 
     return () => { active = false; };
-  }, [filters.sellerType]);
+  }, [filters.sellerType, location]);
 
   const normalizedSearch = search.trim().toLowerCase();
 
@@ -883,29 +877,6 @@ function ShoppingJourneySection({ isAuthenticated }) {
 }
 
 export default function Products({ isAuthenticated = false }) {
-  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "");
-  const [locationOpen, setLocationOpen] = useState(false);
-
-  const locationRef = useRef(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (
-        locationOpen &&
-        locationRef.current &&
-        !locationRef.current.contains(event.target)
-      ) {
-        setLocationOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [locationOpen]);
-
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
       <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#fbfaf7] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
