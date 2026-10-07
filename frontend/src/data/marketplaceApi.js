@@ -99,8 +99,8 @@ export async function getMarketplaceProducts({ sellerType = "", location = "" } 
   });
 }
 
-export async function getProductCollection() {
-  const { products } = await loadMarketplace();
+export async function getProductCollection(location = "") {
+  const { products } = await loadMarketplace(location);
   return products.map(withProductUiFields);
 }
 
