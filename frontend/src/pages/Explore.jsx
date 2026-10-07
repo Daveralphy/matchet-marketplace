@@ -114,11 +114,11 @@ function SearchBar() {
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await searchMarketplace({ query: value, location: selectedLocation });
+      const results = await searchMarketplace({ query: value, location: localStorage.getItem("matchet_location") || "Lagos, Nigeria" });
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [query, selectedLocation]);
+  }, [query]);
 
   const submitSearch = () => {
     if (!query.trim()) return;
@@ -149,9 +149,7 @@ function SearchBar() {
           </div>
         )}
       </div>
-      <div className="h-px w-full bg-slate-100 sm:h-[34px] sm:w-px" />
-      <MarketplaceLocationSelect selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} locationOpen={locationOpen} setLocationOpen={setLocationOpen} locationRef={locationRef} />
-      <button type="button" onClick={submitSearch} className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]">Search</button>
+      button type="button" onClick={submitSearch} className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]">Search</button>
     </div>
   );
 }
