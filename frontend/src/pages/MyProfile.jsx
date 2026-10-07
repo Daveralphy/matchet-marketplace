@@ -543,13 +543,8 @@ function MyProfile() {
                 </span>
 
                 <div>
-                  <span className="profile-information-label">
-                    {location || "Location not added"}
-                  </span>
-
-                  <span className="profile-information-value">
-                    Location
-                  </span>
+                  <span className="profile-information-label">Location</span>
+                  <span className="profile-information-value">{location || "Location not added"}</span>
                 </div>
               </div>
 
