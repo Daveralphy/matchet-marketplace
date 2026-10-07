@@ -12,7 +12,6 @@ import HelpSupport from "./pages/HelpSupport";
 import MyProfile from "./pages/MyProfile";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
-import SellerSignupPageThree from "./pages/SellerSignupPage3";
 import SellerSignupPageFour from "./pages/SellerSignupPage4";
 import SellerSignupPageFive from "./pages/SellerSignupPage5";
 import SellerSignupPageSix from "./pages/SellerSignupPage6";
@@ -384,23 +383,23 @@ const router = createBrowserRouter([
     element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageThree /></RequireOnboardingStep>,
   },
   {
+    path: "/register/page3",
+    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageFour /></RequireOnboardingStep>,
+  },
+  {
     path: "/register/page4",
-    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFour /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/register/page5",
-    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageFive /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/register/page6",
-    element: <RequireOnboardingStep flow="seller" step={6}><SellerSignupPageSix /></RequireOnboardingStep>,
-  },
-  {
-    path: "/register/page7",
     element: <RequireOnboardingReview flow="seller"><SellerSignupPageSeven /></RequireOnboardingReview>,
   },
   {
-    path: "/register/page8",
+    path: "/register/page7",
     element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
   },
   {
