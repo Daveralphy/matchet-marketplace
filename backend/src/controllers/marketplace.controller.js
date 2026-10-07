@@ -267,15 +267,14 @@ async function getProviders(req, res) {
       status: "active",
       verificationStatus: "verified",
     };
-    const locationQuery = locationFilter(req.query.location);
-    if (locationQuery) {
-      providerFilter.$and = locationQuery.$and.map((condition) => ({
-        $or: [
-          { "serviceArea.city": condition.$or[0]["location.city"] },
-          { "serviceArea.state": condition.$or[1]["location.state"] },
-          { "serviceArea.country": condition.$or[2]["location.country"] },
-        ],
-      }));
+    const requestedLocation = clean(req.query.location);
+    if (requestedLocation) {
+      const parts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
+      providerFilter.$or = parts.flatMap((part) => ([
+        { "serviceArea.city": { $regex: part, $options: "i" } },
+        { "serviceArea.state": { $regex: part, $options: "i" } },
+        { "serviceArea.country": { $regex: part, $options: "i" } },
+      ]));
     }
     const profiles = await ProviderProfile.find(providerFilter)
       .populate({ path: "userId", select: "firstName lastName username email avatar" })
