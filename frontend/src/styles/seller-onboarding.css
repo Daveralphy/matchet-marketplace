@@ -1772,3 +1772,12 @@
 .seller-signup-right-section.is-scrolling::-webkit-scrollbar-thumb { background: rgba(16,24,63,.28); }
 .seller-signup-right-section:hover { scrollbar-color: rgba(16,24,63,.28) transparent; }
 .seller-signup-right-section.is-scrolling { scrollbar-color: rgba(16,24,63,.28) transparent; }
+
+/* Professional seller profile photo uploader */
+.seller-signup-avatar-upload-modern{position:relative;width:104px;height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px dashed #bfc9da;border-radius:50%;background:#f5f7fb;color:#68739b;cursor:pointer;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease}
+.seller-signup-avatar-upload-modern:hover{border-color:#07983f;box-shadow:0 0 0 4px rgba(7,152,63,.08)}
+.seller-signup-avatar-upload-modern.has-image{border-style:solid;border-color:#d7deec}
+.seller-signup-avatar-image{width:100%;height:100%;object-fit:cover}
+.seller-signup-avatar-placeholder{font-size:25px;line-height:1;color:#8a94b6}
+.seller-signup-avatar-upload-modern strong{font-size:11px;color:#10183f}
+.seller-signup-remove-photo{border:0;background:transparent;color:#c23d3d;font-size:11px;font-weight:600;cursor:pointer}
