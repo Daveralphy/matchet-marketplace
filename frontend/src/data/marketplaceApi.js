@@ -72,6 +72,8 @@ function withServiceUiFields(service) {
     rating: Number(service.rating ?? 0),
     sellerVerified: Boolean(service.sellerVerified),
     sellerInitial: service.sellerInitial || String(service.seller || "P").trim().charAt(0).toUpperCase(),
+    sellerImage: service.sellerImage || "",
+    businessName: service.businessName || "",
     image: gallery[0] || "",
     imageTone: service.imageTone || "bg-[#eef1ef]",
     avatarTone: service.avatarTone || "bg-[#e8f0f8] text-[#2682e9]",
