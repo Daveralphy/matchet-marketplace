@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { useCart, formatNaira } from "../context/CartContext";
+import { useCart, formatCurrency, formatNaira } from "../context/CartContext";
 import { getProductCollection } from "../data/marketplaceApi";
 import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
 
