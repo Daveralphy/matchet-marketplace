@@ -426,7 +426,7 @@ export default function SellerSignupPageSeven() {
             </h3>
 
             <Link
-              to="/register/page4"
+              to="/register/page3"
               className="seller-signup-verification-card-edit-link"
             >
               Edit
