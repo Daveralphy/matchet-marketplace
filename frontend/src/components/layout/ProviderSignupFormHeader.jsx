@@ -17,12 +17,10 @@ function ProviderSignupFormHeader({ step }) {
   const { formData } = useForm();
   const stepsData = [
     { num: 1, label: "Your Details" },
-    { num: 2, label: "Services" },
-    { num: 3, label: "Experience" },
-    { num: 4, label: "Availability" },
-    { num: 5, label: "Verification" },
-    { num: 6, label: "Payment" },
-    { num: 7, label: "Review" },
+    { num: 2, label: "About Your Work" },
+    { num: 3, label: "Verification" },
+    { num: 4, label: "Payment" },
+    { num: 5, label: "Review" },
   ];
 
   return (
@@ -63,7 +61,7 @@ function ProviderSignupFormHeader({ step }) {
         })}
       </div>
 
-      <p className="provider-signup-step-counter">Step {step} of 7</p>
+      <p className="provider-signup-step-counter">Step {step} of 5</p>
     </header>
   );
 }
