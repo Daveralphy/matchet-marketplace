@@ -1748,13 +1748,13 @@ async function getSellerProducts(req, res) {
 }
 async function createSellerProduct(req,res){
   try {
-    const {name,description,shortDescription="",category,price,inventory=0,images=[],location,status="draft",details={},sku}=req.body;
+    const {name,description,shortDescription="",category,price,inventory=0,images=[],location,status="draft",details={},sku,currency="NGN",shipping={}}=req.body;
     if(!name||!description||!category||price===undefined) return res.status(400).json({success:false,message:"Name, description, category and price are required."});
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     const safeStatus=canPublish ? status : "draft";
     const safeImages = normalizeImageAssets(images, 5);
-    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images:safeImages,status:safeStatus,location,details,sku});
+    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images:safeImages,status:safeStatus,location,details,sku,currency:String(currency).toUpperCase(),shipping:{homeDelivery:Boolean(shipping.homeDelivery),pickup:Boolean(shipping.pickup),deliveryFee:Number(shipping.deliveryFee)||0,pickupStationRequired:true}});
     return res.status(201).json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
@@ -1762,7 +1762,7 @@ async function updateSellerProduct(req,res){
   try {
     const product=await Product.findOne({_id:req.params.productId,sellerId:req.user._id});
     if(!product)return res.status(404).json({success:false,message:"Product not found."});
-    const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details"];
+    const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details","currency","shipping"];
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=k==="images" ? normalizeImageAssets(req.body[k], 5) : req.body[k]});
