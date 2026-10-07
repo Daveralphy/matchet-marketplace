@@ -596,8 +596,6 @@ export default function SellerSignupPageFive() {
 
               <div className="seller-signup-identity-upload-grid">
                 <label className="seller-signup-upload">
-                  <span className="seller-signup-upload-icon">↑</span>
-
                   {!formData.idImageFront ? (
                     <>
                       <span className="seller-signup-upload-icon">↑</span>
@@ -622,8 +620,6 @@ export default function SellerSignupPageFive() {
                 </label>
 
                 <label className="seller-signup-upload">
-                  <span className="seller-signup-upload-icon">↑</span>
-
                   {!formData.idImageBack ? (
                     <>
                       <span className="seller-signup-upload-icon">↑</span>
