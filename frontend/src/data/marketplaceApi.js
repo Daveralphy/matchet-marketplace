@@ -145,8 +145,8 @@ export async function searchMarketplace({ type = "all", query = "", location = "
   });
 }
 
-export async function getProviderCollection() {
-  const providers = await getMarketplaceProviders();
+export async function getProviderCollection(location = "") {
+  const providers = await getMarketplaceProviders({ location });
   return providers.map((provider) => ({
     ...provider,
     initials: provider.name?.trim()?.charAt(0)?.toUpperCase() || "P",
