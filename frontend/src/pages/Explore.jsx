@@ -390,7 +390,7 @@ function ProviderCard({ provider }) {
       </div>
 
       <Link
-        to={`/services?q=${encodeURIComponent(provider.name || "")}&location=${encodeURIComponent(provider.location || "")}`}
+        to={`/providers/${provider.id}`}
         className="mt-3 flex h-9 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[10px] font-semibold text-[#07863a] transition-colors hover:bg-[#dff7e7]"
       >
         View services <span className="ml-1 text-[14px]">→</span>
