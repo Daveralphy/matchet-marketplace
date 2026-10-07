@@ -88,6 +88,7 @@ function productResponse(product) {
     images: (product.images || []).map((image) => ({ ...image, url: imageUrl(image) })).filter((image) => image.url),
     reviews: Number(product.reviewCount || 0),
     rating: Number(product.ratingAverage || 0),
+    viewCount: Number(product.viewCount || 0),
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
   };
@@ -124,6 +125,7 @@ function serviceResponse(service) {
     images: (service.images || []).map((image) => ({ ...image, url: imageUrl(image) })).filter((image) => image.url),
     reviews: Number(service.reviewCount || 0),
     rating: Number(service.ratingAverage || 0),
+    viewCount: Number(service.viewCount || 0),
     createdAt: service.createdAt,
     updatedAt: service.updatedAt,
   };
@@ -247,6 +249,7 @@ async function getProductById(req, res) {
       return res.status(404).json({ success: false, message: "Product not found." });
     }
 
+    await Product.updateOne({ _id: req.params.id, status: "active" }, { $inc: { viewCount: 1 } });
     const products = await findProducts({ _id: req.params.id, status: "active" });
     const product = products[0];
 
@@ -372,6 +375,7 @@ async function getServiceById(req, res) {
       return res.status(404).json({ success: false, message: "Service not found." });
     }
 
+    await Service.updateOne({ _id: req.params.id, status: "active" }, { $inc: { viewCount: 1 } });
     const services = await findServices({ _id: req.params.id, status: "active" });
     const service = services[0];
 
