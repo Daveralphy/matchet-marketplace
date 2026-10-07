@@ -165,3 +165,5 @@ export async function getSavedItems(){const p=await request("/api/saved-items");
 export async function saveItem(data){const p=await request("/api/saved-items",{method:"POST",body:JSON.stringify(data)});return p.item;}
 export async function removeSavedItem(id){return request("/api/saved-items/"+encodeURIComponent(id),{method:"DELETE"});}
 export async function clearSavedItems(type){return request("/api/saved-items"+(type?"?type="+encodeURIComponent(type):""),{method:"DELETE"});}
+
+export async function createBuyerOrder(payload) { const p = await request("/api/orders", { method: "POST", body: JSON.stringify(payload) }); return p.order ?? null; }
