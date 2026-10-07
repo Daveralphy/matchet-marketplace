@@ -207,7 +207,30 @@ async function getProducts(req, res) {
     };
     if (clean(req.query.category)) filter.category = clean(req.query.category);
     const locationQuery = locationFilter(req.query.location);
-    if (locationQuery) Object.assign(filter, locationQuery);
+    if (locationQuery) {
+      const parts = locationQuery.$and;
+      const matchingStores = await StoreProfile.find({
+        status: "active",
+        verificationStatus: "verified",
+        $and: parts.map((condition) => ({
+          $or: [
+            { "location.city": condition.$or[0]["location.city"] },
+            { "location.state": condition.$or[1]["location.state"] },
+            { "location.country": condition.$or[2]["location.country"] },
+          ],
+        })),
+      }).select("userId").lean();
+      const matchingSellerIds = matchingStores.map((store) => store.userId).filter(Boolean);
+      filter.$or = [
+        { $and: parts },
+        {
+          $and: [
+            { $or: [{ "location.city": { $exists: false } }, { "location.state": { $exists: false } }, { "location.country": { $exists: false } }] },
+            { sellerId: { $in: matchingSellerIds } },
+          ],
+        },
+      ];
+    }
     const products = await findProducts(filter);
     return res.json({ success: true, products: products.map(productResponse) });
   } catch (error) {
@@ -308,7 +331,30 @@ async function getServices(req, res) {
     };
     if (clean(req.query.category)) filter.category = clean(req.query.category);
     const locationQuery = locationFilter(req.query.location);
-    if (locationQuery) Object.assign(filter, locationQuery);
+    if (locationQuery) {
+      const parts = locationQuery.$and;
+      const matchingProviders = await ProviderProfile.find({
+        status: "active",
+        verificationStatus: "verified",
+        $and: parts.map((condition) => ({
+          $or: [
+            { "serviceArea.city": condition.$or[0]["location.city"] },
+            { "serviceArea.state": condition.$or[1]["location.state"] },
+            { "serviceArea.country": condition.$or[2]["location.country"] },
+          ],
+        })),
+      }).select("userId").lean();
+      const matchingProviderIds = matchingProviders.map((profile) => profile.userId).filter(Boolean);
+      filter.$or = [
+        { $and: parts },
+        {
+          $and: [
+            { $or: [{ "location.city": { $exists: false } }, { "location.state": { $exists: false } }, { "location.country": { $exists: false } }] },
+            { providerId: { $in: matchingProviderIds } },
+          ],
+        },
+      ];
+    }
     const services = await findServices(filter);
     return res.json({ success: true, services: services.map(serviceResponse) });
   } catch (error) {
