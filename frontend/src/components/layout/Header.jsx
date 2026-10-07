@@ -253,6 +253,7 @@ export default function Header({
   const persistLocation = (value) => {
     setSelectedLocation(value);
     window.localStorage.setItem("matchet_location", value);
+    window.dispatchEvent(new CustomEvent("matchet-location-change", { detail: value }));
   };
 
   useEffect(() => {
