@@ -10,14 +10,6 @@ import person2 from "../assets/inspirations/services/person2.png";
 import { getServiceCategoryCollections, getServiceCollection, getServiceExperience, getServiceReviews } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
 
-const LOCATION_OPTIONS = [
-  "Lagos, Nigeria",
-  "Abuja, Nigeria",
-  "Port Harcourt, Nigeria",
-  "Kano, Nigeria",
-  "Ibadan, Nigeria",
-];
-
 const SERVICE_CATEGORIES = [
   { label: "Home Services", icon: "home" },
   { label: "Repairs", icon: "tools" },
@@ -143,105 +135,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function LocationSelect({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
-  const navigate = useNavigate();
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  useEffect(() => {
-    let active = true;
-    const value = query.trim();
-    if (!value) { setSuggestions([]); return undefined; }
-    const timer = window.setTimeout(async () => {
-      const results = await getServiceCollection("featured").then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
-      if (active) setSuggestions(results.slice(0, 6));
-    }, 120);
-    return () => { active = false; window.clearTimeout(timer); };
-  }, [query]);
-  const submitSearch = () => {
-    const value = query.trim();
-    if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
-  };
-
-  return (
-    <div ref={locationRef} className="relative min-w-0 flex-1">
-      <button
-        type="button"
-        onClick={() => setLocationOpen((open) => !open)}
-        className={[
-          "flex h-12 w-full min-w-0 items-center gap-2 border-l border-slate-100 px-3 text-left text-[12px] font-medium text-[#10183f] transition-colors sm:h-[54px] sm:px-4",
-          locationOpen ? "text-[#07983f]" : "",
-        ].join(" ")}
-        aria-expanded={locationOpen}
-        aria-haspopup="listbox"
-      >
-        <Icon name="pin" size={18} />
-
-        <span className="min-w-0 flex-1 truncate">
-          {selectedLocation}
-        </span>
-
-        <Icon
-          name={locationOpen ? "chevronUp" : "chevronDown"}
-          size={15}
-        />
-      </button>
-
-      {locationOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.14)] sm:left-auto sm:right-0 sm:w-[250px]">
-          <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
-            <Icon name="search" size={16} />
-
-            <input
-              type="text"
-              placeholder="Search for a city or state..."
-              className="min-w-0 w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
-            />
-          </div>
-
-          <div role="listbox" aria-label="Select location">
-            {LOCATION_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="option"
-                aria-selected={option === selectedLocation}
-                onClick={() => {
-                  setSelectedLocation(option);
-                  localStorage.setItem("matchet_location", option);
-                  setLocationOpen(false);
-                }}
-                className={[
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] transition-colors hover:bg-slate-50",
-                  option === selectedLocation
-                    ? "bg-[#effaf3] text-[#07863a]"
-                    : "",
-                ].join(" ")}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <Icon name="pin" size={15} />
-                  <span className="truncate">{option}</span>
-                </span>
-
-                {option === selectedLocation && (
-                  <span className="ml-2 shrink-0 font-semibold text-[#07983f]">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+import MarketplaceLocationSelect from "../components/MarketplaceLocationSelect";
 
 function SearchBar({
   selectedLocation,
