@@ -761,28 +761,31 @@ function ServiceListingCard({ service }) {
     if (!isAuthenticated) { window.location.href = "/login"; return; }
     await toggleSaved("service", service.id);
   };
+
   return (
-    <Link to={`/services/${service.id}`} className="block overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
-      <div className={`relative h-[218px] overflow-hidden ${service.imageTone || "bg-[#dfe7e2]"}`}>
-        {service.image || service.gallery?.[0] ? (
-          <img
-            src={service.image || service.gallery?.[0]}
-            alt=""
-            className="h-full w-full object-cover"
-            onError={(event) => {
-              event.currentTarget.style.display = "none";
-              event.currentTarget.nextElementSibling?.classList.remove("hidden");
-            }}
-          />
-        ) : null}
-        <div className={service.image || service.gallery?.[0] ? "absolute inset-0 hidden items-center justify-center" : "absolute inset-0 flex items-center justify-center"}>
-            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
-              <Icon name={service.icon || (service.category === "Beauty & Care" || service.category === "Beauty & Wellness" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home")} size={42} strokeWidth={1.45} />
+    <Link to={`/services/${service.id}`} className="group block min-w-0 rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+      <div className="relative">
+        <div className={`relative h-[152px] overflow-hidden rounded-[8px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
+          {service.image || service.gallery?.[0] ? (
+            <img
+              src={service.image || service.gallery?.[0]}
+              alt=""
+              className="h-full w-full object-cover"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+                event.currentTarget.nextElementSibling?.classList.remove("hidden");
+              }}
+            />
+          ) : null}
+          <div className={service.image || service.gallery?.[0] ? "absolute inset-0 hidden items-center justify-center" : "absolute inset-0 flex items-center justify-center"}>
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
+              <Icon name={service.icon || (service.category === "Beauty & Care" || service.category === "Beauty & Wellness" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home")} size={34} strokeWidth={1.45} />
             </span>
           </div>
+        </div>
 
         {service.match && (
-          <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold text-[#07863a] shadow-sm">
+          <span className="absolute left-2 top-2 rounded-full bg-white px-2.5 py-1 text-[9px] font-semibold text-[#07863a] shadow-sm">
             ◈ {service.match}
           </span>
         )}
@@ -792,48 +795,34 @@ function ServiceListingCard({ service }) {
           aria-label={saved ? `Unsave ${service.title}` : `Save ${service.title}`}
           aria-pressed={saved}
           onClick={handleSave}
-          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-all ${saved ? "bg-[#10183f] text-white scale-105" : "bg-white text-[#10183f]"}`}
+          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 ${saved ? "bg-[#10183f] text-white scale-105" : "bg-white text-[#10183f]"}`}
         >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
-          </svg>
+          <Icon name="heart" size={16} />
         </button>
       </div>
 
-      <div className="px-4 pb-4 pt-3.5">
-        <h3 className="truncate text-[15px] font-semibold tracking-[-0.02em] text-[#10183f]">
+      <div className="px-0.5 pb-1 pt-2">
+        <h3 className="truncate text-[11px] font-medium leading-4 text-[#10183f] sm:text-[12px]">
           {service.title}
         </h3>
 
-        <p className="mt-2 text-[16px] font-semibold text-[#07863a]">
+        <p className="mt-1 text-[13px] font-bold tracking-[-0.02em] text-[#10183f] sm:text-[14px]">
           {service.price}
         </p>
 
-        <p className="mt-2 text-[11px] text-[#69739a]">
-          {Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? (
-            <>
-              <span className="mr-1.5 text-[15px] text-[#f4ad00]">★</span>
-              <strong className="text-[#27335f]">{Number(service.rating).toFixed(1)}</strong>
-              <span className="ml-1 text-[#7b84a3]">({service.reviews} reviews)</span>
-            </>
-          ) : (
-            <span className="text-[#7b84a3]">No reviews yet</span>
-          )}
-        </p>
-
-        <div className="mt-4 flex items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#eef1f3] text-[11px] font-semibold text-[#10183f]">
-            {service.sellerImage ? <img src={service.sellerImage} alt={service.seller || ""} className="h-full w-full object-cover" /> : service.sellerInitial}
+        <div className="mt-1.5 flex h-9 items-center gap-1.5">
+          <span className="text-[13px] text-[#f4a900]">★</span>
+          <span className="text-[10px] font-medium text-[#10183f]">
+            {Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? Number(service.rating).toFixed(1) : "New"}
           </span>
-          <div className="min-w-0">
-            <p className="flex items-center gap-1 truncate text-[11px] font-semibold text-[#10183f]">
-              {service.seller}
-              {service.sellerVerified && (
-                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#18a34a] text-[9px] text-white">✓</span>
-              )}
-            </p>
-            <p className="mt-0.5 text-[10px] text-[#7b84a3]">{service.location}</p>
-          </div>
+          {service.reviews != null && Number(service.reviews) > 0 && (
+            <span className="text-[10px] text-[#7b84a3]">({service.reviews})</span>
+          )}
+        </div>
+
+        <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[9px] text-[#7b84a3]">
+          {service.sellerVerified && <Icon name="shield" size={12} strokeWidth={2.2} />}
+          <span className="truncate">{service.seller} · {service.location}</span>
         </div>
       </div>
     </Link>
@@ -900,7 +889,7 @@ function ServicesListingSection({ isAuthenticated }) {
         </button>
       </div>
 
-      <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-7 grid grid-cols-2 gap-3 xl:grid-cols-5">
         {services.length ? services.map((service) => (
           <ServiceListingCard key={service.id} service={service} />
         )) : (
