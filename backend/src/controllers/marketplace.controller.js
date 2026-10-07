@@ -23,6 +23,21 @@ function locationLabel(location) {
   return [location.city, location.state, location.country].filter(Boolean).join(", ");
 }
 
+
+function locationFilter(value) {
+  const parts = String(value || "").split(",").map((part) => part.trim()).filter(Boolean);
+  if (!parts.length) return null;
+  return {
+    $and: parts.map((part) => ({
+      $or: [
+        { "location.city": { $regex: part, $options: "i" } },
+        { "location.state": { $regex: part, $options: "i" } },
+        { "location.country": { $regex: part, $options: "i" } },
+      ],
+    })),
+  };
+}
+
 function primaryImage(images = []) {
   return images.find((image) => image?.isPrimary)?.url || images[0]?.url || "";
 }
@@ -191,6 +206,8 @@ async function getProducts(req, res) {
       sellerId: { $in: approvedSellerIds },
     };
     if (clean(req.query.category)) filter.category = clean(req.query.category);
+    const locationQuery = locationFilter(req.query.location);
+    if (locationQuery) Object.assign(filter, locationQuery);
     const products = await findProducts(filter);
     return res.json({ success: true, products: products.map(productResponse) });
   } catch (error) {
@@ -279,6 +296,8 @@ async function getServices(req, res) {
       providerId: { $in: approvedProviderIds },
     };
     if (clean(req.query.category)) filter.category = clean(req.query.category);
+    const locationQuery = locationFilter(req.query.location);
+    if (locationQuery) Object.assign(filter, locationQuery);
     const services = await findServices(filter);
     return res.json({ success: true, services: services.map(serviceResponse) });
   } catch (error) {
