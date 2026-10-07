@@ -625,38 +625,25 @@ export default function SellerSignupPageOne() {
                   Profile photo
                 </span>
 
-                <label className="seller-signup-avatar-upload">
-                  <span className="seller-signup-avatar-circle">{photoPreview ? <img src={photoPreview} alt="Seller profile preview" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} /> : (formData.firstName?.[0] || "M")}</span>
-
-                  <span className="seller-signup-change-photo">
-                    ↑ Change photo
-                  </span>
-
+                                <label className={`seller-signup-avatar-upload seller-signup-avatar-upload-modern ${photoPreview ? "has-image" : ""}`}>
+                  {photoPreview ? <img className="seller-signup-avatar-image" src={photoPreview} alt="Seller profile preview" /> : <><span className="seller-signup-avatar-placeholder">◎</span><strong>Upload image</strong></>}
                   <input
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
-                        alert("Please choose a JPG, PNG, or WebP image up to 5MB.");
-                        e.target.value = "";
+                      if (file.size > 5 * 1024 * 1024) {
+                        alert("Image must be 5MB or smaller.");
                         return;
                       }
-                      photoSelectionRef.current = true;
                       userEditedSellerStepOneRef.current = true;
-                      uploadFile(file, "matchet/profiles").then((uploaded) => {
-                        if (!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
-                        updateField("profileImage", uploaded);
-                        setPhotoPreview(uploaded.url);
-                      }).catch((error) => {
-                        photoSelectionRef.current = false;
-                        alert(error.message || "Unable to upload your profile photo.");
-                      });
-                      e.target.value = "";
+                      updateField("profileImage", file);
                     }}
+                    hidden
                   />
                 </label>
+                {photoPreview && <button type="button" className="seller-signup-remove-photo" onClick={() => { userEditedSellerStepOneRef.current = true; updateField("profileImage", null); }}>Remove</button>
 
                 <span className="seller-signup-upload-note">
                   JPG, PNG or WebP. Max 5MB.
@@ -704,3 +691,11 @@ export default function SellerSignupPageOne() {
     </>
   );
 }
+/* Professional seller profile photo uploader */
+.seller-signup-avatar-upload-modern{position:relative;width:104px;height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px dashed #bfc9da;border-radius:50%;background:#f5f7fb;color:#68739b;cursor:pointer;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease}
+.seller-signup-avatar-upload-modern:hover{border-color:#07983f;box-shadow:0 0 0 4px rgba(7,152,63,.08)}
+.seller-signup-avatar-upload-modern.has-image{border-style:solid;border-color:#d7deec}
+.seller-signup-avatar-image{width:100%;height:100%;object-fit:cover}
+.seller-signup-avatar-placeholder{font-size:25px;line-height:1;color:#8a94b6}
+.seller-signup-avatar-upload-modern strong{font-size:11px;color:#10183f}
+.seller-signup-remove-photo{border:0;background:transparent;color:#c23d3d;font-size:11px;font-weight:600;cursor:pointer}
