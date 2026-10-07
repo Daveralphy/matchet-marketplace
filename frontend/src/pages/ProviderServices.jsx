@@ -391,8 +391,7 @@ export default function ProviderServices() {
                 />
                 <small className="provider-service-image-help">Add one image first. Use the + tile to add more images.</small>
               </label>
-              {form.images?.length > 0 && (
-                <div className="provider-service-image-grid">
+              <div className="provider-service-image-grid">
                   {form.images.map((image, index) => {
                     const preview = image instanceof File ? URL.createObjectURL(image) : image?.url;
                     return (
@@ -411,7 +410,6 @@ export default function ProviderServices() {
                     );
                   })}
                 <label className="provider-service-image-preview provider-service-image-add"><span>＋</span><small>Add image</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e)=>{const file=e.target.files?.[0];if(file)setForm((current)=>({...current,images:[...(current.images||[]),file].slice(0,6)}));e.target.value="";}} /></label></div>
-              )}
               <div className="provider-service-modal-actions"><button type="button" onClick={() => setShowForm(false)}>Cancel</button><button className="provider-blue-button" disabled={saving}>{saving ? "Saving..." : editingService ? "Save changes" : "Publish service"}</button></div>
             </form>
           </div>
