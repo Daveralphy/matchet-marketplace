@@ -10,7 +10,7 @@ const COUNTRY_CURRENCY = {
   Ireland: "EUR",
   Ghana: "GHS",
   Kenya: "KES",
-  South Africa: "ZAR",
+  "South Africa": "ZAR",
   Australia: "AUD",
   "New Zealand": "NZD",
   India: "INR",
