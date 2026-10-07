@@ -190,7 +190,7 @@ function RequireOnboardingReview({ flow, children }) {
 
   if (loading || checking) return <main className="min-h-[60vh] w-full" />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (redirectStep === 0) return <Navigate to={flow === "service" ? "/provider/application-status" : "/register/page7"} replace />;
+  if (redirectStep === 0) return <Navigate to={flow === "service" ? "/provider/application-status" : "/register/page6"} replace />;
   if (redirectStep) {
     const target = flow === "service"
       ? (redirectStep === 1 ? "/provider/onboarding" : "/provider/onboarding/page" + redirectStep)
@@ -377,10 +377,6 @@ const router = createBrowserRouter([
   },
   {
     path: "/register/page3",
-    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageThree /></RequireOnboardingStep>,
-  },
-  {
-    path: "/register/page3",
     element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageFive /></RequireOnboardingStep>,
   },
   {
@@ -394,9 +390,6 @@ const router = createBrowserRouter([
   {
     path: "/register/page6",
     element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
-  },
-  {
-    
   },
   {
     path: "/account/saved-items",
@@ -657,19 +650,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/onboarding/page6",
-    element: <RequireOnboardingReview flow="service"><ProviderSignupPageSeven /></RequireOnboardingReview>,
-  },
-  {
-    path: "/provider/onboarding/page7",
-    element: <RequireOnboardingStep flow="service" step={7}><ProviderSignupPageSeven /></RequireOnboardingStep>,
-  },
-  {
-    path: "/provider/onboarding/success",
     element: <RequireOnboardingSubmitted flow="service"><ProviderSignupPageEight /></RequireOnboardingSubmitted>,
-  },
-  {
-    path: "/provider/application-status",
-    element: <RequireAuth><ProviderApplicationStatus /></RequireAuth>,
   },
   {
     path: "/provider/listings",
