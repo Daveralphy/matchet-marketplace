@@ -291,12 +291,13 @@ async function getProviders(req, res) {
       success: true,
       providers: profiles.map((profile) => {
         const user = profile.userId || {};
-        const name = profile.businessName || [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || "Provider";
+        const personName = [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || "Provider";
+        const name = personName;
         return {
           id: profile._id.toString(),
           userId: user._id?.toString?.() || null,
           name,
-          businessName: profile.businessName || name,
+          businessName: profile.businessName || "",
           category: profile.categories?.[0] || "Services",
           categories: profile.categories || [],
           bio: profile.bio || "",
