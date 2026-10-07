@@ -46,14 +46,18 @@ async function request(path, options = {}) {
   }
 }
 
-export async function getMarketplaceProducts({ sellerType = "" } = {}) {
-  const params = sellerType && sellerType !== "Verified sellers" ? `?sellerType=${encodeURIComponent(sellerType)}` : "";
-  const payload = await request("/api/marketplace/products" + params);
+export async function getMarketplaceProducts({ sellerType = "", location = "" } = {}) {
+  const params = new URLSearchParams();
+  if (sellerType && sellerType !== "Verified sellers") params.set("sellerType", sellerType);
+  if (location) params.set("location", location);
+  const query = params.toString();
+  const payload = await request("/api/marketplace/products" + (query ? "?" + query : ""));
   return Array.isArray(payload.products) ? payload.products : [];
 }
 
-export async function getMarketplaceServices() {
-  const payload = await request("/api/marketplace/services");
+export async function getMarketplaceServices({ location = "" } = {}) {
+  const query = location ? "?location=" + encodeURIComponent(location) : "";
+  const payload = await request("/api/marketplace/services" + query);
   return Array.isArray(payload.services) ? payload.services : [];
 }
 
