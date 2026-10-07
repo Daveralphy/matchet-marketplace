@@ -208,6 +208,7 @@ async function getProducts(req, res) {
       sellerId: { $in: approvedSellerIds },
     };
     if (clean(req.query.category)) filter.category = clean(req.query.category);
+    if (clean(req.query.providerId) && mongoose.isValidObjectId(req.query.providerId)) filter.providerId = req.query.providerId;
     const locationQuery = locationFilter(req.query.location);
     if (locationQuery) {
       const parts = locationQuery.$and;
@@ -379,6 +380,41 @@ async function getServices(req, res) {
     return res.status(500).json({ success: false, message: "Unable to load services right now." });
   }
 }
+async function getPublicProviderProfile(req, res) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ success: false, message: "Provider not found." });
+    const profile = await ProviderProfile.findOne({
+      _id: req.params.id, status: "active", verificationStatus: "verified",
+    }).populate({ path: "userId", select: "firstName lastName username avatar" }).lean();
+    if (!profile) return res.status(404).json({ success: false, message: "Provider not found." });
+
+    const user = profile.userId || {};
+    const services = await findServices({ providerId: user._id, status: "active" });
+
+    return res.json({
+      success: true,
+      provider: {
+        id: profile._id.toString(),
+        userId: user._id?.toString?.() || null,
+        name: [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || "Provider",
+        businessName: profile.businessName || "",
+        categories: profile.categories || [],
+        bio: profile.bio || "",
+        experience: profile.experience || "",
+        location: locationLabel(profile.serviceArea),
+        rating: Number(profile.ratingAverage || 0),
+        reviews: Number(profile.reviewCount || 0),
+        image: user.avatar?.url || "",
+        verified: profile.verificationStatus === "verified",
+      },
+      services: services.map(serviceResponse),
+    });
+  } catch (error) {
+    console.error("Get public provider profile failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to load this provider right now." });
+  }
+}
+
 async function getServiceById(req, res) {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -602,6 +638,7 @@ module.exports = {
   getProviders,
   getServices,
   getServiceById,
+  getPublicProviderProfile,
   getProviderProfile,
   getStoreProfile,
   upsertProviderProfile,
