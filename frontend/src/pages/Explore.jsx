@@ -628,6 +628,12 @@ function ExploreResultsSection({ isAuthenticated }) {
   }, [selectedLocation]);
 
   useEffect(() => {
+    const handleLocationChange = (event) => setSelectedLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
+  }, []);
+
+  useEffect(() => {
     const query = searchParams.get("q") || "";
     setSearch(query);
   }, [searchParams]);
