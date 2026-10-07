@@ -676,6 +676,15 @@ function ProductCatalogue({ isAuthenticated }) {
   }, [view, sort, location, search, filters]);
 
   useEffect(() => {
+    const handleLocationChange = (event) => {
+      const next = event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria";
+      setLocation(next);
+    };
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
+  }, []);
+
+  useEffect(() => {
     let active = true;
 
     const loadProducts = filters.sellerType ? getMarketplaceProducts({ sellerType: filters.sellerType, location }).then((products) => ({ products })) : getMarketplaceData(location);
