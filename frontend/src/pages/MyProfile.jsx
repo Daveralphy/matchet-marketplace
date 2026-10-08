@@ -319,33 +319,295 @@ function MyProfile() {
   const { user, refreshUser } = useAuth();
   const [profile, setProfile] = useState(user);
   const [editing, setEditing] = useState(false);
+  const [editingField, setEditingField] = useState(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [language, setLanguage] = useState("English");
+  const [preferredLocation, setPreferredLocation] = useState("");
 
-  useEffect(() => { getCurrentUser().then((response) => setProfile(response.user)).catch(() => {}); }, []);
+  useEffect(() => {
+    getCurrentUser()
+      .then((response) => {
+        setProfile(response.user);
+
+        const savedNotifications =
+          response.user?.preferences?.notifications?.enabled;
+
+        if (savedNotifications !== undefined) {
+          setNotificationsEnabled(savedNotifications);
+        }
+
+        const savedLanguage =
+          response.user?.preferences?.platform?.language;
+
+        if (savedLanguage) {
+          setLanguage(savedLanguage);
+        }
+
+        const savedPreferredLocation =
+          response.user?.preferences?.preferredLocation;
+
+        if (savedPreferredLocation) {
+          setPreferredLocation(savedPreferredLocation);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const saveProfile = async (event) => {
-    event.preventDefault(); setSaving(true); setMessage(""); setError("");
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
+
     const form = new FormData(event.currentTarget);
+
     try {
-      const response = await updateCurrentUser({ firstName: form.get("firstName"), lastName: form.get("lastName"), phone: form.get("phone"), location: { city: form.get("city"), state: form.get("state"), country: form.get("country") } });
-      setProfile(response.user); await refreshUser(); setEditing(false); setMessage("Your profile has been updated.");
-    } catch (e) { setError(e.message || "Unable to update your profile."); } finally { setSaving(false); }
+      const response = await updateCurrentUser({
+        firstName: form.get("firstName"),
+        lastName: form.get("lastName"),
+        phone: form.get("phone"),
+        location: {
+          city: form.get("city"),
+          state: form.get("state"),
+          country: form.get("country"),
+        },
+      });
+
+      setProfile(response.user);
+      await refreshUser();
+      setEditing(false);
+      setMessage("Your profile has been updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your profile.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const changeAvatar = async (event) => {
-    const file = event.target.files?.[0]; if (!file) return;
-    setUploading(true); setMessage(""); setError("");
-    try { const uploaded = await uploadFile(file, "matchet/profiles"); const response = await updateCurrentUser({ avatar: uploaded }); setProfile(response.user); await refreshUser(); setMessage("Profile photo updated."); }
-    catch (e) { setError(e.message || "Unable to update your profile photo."); } finally { setUploading(false); }
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setMessage("");
+    setError("");
+
+    try {
+      const uploaded = await uploadFile(file, "matchet/profiles");
+      const response = await updateCurrentUser({ avatar: uploaded });
+      setProfile(response.user);
+      await refreshUser();
+      setMessage("Profile photo updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your profile photo.");
+    } finally {
+      setUploading(false);
+    }
   };
 
-  const fullName = [profile?.firstName, profile?.lastName].filter(Boolean).join(" ") || "Your name";
-  const initials = `${profile?.firstName?.[0] || ""}${profile?.lastName?.[0] || ""}`.toUpperCase() || "U";
+  const saveName = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
+
+    const form = new FormData(event.currentTarget);
+
+    try {
+      const response = await updateCurrentUser({
+        firstName: form.get("firstName"),
+        lastName: form.get("lastName"),
+      });
+
+      setProfile(response.user);
+      await refreshUser();
+      setEditingField(null);
+      setMessage("Your name has been updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your name.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveEmail = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
+
+    const form = new FormData(event.currentTarget);
+
+    try {
+      const response = await updateCurrentUser({
+        email: form.get("email"),
+      });
+
+      setProfile(response.user);
+      await refreshUser();
+      setEditingField(null);
+      setMessage("Your email address has been updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your email address.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const savePhone = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
+
+    const form = new FormData(event.currentTarget);
+
+    try {
+      const response = await updateCurrentUser({
+        phone: form.get("phone"),
+      });
+
+      setProfile(response.user);
+      await refreshUser();
+      setEditingField(null);
+      setMessage("Your phone number has been updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your phone number.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveLocation = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
+
+    const form = new FormData(event.currentTarget);
+
+    try {
+      const response = await updateCurrentUser({
+        location: {
+          city: form.get("city"),
+          state: form.get("state"),
+          country: form.get("country"),
+        },
+      });
+
+      setProfile(response.user);
+      await refreshUser();
+      setEditingField(null);
+      setMessage("Your location has been updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your location.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const savePreferredLocation = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
+
+    const form = new FormData(event.currentTarget);
+
+    try {
+      const value = form.get("preferredLocation");
+
+      const response = await updateCurrentUser({
+        preferences: {
+          preferredLocation: value,
+        },
+      });
+
+      setProfile(response.user);
+      setPreferredLocation(value);
+      await refreshUser();
+      setEditingField(null);
+      setMessage("Your preferred location has been updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your preferred location.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveNotifications = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
+
+    try {
+      const response = await updateCurrentUser({
+        preferences: {
+          notifications: {
+            enabled: notificationsEnabled,
+          },
+        },
+      });
+
+      setProfile(response.user);
+      await refreshUser();
+      setEditingField(null);
+      setMessage("Your notification preferences have been updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your notification preferences.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveLanguage = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
+
+    try {
+      const response = await updateCurrentUser({
+        preferences: {
+          platform: {
+            language,
+          },
+        },
+      });
+
+      setProfile(response.user);
+      await refreshUser();
+      setEditingField(null);
+      setMessage("Your language preference has been updated.");
+    } catch (e) {
+      setError(e.message || "Unable to update your language preference.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const fullName =
+    [profile?.firstName, profile?.lastName].filter(Boolean).join(" ") ||
+    "Your name";
+
+  const initials =
+    `${profile?.firstName?.[0] || ""}${profile?.lastName?.[0] || ""}`.toUpperCase() ||
+    "U";
+
   const avatar = profile?.avatar?.url || "";
-  const location = [profile?.location?.city, profile?.location?.state, profile?.location?.country].filter(Boolean).join(", ");
+
+  const location = [
+    profile?.location?.city,
+    profile?.location?.state,
+    profile?.location?.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
 
   return (
     <main className="my-profile-page">
@@ -380,10 +642,25 @@ function MyProfile() {
 
             <div className="profile-avatar-wrapper">
               <div className="profile-avatar">
-                {avatar ? <img src={avatar} alt={fullName} /> : <span>{initials}</span>}
+                {avatar ? (
+                  <img src={avatar} alt={fullName} />
+                ) : (
+                  <span>{initials}</span>
+                )}
               </div>
 
-              <label className="profile-camera-button" aria-label="Change profile picture"><CameraIcon /><input type="file" accept="image/*" onChange={changeAvatar} hidden /></label>
+              <label
+                className="profile-camera-button"
+                aria-label="Change profile picture"
+              >
+                <CameraIcon />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={changeAvatar}
+                  hidden
+                />
+              </label>
             </div>
 
             <div className="profile-summary-details">
@@ -393,7 +670,7 @@ function MyProfile() {
                 @{profile?.username || "username"}
               </p>
 
-              <p>{profile?.email || "—"}</p>
+              <p>{profile?.email || "â€”"}</p>
 
               <p>{profile?.phone || "Phone not added"}</p>
 
@@ -437,7 +714,11 @@ function MyProfile() {
 
               </div>
 
-              <button type="button" className="profile-edit-button" onClick={() => setEditing((value) => !value)}>
+              <button
+                type="button"
+                className="profile-edit-button"
+                onClick={() => setEditing((value) => !value)}
+              >
                 <PencilIcon />
                 <span>{editing ? "Cancel editing" : "Edit Profile"}</span>
               </button>
@@ -446,8 +727,77 @@ function MyProfile() {
           </div>
         </section>
 
+        {editing && (
+          <form
+            className="profile-edit-form profile-section"
+            onSubmit={saveProfile}
+          >
+            <div className="profile-section-header">
+              <h2>Edit your information</h2>
+              <p>Update the details connected to your Matchet account.</p>
+            </div>
 
-        {editing && <form className="profile-edit-form profile-section" onSubmit={saveProfile}><div className="profile-section-header"><h2>Edit your information</h2><p>Update the details connected to your Matchet account.</p></div><div className="profile-edit-grid"><label>First name<input name="firstName" defaultValue={profile?.firstName || ""} required /></label><label>Last name<input name="lastName" defaultValue={profile?.lastName || ""} required /></label><label>Phone number<input name="phone" defaultValue={profile?.phone || ""} /></label><label>City<input name="city" defaultValue={profile?.location?.city || ""} /></label><label>State<input name="state" defaultValue={profile?.location?.state || ""} /></label><label>Country<input name="country" defaultValue={profile?.location?.country || ""} /></label></div><button className="profile-save-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button></form>}
+            <div className="profile-edit-grid">
+              <label>
+                First name
+                <input
+                  name="firstName"
+                  defaultValue={profile?.firstName || ""}
+                  required
+                />
+              </label>
+
+              <label>
+                Last name
+                <input
+                  name="lastName"
+                  defaultValue={profile?.lastName || ""}
+                  required
+                />
+              </label>
+
+              <label>
+                Phone number
+                <input
+                  name="phone"
+                  defaultValue={profile?.phone || ""}
+                />
+              </label>
+
+              <label>
+                City
+                <input
+                  name="city"
+                  defaultValue={profile?.location?.city || ""}
+                />
+              </label>
+
+              <label>
+                State
+                <input
+                  name="state"
+                  defaultValue={profile?.location?.state || ""}
+                />
+              </label>
+
+              <label>
+                Country
+                <input
+                  name="country"
+                  defaultValue={profile?.location?.country || ""}
+                />
+              </label>
+            </div>
+
+            <button
+              className="profile-save-button"
+              type="submit"
+              disabled={saving}
+            >
+              {saving ? "Saving..." : "Save changes"}
+            </button>
+          </form>
+        )}
 
         {/* Personal Information */}
 
@@ -472,13 +822,54 @@ function MyProfile() {
                     Full name
                   </span>
 
-                  <span className="profile-information-value">
-                    {fullName}
-                  </span>
+                  {editingField === "name" ? (
+                    <form onSubmit={saveName}>
+                      <input
+                        name="firstName"
+                        defaultValue={profile?.firstName || ""}
+                        aria-label="First name"
+                        required
+                      />
+
+                      <input
+                        name="lastName"
+                        defaultValue={profile?.lastName || ""}
+                        aria-label="Last name"
+                        required
+                      />
+
+                      <button type="submit" disabled={saving}>
+                        {saving ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingField(null)}
+                        disabled={saving}
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="profile-information-value">
+                      {fullName}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <button type="button">Edit</button>
+              {editingField !== "name" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingField("name");
+                    setMessage("");
+                    setError("");
+                  }}
+                >
+                  Edit
+                </button>
+              )}
 
             </div>
 
@@ -494,17 +885,52 @@ function MyProfile() {
                     Email address
                   </span>
 
-                  <span className="profile-information-value">
-                    {profile?.email || "—"}
+                  {editingField === "email" ? (
+                    <form onSubmit={saveEmail}>
+                      <input
+                        type="email"
+                        name="email"
+                        defaultValue={profile?.email || ""}
+                        aria-label="Email address"
+                        required
+                      />
 
-                    <span className="profile-verified">
-                      Verified
-                    </span>
-                  </span>
+                      <button type="submit" disabled={saving}>
+                        {saving ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingField(null)}
+                        disabled={saving}
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="profile-information-value">
+                      {profile?.email || "â€”"}
+
+                      <span className="profile-verified">
+                        Verified
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <button type="button">Edit</button>
+              {editingField !== "email" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingField("email");
+                    setMessage("");
+                    setError("");
+                  }}
+                >
+                  Edit
+                </button>
+              )}
 
             </div>
 
@@ -520,17 +946,51 @@ function MyProfile() {
                     Phone number
                   </span>
 
-                  <span className="profile-information-value">
-                    {profile?.phone || "Phone not added"}
+                  {editingField === "phone" ? (
+                    <form onSubmit={savePhone}>
+                      <input
+                        type="tel"
+                        name="phone"
+                        defaultValue={profile?.phone || ""}
+                        aria-label="Phone number"
+                      />
 
-                    <span className="profile-verified">
-                      Verified
+                      <button type="submit" disabled={saving}>
+                        {saving ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingField(null)}
+                        disabled={saving}
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="profile-information-value">
+                      {profile?.phone || "Phone not added"}
+
+                      <span className="profile-verified">
+                        Verified
+                      </span>
                     </span>
-                  </span>
+                  )}
                 </div>
               </div>
 
-              <button type="button">Edit</button>
+              {editingField !== "phone" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingField("phone");
+                    setMessage("");
+                    setError("");
+                  }}
+                >
+                  Edit
+                </button>
+              )}
 
             </div>
 
@@ -546,13 +1006,61 @@ function MyProfile() {
                     {location || "Location not added"}
                   </span>
 
-                  <span className="profile-information-value">
-                    Location
-                  </span>
+                  {editingField === "location" ? (
+                    <form onSubmit={saveLocation}>
+                      <input
+                        name="city"
+                        defaultValue={profile?.location?.city || ""}
+                        aria-label="City"
+                        placeholder="City"
+                      />
+
+                      <input
+                        name="state"
+                        defaultValue={profile?.location?.state || ""}
+                        aria-label="State"
+                        placeholder="State"
+                      />
+
+                      <input
+                        name="country"
+                        defaultValue={profile?.location?.country || ""}
+                        aria-label="Country"
+                        placeholder="Country"
+                      />
+
+                      <button type="submit" disabled={saving}>
+                        {saving ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingField(null)}
+                        disabled={saving}
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="profile-information-value">
+                      Location
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <button type="button">Edit</button>
+              {editingField !== "location" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingField("location");
+                    setMessage("");
+                    setError("");
+                  }}
+                >
+                  Edit
+                </button>
+              )}
 
             </div>
 
@@ -582,13 +1090,51 @@ function MyProfile() {
                     Preferred location
                   </span>
 
-                  <span className="profile-information-value">
-                    Location
-                  </span>
+                  {editingField === "preferredLocation" ? (
+                    <form onSubmit={savePreferredLocation}>
+                      <input
+                        type="text"
+                        name="preferredLocation"
+                        value={preferredLocation}
+                        onChange={(event) =>
+                          setPreferredLocation(event.target.value)
+                        }
+                        aria-label="Preferred location"
+                        placeholder="Enter preferred location"
+                      />
+
+                      <button type="submit" disabled={saving}>
+                        {saving ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingField(null)}
+                        disabled={saving}
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="profile-information-value">
+                      {preferredLocation || "Location"}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <button type="button">Edit</button>
+              {editingField !== "preferredLocation" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingField("preferredLocation");
+                    setMessage("");
+                    setError("");
+                  }}
+                >
+                  Edit
+                </button>
+              )}
 
             </div>
 
@@ -604,13 +1150,53 @@ function MyProfile() {
                     Notifications
                   </span>
 
-                  <span className="profile-information-value">
-                    Email and in-app
-                  </span>
+                  {editingField === "notifications" ? (
+                    <form onSubmit={saveNotifications}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={notificationsEnabled}
+                          onChange={(event) =>
+                            setNotificationsEnabled(event.target.checked)
+                          }
+                        />
+                        Enable notifications
+                      </label>
+
+                      <button type="submit" disabled={saving}>
+                        {saving ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingField(null)}
+                        disabled={saving}
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="profile-information-value">
+                      {notificationsEnabled
+                        ? "Email and in-app"
+                        : "Notifications off"}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <button type="button">Edit</button>
+              {editingField !== "notifications" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingField("notifications");
+                    setMessage("");
+                    setError("");
+                  }}
+                >
+                  Edit
+                </button>
+              )}
 
             </div>
 
@@ -626,13 +1212,52 @@ function MyProfile() {
                     Language
                   </span>
 
-                  <span className="profile-information-value">
-                    English
-                  </span>
+                  {editingField === "language" ? (
+                    <form onSubmit={saveLanguage}>
+                      <select
+                        value={language}
+                        onChange={(event) =>
+                          setLanguage(event.target.value)
+                        }
+                        aria-label="Language"
+                      >
+                        <option value="English">English</option>
+                        <option value="Spanish">Spanish</option>
+                        <option value="French">French</option>
+                      </select>
+
+                      <button type="submit" disabled={saving}>
+                        {saving ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingField(null)}
+                        disabled={saving}
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <span className="profile-information-value">
+                      {language}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              <button type="button">Edit</button>
+              {editingField !== "language" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingField("language");
+                    setMessage("");
+                    setError("");
+                  }}
+                >
+                  Edit
+                </button>
+              )}
 
             </div>
 
@@ -679,7 +1304,7 @@ function MyProfile() {
             </span>
 
             <span className="profile-account-arrow">
-              ›
+               ›
             </span>
           </button>
 
@@ -699,7 +1324,7 @@ function MyProfile() {
             </span>
 
             <span className="profile-account-arrow">
-              ›
+               ›
             </span>
           </button>
 

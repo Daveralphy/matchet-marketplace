@@ -503,4 +503,117 @@
 .profile-save-button{margin-top:20px;border:0;border-radius:10px;background:#07983f;color:#fff;padding:12px 20px;font-weight:600;cursor:pointer}
 .profile-save-button:disabled{opacity:.6;cursor:not-allowed}
 .profile-camera-button{cursor:pointer}
+/* Individual profile edit forms */
+
+.profile-information-main form {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-information-main form input,
+.profile-information-main form select {
+  height: 36px;
+  min-width: 180px;
+  border: 1px solid #dfe3ec;
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #ffffff;
+  color: #374151;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.profile-information-main form input:focus,
+.profile-information-main form select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.profile-information-main form input::placeholder {
+  color: #9ca3af;
+}
+
+.profile-information-main form button {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.profile-information-main form button[type="submit"] {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.profile-information-main form button[type="submit"]:hover {
+  background-color: #1d4ed8;
+  text-decoration: none;
+}
+
+.profile-information-main form button[type="button"] {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border-color: #e5e7eb;
+}
+
+.profile-information-main form button[type="button"]:hover {
+  background-color: #e5e7eb;
+  color: #374151;
+  text-decoration: none;
+}
+
+.profile-information-main form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Notification preference form */
+
+.profile-information-main form label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.profile-information-main form label input[type="checkbox"] {
+  min-width: auto;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #2563eb;
+}
+
+/* Keep location editing fields a comfortable size */
+
+.profile-information-main form input[name="city"],
+.profile-information-main form input[name="state"],
+.profile-information-main form input[name="country"] {
+  min-width: 140px;
+}
+
+@media (max-width: 600px) {
+  .profile-information-main form {
+    width: 100%;
+  }
+
+  .profile-information-main form input,
+  .profile-information-main form select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .profile-information-main form button {
+    min-width: 70px;
+  }
+}
 @media(max-width:640px){.profile-edit-grid{grid-template-columns:1fr}}
