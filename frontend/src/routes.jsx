@@ -54,7 +54,7 @@ import ProviderReviews from "./pages/ProviderReviews";
 import ProviderProfile from "./pages/ProviderProfile";
 import ProviderSettings from "./pages/ProviderSettings";
 import { getOnboardingProgress, getProviderProfile, getSellerProfile } from "./api/provider";
-import Login from "./pages/Login";
+import Login from "./pages/Login";\nimport ForgotPassword from "./pages/ForgotPassword";\nimport ResetPassword from "./pages/ResetPassword";\nimport OAuthCallback from "./pages/OAuthCallback";
 import CreateAccount from "./pages/CreateAccount";
 import MarketplaceLayout from "./components/layout/MarketplaceLayout";
 import Home from "./pages/Home";
