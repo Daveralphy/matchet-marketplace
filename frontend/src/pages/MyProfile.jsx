@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { getCurrentUser, updateCurrentUser } from "../api/auth";
 import { uploadFile } from "../api/uploads";
 import "./MyProfile.css";
-import Button from "../components/common/Button";
+//import Button from "../components/common/Button";
 
 function HomeIcon() {
   return (
@@ -319,10 +319,12 @@ function TrashIcon() {
 function MyProfile() {
   const { user, refreshUser } = useAuth();
   const [profile, setProfile] = useState(user);
+  const [selectedProfileLocation, setSelectedProfileLocation] = useState(null);
+  const [profileLocationText, setProfileLocationText] = useState("");
   const [editing, setEditing] = useState(false);
   const [editingField, setEditingField] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  // const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -368,12 +370,11 @@ function MyProfile() {
     const form = new FormData(event.currentTarget);
 
     try {
-      const selectedLocation = (form.get("location") || "").trim();
+      const selectedLocation = form.get("location") || "";
+      const existingLocation = profile?.location || {};
       const locationParts = selectedLocation
         .split(",")
         .map((part) => part.trim());
-
-      const existingLocation = profile?.location || {};
 
       const response = await updateCurrentUser({
         firstName: form.get("firstName"),
@@ -381,22 +382,26 @@ function MyProfile() {
         phone: form.get("phone"),
         location: {
           ...existingLocation,
-          ...(selectedLocation
+          ...(selectedProfileLocation
             ? {
-              city: locationParts[0] || "",
-              state:
-                locationParts.length > 2
-                  ? locationParts[1] || ""
-                  : "",
-              country:
-                locationParts[locationParts.length - 1] || "",
+              city: selectedProfileLocation.city || "",
+              state: selectedProfileLocation.state || "",
+              country: selectedProfileLocation.country || "",
+              ...(selectedProfileLocation.coordinates
+                ? { coordinates: selectedProfileLocation.coordinates }
+                : {}),
             }
-            : {
-              city: form.get("city") || existingLocation.city || "",
-              state: form.get("state") || existingLocation.state || "",
-              country:
-                form.get("country") || existingLocation.country || "",
-            }),
+            : selectedLocation
+              ? {
+                city: locationParts[0] || "",
+                state: locationParts.length > 2 ? locationParts[1] || "" : "",
+                country: locationParts[locationParts.length - 1] || "",
+              }
+              : {
+                city: form.get("city") || existingLocation.city || "",
+                state: form.get("state") || existingLocation.state || "",
+                country: form.get("country") || existingLocation.country || "",
+              }),
           addressLine1:
             form.get("addressLine1") ||
             existingLocation.addressLine1 ||
@@ -414,14 +419,13 @@ function MyProfile() {
       setSaving(false);
     }
 
-
   };
 
   const changeAvatar = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
+    // setUploading(true);
     setMessage("");
     setError("");
 
@@ -433,8 +437,6 @@ function MyProfile() {
       setMessage("Profile photo updated.");
     } catch (e) {
       setError(e.message || "Unable to update your profile photo.");
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -634,13 +636,17 @@ function MyProfile() {
   const avatar = profile?.avatar?.url || "";
 
   const location = [
-    profile?.location?.city,
-    profile?.location?.state,
-    profile?.location?.country,
-  ]
-    .filter(Boolean)
-    .join(", ");
-
+    ...new Set(
+      [
+        profile?.location?.city,
+        profile?.location?.state,
+        profile?.location?.country,
+      ]
+        .filter(Boolean)
+        .map((part) => part.trim())
+        .filter(Boolean)
+    ),
+  ].join(", ");
   return (
     <main className="my-profile-page">
       <div className="my-profile-container">
@@ -800,14 +806,23 @@ function MyProfile() {
               <label className="location-field">
                 Location
                 <LocationSearch
-                  value={[
-                    profile?.location?.city,
-                    profile?.location?.state,
-                    profile?.location?.country,
-                  ].filter(Boolean).join(", ")}
+                  value={
+                    profileLocationText ||
+                    [
+                      profile?.location?.city,
+                      profile?.location?.state,
+                      profile?.location?.country,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")
+                  }
+                  onChange={(value) => {
+                    setProfileLocationText(value);
+                    setSelectedProfileLocation(null);
+                  }}
                   onSelect={(location) => {
-                    const input = document.querySelector('input[name="location"]');
-                    if (input) input.value = location.label;
+                    setSelectedProfileLocation(location);
+                    setProfileLocationText(location.label);
                   }}
                   placeholder="Search for your city, state, or country..."
                 />
@@ -816,11 +831,17 @@ function MyProfile() {
               <input
                 type="hidden"
                 name="location"
-                defaultValue={[
-                  profile?.location?.city,
-                  profile?.location?.state,
-                  profile?.location?.country,
-                ].filter(Boolean).join(", ")}
+                value={
+                  profileLocationText ||
+                  [
+                    profile?.location?.city,
+                    profile?.location?.state,
+                    profile?.location?.country,
+                  ]
+                    .filter(Boolean)
+                    .join(", ")
+                }
+                readOnly
               />
 
               <label>
