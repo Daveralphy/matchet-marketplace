@@ -8,11 +8,21 @@ const {
   logout,
   changePassword,
   deleteAccount,
+  requestPasswordReset,
+  resetPassword,
+  startGoogleSignIn,
+  finishGoogleSignIn,
+  appleSignIn,
 } = require("../controllers/auth.controller");
 
 const router = express.Router();
 
-router.get("/google", startGoogleSignIn);\nrouter.get("/google/callback", finishGoogleSignIn);\nrouter.get("/apple", appleSignIn);\nrouter.post("/forgot-password", requestPasswordReset);\nrouter.post("/reset-password", resetPassword);\nrouter.post("/register", register);
+router.get("/google", startGoogleSignIn);
+router.get("/google/callback", finishGoogleSignIn);
+router.get("/apple", appleSignIn);
+router.post("/forgot-password", requestPasswordReset);
+router.post("/reset-password", resetPassword);
+router.post("/register", register);
 router.post("/login", login);
 router.get("/me", requireAuth, me);
 router.patch("/me", requireAuth, updateMe);
