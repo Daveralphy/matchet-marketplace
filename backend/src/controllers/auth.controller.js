@@ -12,7 +12,7 @@ const CLIENT_URL = () => (process.env.CLIENT_URL || "http://localhost:5173").rep
 const GOOGLE_SCOPES = "openid email profile";
 
 function googleRedirectUri() {
-  return process.env.GOOGLE_REDIRECT_URI || `${(process.env.BACKEND_URL || "http://localhost:5000").replace(/\\/$/, "")}/api/auth/google/callback`;
+  return process.env.GOOGLE_REDIRECT_URI || `${(process.env.BACKEND_URL || "http://localhost:5000").replace(/\/$/, "")}/api/auth/google/callback`;
 }
 
 function googleIsConfigured() {
@@ -41,6 +41,31 @@ async function sendPasswordResetEmail(email, resetUrl) {
   if (!response.ok) {
     const details = await response.text().catch(() => "");
     throw new Error(`Password reset email delivery failed (${response.status}): ${details.slice(0, 300)}`);
+  }
+}
+
+async function exchangeGoogleSignIn(req, res) {
+  const code = String(req.body?.code || "");
+  if (!code) return res.status(400).json({ success: false, message: "The Google sign-in code is missing." });
+
+  try {
+    const codeHash = crypto.createHash("sha256").update(code).digest("hex");
+    const user = await User.findOne({
+      googleLoginCodeHash: codeHash,
+      googleLoginCodeExpiresAt: { $gt: new Date() },
+      isActive: true,
+    });
+    if (!user) return res.status(400).json({ success: false, message: "This Google sign-in session is invalid or expired. Please try again." });
+
+    user.googleLoginCodeHash = undefined;
+    user.googleLoginCodeExpiresAt = undefined;
+    user.lastLoginAt = new Date();
+    await user.save();
+    setAuthCookie(res, signAuthToken(user._id));
+    return res.status(200).json({ success: true, user: serializeUser(user) });
+  } catch (error) {
+    console.error("Google sign-in exchange failed:", error.message);
+    return res.status(500).json({ success: false, message: "Unable to finish Google sign-in right now." });
   }
 }
 
@@ -259,10 +284,11 @@ async function finishGoogleSignIn(req, res) {
       });
     }
 
-    user.lastLoginAt = new Date();
+    const rawLoginCode = crypto.randomBytes(32).toString("hex");
+    user.googleLoginCodeHash = crypto.createHash("sha256").update(rawLoginCode).digest("hex");
+    user.googleLoginCodeExpiresAt = new Date(Date.now() + 2 * 60 * 1000);
     await user.save();
-    setAuthCookie(res, signAuthToken(user._id));
-    return res.redirect(`${CLIENT_URL()}/auth/callback`);
+    return res.redirect(`${CLIENT_URL()}/auth/callback?code=${encodeURIComponent(rawLoginCode)}`);
   } catch (error) {
     console.error("Google sign-in failed:", error.message);
     return fail("google_sign_in_failed");
@@ -580,4 +606,10 @@ module.exports = {
   logout,
   changePassword,
   deleteAccount,
+  requestPasswordReset,
+  resetPassword,
+  startGoogleSignIn,
+  finishGoogleSignIn,
+  exchangeGoogleSignIn,
+  appleSignIn,
 };
