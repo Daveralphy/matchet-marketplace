@@ -371,6 +371,18 @@ const router = createBrowserRouter([
     element: <CreateAccount />,
   },
   {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
+  },
+  {
+    path: "/auth/callback",
+    element: <OAuthCallback />,
+  },
+  {
     path: "/register",
     element: <RequireOnboardingStep flow="seller" step={1}><SellerSignupPageOne /></RequireOnboardingStep>,
   },
