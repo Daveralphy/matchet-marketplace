@@ -2,6 +2,7 @@
 // Edited by: Brigham
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LocationSearch from "../components/LocationSearch";
 import { useAuth } from "../context/AuthContext";
 import { getCurrentUser, updateCurrentUser } from "../api/auth";
@@ -318,6 +319,7 @@ function TrashIcon() {
 
 function MyProfile() {
   const { user, refreshUser } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(user);
   const [selectedProfileLocation, setSelectedProfileLocation] = useState(null);
   const [profileLocationText, setProfileLocationText] = useState("");
@@ -1352,6 +1354,7 @@ function MyProfile() {
           <button
             type="button"
             className="profile-account-card"
+            onClick={() => navigate("/account/security")}
           >
             <span className="profile-account-icon security-icon">
               <LockIcon />
@@ -1370,6 +1373,7 @@ function MyProfile() {
           <button
             type="button"
             className="profile-account-card"
+            onClick={() => navigate("/account/delete")}
           >
             <span className="profile-account-icon delete-icon">
               <TrashIcon />

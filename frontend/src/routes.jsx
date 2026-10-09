@@ -8,6 +8,8 @@ import SavedItems from "./pages/SavedItems";
 import BuyerOrders from "./pages/BuyerOrders";
 import BuyerBookings from "./pages/BuyerBookings";
 import AccountSettings from "./pages/AccountSettings";
+import AccountSecurity from "./pages/AccountSecurity";
+import DeleteAccount from "./pages/DeleteAccount";
 import HelpSupport from "./pages/HelpSupport";
 import MyProfile from "./pages/MyProfile";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
@@ -536,6 +538,14 @@ const router = createBrowserRouter([
   {
     path: "/account/settings",
     element: <RequireAuth><MarketplaceLayout><AccountSettings /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/security",
+    element: <RequireAuth><MarketplaceLayout><AccountSecurity /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/delete",
+    element: <RequireAuth><MarketplaceLayout><DeleteAccount /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/safety",
