@@ -2,7 +2,7 @@ import {useEffect,useState} from "react";
 import {ProviderShell,Icon} from "../components/ProviderShell";
 import {getSellerEarnings} from "../api/provider";
 import "../styles/seller-earnings.css";
-const money=v=>new Intl.NumberFormat("en-NG",{style:"currency",currency:"NGN",maximumFractionDigits:0}).format(Number(v||0));
+const money=(v,currency="NGN")=>new Intl.NumberFormat(undefined,{style:"currency",currency,maximumFractionDigits:0}).format(Number(v||0));
 export default function SellerEarnings(){
  const [data,setData]=useState(null),[error,setError]=useState("");
  useEffect(()=>{getSellerEarnings().then(r=>setData(r.data)).catch(e=>setError(e.message||"Unable to load earnings."))},[]);

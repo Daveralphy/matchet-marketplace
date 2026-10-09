@@ -19,6 +19,7 @@ export default function SellerSignupPageSix() {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
+      e.target.reportValidity();
       return;
     }
 
@@ -31,7 +32,7 @@ export default function SellerSignupPageSix() {
       };
       const response = await saveSellerOnboardingDraft(paymentFormData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/register/page7");
+      navigate("/register/page5");
     } catch (error) {
       alert(error.message || "Unable to save your progress. Please try again.");
     }
@@ -334,7 +335,7 @@ export default function SellerSignupPageSix() {
         </section>
 
         <section className="seller-signup-right-section">
-          <SellerSignupFormHeader step={6} />
+          <SellerSignupFormHeader step={4} />
 
           <h2 className="seller-signup-step-header">
             Set up your payment details

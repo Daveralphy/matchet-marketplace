@@ -23,6 +23,19 @@ function locationLabel(location) {
   return [location.city, location.state, location.country].filter(Boolean).join(", ");
 }
 
+
+function locationFilter(value) {
+  const parts = String(value || "").split(",").map((part) => part.trim()).filter(Boolean);
+  if (!parts.length) return null;
+  return {
+    $or: parts.flatMap((part) => ([
+      { "location.city": { $regex: part, $options: "i" } },
+      { "location.state": { $regex: part, $options: "i" } },
+      { "location.country": { $regex: part, $options: "i" } },
+    ])),
+  };
+}
+
 function primaryImage(images = []) {
   return images.find((image) => image?.isPrimary)?.url || images[0]?.url || "";
 }
@@ -51,9 +64,10 @@ function productResponse(product) {
     name: product.name,
     description: product.description,
     category: product.category,
-    price: formatPrice(product.price),
+    price: formatPrice(product.price, product.currency || "NGN"),
     priceValue: product.price,
-    currency: "NGN",
+    currency: product.currency || "NGN",
+    shipping: product.shipping || { homeDelivery: true, pickup: true, deliveryFee: 0 },
     inventory: product.inventory,
     availability: product.inventory > 0 ? "In stock" : "Out of stock",
     status: product.status,
@@ -72,6 +86,7 @@ function productResponse(product) {
     images: (product.images || []).map((image) => ({ ...image, url: imageUrl(image) })).filter((image) => image.url),
     reviews: Number(product.reviewCount || 0),
     rating: Number(product.ratingAverage || 0),
+    viewCount: Number(product.viewCount || 0),
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
   };
@@ -97,7 +112,9 @@ function serviceResponse(service) {
     availability: service.status === "active" ? "Available" : service.status,
     status: service.status,
     location: locationLabel(service.location || profile.serviceArea),
-    seller: profile.businessName || [provider.firstName, provider.lastName].filter(Boolean).join(" ") || provider.username || "Provider",
+    seller: [provider.firstName, provider.lastName].filter(Boolean).join(" ") || provider.username || profile.businessName || "Provider",
+    businessName: profile.businessName || "",
+    sellerImage: provider.avatar?.url || "",
     sellerVerified: profile.verificationStatus === "verified",
     providerVerified: profile.verificationStatus === "verified",
     providerId: provider._id?.toString?.() || service.providerId?.toString?.(),
@@ -106,6 +123,7 @@ function serviceResponse(service) {
     images: (service.images || []).map((image) => ({ ...image, url: imageUrl(image) })).filter((image) => image.url),
     reviews: Number(service.reviewCount || 0),
     rating: Number(service.ratingAverage || 0),
+    viewCount: Number(service.viewCount || 0),
     createdAt: service.createdAt,
     updatedAt: service.updatedAt,
   };
@@ -171,7 +189,7 @@ async function findProducts(query = {}) {
 
 async function findServices(query = {}) {
   const services = await Service.find(query)
-    .populate({ path: "providerId", select: "firstName lastName username" })
+    .populate({ path: "providerId", select: "firstName lastName username avatar" })
     .sort({ createdAt: -1 })
     .lean();
   return attachServiceMarketplaceData(services);
@@ -179,16 +197,48 @@ async function findServices(query = {}) {
 
 async function getProducts(req, res) {
   try {
-    const approvedStores = await StoreProfile.find({
-      status: "active",
-      verificationStatus: "verified",
-    }).select("userId").lean();
+    const sellerType = clean(req.query.sellerType);
+    const storeFilter = { status: "active", verificationStatus: "verified" };
+    if (sellerType === "Businesses") storeFilter["businessDetails.sellerType"] = /business/i;
+    if (sellerType === "Individuals") storeFilter["businessDetails.sellerType"] = /individual/i;
+
+    const approvedStores = await StoreProfile.find(storeFilter).select("userId location").lean();
     const approvedSellerIds = approvedStores.map((store) => store.userId).filter(Boolean);
+
     const filter = {
       status: "active",
       sellerId: { $in: approvedSellerIds },
     };
+
     if (clean(req.query.category)) filter.category = clean(req.query.category);
+
+    const requestedLocation = clean(req.query.location);
+    if (requestedLocation) {
+      const locationParts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
+
+      const productLocationConditions = locationParts.flatMap((part) => ([
+        { "location.city": { $regex: part, $options: "i" } },
+        { "location.state": { $regex: part, $options: "i" } },
+        { "location.country": { $regex: part, $options: "i" } },
+      ]));
+
+      const matchingSellerIds = approvedStores
+        .filter((store) => {
+          const location = store.location || {};
+          const haystack = [location.city, location.state, location.country].filter(Boolean).join(" ").toLowerCase();
+          return locationParts.some((part) => haystack.includes(part.toLowerCase()));
+        })
+        .map((store) => store.userId)
+        .filter(Boolean);
+
+      filter.$or = [
+        ...(productLocationConditions.length ? [{ $or: productLocationConditions }] : []),
+        ...(matchingSellerIds.length ? [{ sellerId: { $in: matchingSellerIds } }] : []),
+      ];
+
+      if (!filter.$or.length) filter.$or = [{ _id: null }];
+    }
+
     const products = await findProducts(filter);
     return res.json({ success: true, products: products.map(productResponse) });
   } catch (error) {
@@ -196,13 +246,13 @@ async function getProducts(req, res) {
     return res.status(500).json({ success: false, message: "Unable to load products right now." });
   }
 }
-
 async function getProductById(req, res) {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(404).json({ success: false, message: "Product not found." });
     }
 
+    await Product.updateOne({ _id: req.params.id, status: "active" }, { $inc: { viewCount: 1 } });
     const products = await findProducts({ _id: req.params.id, status: "active" });
     const product = products[0];
 
@@ -217,10 +267,20 @@ async function getProductById(req, res) {
 
 async function getProviders(req, res) {
   try {
-    const profiles = await ProviderProfile.find({
+    const providerFilter = {
       status: "active",
       verificationStatus: "verified",
-    })
+    };
+    const requestedLocation = clean(req.query.location);
+    if (requestedLocation) {
+      const parts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
+      providerFilter.$or = parts.flatMap((part) => ([
+        { "serviceArea.city": { $regex: part, $options: "i" } },
+        { "serviceArea.state": { $regex: part, $options: "i" } },
+        { "serviceArea.country": { $regex: part, $options: "i" } },
+      ]));
+    }
+    const profiles = await ProviderProfile.find(providerFilter)
       .populate({ path: "userId", select: "firstName lastName username email avatar" })
       .sort({ createdAt: -1 })
       .lean();
@@ -238,12 +298,13 @@ async function getProviders(req, res) {
       success: true,
       providers: profiles.map((profile) => {
         const user = profile.userId || {};
-        const name = profile.businessName || [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || "Provider";
+        const personName = [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || "Provider";
+        const name = personName;
         return {
           id: profile._id.toString(),
           userId: user._id?.toString?.() || null,
           name,
-          businessName: profile.businessName || name,
+          businessName: profile.businessName || "",
           category: profile.categories?.[0] || "Services",
           categories: profile.categories || [],
           bio: profile.bio || "",
@@ -270,18 +331,90 @@ async function getServices(req, res) {
     const approvedProviders = await ProviderProfile.find({
       status: "active",
       verificationStatus: "verified",
-    }).select("userId").lean();
+    }).select("userId serviceArea").lean();
+
     const approvedProviderIds = approvedProviders.map((profile) => profile.userId).filter(Boolean);
     const filter = {
       status: "active",
       providerId: { $in: approvedProviderIds },
     };
+
     if (clean(req.query.category)) filter.category = clean(req.query.category);
+
+    const requestedLocation = clean(req.query.location);
+    if (requestedLocation) {
+      const locationParts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
+
+      const locationConditions = locationParts.flatMap((part) => ([
+        { "location.city": { $regex: part, $options: "i" } },
+        { "location.state": { $regex: part, $options: "i" } },
+        { "location.country": { $regex: part, $options: "i" } },
+      ]));
+
+      const providerLocationConditions = locationParts.flatMap((part) => ([
+        { "serviceArea.city": { $regex: part, $options: "i" } },
+        { "serviceArea.state": { $regex: part, $options: "i" } },
+        { "serviceArea.country": { $regex: part, $options: "i" } },
+      ]));
+
+      const matchingProviderIds = approvedProviders
+        .filter((profile) => {
+          const area = profile.serviceArea || {};
+          const haystack = [area.city, area.state, area.country].filter(Boolean).join(" ").toLowerCase();
+          return locationParts.some((part) => haystack.includes(part.toLowerCase()));
+        })
+        .map((profile) => profile.userId)
+        .filter(Boolean);
+
+      filter.$or = [
+        ...(locationConditions.length ? [{ $or: locationConditions }] : []),
+        ...(matchingProviderIds.length ? [{ providerId: { $in: matchingProviderIds } }] : []),
+      ];
+
+      if (!filter.$or.length) {
+        filter.$or = [{ _id: null }];
+      }
+    }
+
     const services = await findServices(filter);
     return res.json({ success: true, services: services.map(serviceResponse) });
   } catch (error) {
     console.error("Get services failed:", error);
     return res.status(500).json({ success: false, message: "Unable to load services right now." });
+  }
+}
+async function getPublicProviderProfile(req, res) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ success: false, message: "Provider not found." });
+    const profile = await ProviderProfile.findOne({
+      _id: req.params.id, status: "active", verificationStatus: "verified",
+    }).populate({ path: "userId", select: "firstName lastName username avatar" }).lean();
+    if (!profile) return res.status(404).json({ success: false, message: "Provider not found." });
+
+    const user = profile.userId || {};
+    const services = await findServices({ providerId: user._id, status: "active" });
+
+    return res.json({
+      success: true,
+      provider: {
+        id: profile._id.toString(),
+        userId: user._id?.toString?.() || null,
+        name: [user.firstName, user.lastName].filter(Boolean).join(" ") || user.username || "Provider",
+        businessName: profile.businessName || "",
+        categories: profile.categories || [],
+        bio: profile.bio || "",
+        experience: profile.experience || "",
+        location: locationLabel(profile.serviceArea),
+        rating: Number(profile.ratingAverage || 0),
+        reviews: Number(profile.reviewCount || 0),
+        image: user.avatar?.url || "",
+        verified: profile.verificationStatus === "verified",
+      },
+      services: services.map(serviceResponse),
+    });
+  } catch (error) {
+    console.error("Get public provider profile failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to load this provider right now." });
   }
 }
 
@@ -291,6 +424,7 @@ async function getServiceById(req, res) {
       return res.status(404).json({ success: false, message: "Service not found." });
     }
 
+    await Service.updateOne({ _id: req.params.id, status: "active" }, { $inc: { viewCount: 1 } });
     const services = await findServices({ _id: req.params.id, status: "active" });
     const service = services[0];
 
@@ -507,6 +641,7 @@ module.exports = {
   getProviders,
   getServices,
   getServiceById,
+  getPublicProviderProfile,
   getProviderProfile,
   getStoreProfile,
   upsertProviderProfile,

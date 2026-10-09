@@ -9,6 +9,7 @@ import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 import { getProviderCapabilities, getSellerOnboardingDraft, saveSellerOnboardingDraft } from "../api/provider";
 import { uploadFile } from "../api/uploads";
+import LocationSearch from "../components/LocationSearch";
 
 export default function SellerSignupPageOne() {
   const { formData, updateField, mergeFormData, setOnboardingFlow, clearForm } = useForm();
@@ -16,6 +17,7 @@ export default function SellerSignupPageOne() {
   const navigate = useNavigate();
   const [photoPreview, setPhotoPreview] = useState(null);
   const photoSelectionRef = useRef(false);
+  const userEditedSellerStepOneRef = useRef(false);
 
   useEffect(() => {
     setOnboardingFlow("seller");
@@ -37,7 +39,7 @@ export default function SellerSignupPageOne() {
 
     getSellerOnboardingDraft().then((response) => {
       const draft = response?.data;
-      if (draft?.formData) mergeFormData(draft.formData);
+      if (draft?.formData && !userEditedSellerStepOneRef.current) mergeFormData(draft.formData);
       if (draft?.onboardingStatus === "submitted") {
         navigate("/seller/dashboard", { replace: true });
       }
@@ -62,6 +64,7 @@ export default function SellerSignupPageOne() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    userEditedSellerStepOneRef.current = true;
     updateField(name, value);
   };
 
@@ -69,6 +72,7 @@ export default function SellerSignupPageOne() {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
+      e.target.reportValidity();
       return;
     }
 
@@ -621,60 +625,47 @@ export default function SellerSignupPageOne() {
                   Profile photo
                 </span>
 
-                <label className="seller-signup-avatar-upload">
-                  <span className="seller-signup-avatar-circle">{photoPreview ? <img src={photoPreview} alt="Seller profile preview" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} /> : (formData.firstName?.[0] || "M")}</span>
-
-                  <span className="seller-signup-change-photo">
-                    ↑ Change photo
-                  </span>
-
+                                <label className={`seller-signup-avatar-upload seller-signup-avatar-upload-modern ${photoPreview ? "has-image" : ""}`}>
+                  {photoPreview ? <img className="seller-signup-avatar-image" src={photoPreview} alt="Seller profile preview" /> : <><span className="seller-signup-avatar-placeholder">◎</span><strong>Upload image</strong></>}
                   <input
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
-                        alert("Please choose a JPG, PNG, or WebP image up to 5MB.");
-                        e.target.value = "";
+                      if (file.size > 5 * 1024 * 1024) {
+                        alert("Image must be 5MB or smaller.");
                         return;
                       }
-                      photoSelectionRef.current = true;
-                      uploadFile(file, "matchet/profiles").then((uploaded) => {
-                        if (!uploaded?.url) throw new Error("Cloudinary did not return an image URL.");
-                        updateField("profileImage", uploaded);
-                        setPhotoPreview(uploaded.url);
-                      }).catch((error) => {
-                        photoSelectionRef.current = false;
-                        alert(error.message || "Unable to upload your profile photo.");
-                      });
-                      e.target.value = "";
+                      userEditedSellerStepOneRef.current = true;
+                      updateField("profileImage", file);
                     }}
+                    hidden
                   />
                 </label>
+                {photoPreview && <button type="button" className="seller-signup-remove-photo" onClick={() => { userEditedSellerStepOneRef.current = true; updateField("profileImage", null); }}>Remove</button>}
 
                 <span className="seller-signup-upload-note">
                   JPG, PNG or WebP. Max 5MB.
                 </span>
               </div>
 
-              <label htmlFor="location">
-                Location
-
-                <select
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>
-                    Select location
-                  </option>
-                  <option value="california-usa">California, USA</option>
-                  <option value="lagos-nigeria">Lagos, Nigeria</option>
-                </select>
-              </label>
+              <label htmlFor="location">Location *</label>
+              <LocationSearch
+                value={formData.location}
+                onChange={(value) => {
+                  userEditedSellerStepOneRef.current = true;
+                  updateField("location", value);
+                }}
+                onSelect={(location) => {
+                  userEditedSellerStepOneRef.current = true;
+                  updateField("location", location.label);
+                  updateField("locationData", location);
+                }}
+                placeholder="Search for your city, state, or country..."
+                className="seller-location-search"
+                required
+              />
 
               <label htmlFor="sellerBio">
                 Short bio (optional)

@@ -1,10 +1,10 @@
 // Created by: Blake Ostler
 // Edited by: Raphael Daveal
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
-import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, searchProviderLocations } from "../api/provider";
+import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, searchProviderLocations, highlightOnboardingFields } from "../api/provider";
 import { uploadFile } from "../api/uploads";
 import { useAuth } from "../context/AuthContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
@@ -20,6 +20,7 @@ function ProviderIcon({ type }) {
 export default function ProviderSignupPageOne() {
   const { formData, updateField, mergeFormData, setOnboardingFlow } = useForm();
   const { user } = useAuth();
+  const userEditedStepOneRef = useRef(false);
   const navigate = useNavigate();
   useEffect(() => {
     setOnboardingFlow("service");
@@ -28,7 +29,11 @@ export default function ProviderSignupPageOne() {
         const state = capabilityResponse?.data?.service;
         const draft = draftResponse?.data;
 
-        if (draft?.formData) mergeFormData(draft.formData);
+        // Do not let a late draft response overwrite a selection the user
+        // has already made while Step 1 is loading.
+        if (draft?.formData && !userEditedStepOneRef.current) {
+          mergeFormData(draft.formData);
+        }
 
         if (state?.status === "active" && state?.verificationStatus === "verified" && state?.applicationSubmittedAt) {
           navigate("/provider/dashboard", { replace: true });
@@ -66,7 +71,22 @@ export default function ProviderSignupPageOne() {
     }
   }, [user, formData.providerFirstName, formData.providerLastName, formData.providerEmail, formData.providerPhoneNumber, formData.providerProfileImage, formData.providerLocation, updateField]);
   const [profilePreview, setProfilePreview] = useState(null);
+  const [selectedProviderType, setSelectedProviderType] = useState(formData.providerType || "");
+  const [selectedProviderCountryCode, setSelectedProviderCountryCode] = useState(formData.providerCountryCode || "");
+  const [shortBio, setShortBio] = useState(formData.providerBio || "");
   const [locationQuery, setLocationQuery] = useState(formData.providerLocation || "");
+
+  useEffect(() => {
+    if (!userEditedStepOneRef.current && formData.providerType) {
+      setSelectedProviderType(formData.providerType);
+    }
+  }, [formData.providerType]);
+
+  useEffect(() => {
+    if (!userEditedStepOneRef.current && formData.providerCountryCode) {
+      setSelectedProviderCountryCode(formData.providerCountryCode);
+    }
+  }, [formData.providerCountryCode]);
 
   useEffect(() => {
     setLocationQuery(formData.providerLocation || "");
@@ -125,6 +145,10 @@ export default function ProviderSignupPageOne() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
+    userEditedStepOneRef.current = true;
+    if (name === "providerType") {
+      setSelectedProviderType(value);
+    }
     updateField(name, value);
   };
 
@@ -144,16 +168,32 @@ export default function ProviderSignupPageOne() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!event.currentTarget.checkValidity()) {
-      event.currentTarget.reportValidity();
+
+    const form = event.currentTarget;
+    if (!form.checkValidity()) {
+      form.reportValidity();
       return;
     }
+
     try {
-      const response = await saveProviderOnboardingDraft(formData, 1);
+      const submittedFormData = {
+        ...formData,
+        providerFirstName: form.elements.providerFirstName?.value || "",
+        providerLastName: form.elements.providerLastName?.value || "",
+        providerCountryCode: form.elements.providerCountryCode?.value || "",
+        providerPhoneNumber: form.elements.providerPhoneNumber?.value || "",
+        providerType: selectedProviderType,
+        providerLocation: form.elements.providerLocation?.value || "",
+        providerBio: form.elements.providerBio?.value || "",
+      };
+
+      const response = await saveProviderOnboardingDraft(submittedFormData, 1);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page2");
     } catch (error) {
-      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
+      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) {
+        highlightOnboardingFields(error.missingFields);
+      }
       alert(error.message || "Please complete the highlighted fields before continuing.");
     }
   };
@@ -200,7 +240,18 @@ export default function ProviderSignupPageOne() {
               <fieldset className="phone-fieldset">
                 <legend>Phone number</legend>
                 <div className="phone-input-container">
-                  <select id="providerCountryCode" name="providerCountryCode" value={formData.providerCountryCode || ""} onChange={handleChange} required>
+                  <select
+                    id="providerCountryCode"
+                    name="providerCountryCode"
+                    value={selectedProviderCountryCode}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      userEditedStepOneRef.current = true;
+                      setSelectedProviderCountryCode(value);
+                      updateField("providerCountryCode", value);
+                    }}
+                    required
+                  >
                     <option value="" disabled>Country</option>
                     <option value="+234">🇳🇬 +234</option>
                     <option value="+1">🇺🇸 +1</option>
@@ -217,9 +268,22 @@ export default function ProviderSignupPageOne() {
 
               <fieldset className="provider-signup-provider-types">
                 {providerTypes.map((type) => (
-                  <label key={type.value} className={`provider-signup-provider-type ${formData.providerType === type.value ? "is-selected" : ""}`}>
-                    <input type="radio" name="providerType" value={type.value} checked={formData.providerType === type.value} onChange={handleChange} required />
-                    <ProviderIcon type={type.value} />
+                  <label
+                    key={type.value}
+                    className={`provider-signup-provider-type ${selectedProviderType === type.value ? "is-selected" : ""}`}
+                  >
+                    <input
+                      type="radio"
+                      name="providerType"
+                      value={type.value}
+                      checked={selectedProviderType === type.value}
+                      onChange={handleChange}
+                      required
+                    />
+                    <span className="provider-signup-provider-type-radio" aria-hidden="true" />
+                    <span className="provider-signup-provider-type-icon">
+                      <ProviderIcon type={type.value} />
+                    </span>
                     <span className="provider-signup-provider-type-copy">
                       <strong>{type.title}</strong>
                       <small>{type.description}</small>
@@ -232,14 +296,15 @@ export default function ProviderSignupPageOne() {
                 <div>
                   <label className="provider-signup-form-field-label" htmlFor="providerProfileImage">Profile photo</label>
                   <div className="provider-signup-profile-upload">
-                    <div className="provider-signup-profile-avatar">
-                      {profilePreview ? <img src={profilePreview} alt="Selected profile" /> : <span>No image</span>}
-                    </div>
-                    <div>
-                      <label className="provider-signup-change-photo" htmlFor="providerProfileImage">Change photo</label>
-                      <input type="file" id="providerProfileImage" name="providerProfileImage" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleFileChange} hidden />
-                      <p className="provider-signup-upload-note">JPG, PNG or WebP. Max 5MB.</p>
-                    </div>
+                    <label
+                      className={`provider-signup-profile-avatar provider-signup-profile-avatar-upload ${profilePreview ? "has-image" : ""}`}
+                      htmlFor="providerProfileImage"
+                    >
+                      {profilePreview ? <img src={profilePreview} alt="Selected profile" /> : <><span className="provider-profile-placeholder-icon">◎</span><strong>Upload image</strong></>}
+                    </label>
+                    <input type="file" id="providerProfileImage" name="providerProfileImage" accept="image/jpeg,image/jpg,image/png,image/webp" onChange={handleFileChange} hidden />
+                    {profilePreview && <button type="button" className="provider-signup-remove-photo" onClick={() => { updateField("providerProfileImage", null); setProfilePreview(null); }}>Remove</button>}
+                    <p className="provider-signup-upload-note">JPG, PNG or WebP. Max 5MB.</p>
                   </div>
                 </div>
 
@@ -254,6 +319,7 @@ export default function ProviderSignupPageOne() {
                     autoComplete="off"
                     onChange={(event) => {
                       const value = event.target.value;
+                      userEditedStepOneRef.current = true;
                       setLocationQuery(value);
                       if (value !== formData.providerLocation) updateField("providerLocation", "");
                     }}
@@ -268,6 +334,7 @@ export default function ProviderSignupPageOne() {
                           type="button"
                           style={{ display: "block", width: "100%", border: 0, background: "#fff", padding: "10px 12px", textAlign: "left", cursor: "pointer" }}
                           onClick={() => {
+                            userEditedStepOneRef.current = true;
                             setLocationQuery(location.label);
                             updateField("providerLocation", location.label);
                             updateField("providerLocationData", location);
@@ -285,9 +352,23 @@ export default function ProviderSignupPageOne() {
               <div className="provider-signup-bio-field">
                 <label htmlFor="providerBio">
                   Short bio
-                  <textarea id="providerBio" name="providerBio" rows="4" maxLength="500" placeholder="Tell customers a bit about yourself, your background, and what you do." value={formData.providerBio || ""} onChange={handleChange} required />
+                  <textarea
+                    id="providerBio"
+                    name="providerBio"
+                    rows="4"
+                    maxLength="500"
+                    placeholder="Tell customers a bit about yourself, your background, and what you do."
+                    defaultValue={formData.providerBio || ""}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      userEditedStepOneRef.current = true;
+                      setShortBio(value);
+                      updateField("providerBio", value);
+                    }}
+                    required
+                  />
                 </label>
-                <span className="provider-signup-character-count">{(formData.providerBio || "").length}/500</span>
+                <span className="provider-signup-character-count">{shortBio.length}/500</span>
               </div>
             </div>
 

@@ -12,15 +12,12 @@ import HelpSupport from "./pages/HelpSupport";
 import MyProfile from "./pages/MyProfile";
 import SellerSignupPageOne from "./pages/SellerSignupPage1";
 import SellerSignupPageTwo from "./pages/SellerSignupPage2";
-import SellerSignupPageFour from "./pages/SellerSignupPage4";
 import SellerSignupPageFive from "./pages/SellerSignupPage5";
 import SellerSignupPageSix from "./pages/SellerSignupPage6";
 import SellerSignupPageSeven from "./pages/SellerSignupPage7";
 import SellerSignupPageEight from "./pages/SellerSignupPage8";
 import ProviderSignupPageOne from "./pages/ProvderSignupPage1";
-import ProviderSignupPageTwo from "./pages/ProviderSignupPage2";
 import ProviderSignupPageThree from "./pages/ProviderSignupPage3";
-import ProviderSignupPageFour from "./pages/ProviderSignupPage4";
 import ProviderSignupPageFive from "./pages/ProviderSignupPage5";
 import ProviderSignupPageSix from "./pages/ProviderSignupPage6";
 import ProviderSignupPageSeven from "./pages/ProviderSignupPage7";
@@ -64,6 +61,7 @@ import ProductDetailsPage from "./pages/ProductDetails";
 import ServiceDetailsPage from "./pages/ServiceDetails";
 import Explore from "./pages/Explore";
 import Services from "./pages/Services";
+import PublicProviderServices from "./pages/PublicProviderServices";
 import ForProviders from "./pages/ForProviders";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -193,7 +191,7 @@ function RequireOnboardingReview({ flow, children }) {
 
   if (loading || checking) return <main className="min-h-[60vh] w-full" />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (redirectStep === 0) return <Navigate to={flow === "service" ? "/provider/application-status" : "/register/page7"} replace />;
+  if (redirectStep === 0) return <Navigate to={flow === "service" ? "/provider/application-status" : "/register/page6"} replace />;
   if (redirectStep) {
     const target = flow === "service"
       ? (redirectStep === 1 ? "/provider/onboarding" : "/provider/onboarding/page" + redirectStep)
@@ -380,22 +378,18 @@ const router = createBrowserRouter([
   },
   {
     path: "/register/page3",
-    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageFour /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={3}><SellerSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/register/page4",
-    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageFive /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="seller" step={4}><SellerSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/register/page5",
-    element: <RequireOnboardingStep flow="seller" step={5}><SellerSignupPageSix /></RequireOnboardingStep>,
-  },
-  {
-    path: "/register/page6",
     element: <RequireOnboardingReview flow="seller"><SellerSignupPageSeven /></RequireOnboardingReview>,
   },
   {
-    path: "/register/page7",
+    path: "/register/page6",
     element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
   },
   {
@@ -415,6 +409,14 @@ const router = createBrowserRouter([
     element: (
       <MarketplaceLayout>
         <ProductDetailsPage />
+      </MarketplaceLayout>
+    ),
+  },
+  {
+    path: "/providers/:id",
+    element: (
+      <MarketplaceLayout>
+        <PublicProviderServices />
       </MarketplaceLayout>
     ),
   },
@@ -641,35 +643,23 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/onboarding/page2",
-    element: <RequireOnboardingStep flow="service" step={2}><ProviderSignupPageTwo /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="service" step={2}><ProviderSignupPageThree /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page3",
-    element: <RequireOnboardingStep flow="service" step={3}><ProviderSignupPageThree /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="service" step={3}><ProviderSignupPageFive /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page4",
-    element: <RequireOnboardingStep flow="service" step={4}><ProviderSignupPageFour /></RequireOnboardingStep>,
+    element: <RequireOnboardingStep flow="service" step={4}><ProviderSignupPageSix /></RequireOnboardingStep>,
   },
   {
     path: "/provider/onboarding/page5",
-    element: <RequireOnboardingStep flow="service" step={5}><ProviderSignupPageFive /></RequireOnboardingStep>,
+    element: <RequireOnboardingReview flow="service"><ProviderSignupPageSeven /></RequireOnboardingReview>,
   },
   {
     path: "/provider/onboarding/page6",
-    element: <RequireOnboardingStep flow="service" step={6}><ProviderSignupPageSix /></RequireOnboardingStep>,
-  },
-  {
-    path: "/provider/onboarding/page7",
-    element: <RequireOnboardingStep flow="service" step={7}><ProviderSignupPageSeven /></RequireOnboardingStep>,
-  },
-  {
-    path: "/provider/onboarding/success",
     element: <RequireOnboardingSubmitted flow="service"><ProviderSignupPageEight /></RequireOnboardingSubmitted>,
-  },
-  {
-    path: "/provider/application-status",
-    element: <RequireAuth><ProviderApplicationStatus /></RequireAuth>,
   },
   {
     path: "/provider/listings",

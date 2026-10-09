@@ -1,13 +1,12 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const steps = [
   "Your Details",
   "Business Info",
-  "Products",
-  "Shipping",
   "Verification",
   "Payment",
   "Review",
@@ -31,10 +30,28 @@ function SaveIcon() {
 }
 
 export default function SellerSignupFormHeader({ step }) {
+  useEffect(() => { const labels = ["Your Details","Business Info","Verification","Payment","Review"]; document.title = `${labels[step - 1] || "Seller Application"} | Matchet`; }, [step]);
+  useEffect(() => {
+    const scroller = document.querySelector(".seller-signup-right-section");
+    if (!scroller) return undefined;
+    let timer;
+    const handleScroll = () => {
+      scroller.classList.add("is-scrolling");
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => scroller.classList.remove("is-scrolling"), 700);
+    };
+    scroller.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      scroller.removeEventListener("scroll", handleScroll);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+
   return (
     <header className="seller-signup-form-header">
       <div className="seller-signup-form-heading-row">
-        <Link to="/for-providers" className="seller-signup-breadcrumb"><span aria-hidden="true">←</span><span>For Providers</span></Link>
+        <Link to="/" className="seller-signup-breadcrumb"><span aria-hidden="true">←</span><span>For Sellers</span></Link>
         <Link to="/for-providers" className="seller-signup-save-and-exit">
           <SaveIcon />
           <span>Save and exit</span>
@@ -42,7 +59,7 @@ export default function SellerSignupFormHeader({ step }) {
       </div>
 
       <div className="seller-signup-form-heading-copy">
-        <h1>Become a provider</h1>
+        <h1>Become a seller</h1>
         <p>Set up your seller profile and start selling your products on Matchet.</p>
       </div>
 

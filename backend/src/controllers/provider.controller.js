@@ -86,10 +86,9 @@ async function searchProviderLocations(req, res) {
 
     const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
     url.searchParams.set("name", query);
-    url.searchParams.set("count", "8");
+    url.searchParams.set("count", "20");
     url.searchParams.set("language", "en");
     url.searchParams.set("format", "json");
-    url.searchParams.set("countryCode", "NG");
 
     const response = await fetch(url);
     if (!response.ok) throw new Error("Location service unavailable.");
@@ -1237,42 +1236,11 @@ const providerStepRequirements = [
     ["providerBio", onboardingHasValue(data.providerBio)],
   ],
   (data) => [
-    ["providerServiceCat", onboardingHasValue(data.providerServiceCat)],
     ["providerServiceName", onboardingHasValue(data.providerServiceName)],
     ["providerServiceDesc", onboardingHasValue(data.providerServiceDesc)],
-    ["providerServiceType", onboardingHasValue(data.providerServiceType)],
-    ["providerServicePrice", data.providerServicePrice !== undefined && data.providerServicePrice !== ""],
-    ["providerServiceDuration", onboardingHasValue(data.providerServiceDuration)],
-    ["providerAreasServed", onboardingHasValue(data.providerAreasServed)],
-    ["providerServiceImages", Array.isArray(data.providerServiceImages) && data.providerServiceImages.some(onboardingHasFile)],
-  ],
-  (data) => [
-    ["providerYearsofExperience", data.providerYearsofExperience !== undefined && data.providerYearsofExperience !== ""],
+    ["providerYearsofExperience", onboardingHasValue(data.providerYearsofExperience)],
     ["providerAreasofExpertise", onboardingHasValue(data.providerAreasofExpertise)],
-    ["providerPortfolioMedia",
-      (Array.isArray(data.providerPortfolioMedia) && data.providerPortfolioMedia.some(onboardingHasFile)) ||
-      onboardingHasValue(data.providerPortfolioLink),
-    ],
   ],
-  (data) => {
-    const availability = data.providerAvailability || {};
-    const hasAvailability = Object.values(availability).some((day) =>
-      day?.enabled && onboardingHasValue(day.startTime) && onboardingHasValue(day.endTime)
-    );
-    const area = data.providerServiceArea;
-    const areaComplete =
-      area === "remote" ||
-      (area === "radius" && onboardingHasValue(data.providerServiceAreaRadius)) ||
-      (area === "specificLocations" && Array.isArray(data.providerServiceAreaSpecificLocations) && data.providerServiceAreaSpecificLocations.length > 0);
-    return [
-      ["providerAvailability", hasAvailability],
-      ["providerMinimumNoticeRequired", onboardingHasValue(data.providerMinimumNoticeRequired)],
-      ["providerMaximumAdvanceBooking", onboardingHasValue(data.providerMaximumAdvanceBooking)],
-      ["providerResponseTime", onboardingHasValue(data.providerResponseTime)],
-      ["providerServiceArea", onboardingHasValue(area)],
-      ["providerServiceAreaDetails", areaComplete],
-    ];
-  },
   (data) => [
     ["providerIdType", onboardingHasValue(data.providerIdType)],
     ["providerIdNumber", onboardingHasValue(data.providerIdNumber)],
@@ -1305,13 +1273,6 @@ const sellerStepRequirements = [
     ["businessAddress", onboardingHasValue(data.businessAddress)],
     ["businessPhoneCountryCode", onboardingHasValue(data.businessPhoneCountryCode)],
     ["businessPhoneNumber", onboardingHasValue(data.businessPhoneNumber)],
-  ],
-  (data) => [
-    ["shippingOptions", onboardingHasValue(data.shippingOptions)],
-    ["shippingRegions", onboardingHasValue(data.shippingRegions)],
-    ["shippingFee", onboardingHasValue(data.shippingFee)],
-    ["shippingFeeAmount", data.shippingFeeAmount !== undefined && data.shippingFeeAmount !== ""],
-    ["processingTime", onboardingHasValue(data.processingTime)],
   ],
   (data) => [
     ["idType", onboardingHasValue(data.idType)],
@@ -1406,13 +1367,20 @@ async function submitSellerOnboarding(req, res) {
     const existing = await StoreProfile.findOne({ slug: { $regex: new RegExp("^" + baseSlug + "(?:-[0-9]+)?$") }, userId: { $ne: userId } }).sort({ createdAt: -1 }).lean();
     const slug = existing ? baseSlug + "-" + String(Date.now()).slice(-6) : baseSlug;
 
-    const normalizedLocation = String(input.location || "").toLowerCase() === "lagos-nigeria"
-      ? { city: "Lagos", state: "Lagos", country: "Nigeria" }
-      : {
-          city: input.location || "",
-          state: input.businessState || "",
-          country: input.businessCountry || "",
-        };
+    const selectedLocation = input.locationData && typeof input.locationData === "object" ? input.locationData : null;
+    const normalizedLocation = selectedLocation
+      ? {
+          city: selectedLocation.city || "",
+          state: selectedLocation.state || "",
+          country: selectedLocation.country || "",
+        }
+      : String(input.location || "").toLowerCase() === "lagos-nigeria"
+        ? { city: "Lagos", state: "Lagos", country: "Nigeria" }
+        : {
+            city: input.location || "",
+            state: input.businessState || "",
+            country: input.businessCountry || "",
+          };
 
     // Do not send an empty GeoJSON coordinates array to MongoDB's 2dsphere index.
     if (!normalizedLocation.city && !normalizedLocation.state && !normalizedLocation.country) {
@@ -1773,7 +1741,7 @@ async function getSellerProducts(req, res) {
     filtered.sort((a,b) => sort === "oldest" ? new Date(a.createdAt)-new Date(b.createdAt) : sort === "priceHigh" ? b.price-a.price : sort === "priceLow" ? a.price-b.price : new Date(b.createdAt)-new Date(a.createdAt));
     const totalViews = 0;
     const mapped = filtered.map(p => ({
-      id:p._id, name:p.name, description:p.description, shortDescription:p.shortDescription||"", details:p.details||{}, category:p.category, price:p.price, inventory:p.inventory,
+      id:p._id, name:p.name, description:p.description, shortDescription:p.shortDescription||"", details:p.details||{}, category:p.category, price:p.price, currency:p.currency||"NGN", inventory:p.inventory, location:p.location||null, shipping:p.shipping||null,
       status:p.status, orders:orderCounts[String(p._id)] || 0, createdAt:p.createdAt, updatedAt:p.updatedAt,
       images:p.images||[], image:p.images?.find(i=>i.isPrimary)?.url || p.images?.[0]?.url || null, createdAt:p.createdAt
     }));
@@ -1787,13 +1755,13 @@ async function getSellerProducts(req, res) {
 }
 async function createSellerProduct(req,res){
   try {
-    const {name,description,shortDescription="",category,price,inventory=0,images=[],location,status="draft",details={},sku}=req.body;
+    const {name,description,shortDescription="",category,price,inventory=0,images=[],location,status="draft",details={},sku,currency="NGN",shipping={}}=req.body;
     if(!name||!description||!category||price===undefined) return res.status(400).json({success:false,message:"Name, description, category and price are required."});
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     const safeStatus=canPublish ? status : "draft";
     const safeImages = normalizeImageAssets(images, 5);
-    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images:safeImages,status:safeStatus,location,details,sku});
+    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images:safeImages,status:safeStatus,location,details,sku,currency:String(currency).toUpperCase(),shipping:{homeDelivery:Boolean(shipping.homeDelivery),pickup:Boolean(shipping.pickup),deliveryFee:Number(shipping.deliveryFee)||0,pickupStationRequired:true}});
     return res.status(201).json({success:true,data:product});
   } catch(error){return res.status(400).json({success:false,message:error.message});}
 }
@@ -1801,7 +1769,7 @@ async function updateSellerProduct(req,res){
   try {
     const product=await Product.findOne({_id:req.params.productId,sellerId:req.user._id});
     if(!product)return res.status(404).json({success:false,message:"Product not found."});
-    const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details"];
+    const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details","currency","shipping"];
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=k==="images" ? normalizeImageAssets(req.body[k], 5) : req.body[k]});

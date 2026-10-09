@@ -60,6 +60,7 @@ export default function SellerSignupPageTwo() {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
+      e.target.reportValidity();
       return;
     }
 

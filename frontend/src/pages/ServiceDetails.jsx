@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getServiceById, getRelatedServices } from "../data/marketplaceApi";
+import { getServiceById, getRelatedServices, recordMarketplaceView } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
 
 function Icon({ name, size = 20, strokeWidth = 1.8 }) {
@@ -66,7 +66,7 @@ function ServiceDetails({service,related}) {
      <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">{[{icon:"shield",title:"Verified provider",text:service.providerVerified?"Provider verified":"Provider status available"},{icon:"clock",title:"Response time",text:service.responseTime},{icon:"calendar",title:"Availability",text:service.bookingNotice}].map(x=><div key={x.title} className="text-[10px] text-[#69739a]"><Icon name={x.icon} size={23}/><p className="mt-1 font-semibold text-[#10183f]">{x.title}</p><p className="mt-0.5 leading-4">{x.text}</p></div>)}</div>
     </div>
     <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
-      <div className="flex items-center gap-3"><span className={`flex h-12 w-12 items-center justify-center rounded-full ${service.avatarTone||"bg-[#eef1f3] text-[#10183f]"} font-semibold`}>{service.sellerInitial}</span><div><p className="text-[14px] font-semibold text-[#10183f]">{service.seller}{service.providerVerified&&<span className="ml-1 text-[#18a34a]">✓</span>}</p><p className="mt-1 text-[11px] text-[#69739a]">{service.experience}</p></div></div>
+      <div className="flex items-center gap-3"><span className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-full ${service.avatarTone||"bg-[#eef1f3] text-[#10183f]"} font-semibold`}>{service.sellerImage ? <img src={service.sellerImage} alt={service.seller || ""} className="h-full w-full object-cover" /> : service.sellerInitial}</span><div><p className="text-[14px] font-semibold text-[#10183f]">{service.seller}{service.providerVerified&&<span className="ml-1 text-[#18a34a]">✓</span>}</p><p className="mt-1 text-[11px] text-[#69739a]">{service.experience}</p></div></div>
       <div className="mt-5 grid grid-cols-2 gap-3 text-[11px] text-[#69739a]"><span className="rounded-[8px] bg-[#f7f9fb] p-3"><b className="block text-[#10183f]">Service duration</b>{service.serviceDuration}</span><span className="rounded-[8px] bg-[#f7f9fb] p-3"><b className="block text-[#10183f]">Cancellation</b>{service.cancellationPolicy}</span></div>
       <p className="mt-4 flex items-center gap-2 text-[11px] text-[#69739a]"><Icon name="pin" size={16}/>{service.location}</p>
     </div>

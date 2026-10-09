@@ -20,7 +20,7 @@ function mapProduct(product, quantity) {
   return {
     id: product._id.toString(), type: "product", title: product.name, name: product.name,
     description: product.description || "", category: product.category || "",
-    price: product.price, priceValue: Number(product.price || 0),
+    price: product.price, priceValue: Number(product.price || 0), currency: product.currency || "NGN", shipping: product.shipping || { homeDelivery: true, pickup: true, deliveryFee: 0 },
     inventory: Number(product.inventory || 0), stockCount: Number(product.inventory || 0),
     availability: product.inventory > 0 ? "In stock" : "Out of stock", status: product.status,
     image, images, quantity,

@@ -1,7 +1,10 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import {
+  currencyForLocation,
+  SUPPORTED_CURRENCIES,
+} from "../utils/currency";
 import { updateCurrentUser } from "../api/auth";
 import "./BuyerAccount.css";
 
@@ -13,6 +16,10 @@ export default function AccountSettings() {
   );
   const [language, setLanguage] = useState(
     user?.preferences?.language || "English"
+  );
+  const [currency, setCurrency] = useState(
+    user?.preferences?.currency ||
+      currencyForLocation(user?.location, "NGN")
   );
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -26,6 +33,7 @@ export default function AccountSettings() {
         preferences: {
           ...(user?.preferences || {}),
           language,
+          currency,
           notifications: {
             ...(user?.preferences?.notifications || {}),
             email: notifications,
@@ -67,6 +75,22 @@ export default function AccountSettings() {
               checked={notifications}
               onChange={(e) => setNotifications(e.target.checked)}
             />
+          </label>
+
+          <label>
+            <span>Currency</span>
+            <small>
+              Use your location to choose a default currency. You can change it
+              when needed.
+            </small>
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+            >
+              {SUPPORTED_CURRENCIES.map((code) => (
+                <option key={code}>{code}</option>
+              ))}
+            </select>
           </label>
 
           <label>

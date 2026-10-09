@@ -10,7 +10,7 @@ function normalizeItems(items) {
 }
 
 export function CartProvider({ children }) {
-  const { user, loading: authLoading, refreshUser } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [items, setItems] = useState([]);
   const [cartLoading, setCartLoading] = useState(true);
 
@@ -26,11 +26,10 @@ export function CartProvider({ children }) {
       setItems(normalizeItems(serverItems));
     } catch (error) {
       setItems([]);
-      if (error?.status === 401) await refreshUser();
     } finally {
       setCartLoading(false);
     }
-  }, [user, refreshUser]);
+  }, [user]);
 
   useEffect(() => {
     if (!authLoading) loadCart();
@@ -88,8 +87,12 @@ export function parsePrice(value) {
   return Number(String(value || "").replace(/[^0-9]/g, "")) || 0;
 }
 
+export function formatCurrency(value, currency = "NGN") {
+  return new Intl.NumberFormat(undefined, { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
+}
+
 export function formatNaira(value) {
-  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(value).replace("NGN", "₦");
+  return formatCurrency(value, "NGN");
 }
 
 export async function getCheckoutProduct(id) {

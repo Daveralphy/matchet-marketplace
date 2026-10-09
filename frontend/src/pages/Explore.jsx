@@ -4,16 +4,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
-import { getCategoryCollections, getMarketplaceData, getProviderCollection, searchMarketplace } from "../data/marketplaceApi";
+import { getCategoryCollections, getMarketplaceData, getMarketplaceViewHistory, getProviderCollection, searchMarketplace } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
-
-const LOCATION_OPTIONS = [
-  "Lagos, Nigeria",
-  "Abuja, Nigeria",
-  "Port Harcourt, Nigeria",
-  "Kano, Nigeria",
-  "Ibadan, Nigeria",
-];
 
 function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   const common = {
@@ -111,94 +103,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function LocationSelect({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
-  return (
-    <div ref={locationRef} className="relative min-w-0 flex-1">
-      <button
-        type="button"
-        onClick={() => setLocationOpen((open) => !open)}
-        className={[
-          "flex h-12 w-full min-w-0 items-center gap-2 border-l border-slate-100 px-3 text-left text-[12px] font-medium text-[#10183f] transition-colors sm:h-[54px] sm:px-4",
-          locationOpen ? "text-[#07983f]" : "",
-        ].join(" ")}
-        aria-expanded={locationOpen}
-        aria-haspopup="listbox"
-      >
-        <Icon name="pin" size={18} />
-
-        <span className="min-w-0 flex-1 truncate">
-          {selectedLocation}
-        </span>
-
-        <Icon
-          name={locationOpen ? "chevronUp" : "chevronDown"}
-          size={15}
-        />
-      </button>
-
-      {locationOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.14)] sm:left-auto sm:right-0 sm:w-[250px]">
-          <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
-            <Icon name="search" size={16} />
-
-            <input
-              type="text"
-              placeholder="Search for a city or state..."
-              className="min-w-0 w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
-            />
-          </div>
-
-          <div role="listbox" aria-label="Select location">
-            {LOCATION_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="option"
-                aria-selected={option === selectedLocation}
-                onClick={() => {
-                  setSelectedLocation(option);
-                  localStorage.setItem("matchet_location", option);
-                  setLocationOpen(false);
-                }}
-                className={[
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] transition-colors hover:bg-slate-50",
-                  option === selectedLocation
-                    ? "bg-[#effaf3] text-[#07863a]"
-                    : "",
-                ].join(" ")}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <Icon name="pin" size={15} />
-                  <span className="truncate">{option}</span>
-                </span>
-
-                {option === selectedLocation && (
-                  <span className="ml-2 shrink-0 font-semibold text-[#07983f]">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SearchBar({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
+function SearchBar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -208,15 +113,15 @@ function SearchBar({
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await searchMarketplace({ query: value, location: selectedLocation });
+      const results = await searchMarketplace({ query: value, location: localStorage.getItem("matchet_location") || "Lagos, Nigeria" });
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [query, selectedLocation]);
+  }, [query]);
 
   const submitSearch = () => {
     if (!query.trim()) return;
-    navigate(`/explore?q=${encodeURIComponent(query.trim())}&location=${encodeURIComponent(selectedLocation)}`);
+    navigate(`/explore?q=${encodeURIComponent(query.trim())}`);
   };
 
   return (
@@ -243,8 +148,6 @@ function SearchBar({
           </div>
         )}
       </div>
-      <div className="h-px w-full bg-slate-100 sm:h-[34px] sm:w-px" />
-      <LocationSelect selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} locationOpen={locationOpen} setLocationOpen={setLocationOpen} locationRef={locationRef} />
       <button type="button" onClick={submitSearch} className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]">Search</button>
     </div>
   );
@@ -430,67 +333,93 @@ function HeartButton({ item }) {
 
 function ProviderCard({ provider }) {
   return (
-    <article className="overflow-hidden rounded-[12px] border border-[#e4e9f0] bg-white shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
-      <div className="relative h-[150px]">
-        <div className={`relative flex h-full w-full items-center justify-center ${provider.imageTone}`}>
-          {provider.image ? <img src={provider.image} alt={provider.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
-          <span className={provider.image ? "hidden" : "text-[#10183f]/60"}><Icon name="provider" size={72} strokeWidth={1.2} /></span>
+    <article className="rounded-[12px] border border-[#e4e9f0] bg-white p-3 shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
+      <div className="flex items-start gap-3">
+        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#eef1ef]">
+          {provider.image ? (
+            <img
+              src={provider.image}
+              alt={provider.name || ""}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center text-[14px] font-semibold text-[#69739a]">
+              {provider.initials}
+            </span>
+          )}
+          {provider.verified && (
+            <span className="absolute bottom-0 right-0 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-[#07983f] text-[8px] font-bold text-white">
+              ✓
+            </span>
+          )}
         </div>
-        {provider.match && (
-          <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[9px] font-semibold text-[#07863a] shadow-sm">
-            ✦ {provider.match}
-          </span>
-        )}
-        <button
-          type="button"
-          aria-label={`Save ${provider.name}`}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-sm"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
-          </svg>
-        </button>
-      </div>
 
-      <div className="px-3 pb-3 pt-2.5">
-        <div className="flex items-center gap-2.5">
-          <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[14px] font-semibold ${provider.logoTone}`}>
-            {provider.initials}
-          </span>
-          <div className="min-w-0">
-            <h3 className="truncate text-[13px] font-semibold text-[#10183f]">
-              {provider.name} <span className="text-[#2682e9]">●</span>
-            </h3>
-            <p className="mt-0.5 truncate text-[10px] text-[#747d9e]">{provider.category}</p>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h3 className="truncate text-[13px] font-semibold leading-5 text-[#10183f]">
+                {provider.name}
+              </h3>
+              <p className="mt-0.5 truncate text-[10px] text-[#69739a]">
+                {provider.businessName || provider.category}
+              </p>
+            </div>
+
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#fff8e6] px-2 py-1 text-[9px] font-semibold text-[#10183f]">
+              <span className="text-[#f4b400]">★</span>
+              {provider.rating > 0 ? provider.rating.toFixed(1) : "New"}
+            </span>
           </div>
         </div>
-
-        <div className="mt-3 space-y-2 text-[10px] text-[#27335f]">
-          <p><span className="mr-2 text-[#f4b400]">★</span><strong>{provider.rating}</strong> <span className="text-[#7b84a3]">({provider.reviews} reviews)</span></p>
-          <p><span className="mr-2 text-[#10183f]">⌖</span>{provider.location}</p>
-          <p><span className="mr-2 text-[#10183f]">▱</span>{provider.listings} listings</p>
-        </div>
-
-        <button type="button" className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[#e9f9ed] text-[11px] font-semibold text-[#07863a]">
-          View profile <span className="text-[16px]">→</span>
-        </button>
       </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#edf0f3] pt-3 text-[9px] text-[#69739a]">
+        <div>
+          <span className="block font-semibold text-[#10183f]">{provider.category}</span>
+          <span>Specialty</span>
+        </div>
+        <div>
+          <span className="block font-semibold text-[#10183f]">{provider.listings || 0}</span>
+          <span>Active services</span>
+        </div>
+        <div className="col-span-2 flex items-center gap-1 truncate">
+          <span className="text-[#07863a]">⌖</span>
+          <span className="truncate">{provider.location}</span>
+          {provider.reviews > 0 && <span className="shrink-0">· {provider.reviews} reviews</span>}
+        </div>
+      </div>
+
+      <Link
+        to={`/providers/${provider.id}`}
+        className="mt-3 flex h-9 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[10px] font-semibold text-[#07863a] transition-colors hover:bg-[#dff7e7]"
+      >
+        View services <span className="ml-1 text-[14px]">→</span>
+      </Link>
     </article>
   );
 }
 
 function ProvidersSection({ isAuthenticated }) {
   const [providers, setProviders] = useState([]);
+  const [location, setLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+
+  useEffect(() => {
+    const handleLocationChange = (event) => {
+      setLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+    };
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
+  }, []);
 
   useEffect(() => {
     let active = true;
-    getProviderCollection(isAuthenticated ? "recommended" : "featured").then((items) => {
+    getProviderCollection(location).then((items) => {
       if (active) setProviders(items);
     });
     return () => {
       active = false;
     };
-  }, [isAuthenticated]);
+  }, [location]);
 
   const title = isAuthenticated ? (
     <>People <span className="text-[#07863a]">worth knowing.</span></>
@@ -543,6 +472,30 @@ function getMarketplacePlaceholderIcon(item) {
 }
 
 function ExploreProductCard({ item, listView = false }) {
+  const isProvider = item.type === "provider";
+  if (isProvider) {
+    return (
+      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
+        <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
+          <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone || "bg-[#eef1ef]"}`}>
+            {item.image ? <img src={item.image} alt={item.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
+            <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name="provider" size={58} strokeWidth={1.15} /></span>
+          </div>
+        </div>
+        <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "px-2.5 pb-2.5 pt-2"}>
+          <div className="flex items-center justify-between gap-1.5">
+            <span className="max-w-[150px] truncate text-[8px] font-medium text-[#6f7899]">{item.category}</span>
+            <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]"><span className="text-[#f4b400]">★</span>{item.rating}</span>
+          </div>
+          <h3 className="mt-1.5 truncate text-[11px] font-semibold leading-4 text-[#10183f]">{item.name}</h3>
+          <p className="mt-1 truncate text-[9px] text-[#69739a]">{item.businessName && item.businessName !== item.name ? item.businessName : item.category}</p>
+          <p className="mt-1 truncate text-[8px] text-[#7b84a3]">⌖ {item.location}</p>
+          <p className="mt-1 line-clamp-2 text-[8px] leading-3.5 text-[#69739a]">{item.bio || item.experience || "Service provider on Matchet."}</p>
+          <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-2 flex h-8 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[9px] font-semibold text-[#07863a]">View their services →</Link>
+        </div>
+      </article>
+    );
+  }
   return (
     <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "block overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
       <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
@@ -701,31 +654,39 @@ function CategoriesSection({ isAuthenticated }) {
 function ExploreResultsSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
   const [sourceItems, setSourceItems] = useState([]);
+  const [providerItems, setProviderItems] = useState([]);
   const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
-  const [selectedLocation, setSelectedLocation] = useState(() => searchParams.get("location") || "");
+  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
   const [sortBy, setSortBy] = useState("relevance");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [viewHistory, setViewHistory] = useState(() => getMarketplaceViewHistory());
   const [listView, setListView] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
     let active = true;
 
-    getMarketplaceData().then(({ products, services }) => {
+    getMarketplaceData(selectedLocation).then(({ products, services, providers }) => {
       if (!active) return;
       setSourceItems([...products, ...services]);
+      setProviderItems(Array.isArray(providers) ? providers : []);
     });
 
     return () => {
       active = false;
     };
+  }, [selectedLocation]);
+
+  useEffect(() => {
+    const handleLocationChange = (event) => setSelectedLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
   }, []);
 
   useEffect(() => {
     const query = searchParams.get("q") || "";
-    const location = searchParams.get("location") || "";
     setSearch(query);
-    setSelectedLocation(location);
   }, [searchParams]);
 
   const tabs = [
@@ -736,8 +697,20 @@ function ExploreResultsSection({ isAuthenticated }) {
   ];
 
   const normalizedSearch = search.trim().toLowerCase();
+  const viewedCategories = new Map();
+  viewHistory.forEach((entry) => viewedCategories.set(entry.category, (viewedCategories.get(entry.category) || 0) + 1));
+  const hasRecommendationHistory = viewHistory.length >= 3;
+  const recommendedItems = [...sourceItems, ...providerItems]
+    .map((item) => ({ item, score: (viewedCategories.get(item.category) || 0) * 100 + Math.min(Number(item.viewCount || 0), 1000) }))
+    .sort((a, b) => b.score - a.score)
+    .map(({ item }) => item);
 
-  const filteredItems = sourceItems
+  const baseItems = activeTab === "providers"
+    ? providerItems
+    : activeTab === "recommended"
+      ? recommendedItems
+      : sourceItems;
+  const filteredItems = baseItems
     .filter((item) => {
       if (activeTab === "products") return item.type === "product";
       if (activeTab === "services") return item.type === "service";
@@ -745,13 +718,17 @@ function ExploreResultsSection({ isAuthenticated }) {
       return true;
     })
     .filter((item) => {
+      if (selectedCategory === "all") return true;
+      return String(item.category || "").toLowerCase() === selectedCategory.toLowerCase();
+    })
+    .filter((item) => {
       if (!normalizedSearch) return true;
-      return [item.title, item.category, item.seller, item.location]
-        .join(" ")
+      return [item.title, item.name, item.businessName, item.category, ...(item.categories || []), item.seller, item.location, item.bio, item.experience]
+        .filter(Boolean).join(" ")
         .toLowerCase()
         .includes(normalizedSearch);
     })
-    .filter((item) => !selectedLocation || item.location === selectedLocation)
+
     .sort((a, b) => {
       if (sortBy === "price-low") {
         return Number(a.priceValue ?? String(a.price).replace(/[^0-9]/g, "")) - Number(b.priceValue ?? String(b.price).replace(/[^0-9]/g, ""));
@@ -764,6 +741,10 @@ function ExploreResultsSection({ isAuthenticated }) {
     });
 
   const visibleItems = filteredItems.slice(0, visibleCount);
+
+  useEffect(() => {
+    setViewHistory(getMarketplaceViewHistory());
+  }, [activeTab]);
 
   const updateTab = (tab) => {
     setActiveTab(tab);
@@ -852,13 +833,23 @@ function ExploreResultsSection({ isAuthenticated }) {
           className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
           aria-label="Location"
         >
-          <option value="Lagos">Lagos</option>
-          <option value="Abuja">Abuja</option>
-          <option value="Port Harcourt">Port Harcourt</option>
-          <option value="Kano">Kano</option>
+          <option value="Lagos, Nigeria">Lagos, Nigeria</option>
+          <option value="Abuja, Nigeria">Abuja, Nigeria</option>
+          <option value="Port Harcourt, Nigeria">Port Harcourt, Nigeria</option>
+          <option value="Kano, Nigeria">Kano, Nigeria</option>
         </select>
 
-        <ResultsControl icon="grid">Filters</ResultsControl>
+        <select
+          value={selectedCategory}
+          onChange={(event) => { setSelectedCategory(event.target.value); setVisibleCount(12); }}
+          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
+          aria-label="Filter by category"
+        >
+          <option value="all">All categories</option>
+          {[...new Set([...sourceItems, ...providerItems].map((item) => item.category).filter(Boolean))].sort().map((category) => (
+            <option key={category} value={category}>{category}</option>
+          ))}
+        </select>
 
         <select
           value={sortBy}
@@ -873,16 +864,24 @@ function ExploreResultsSection({ isAuthenticated }) {
         </select>
       </div>
 
-      <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"}>
-        {visibleItems.length ? visibleItems.map((item) => (
-          <ExploreProductCard key={item.title} item={item} listView={listView} />
-        )) : (
-          <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-14 text-center">
-            <p className="text-[13px] font-semibold text-[#10183f]">Nothing matches your search</p>
-            <p className="mt-1 text-[11px] text-[#69739a]">There are no active products or services matching the current filters.</p>
-          </div>
-        )}
-      </div>
+{activeTab === "recommended" && !hasRecommendationHistory ? (
+        <div className="mt-6 rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
+          <p className="text-[13px] font-semibold text-[#10183f]">We are still learning what matches you.</p>
+          <p className="mx-auto mt-1 max-w-[480px] text-[11px] leading-5 text-[#69739a]">Keep viewing products and services you are interested in. As you explore more, Matchet will learn your interests and recommend more relevant options here.</p>
+          <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">Start exploring</Link>
+        </div>
+      ) : (
+        <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"}>
+          {visibleItems.length ? visibleItems.map((item) => (
+            <ExploreProductCard key={item.id + item.type} item={item} listView={listView} />
+          )) : (
+            <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-14 text-center">
+              <p className="text-[13px] font-semibold text-[#10183f]">Nothing matches your search</p>
+              <p className="mt-1 text-[11px] text-[#69739a]">There are no active products or services matching the current filters.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {visibleItems.length === 0 && (
         <div className="mt-5 rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-12 text-center text-[12px] text-[#69739a]">
@@ -907,8 +906,6 @@ function ExploreResultsSection({ isAuthenticated }) {
 
 export default function Explore({ isAuthenticated = false }) {
   const [searchParams] = useSearchParams();
-  const [selectedLocation, setSelectedLocation] = useState(() => searchParams.get("location") || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
-  const [locationOpen, setLocationOpen] = useState(false);
 
   useEffect(() => {
     const query = searchParams.get("q") || "";
@@ -917,26 +914,6 @@ export default function Explore({ isAuthenticated = false }) {
       window.dispatchEvent(event);
     }
   }, [searchParams]);
-
-  const locationRef = useRef(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (
-        locationOpen &&
-        locationRef.current &&
-        !locationRef.current.contains(event.target)
-      ) {
-        setLocationOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [locationOpen]);
 
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
@@ -970,13 +947,7 @@ export default function Explore({ isAuthenticated = false }) {
             </p>
 
             <div className="mt-6">
-              <SearchBar
-                selectedLocation={selectedLocation}
-                setSelectedLocation={setSelectedLocation}
-                locationOpen={locationOpen}
-                setLocationOpen={setLocationOpen}
-                locationRef={locationRef}
-              />
+              <SearchBar />
             </div>
 
             <div className="mt-4">

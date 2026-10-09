@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 const SavedItemsContext = createContext(null);
 
 export function SavedItemsProvider({ children }) {
-  const { user, loading: authLoading, refreshUser } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,11 +21,10 @@ export function SavedItemsProvider({ children }) {
       setItems(await getSavedItems());
     } catch (error) {
       setItems([]);
-      if (error?.status === 401) await refreshUser();
     } finally {
       setLoading(false);
     }
-  }, [user, refreshUser]);
+  }, [user]);
 
   useEffect(() => {
     if (!authLoading) loadSavedItems();
@@ -67,13 +66,12 @@ export function SavedItemsProvider({ children }) {
         return { saved: true };
       } catch (error) {
         if (error?.status === 401) {
-          await refreshUser();
           return { requiresAuth: true };
         }
         throw error;
       }
     },
-    [items, user, refreshUser],
+    [items, user],
   );
 
   const value = useMemo(

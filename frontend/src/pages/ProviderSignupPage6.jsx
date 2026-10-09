@@ -65,7 +65,7 @@ export default function ProviderSignupPageSix() {
       };
       const response = await saveProviderOnboardingDraft(paymentFormData);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/provider/onboarding/page7");
+      navigate("/provider/onboarding/page5");
     } catch (error) {
       if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
       alert(error.message || "Please complete the highlighted fields before continuing.");
@@ -81,7 +81,7 @@ export default function ProviderSignupPageSix() {
       </section>
 
       <section className="provider-signup-right-section">
-        <ProviderSignupFormHeader step={6} />
+        <ProviderSignupFormHeader step={4} />
 
         <div className="provider-signup-form-page6">
           <h2 className="provider-signup-step-header">Set up your payment details</h2>
@@ -205,7 +205,7 @@ export default function ProviderSignupPageSix() {
             </div>
 
             <div className="provider-signup-page6-actions">
-              <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding/page5")}>←&nbsp;&nbsp;Back</button>
+              <button type="button" className="provider-signup-back-button" onClick={() => navigate("/provider/onboarding/page3")}>←&nbsp;&nbsp;Back</button>
               <button type="submit" className="provider-signup-save-continue-button">Save &amp; continue&nbsp;&nbsp;→</button>
             </div>
           </form>

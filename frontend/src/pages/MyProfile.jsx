@@ -2,6 +2,7 @@
 // Edited by: Brigham
 
 import { useEffect, useState } from "react";
+import LocationSearch from "../components/LocationSearch";
 import { useAuth } from "../context/AuthContext";
 import { getCurrentUser, updateCurrentUser } from "../api/auth";
 import { uploadFile } from "../api/uploads";
@@ -363,17 +364,43 @@ function MyProfile() {
     setMessage("");
     setError("");
 
+
     const form = new FormData(event.currentTarget);
 
     try {
+      const selectedLocation = (form.get("location") || "").trim();
+      const locationParts = selectedLocation
+        .split(",")
+        .map((part) => part.trim());
+
+      const existingLocation = profile?.location || {};
+
       const response = await updateCurrentUser({
         firstName: form.get("firstName"),
         lastName: form.get("lastName"),
         phone: form.get("phone"),
         location: {
-          city: form.get("city"),
-          state: form.get("state"),
-          country: form.get("country"),
+          ...existingLocation,
+          ...(selectedLocation
+            ? {
+              city: locationParts[0] || "",
+              state:
+                locationParts.length > 2
+                  ? locationParts[1] || ""
+                  : "",
+              country:
+                locationParts[locationParts.length - 1] || "",
+            }
+            : {
+              city: form.get("city") || existingLocation.city || "",
+              state: form.get("state") || existingLocation.state || "",
+              country:
+                form.get("country") || existingLocation.country || "",
+            }),
+          addressLine1:
+            form.get("addressLine1") ||
+            existingLocation.addressLine1 ||
+            "",
         },
       });
 
@@ -386,6 +413,8 @@ function MyProfile() {
     } finally {
       setSaving(false);
     }
+
+
   };
 
   const changeAvatar = async (event) => {
@@ -740,6 +769,7 @@ function MyProfile() {
               <p>Update the details connected to your Matchet account.</p>
             </div>
 
+
             <div className="profile-edit-grid">
               <label>
                 First name
@@ -767,27 +797,38 @@ function MyProfile() {
                 />
               </label>
 
-              <label>
-                City
-                <input
-                  name="city"
-                  defaultValue={profile?.location?.city || ""}
+              <label className="location-field">
+                Location
+                <LocationSearch
+                  value={[
+                    profile?.location?.city,
+                    profile?.location?.state,
+                    profile?.location?.country,
+                  ].filter(Boolean).join(", ")}
+                  onSelect={(location) => {
+                    const input = document.querySelector('input[name="location"]');
+                    if (input) input.value = location.label;
+                  }}
+                  placeholder="Search for your city, state, or country..."
                 />
               </label>
 
-              <label>
-                State
-                <input
-                  name="state"
-                  defaultValue={profile?.location?.state || ""}
-                />
-              </label>
+              <input
+                type="hidden"
+                name="location"
+                defaultValue={[
+                  profile?.location?.city,
+                  profile?.location?.state,
+                  profile?.location?.country,
+                ].filter(Boolean).join(", ")}
+              />
 
               <label>
-                Country
+                Delivery address
                 <input
-                  name="country"
-                  defaultValue={profile?.location?.country || ""}
+                  name="addressLine1"
+                  defaultValue={profile?.location?.addressLine1 || ""}
+                  placeholder="House number, street, area..."
                 />
               </label>
             </div>
@@ -801,7 +842,6 @@ function MyProfile() {
             </button>
           </form>
         )}
-
         {/* Personal Information */}
 
         <section className="profile-section">
@@ -911,12 +951,9 @@ function MyProfile() {
                       </button>
                     </form>
                   ) : (
+
                     <div className="profile-information-value">
                       {profile?.email || "—"}
-
-                      <span className="profile-verified">
-                        Verified
-                      </span>
                     </div>
                   )}
                 </div>
@@ -1005,8 +1042,9 @@ function MyProfile() {
                 </span>
 
                 <div>
+
                   <span className="profile-information-label">
-                    {location || "Location not added"}
+                    Location
                   </span>
 
                   {editingField === "location" ? (
@@ -1017,25 +1055,21 @@ function MyProfile() {
                         aria-label="City"
                         placeholder="City"
                       />
-
                       <input
                         name="state"
                         defaultValue={profile?.location?.state || ""}
                         aria-label="State"
                         placeholder="State"
                       />
-
                       <input
                         name="country"
                         defaultValue={profile?.location?.country || ""}
                         aria-label="Country"
                         placeholder="Country"
                       />
-
                       <button type="submit" disabled={saving}>
                         {saving ? "Saving..." : "Save"}
                       </button>
-
                       <button
                         type="button"
                         onClick={() => setEditingField(null)}
@@ -1046,11 +1080,11 @@ function MyProfile() {
                     </form>
                   ) : (
                     <span className="profile-information-value">
-                      Location
+                      {location || "Location not added"}
                     </span>
                   )}
-                </div>
-              </div>
+                </div >
+              </div >
 
               {editingField !== "location" && (
                 <button
@@ -1063,16 +1097,17 @@ function MyProfile() {
                 >
                   Edit
                 </button>
-              )}
+              )
+              }
 
-            </div>
+            </div >
 
-          </div>
-        </section>
+          </div >
+        </section >
 
         {/* Preferences */}
 
-        <section className="profile-section">
+        < section className="profile-section" >
 
           <div className="profile-section-header">
             <h2>Preferences</h2>
@@ -1287,11 +1322,11 @@ function MyProfile() {
             </div>
 
           </div>
-        </section>
+        </section >
 
         {/* Account actions */}
 
-        <div className="profile-account-actions">
+        < div className="profile-account-actions" >
 
           <button
             type="button"
@@ -1331,10 +1366,10 @@ function MyProfile() {
             </span>
           </button>
 
-        </div>
+        </div >
 
-      </div>
-    </main>
+      </div >
+    </main >
   );
 }
 

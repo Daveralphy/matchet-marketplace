@@ -236,9 +236,13 @@ async function prepareSellerOnboardingPayload(formData) {
   }
   if (Array.isArray(formData.productImages)) {
     const files = formData.productImages.filter((item) => item instanceof File);
-    const existing = formData.productImages.filter(
-      (item) => item && typeof item === "object" && item.url && item.publicId,
-    );
+    // Keep every already-uploaded asset, whether it came back as a URL
+    // string or a Cloudinary metadata object. Only File objects need uploading.
+    const existing = formData.productImages.filter((item) => {
+      if (!item || item instanceof File) return false;
+      if (typeof item === "string") return Boolean(item);
+      return typeof item === "object" && Boolean(item.url || item.publicId);
+    });
     const uploaded = files.length ? await uploadFiles(files, "matchet/products") : [];
     next.productImages = [...existing, ...uploaded].slice(0, 5);
   }

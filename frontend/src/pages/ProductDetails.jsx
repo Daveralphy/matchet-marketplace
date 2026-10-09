@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import MarketplaceLayout from "../components/layout/MarketplaceLayout";
-import { getProductById, getRelatedProducts } from "../data/marketplaceApi";
+import { getProductById, getRelatedProducts, recordMarketplaceView } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
 import { useSavedItems } from "../context/SavedItemsContext";
 
@@ -329,6 +329,7 @@ export default function ProductDetailsPage() {
     Promise.all([getProductById(id), getRelatedProducts(id)]).then(([nextProduct, nextRelated]) => {
       if (!active) return;
       setProduct(nextProduct);
+      recordMarketplaceView(nextProduct);
       setRelated(nextRelated);
     });
     return () => { active = false; };

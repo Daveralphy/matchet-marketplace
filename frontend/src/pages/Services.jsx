@@ -10,14 +10,6 @@ import person2 from "../assets/inspirations/services/person2.png";
 import { getServiceCategoryCollections, getServiceCollection, getServiceExperience, getServiceReviews } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
 
-const LOCATION_OPTIONS = [
-  "Lagos, Nigeria",
-  "Abuja, Nigeria",
-  "Port Harcourt, Nigeria",
-  "Kano, Nigeria",
-  "Ibadan, Nigeria",
-];
-
 const SERVICE_CATEGORIES = [
   { label: "Home Services", icon: "home" },
   { label: "Repairs", icon: "tools" },
@@ -143,113 +135,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function LocationSelect({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
-  const navigate = useNavigate();
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  useEffect(() => {
-    let active = true;
-    const value = query.trim();
-    if (!value) { setSuggestions([]); return undefined; }
-    const timer = window.setTimeout(async () => {
-      const results = await getServiceCollection("featured").then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
-      if (active) setSuggestions(results.slice(0, 6));
-    }, 120);
-    return () => { active = false; window.clearTimeout(timer); };
-  }, [query]);
-  const submitSearch = () => {
-    const value = query.trim();
-    if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
-  };
-
-  return (
-    <div ref={locationRef} className="relative min-w-0 flex-1">
-      <button
-        type="button"
-        onClick={() => setLocationOpen((open) => !open)}
-        className={[
-          "flex h-12 w-full min-w-0 items-center gap-2 border-l border-slate-100 px-3 text-left text-[12px] font-medium text-[#10183f] transition-colors sm:h-[54px] sm:px-4",
-          locationOpen ? "text-[#07983f]" : "",
-        ].join(" ")}
-        aria-expanded={locationOpen}
-        aria-haspopup="listbox"
-      >
-        <Icon name="pin" size={18} />
-
-        <span className="min-w-0 flex-1 truncate">
-          {selectedLocation}
-        </span>
-
-        <Icon
-          name={locationOpen ? "chevronUp" : "chevronDown"}
-          size={15}
-        />
-      </button>
-
-      {locationOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.14)] sm:left-auto sm:right-0 sm:w-[250px]">
-          <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
-            <Icon name="search" size={16} />
-
-            <input
-              type="text"
-              placeholder="Search for a city or state..."
-              className="min-w-0 w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
-            />
-          </div>
-
-          <div role="listbox" aria-label="Select location">
-            {LOCATION_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="option"
-                aria-selected={option === selectedLocation}
-                onClick={() => {
-                  setSelectedLocation(option);
-                  localStorage.setItem("matchet_location", option);
-                  setLocationOpen(false);
-                }}
-                className={[
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] transition-colors hover:bg-slate-50",
-                  option === selectedLocation
-                    ? "bg-[#effaf3] text-[#07863a]"
-                    : "",
-                ].join(" ")}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <Icon name="pin" size={15} />
-                  <span className="truncate">{option}</span>
-                </span>
-
-                {option === selectedLocation && (
-                  <span className="ml-2 shrink-0 font-semibold text-[#07983f]">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SearchBar({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
+function SearchBar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
@@ -259,7 +145,7 @@ function SearchBar({
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await getServiceCollection("featured").then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
+      const results = await getServiceCollection(localStorage.getItem("matchet_location") || "Lagos, Nigeria").then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
@@ -268,7 +154,7 @@ function SearchBar({
   const submitSearch = () => {
     const value = query.trim();
     if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+    navigate(`/explore?q=${encodeURIComponent(value)}`);
   };
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
@@ -296,17 +182,6 @@ function SearchBar({
           </div>
         )}
       </div>
-
-      <div className="h-px w-full bg-slate-100 sm:h-[34px] sm:w-px" />
-
-      <LocationSelect
-        selectedLocation={selectedLocation}
-        setSelectedLocation={setSelectedLocation}
-        locationOpen={locationOpen}
-        setLocationOpen={setLocationOpen}
-        locationRef={locationRef}
-      />
-
       <button
         type="button"
         onClick={submitSearch}
@@ -886,28 +761,31 @@ function ServiceListingCard({ service }) {
     if (!isAuthenticated) { window.location.href = "/login"; return; }
     await toggleSaved("service", service.id);
   };
+
   return (
-    <Link to={`/services/${service.id}`} className="block overflow-hidden rounded-[14px] border border-[#e3e8ee] bg-white shadow-[0_7px_20px_rgba(16,24,63,0.045)]">
-      <div className={`relative h-[218px] overflow-hidden ${service.imageTone || "bg-[#dfe7e2]"}`}>
-        {service.image || service.gallery?.[0] ? (
-          <img
-            src={service.image || service.gallery?.[0]}
-            alt=""
-            className="h-full w-full object-cover"
-            onError={(event) => {
-              event.currentTarget.style.display = "none";
-              event.currentTarget.nextElementSibling?.classList.remove("hidden");
-            }}
-          />
-        ) : null}
-        <div className={service.image || service.gallery?.[0] ? "absolute inset-0 hidden items-center justify-center" : "absolute inset-0 flex items-center justify-center"}>
-            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
+    <Link to={`/services/${service.id}`} className="group block min-w-0 rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+      <div className="relative">
+        <div className={`relative h-[152px] overflow-hidden rounded-[8px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
+          {service.image || service.gallery?.[0] ? (
+            <img
+              src={service.image || service.gallery?.[0]}
+              alt=""
+              className="h-full w-full object-cover"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+                event.currentTarget.nextElementSibling?.classList.remove("hidden");
+              }}
+            />
+          ) : null}
+          <div className={service.image || service.gallery?.[0] ? "absolute inset-0 hidden items-center justify-center" : "absolute inset-0 flex items-center justify-center"}>
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
               <Icon name={service.icon || (service.category === "Beauty & Care" || service.category === "Beauty & Wellness" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home")} size={42} strokeWidth={1.45} />
             </span>
           </div>
+        </div>
 
         {service.match && (
-          <span className="absolute left-3 top-3 rounded-full bg-white px-3 py-1.5 text-[10px] font-semibold text-[#07863a] shadow-sm">
+          <span className="absolute left-2 top-2 rounded-full bg-white px-2.5 py-1 text-[9px] font-semibold text-[#07863a] shadow-sm">
             ◈ {service.match}
           </span>
         )}
@@ -917,7 +795,7 @@ function ServiceListingCard({ service }) {
           aria-label={saved ? `Unsave ${service.title}` : `Save ${service.title}`}
           aria-pressed={saved}
           onClick={handleSave}
-          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-all ${saved ? "bg-[#10183f] text-white scale-105" : "bg-white text-[#10183f]"}`}
+          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 ${saved ? "bg-[#10183f] text-white scale-105" : "bg-white text-[#10183f]"}`}
         >
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
@@ -925,40 +803,28 @@ function ServiceListingCard({ service }) {
         </button>
       </div>
 
-      <div className="px-4 pb-4 pt-3.5">
-        <h3 className="truncate text-[15px] font-semibold tracking-[-0.02em] text-[#10183f]">
+      <div className="px-0.5 pb-1 pt-2">
+        <h3 className="truncate text-[11px] font-medium leading-4 text-[#10183f] sm:text-[12px]">
           {service.title}
         </h3>
 
-        <p className="mt-2 text-[16px] font-semibold text-[#07863a]">
+        <p className="mt-1 text-[13px] font-bold tracking-[-0.02em] text-[#10183f] sm:text-[14px]">
           {service.price}
         </p>
 
-        <p className="mt-2 text-[11px] text-[#69739a]">
-          {Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? (
-            <>
-              <span className="mr-1.5 text-[15px] text-[#f4ad00]">★</span>
-              <strong className="text-[#27335f]">{Number(service.rating).toFixed(1)}</strong>
-              <span className="ml-1 text-[#7b84a3]">({service.reviews} reviews)</span>
-            </>
-          ) : (
-            <span className="text-[#7b84a3]">No reviews yet</span>
-          )}
-        </p>
-
-        <div className="mt-4 flex items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef1f3] text-[11px] font-semibold text-[#10183f]">
-            {service.sellerInitial}
+        <div className="mt-1.5 flex h-9 items-center gap-1.5">
+          <span className="text-[13px] text-[#f4a900]">★</span>
+          <span className="text-[10px] font-medium text-[#10183f]">
+            {Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? Number(service.rating).toFixed(1) : "New"}
           </span>
-          <div className="min-w-0">
-            <p className="flex items-center gap-1 truncate text-[11px] font-semibold text-[#10183f]">
-              {service.seller}
-              {service.sellerVerified && (
-                <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#18a34a] text-[9px] text-white">✓</span>
-              )}
-            </p>
-            <p className="mt-0.5 text-[10px] text-[#7b84a3]">{service.location}</p>
-          </div>
+          {service.reviews != null && Number(service.reviews) > 0 && (
+            <span className="text-[10px] text-[#7b84a3]">({service.reviews})</span>
+          )}
+        </div>
+
+        <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[9px] text-[#7b84a3]">
+          {service.sellerVerified && <Icon name="shield" size={12} strokeWidth={2.2} />}
+          <span className="truncate">{service.seller} · {service.location}</span>
         </div>
       </div>
     </Link>
@@ -967,24 +833,27 @@ function ServiceListingCard({ service }) {
 
 function ServicesListingSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
-  const savedSearch = sessionStorage.getItem("matchet_services_search") || "";
-  const [search, setSearch] = useState(() => searchParams.get("q") || savedSearch);
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [services, setServices] = useState([]);
-  const selectedLocation = searchParams.get("location") || "";
-
-  useEffect(() => { sessionStorage.setItem("matchet_services_search", search); }, [search]);
+  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
 
   useEffect(() => {
     let active = true;
 
-    getServiceCollection().then((items) => {
-      if (active) setServices(items.filter((item) => (!search || [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(search.toLowerCase())) && (!selectedLocation || item.location === selectedLocation)));
+    getServiceCollection(selectedLocation).then((items) => {
+      if (active) setServices(items.filter((item) => !search || [item.title, item.category, item.seller, item.businessName, item.location].join(" ").toLowerCase().includes(search.toLowerCase())));
     });
 
     return () => {
       active = false;
     };
   }, [isAuthenticated, search, selectedLocation]);
+
+  useEffect(() => {
+    const handleLocationChange = (event) => setSelectedLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
+  }, []);
 
   return (
     <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
@@ -1022,7 +891,7 @@ function ServicesListingSection({ isAuthenticated }) {
         </button>
       </div>
 
-      <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-7 grid grid-cols-2 gap-3 xl:grid-cols-5">
         {services.length ? services.map((service) => (
           <ServiceListingCard key={service.id} service={service} />
         )) : (
@@ -1037,29 +906,6 @@ function ServicesListingSection({ isAuthenticated }) {
 }
 
 export default function Services({ isAuthenticated = false }) {
-  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "");
-  const [locationOpen, setLocationOpen] = useState(false);
-
-  const locationRef = useRef(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (
-        locationOpen &&
-        locationRef.current &&
-        !locationRef.current.contains(event.target)
-      ) {
-        setLocationOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [locationOpen]);
-
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
       <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#f5fbf5] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
@@ -1094,13 +940,7 @@ export default function Services({ isAuthenticated = false }) {
             </p>
 
             <div className="mt-6">
-              <SearchBar
-                selectedLocation={selectedLocation}
-                setSelectedLocation={setSelectedLocation}
-                locationOpen={locationOpen}
-                setLocationOpen={setLocationOpen}
-                locationRef={locationRef}
-              />
+              <SearchBar />
             </div>
 
             <div className="mt-4">

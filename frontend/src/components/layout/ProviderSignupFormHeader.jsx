@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "../../context/FormContext";
 import { saveProviderOnboardingDraft } from "../../api/provider";
@@ -13,16 +13,32 @@ function SaveIcon() {
 }
 
 function ProviderSignupFormHeader({ step }) {
+  useEffect(() => { const labels = ["Your Details","About Your Work","Verification","Payment","Review"]; document.title = `${labels[step - 1] || "Provider Application"} | Matchet`; }, [step]);
+  useEffect(() => {
+    const scroller = document.querySelector(".provider-signup-right-section");
+    if (!scroller) return undefined;
+    let timer;
+    const handleScroll = () => {
+      scroller.classList.add("is-scrolling");
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => scroller.classList.remove("is-scrolling"), 700);
+    };
+    scroller.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      scroller.removeEventListener("scroll", handleScroll);
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+
   const navigate = useNavigate();
   const { formData } = useForm();
   const stepsData = [
     { num: 1, label: "Your Details" },
-    { num: 2, label: "Services" },
-    { num: 3, label: "Experience" },
-    { num: 4, label: "Availability" },
-    { num: 5, label: "Verification" },
-    { num: 6, label: "Payment" },
-    { num: 7, label: "Review" },
+    { num: 2, label: "About Your Work" },
+    { num: 3, label: "Verification" },
+    { num: 4, label: "Payment" },
+    { num: 5, label: "Review" },
   ];
 
   return (
@@ -63,7 +79,7 @@ function ProviderSignupFormHeader({ step }) {
         })}
       </div>
 
-      <p className="provider-signup-step-counter">Step {step} of 7</p>
+      <p className="provider-signup-step-counter">Step {step} of 5</p>
     </header>
   );
 }

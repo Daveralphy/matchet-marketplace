@@ -1,3 +1,13 @@
+export async function getMarketplaceProviderById(id) {
+  try {
+    const payload = await request(`/api/marketplace/providers/${encodeURIComponent(id)}`);
+    return payload?.provider ? { ...payload.provider, services: Array.isArray(payload.services) ? payload.services : [] } : null;
+  } catch (error) {
+    if (error.status === 404) return null;
+    throw error;
+  }
+}
+
 const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 async function request(path, options = {}) {
@@ -46,18 +56,24 @@ async function request(path, options = {}) {
   }
 }
 
-export async function getMarketplaceProducts() {
-  const payload = await request("/api/marketplace/products");
+export async function getMarketplaceProducts({ sellerType = "", location = "" } = {}) {
+  const params = new URLSearchParams();
+  if (sellerType && sellerType !== "Verified sellers") params.set("sellerType", sellerType);
+  if (location) params.set("location", location);
+  const query = params.toString();
+  const payload = await request("/api/marketplace/products" + (query ? "?" + query : ""));
   return Array.isArray(payload.products) ? payload.products : [];
 }
 
-export async function getMarketplaceServices() {
-  const payload = await request("/api/marketplace/services");
+export async function getMarketplaceServices({ location = "" } = {}) {
+  const query = location ? "?location=" + encodeURIComponent(location) : "";
+  const payload = await request("/api/marketplace/services" + query);
   return Array.isArray(payload.services) ? payload.services : [];
 }
 
-export async function getMarketplaceProviders() {
-  const payload = await request("/api/marketplace/providers");
+export async function getMarketplaceProviders({ location = "" } = {}) {
+  const query = location ? "?location=" + encodeURIComponent(location) : "";
+  const payload = await request("/api/marketplace/providers" + query);
   return Array.isArray(payload.providers) ? payload.providers : [];
 }
 
@@ -165,3 +181,5 @@ export async function getSavedItems(){const p=await request("/api/saved-items");
 export async function saveItem(data){const p=await request("/api/saved-items",{method:"POST",body:JSON.stringify(data)});return p.item;}
 export async function removeSavedItem(id){return request("/api/saved-items/"+encodeURIComponent(id),{method:"DELETE"});}
 export async function clearSavedItems(type){return request("/api/saved-items"+(type?"?type="+encodeURIComponent(type):""),{method:"DELETE"});}
+
+export async function createBuyerOrder(payload) { const p = await request("/api/orders", { method: "POST", body: JSON.stringify(payload) }); return p.order ?? null; }

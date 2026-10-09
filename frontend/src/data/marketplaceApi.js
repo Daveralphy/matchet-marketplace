@@ -1,14 +1,16 @@
-import { getMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById } from "../api/marketplace";
+import { getMarketplaceProducts as fetchMarketplaceProducts, getMarketplaceServices, getMarketplaceProviders, getMarketplaceProductById, getMarketplaceServiceById, getMarketplaceProviderById } from "../api/marketplace";
 import { marketplaceContent } from "./marketplaceContent";
 
-async function loadMarketplace() {
+async function loadMarketplace(location = "") {
   const results = await Promise.allSettled([
-    getMarketplaceProducts(),
-    getMarketplaceServices(),
+    fetchMarketplaceProducts({ location }),
+    getMarketplaceServices({ location }),
+    getMarketplaceProviders({ location }),
   ]);
 
   const products = results[0].status === "fulfilled" ? results[0].value : [];
   const services = results[1].status === "fulfilled" ? results[1].value : [];
+  const providers = results[2].status === "fulfilled" ? results[2].value : [];
 
   if (results[0].status === "rejected") {
     console.error("Marketplace products loading failed:", results[0].reason);
@@ -16,10 +18,14 @@ async function loadMarketplace() {
   if (results[1].status === "rejected") {
     console.error("Marketplace services loading failed:", results[1].reason);
   }
+  if (results[2].status === "rejected") {
+    console.error("Marketplace providers loading failed:", results[2].reason);
+  }
 
   return {
     products: Array.isArray(products) ? products : [],
     services: Array.isArray(services) ? services : [],
+    providers: Array.isArray(providers) ? providers : [],
   };
 }
 
@@ -35,6 +41,7 @@ function withProductUiFields(product) {
     seller: product.seller || "Seller",
     gallery,
     reviews: Number(product.reviews ?? 0),
+    viewCount: Number(product.viewCount ?? 0),
     rating: Number(product.rating ?? 0),
     stockCount: Number(product.inventory ?? 0),
     sellerVerified: Boolean(product.sellerVerified),
@@ -63,9 +70,12 @@ function withServiceUiFields(service) {
     seller: service.seller || "Provider",
     gallery,
     reviews: Number(service.reviews ?? 0),
+    viewCount: Number(service.viewCount ?? 0),
     rating: Number(service.rating ?? 0),
     sellerVerified: Boolean(service.sellerVerified),
     sellerInitial: service.sellerInitial || String(service.seller || "P").trim().charAt(0).toUpperCase(),
+    sellerImage: service.sellerImage || "",
+    businessName: service.businessName || "",
     image: gallery[0] || "",
     imageTone: service.imageTone || "bg-[#eef1ef]",
     avatarTone: service.avatarTone || "bg-[#e8f0f8] text-[#2682e9]",
@@ -78,16 +88,82 @@ function withServiceUiFields(service) {
   };
 }
 
-export async function getMarketplaceData() {
-  const data = await loadMarketplace();
+function withProviderUiFields(provider) {
+  if (!provider) return null;
+  const name = provider.name || "Provider";
   return {
-    products: data.products.map(withProductUiFields).filter(Boolean),
-    services: data.services.map(withServiceUiFields).filter(Boolean),
+    ...provider,
+    type: "provider",
+    name,
+    title: name,
+    businessName: provider.businessName || "",
+    categories: Array.isArray(provider.categories) ? provider.categories : [],
+    category: provider.category || provider.categories?.[0] || "Service provider",
+    bio: provider.bio || "",
+    experience: provider.experience || "",
+    location: provider.location || "",
+    rating: Number(provider.rating ?? 0),
+    reviews: Number(provider.reviews ?? 0),
+    listings: Number(provider.listings ?? 0),
+    image: provider.image || "",
+    verified: Boolean(provider.verified),
+    initials: name.trim().split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "P",
+    imageTone: provider.image ? "" : "bg-[#eef1ef]",
+    logoTone: "bg-[#e8f0f8] text-[#2682e9]",
   };
 }
 
-export async function getProductCollection() {
-  const { products } = await loadMarketplace();
+export async function getMarketplaceData(location = "") {
+  const data = await loadMarketplace(location);
+  return {
+    products: data.products.map(withProductUiFields).filter(Boolean),
+    services: data.services.map(withServiceUiFields).filter(Boolean),
+    providers: data.providers.map(withProviderUiFields).filter(Boolean),
+  };
+}
+
+export function recordMarketplaceView(item) {
+  if (!item?.id || !item?.type) return;
+  try {
+    const key = "matchet_view_history";
+    const history = JSON.parse(window.localStorage.getItem(key) || "[]");
+    const next = history.filter((entry) => !(entry.id === String(item.id) && entry.type === item.type));
+    next.unshift({
+      id: String(item.id),
+      type: item.type,
+      category: item.category || "",
+      viewedAt: Date.now(),
+    });
+    window.localStorage.setItem(key, JSON.stringify(next.slice(0, 30)));
+  } catch {
+    // Recommendations should never block browsing.
+  }
+}
+
+export function getMarketplaceViewHistory() {
+  try {
+    const history = JSON.parse(window.localStorage.getItem("matchet_view_history") || "[]");
+    return Array.isArray(history) ? history : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getMarketplaceProducts({ sellerType = "", location = "" } = {}) {
+  const products = await fetchMarketplaceProducts({ location });
+  const normalized = Array.isArray(products) ? products.map(withProductUiFields).filter(Boolean) : [];
+  if (!sellerType || sellerType === "Verified sellers") return normalized;
+  const selected = String(sellerType).toLowerCase();
+  return normalized.filter((product) => {
+    const type = String(product.sellerType || "").toLowerCase();
+    if (selected === "businesses") return type.includes("business");
+    if (selected === "individuals") return type.includes("individual");
+    return type === selected.replace(/s$/, "");
+  });
+}
+
+export async function getProductCollection(location = "") {
+  const { products } = await loadMarketplace(location);
   return products.map(withProductUiFields);
 }
 
@@ -115,21 +191,50 @@ export async function getMarketplaceCollection(collection) {
 }
 
 export async function searchMarketplace({ type = "all", query = "", location = "" } = {}) {
-  const { products, services } = await getMarketplaceData();
-  let items = type === "products" ? products : type === "services" ? services : [...products, ...services];
+  const { products, services, providers } = await getMarketplaceData(location);
+  let items = type === "products"
+    ? products
+    : type === "services"
+      ? services
+      : type === "providers"
+        ? providers
+        : [...products, ...services, ...providers];
   const normalizedQuery = query.trim().toLowerCase();
   const normalizedLocation = location.trim().toLowerCase();
 
   return items.filter((item) => {
-    const haystack = [item.title, item.category, item.seller, item.location].filter(Boolean).join(" ").toLowerCase();
+    const haystack = [
+      item.title,
+      item.name,
+      item.businessName,
+      item.category,
+      ...(item.categories || []),
+      item.seller,
+      item.location,
+      item.bio,
+      item.experience,
+    ].filter(Boolean).join(" ").toLowerCase();
     const itemLocation = String(item.location || "").toLowerCase();
+    const locationMatches = !normalizedLocation
+      || itemLocation.includes(normalizedLocation)
+      || normalizedLocation.includes(itemLocation)
+      || normalizedLocation.split(",").map((part) => part.trim()).filter(Boolean).some((part) => itemLocation.includes(part));
     return (!normalizedQuery || haystack.includes(normalizedQuery))
-      && (!normalizedLocation || itemLocation === normalizedLocation);
+      && locationMatches;
   });
 }
 
-export async function getProviderCollection() {
-  const providers = await getMarketplaceProviders();
+export async function getProviderById(id) {
+  const data = await getMarketplaceProviderById(id);
+  if (!data) return null;
+  return {
+    ...withProviderUiFields(data),
+    services: (data.services || []).map(withServiceUiFields).filter(Boolean),
+  };
+}
+
+export async function getProviderCollection(location = "") {
+  const providers = await getMarketplaceProviders({ location });
   return providers.map((provider) => ({
     ...provider,
     initials: provider.name?.trim()?.charAt(0)?.toUpperCase() || "P",
@@ -166,8 +271,8 @@ export async function getCategoryCollections() {
   };
 }
 
-export async function getServiceCollection() {
-  const { services } = await getMarketplaceData();
+export async function getServiceCollection(location = "") {
+  const { services } = await getMarketplaceData(location);
   return services;
 }
 

@@ -124,9 +124,9 @@ export default function ProviderSignupPageFive() {
       return;
     }
     try {
-      const response = await saveProviderOnboardingDraft(formData, 5);
+      const response = await saveProviderOnboardingDraft(formData, 3);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/provider/onboarding/page6");
+      navigate("/provider/onboarding/page4");
     } catch (error) {
       if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
       alert(error.message || "Please complete the highlighted fields before continuing.");
@@ -157,7 +157,7 @@ export default function ProviderSignupPageFive() {
       </section>
 
       <section className="provider-signup-right-section">
-        <ProviderSignupFormHeader step={5} />
+        <ProviderSignupFormHeader step={3} />
 
         <div className="provider-signup-form-page5">
           <h2 className="provider-signup-step-header">Verify your identity</h2>

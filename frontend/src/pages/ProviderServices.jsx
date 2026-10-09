@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
+import LocationSearch from "../components/LocationSearch";
+import { currencyForLocation } from "../utils/currency";
 import { createProviderService, getProviderServices, updateProviderService, deleteProviderService } from "../api/provider";
 import "../styles/provider-dashboard.css";
 
@@ -88,7 +90,7 @@ export default function ProviderServices() {
     };
   }, [menuService]);
 
-  const emptyForm = { title: "", description: "", category: "", pricingType: "fixed", price: "", durationMinutes: "", images: [] };
+  const emptyForm = { title: "", description: "", category: "", pricingType: "fixed", price: "", currency: "NGN", durationMinutes: "", location: "", locationData: null, images: [] };
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
@@ -351,7 +353,7 @@ export default function ProviderServices() {
               setSaving(true);
               setError("");
               try {
-                const payload = { ...form, price: form.pricingType === "customQuote" ? undefined : form.price };
+                const payload = { ...form, price: form.pricingType === "customQuote" ? undefined : form.price, currency: form.currency, location: form.locationData || form.location, pricing: { type: form.pricingType, amount: form.pricingType === "customQuote" ? undefined : Number(form.price), currency: form.currency } };
                 const response = editingService
                   ? await updateProviderService(editingService.id, payload)
                   : await createProviderService(payload);
@@ -371,26 +373,14 @@ export default function ProviderServices() {
               <label>Description<textarea required rows="4" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></label>
               <div className="provider-service-modal-grid"><label>Category<input required value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></label><label>Pricing<select value={form.pricingType} onChange={(e) => setForm({ ...form, pricingType: e.target.value })}><option value="fixed">Fixed price</option><option value="startingFrom">Starting from</option><option value="customQuote">Custom quote</option></select></label></div>
               {form.pricingType !== "customQuote" && <label>Price<input required type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></label>}
+              {form.pricingType !== "customQuote" && <label>Currency<select value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })}><option>NGN</option><option>USD</option><option>GBP</option><option>EUR</option><option>CAD</option><option>AUD</option><option>GHS</option><option>KES</option></select></label>}
+              <label>Service location<LocationSearch value={form.location} onChange={(value) => setForm({ ...form, location: value })} onSelect={(location) => setForm({ ...form, location: location.label, locationData: location, currency: currencyForLocation(location, "NGN") })} placeholder="Search where this service is offered..." /></label>
               <label>Duration in minutes<input type="number" min="1" value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} /></label>
               <label>
                 Service images
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  multiple
-                  onChange={(e) => {
-                    const selected = Array.from(e.target.files || []);
-                    setForm((current) => ({
-                      ...current,
-                      images: [...(current.images || []), ...selected].slice(0, 6),
-                    }));
-                    e.target.value = "";
-                  }}
-                />
-                <small className="provider-service-image-help">Add up to 6 images. Images are securely uploaded to Cloudinary when you publish.</small>
+                <small className="provider-service-image-help">Add one image first. Use the + tile to add more images.</small>
               </label>
-              {form.images?.length > 0 && (
-                <div className="provider-service-image-grid">
+              <div className="provider-service-image-grid">
                   {form.images.map((image, index) => {
                     const preview = image instanceof File ? URL.createObjectURL(image) : image?.url;
                     return (
@@ -408,8 +398,7 @@ export default function ProviderServices() {
                       </div>
                     );
                   })}
-                </div>
-              )}
+                <label className="provider-service-image-preview provider-service-image-add"><span>＋</span><small>Add image</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e)=>{const file=e.target.files?.[0];if(file)setForm((current)=>({...current,images:[...(current.images||[]),file].slice(0,6)}));e.target.value="";}} /></label></div>
               <div className="provider-service-modal-actions"><button type="button" onClick={() => setShowForm(false)}>Cancel</button><button className="provider-blue-button" disabled={saving}>{saving ? "Saving..." : editingService ? "Save changes" : "Publish service"}</button></div>
             </form>
           </div>

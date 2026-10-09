@@ -1,7 +1,7 @@
 // Got help from Google Gemini. I typed everything myself and did not provide any code to the chat. Everything was a generic example and I adapted to this project.
 // Consider modifying form field names to match names from database schema
 
-import { createContext, useState, useContext, useCallback } from "react";
+import { createContext, useState, useContext, useCallback, useEffect, useRef } from "react";
 
 // Create the context
 const FormContext = createContext();
@@ -42,29 +42,55 @@ function normalizeOnboardingData(values) {
       typeof value === "string" || typeof value === "number" ? String(value) : String(value?.value ?? value?.label ?? "")
     ).filter(Boolean);
   }
-  const normalizeAssets = (value) => {
-    if (!Array.isArray(value)) return [];
-    return value.map((item) => {
-      if (!item) return null;
-      if (typeof item === "string") return item;
-      if (typeof File !== "undefined" && item instanceof File) return item;
-      if (typeof item === "object") {
-        if (item.url || item.publicId) {
-          return {
-            url: item.url || "",
-            publicId: item.publicId || "",
-            isPrimary: Boolean(item.isPrimary),
-            name: item.name || "",
-            mimeType: item.mimeType || item.type || "",
-          };
-        }
-      }
-      return null;
-    }).filter(Boolean);
+  // Uploaded assets use the same shape everywhere in the onboarding flow.
+  // This keeps Cloudinary URLs intact when data is restored from sessionStorage
+  // or from a saved backend draft, while still allowing a File object before upload.
+  const normalizeAsset = (item) => {
+    if (!item) return null;
+    if (typeof item === "string") return item;
+    if (typeof File !== "undefined" && item instanceof File) return item;
+    if (typeof item === "object" && (item.url || item.publicId)) {
+      return {
+        url: item.url || "",
+        publicId: item.publicId || "",
+        isPrimary: Boolean(item.isPrimary),
+        name: item.name || "",
+        mimeType: item.mimeType || item.type || "",
+        type: item.type || item.mimeType || "",
+        resourceType: item.resourceType || "",
+      };
+    }
+    return null;
   };
 
-  next.providerServiceImages = normalizeAssets(next.providerServiceImages);
-  next.providerPortfolioMedia = normalizeAssets(next.providerPortfolioMedia);
+  const normalizeAssets = (value) => {
+    if (!Array.isArray(value)) return [];
+    return value.map(normalizeAsset).filter(Boolean);
+  };
+
+  // Normalize every uploaded image/document field, not just provider galleries.
+  // This gives seller and provider onboarding the same restore/preview behavior.
+  [
+    "profileImage",
+    "businessLogo",
+    "idImageFront",
+    "idImageBack",
+    "selfieImage",
+    "providerProfileImage",
+    "providerIdImageFront",
+    "providerIdImageBack",
+    "providerSelfieImage",
+  ].forEach((key) => {
+    if (next[key]) next[key] = normalizeAsset(next[key]);
+  });
+
+  [
+    "productImages",
+    "providerServiceImages",
+    "providerPortfolioMedia",
+  ].forEach((key) => {
+    next[key] = normalizeAssets(next[key]);
+  });
 
   if (!Array.isArray(next.productTags)) next.productTags = next.productTags ? [next.productTags] : [];
   return next;
@@ -74,7 +100,8 @@ function normalizeOnboardingData(values) {
 export function FormProvider({ children }) {
   const stored = loadStoredForms();
   const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
-  const [formData, setFormData] = useState(() => ({
+  const [formData, setFormData] = useState(() => {
+    const initialFormData = ({
     // Initialize from fields here
     onboardingUserId: "",
      firstName: "",
@@ -173,14 +200,20 @@ export function FormProvider({ children }) {
     providerAccountType: "",
     providerBvn: "",
     providerTin: "",
-  }));
-  if (stored[flow]) Object.assign(formData, normalizeOnboardingData(stored[flow]));
+    });
+
+    if (stored[flow]) {
+      return { ...initialFormData, ...normalizeOnboardingData(stored[flow]) };
+    }
+
+    return initialFormData;
+  });
 
   const setOnboardingFlow = useCallback((nextFlow) => {
     const safeFlow = nextFlow === "service" ? "service" : "seller";
     sessionStorage.setItem("matchet_onboarding_flow", safeFlow);
     const saved = loadStoredForms()[safeFlow];
-    setFormData((prev) => saved ? { ...prev, ...saved } : prev);
+    setFormData((prev) => saved ? normalizeOnboardingData({ ...prev, ...saved }) : prev);
   }, []);
 
   const clearForm = useCallback(() => {
@@ -189,18 +222,33 @@ export function FormProvider({ children }) {
     setFormData((prev) => { const next = { ...prev }; const isService = currentFlow === "service"; Object.keys(next).forEach((key) => { if (isService ? key.startsWith("provider") : !key.startsWith("provider")) next[key] = Array.isArray(next[key]) ? [] : key === "providerProfileImage" ? null : key === "providerAvailability" ? { monday:{enabled:false,startTime:"",endTime:""},tuesday:{enabled:false,startTime:"",endTime:""},wednesday:{enabled:false,startTime:"",endTime:""},thursday:{enabled:false,startTime:"",endTime:""},friday:{enabled:false,startTime:"",endTime:""},saturday:{enabled:false,startTime:"",endTime:""},sunday:{enabled:false,startTime:"",endTime:""} } : ""; }); return next; });
   }, []);
 
-  // Function to update a single field's value
-  const updateField = (name, value) => {
-    setFormData((prevData) => {
-      const next = normalizeOnboardingData({ ...prevData, [name]: value });
+  const persistTimerRef = useRef(null);
+
+  const schedulePersist = useCallback((next, flow) => {
+    if (persistTimerRef.current) window.clearTimeout(persistTimerRef.current);
+    persistTimerRef.current = window.setTimeout(() => {
       try {
         const all = loadStoredForms();
-        const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
         sessionStorage.setItem(FORM_STORAGE_KEY, JSON.stringify({ ...all, [flow]: next }));
       } catch {}
+    }, 250);
+  }, []);
+
+  useEffect(() => () => {
+    if (persistTimerRef.current) window.clearTimeout(persistTimerRef.current);
+  }, []);
+
+  // Update only the field being edited. The previous implementation normalized
+  // and serialized the entire onboarding form on every keystroke, which made
+  // controlled inputs lag and occasionally miss characters.
+  const updateField = useCallback((name, value) => {
+    setFormData((prevData) => {
+      const next = { ...prevData, [name]: value };
+      const flow = sessionStorage.getItem("matchet_onboarding_flow") || "seller";
+      schedulePersist(next, flow);
       return next;
     });
-  };
+  }, [schedulePersist]);
 
   const mergeFormData = useCallback((values) => {
     if (!values || typeof values !== "object") return;

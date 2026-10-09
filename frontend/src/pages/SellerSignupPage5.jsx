@@ -54,13 +54,14 @@ export default function SellerSignupPageFive() {
     e.preventDefault();
 
     if (!e.target.checkValidity()) {
+      e.target.reportValidity();
       return;
     }
 
     try {
-      const response = await saveSellerOnboardingDraft(formData, 5);
+      const response = await saveSellerOnboardingDraft(formData, 3);
       if (response?.data?.formData) mergeFormData(response.data.formData);
-      navigate("/register/page6");
+      navigate("/register/page4");
     } catch (error) {
       if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
       alert(error.message || "Please complete the highlighted fields before continuing.");
@@ -538,7 +539,7 @@ export default function SellerSignupPageFive() {
         </section>
 
         <section className="seller-signup-right-section">
-          <SellerSignupFormHeader step={5} />
+          <SellerSignupFormHeader step={3} />
 
           <h2 className="seller-signup-step-header">
             Verify your identity
@@ -595,8 +596,6 @@ export default function SellerSignupPageFive() {
 
               <div className="seller-signup-identity-upload-grid">
                 <label className="seller-signup-upload">
-                  <span className="seller-signup-upload-icon">↑</span>
-
                   {!formData.idImageFront ? (
                     <>
                       <span className="seller-signup-upload-icon">↑</span>
@@ -621,8 +620,6 @@ export default function SellerSignupPageFive() {
                 </label>
 
                 <label className="seller-signup-upload">
-                  <span className="seller-signup-upload-icon">↑</span>
-
                   {!formData.idImageBack ? (
                     <>
                       <span className="seller-signup-upload-icon">↑</span>

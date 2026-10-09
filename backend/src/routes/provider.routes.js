@@ -14,7 +14,7 @@ router.post("/onboarding", requireAuth, submitProviderOnboarding);
 router.post("/seller-onboarding", requireAuth, submitSellerOnboarding);
 router.get("/seller-onboarding/draft", requireAuth, getSellerOnboardingDraft);
 router.get("/onboarding/draft", requireAuth, getProviderOnboardingDraft);
-router.get("/locations/search", requireAuth, searchProviderLocations);
+router.get("/locations/search", searchProviderLocations);
 router.get("/onboarding/progress", requireAuth, getOnboardingProgress);
 router.get("/capabilities", requireAuth, getProviderCapabilities);
 router.get("/seller-dashboard", requireAuth, requireActiveSeller, getSellerDashboard);

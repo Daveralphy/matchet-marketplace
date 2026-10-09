@@ -3,20 +3,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { getMarketplaceData, getProductExperience } from "../data/marketplaceApi";
+import { getMarketplaceData, getMarketplaceProducts, getProductExperience } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
 import { useSavedItems } from "../context/SavedItemsContext";
+import { formatCurrency } from "../context/CartContext";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
 import { MarketplaceProductVisual } from "../components/marketplace/MarketplaceProductVisual";
-
-const LOCATION_OPTIONS = [
-  "Lagos, Nigeria",
-  "Abuja, Nigeria",
-  "Port Harcourt, Nigeria",
-  "Kano, Nigeria",
-  "Ibadan, Nigeria",
-];
 
 const PRODUCT_CATEGORIES = [
   { label: "Electronics", icon: "laptop" },
@@ -230,113 +223,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-function LocationSelect({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
-  const navigate = useNavigate();
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  useEffect(() => {
-    let active = true;
-    const value = query.trim();
-    if (!value) { setSuggestions([]); return undefined; }
-    const timer = window.setTimeout(async () => {
-      const results = await getMarketplaceData().then((data) => data.products.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
-      if (active) setSuggestions(results.slice(0, 6));
-    }, 120);
-    return () => { active = false; window.clearTimeout(timer); };
-  }, [query]);
-  const submitSearch = () => {
-    const value = query.trim();
-    if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
-  };
-
-  return (
-    <div ref={locationRef} className="relative min-w-0 flex-1">
-      <button
-        type="button"
-        onClick={() => setLocationOpen((open) => !open)}
-        className={[
-          "flex h-12 w-full min-w-0 items-center gap-2 border-l border-slate-100 px-3 text-left text-[12px] font-medium text-[#10183f] transition-colors sm:h-[54px] sm:px-4",
-          locationOpen ? "text-[#07983f]" : "",
-        ].join(" ")}
-        aria-expanded={locationOpen}
-        aria-haspopup="listbox"
-      >
-        <Icon name="pin" size={18} />
-
-        <span className="min-w-0 flex-1 truncate">
-          {selectedLocation}
-        </span>
-
-        <Icon
-          name={locationOpen ? "chevronUp" : "chevronDown"}
-          size={15}
-        />
-      </button>
-
-      {locationOpen && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_14px_30px_rgba(16,24,63,0.14)] sm:left-auto sm:right-0 sm:w-[250px]">
-          <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5">
-            <Icon name="search" size={16} />
-
-            <input
-              type="text"
-              placeholder="Search for a city or state..."
-              className="min-w-0 w-full bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
-            />
-          </div>
-
-          <div role="listbox" aria-label="Select location">
-            {LOCATION_OPTIONS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                role="option"
-                aria-selected={option === selectedLocation}
-                onClick={() => {
-                  setSelectedLocation(option);
-                  localStorage.setItem("matchet_location", option);
-                  setLocationOpen(false);
-                }}
-                className={[
-                  "flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-[12px] text-[#24305f] transition-colors hover:bg-slate-50",
-                  option === selectedLocation
-                    ? "bg-[#effaf3] text-[#07863a]"
-                    : "",
-                ].join(" ")}
-              >
-                <span className="flex min-w-0 items-center gap-2">
-                  <Icon name="pin" size={15} />
-                  <span className="truncate">{option}</span>
-                </span>
-
-                {option === selectedLocation && (
-                  <span className="ml-2 shrink-0 font-semibold text-[#07983f]">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SearchBar({
-  selectedLocation,
-  setSelectedLocation,
-  locationOpen,
-  setLocationOpen,
-  locationRef,
-}) {
+function SearchBar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
@@ -346,7 +233,7 @@ function SearchBar({
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await getMarketplaceData().then((data) => data.products.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
+      const results = await getMarketplaceData(localStorage.getItem("matchet_location") || "Lagos, Nigeria").then((data) => data.products.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
@@ -355,7 +242,7 @@ function SearchBar({
   const submitSearch = () => {
     const value = query.trim();
     if (!value) return;
-    navigate(`/explore?q=${encodeURIComponent(value)}&location=${encodeURIComponent(selectedLocation)}`);
+    navigate(`/explore?q=${encodeURIComponent(value)}`);
   };
   return (
     <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
@@ -383,17 +270,6 @@ function SearchBar({
           </div>
         )}
       </div>
-
-      <div className="h-px w-full bg-slate-100 sm:h-[34px] sm:w-px" />
-
-      <LocationSelect
-        selectedLocation={selectedLocation}
-        setSelectedLocation={setSelectedLocation}
-        locationOpen={locationOpen}
-        setLocationOpen={setLocationOpen}
-        locationRef={locationRef}
-      />
-
       <button
         type="button"
         onClick={submitSearch}
@@ -700,8 +576,8 @@ function ProductFilters({ products, filters, setFilters }) {
             className="w-full accent-[#07863a]"
           />
           <div className="mt-1 flex justify-between text-[10px] text-[#69739a]">
-            <span>₦0</span>
-            <span>₦{selectedMaxPrice.toLocaleString("en-NG")}</span>
+            <span>{formatCurrency(0, products[0]?.currency || "NGN")}</span>
+            <span>{formatCurrency(selectedMaxPrice, products[0]?.currency || "NGN")}</span>
           </div>
         </div>
       </FilterSection>
@@ -773,7 +649,7 @@ function ProductCatalogue({ isAuthenticated }) {
   const [products, setProducts] = useState([]);
   const [view, setView] = useState(savedUiState.view || "grid");
   const [sort, setSort] = useState(savedUiState.sort || "recommended");
-  const [location, setLocation] = useState(initialLocation);
+  const [location, setLocation] = useState(() => localStorage.getItem("matchet_location") || initialLocation || "Lagos, Nigeria");
   const [search, setSearch] = useState(initialSearch || savedUiState.search || "");
   const [filters, setFilters] = useState(() => {
     const savedFilters = savedUiState.filters;
@@ -788,9 +664,19 @@ function ProductCatalogue({ isAuthenticated }) {
   }, [view, sort, location, search, filters]);
 
   useEffect(() => {
+    const handleLocationChange = (event) => {
+      const next = event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria";
+      setLocation(next);
+    };
+    window.addEventListener("matchet-location-change", handleLocationChange);
+    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
+  }, []);
+
+  useEffect(() => {
     let active = true;
 
-    getMarketplaceData().then((data) => {
+    const loadProducts = filters.sellerType ? getMarketplaceProducts({ sellerType: filters.sellerType, location }).then((products) => ({ products })) : getMarketplaceData(location);
+    loadProducts.then((data) => {
       if (!active) return;
       setProducts(data.products);
       const prices = data.products
@@ -805,7 +691,7 @@ function ProductCatalogue({ isAuthenticated }) {
     });
 
     return () => { active = false; };
-  }, []);
+  }, [filters.sellerType, location]);
 
   const normalizedSearch = search.trim().toLowerCase();
 
@@ -815,8 +701,7 @@ function ProductCatalogue({ isAuthenticated }) {
 
     return (
       (!normalizedSearch || [product.title, product.category, product.seller, product.location].join(" ").toLowerCase().includes(normalizedSearch)) &&
-      (!location || product.location === location) &&
-      (!filters.category || product.category === filters.category) &&
+(!filters.category || product.category === filters.category) &&
       (filters.maxPrice == null || price <= filters.maxPrice) &&
       (!filters.rating || rating >= filters.rating) &&
       (!filters.condition || String(product.condition || "").toLowerCase() === filters.condition.toLowerCase()) &&
@@ -826,7 +711,7 @@ function ProductCatalogue({ isAuthenticated }) {
       (!filters.sellerType ||
         (filters.sellerType === "Verified sellers"
           ? Boolean(product.sellerVerified)
-          : String(product.sellerType || "").toLowerCase() === filters.sellerType.toLowerCase().replace(/s$/, "")))
+          : (() => { const type = String(product.sellerType || "").toLowerCase(); const selected = filters.sellerType.toLowerCase(); return selected === "businesses" ? type.includes("business") : selected === "individuals" ? type.includes("individual") : type === selected.replace(/s$/, ""); })()))
     );
   });
 
@@ -988,29 +873,6 @@ function ShoppingJourneySection({ isAuthenticated }) {
 }
 
 export default function Products({ isAuthenticated = false }) {
-  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "");
-  const [locationOpen, setLocationOpen] = useState(false);
-
-  const locationRef = useRef(null);
-
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (
-        locationOpen &&
-        locationRef.current &&
-        !locationRef.current.contains(event.target)
-      ) {
-        setLocationOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [locationOpen]);
-
   return (
     <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
       <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#fbfaf7] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
@@ -1047,13 +909,7 @@ export default function Products({ isAuthenticated = false }) {
             </p>
 
             <div className="mt-6">
-              <SearchBar
-                selectedLocation={selectedLocation}
-                setSelectedLocation={setSelectedLocation}
-                locationOpen={locationOpen}
-                setLocationOpen={setLocationOpen}
-                locationRef={locationRef}
-              />
+              <SearchBar />
             </div>
 
             <div className="mt-4">
