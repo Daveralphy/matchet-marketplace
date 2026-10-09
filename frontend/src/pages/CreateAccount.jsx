@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import loginHero from "../assets/inspirations/authentication/login1.png";
+import loginHero from "../assets/inspirations/authentication/login1.png";\n\nconst API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\\/$/, "");
 
 function UserIcon() {
   return (
@@ -245,7 +245,7 @@ const CreateAccount = () => {
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState("");\n  const [socialMessage, setSocialMessage] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -440,7 +440,7 @@ const CreateAccount = () => {
                   <div className="h-px flex-1 bg-slate-200" />
                 </div>
 
-                {formError && (
+                {socialMessage && (\n                  <div role="status" className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-5 text-amber-800">{socialMessage}</div>\n                )}\n\n                {formError && (
                   <div
                     role="alert"
                     className="mb-4 min-h-[46px] rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
