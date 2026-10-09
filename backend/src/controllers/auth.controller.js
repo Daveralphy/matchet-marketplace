@@ -112,205 +112,57 @@ async function updateMe(req, res) {
   try {
     const user = req.user;
     const body = req.body || {};
+
+    if (body.email !== undefined) {
+      const email = normalize(body.email).toLowerCase();
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: "Please enter a valid email address.",
+          errors: { email: "Enter a valid email address." },
+        });
+      }
+
+      const existingUser = await User.findOne({
+        email,
+        _id: { $ne: user._id },
+      });
+
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: "An account with this email already exists.",
+          errors: { email: "This email is already registered." },
+        });
+      }
+
+      user.email = email;
+    }
+
     if (body.firstName !== undefined) user.firstName = normalize(body.firstName);
     if (body.lastName !== undefined) user.lastName = normalize(body.lastName);
     if (body.phone !== undefined) user.phone = normalize(body.phone);
     if (body.avatar !== undefined) user.avatar = body.avatar || null;
     if (body.location !== undefined) user.location = { ...(user.location?.toObject?.() || user.location || {}), ...(body.location || {}) };
     if (body.preferences !== undefined) user.preferences = { ...(user.preferences || {}), ...(body.preferences || {}) };
+
     await user.save();
     return res.json({ success: true, user: serializeUser(user) });
   } catch (error) {
+    if (error?.code === 11000 && error?.keyPattern?.email) {
+      return res.status(409).json({
+        success: false,
+        message: "An account with this email already exists.",
+        errors: { email: "This email is already registered." },
+      });
+    }
+
     console.error("Profile update failed:", error);
     return res.status(500).json({ success: false, message: "Unable to update your profile right now." });
   }
 }
 
-async function changePassword(req, res) {
-  try {
-    const currentPassword = String(req.body?.currentPassword || "");
-    const newPassword = String(req.body?.newPassword || "");
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Current password and new password are required.",
-      });
-    }
-
-    if (newPassword.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must be at least 8 characters.",
-      });
-    }
-
-    const user = await User.findById(req.user._id).select("+passwordHash");
-
-    if (user.role === "admin") {
-      return res.status(403).json({
-        success: false,
-        message:
-          "Administrator accounts cannot be closed through this page. Please contact the system administrator.",
-      });
-    }
-
-    const currentPasswordMatches = await bcrypt.compare(
-      currentPassword,
-      user.passwordHash
-    );
-
-    if (!currentPasswordMatches) {
-      return res.status(401).json({
-        success: false,
-        message: "Your current password is incorrect.",
-      });
-    }
-
-    if (await bcrypt.compare(newPassword, user.passwordHash)) {
-      return res.status(400).json({
-        success: false,
-        message: "Your new password must differ from your current password.",
-      });
-    }
-
-    user.passwordHash = await bcrypt.hash(newPassword, 12);
-    await user.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Password changed successfully.",
-    });
-  } catch (error) {
-    console.error("Password change failed:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Unable to change your password right now.",
-    });
-  }
-}
-
-async function deleteAccount(req, res) {
-  try {
-    const currentPassword = String(req.body?.currentPassword || "");
-
-    if (!currentPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "Your current password is required to close your account.",
-      });
-    }
-
-    const user = await User.findById(req.user._id).select("+passwordHash");
-
-    if (!user || !user.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: "Your session is no longer valid.",
-      });
-    }
-
-    const passwordMatches = await bcrypt.compare(
-      currentPassword,
-      user.passwordHash
-    );
-
-    if (!passwordMatches) {
-      return res.status(401).json({
-        success: false,
-        message: "Your current password is incorrect.",
-      });
-    }
-
-    const userId = user._id;
-
-    const activeOrder = await Order.exists({
-      $or: [
-        { buyerId: userId },
-        { "items.sellerId": userId },
-      ],
-      orderStatus: {
-        $in: ["pending", "confirmed", "processing", "shipped"],
-      },
-    });
-
-    if (activeOrder) {
-      return res.status(409).json({
-        success: false,
-        message:
-          "Your account cannot be closed while you have unresolved orders. Please resolve them first.",
-      });
-    }
-
-    const activeBooking = await Booking.exists({
-      $or: [{ buyerId: userId }, { providerId: userId }],
-      status: { $in: ["pending", "confirmed", "inProgress"] },
-    });
-
-    if (activeBooking) {
-      return res.status(409).json({
-        success: false,
-        message:
-          "Your account cannot be closed while you have active bookings. Please resolve them first.",
-      });
-    }
-
-    const activePayout = await Payout.exists({
-      providerId: userId,
-      status: { $in: ["pending", "processing"] },
-    });
-
-    if (activePayout) {
-      return res.status(409).json({
-        success: false,
-        message:
-          "Your account cannot be closed while you have pending payouts. Please wait until they are resolved.",
-      });
-    }
-
-    const activeProduct = await Product.exists({
-      sellerId: userId,
-      status: "active",
-    });
-
-    if (activeProduct) {
-      return res.status(409).json({
-        success: false,
-        message:
-          "Your account cannot be closed while you have active product listings. Please archive them first.",
-      });
-    }
-
-    const activeService = await Service.exists({
-      providerId: userId,
-      status: "active",
-    });
-
-    if (activeService) {
-      return res.status(409).json({
-        success: false,
-        message:
-          "Your account cannot be closed while you have active service listings. Please archive them first.",
-      });
-    }
-
-    user.isActive = false;
-    await user.save();
-
-    clearAuthCookie(res);
-
-    return res.status(200).json({
-      success: true,
-      message: "Your account has been closed successfully.",
-    });
-  } catch (error) {
-    console.error("Account closure failed:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Unable to close your account right now.",
-    });
-  }
-}
 async function me(req, res) {
   return res.status(200).json({ success: true, user: serializeUser(req.user) });
 }
