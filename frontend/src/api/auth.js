@@ -72,3 +72,17 @@ export async function logout() {
 export function updateCurrentUser(data) {
   return request("/api/auth/me", { method: "PATCH", body: JSON.stringify(data) });
 }
+
+export function changePassword(data) {
+  return request("/api/auth/change-password", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function deleteAccount(data) {
+  return request("/api/auth/account", {
+    method: "DELETE",
+    body: JSON.stringify(data),
+  });
+}

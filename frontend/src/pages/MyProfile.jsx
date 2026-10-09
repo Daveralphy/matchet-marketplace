@@ -2,6 +2,7 @@
 // Edited by: Brigham
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LocationSearch from "../components/LocationSearch";
 import { useAuth } from "../context/AuthContext";
 import { getCurrentUser, updateCurrentUser } from "../api/auth";
@@ -318,6 +319,7 @@ function TrashIcon() {
 
 function MyProfile() {
   const { user, refreshUser } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(user);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -325,7 +327,7 @@ function MyProfile() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  useEffect(() => { getCurrentUser().then((response) => setProfile(response.user)).catch(() => {}); }, []);
+  useEffect(() => { getCurrentUser().then((response) => setProfile(response.user)).catch(() => { }); }, []);
 
   const saveProfile = async (event) => {
     event.preventDefault(); setSaving(true); setMessage(""); setError("");
@@ -448,7 +450,7 @@ function MyProfile() {
         </section>
 
 
-        {editing && <form className="profile-edit-form profile-section" onSubmit={saveProfile}><div className="profile-section-header"><h2>Edit your information</h2><p>Update the details connected to your Matchet account.</p></div><div className="profile-edit-grid"><label>First name<input name="firstName" defaultValue={profile?.firstName || ""} required /></label><label>Last name<input name="lastName" defaultValue={profile?.lastName || ""} required /></label><label>Phone number<input name="phone" defaultValue={profile?.phone || ""} /></label><label className="location-field">Location<LocationSearch value={[profile?.location?.city,profile?.location?.state,profile?.location?.country].filter(Boolean).join(", ")} onSelect={(location)=>{ const input=document.querySelector("input[name=location]"); if(input) input.value=location.label; }} placeholder="Search for your city, state, or country..." /></label><input type="hidden" name="location" defaultValue={[profile?.location?.city,profile?.location?.state,profile?.location?.country].filter(Boolean).join(", ")} /><label>Delivery address<input name="addressLine1" defaultValue={profile?.location?.addressLine1 || ""} placeholder="House number, street, area..." /></label></div><button className="profile-save-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button></form>}
+        {editing && <form className="profile-edit-form profile-section" onSubmit={saveProfile}><div className="profile-section-header"><h2>Edit your information</h2><p>Update the details connected to your Matchet account.</p></div><div className="profile-edit-grid"><label>First name<input name="firstName" defaultValue={profile?.firstName || ""} required /></label><label>Last name<input name="lastName" defaultValue={profile?.lastName || ""} required /></label><label>Phone number<input name="phone" defaultValue={profile?.phone || ""} /></label><label className="location-field">Location<LocationSearch value={[profile?.location?.city, profile?.location?.state, profile?.location?.country].filter(Boolean).join(", ")} onSelect={(location) => { const input = document.querySelector("input[name=location]"); if (input) input.value = location.label; }} placeholder="Search for your city, state, or country..." /></label><input type="hidden" name="location" defaultValue={[profile?.location?.city, profile?.location?.state, profile?.location?.country].filter(Boolean).join(", ")} /><label>Delivery address<input name="addressLine1" defaultValue={profile?.location?.addressLine1 || ""} placeholder="House number, street, area..." /></label></div><button className="profile-save-button" type="submit" disabled={saving}>{saving ? "Saving..." : "Save changes"}</button></form>}
 
         {/* Personal Information */}
 
@@ -664,6 +666,7 @@ function MyProfile() {
           <button
             type="button"
             className="profile-account-card"
+            onClick={() => navigate("/account/security")}
           >
             <span className="profile-account-icon security-icon">
               <LockIcon />
@@ -682,6 +685,7 @@ function MyProfile() {
           <button
             type="button"
             className="profile-account-card"
+            onClick={() => navigate("/account/delete")}
           >
             <span className="profile-account-icon delete-icon">
               <TrashIcon />
