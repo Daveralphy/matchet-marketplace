@@ -258,6 +258,7 @@ const Login = () => {
                   <button
                     type="button"
                     disabled={isSubmitting}
+                    onClick={() => { window.location.assign(API_BASE_URL + "/api/auth/google"); }}
                     className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
                   >
                     <svg
@@ -289,6 +290,15 @@ const Login = () => {
                   <button
                     type="button"
                     disabled={isSubmitting}
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(API_BASE_URL + "/api/auth/apple", { credentials: "include" });
+                        const payload = await response.json().catch(() => ({}));
+                        setSocialMessage(payload.message || "Apple sign-in is not available yet. Please use Google or your email and password.");
+                      } catch {
+                        setSocialMessage("Apple sign-in is not available yet. Please use Google or your email and password.");
+                      }
+                    }
                     className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
                   >
                     <svg
