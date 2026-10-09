@@ -107,15 +107,52 @@ async function updateMe(req, res) {
   try {
     const user = req.user;
     const body = req.body || {};
+
+    if (body.email !== undefined) {
+      const email = normalize(body.email).toLowerCase();
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({
+          success: false,
+          message: "Please enter a valid email address.",
+          errors: { email: "Enter a valid email address." },
+        });
+      }
+
+      const existingUser = await User.findOne({
+        email,
+        _id: { $ne: user._id },
+      });
+
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: "An account with this email already exists.",
+          errors: { email: "This email is already registered." },
+        });
+      }
+
+      user.email = email;
+    }
+
     if (body.firstName !== undefined) user.firstName = normalize(body.firstName);
     if (body.lastName !== undefined) user.lastName = normalize(body.lastName);
     if (body.phone !== undefined) user.phone = normalize(body.phone);
     if (body.avatar !== undefined) user.avatar = body.avatar || null;
     if (body.location !== undefined) user.location = { ...(user.location?.toObject?.() || user.location || {}), ...(body.location || {}) };
     if (body.preferences !== undefined) user.preferences = { ...(user.preferences || {}), ...(body.preferences || {}) };
+
     await user.save();
     return res.json({ success: true, user: serializeUser(user) });
   } catch (error) {
+    if (error?.code === 11000 && error?.keyPattern?.email) {
+      return res.status(409).json({
+        success: false,
+        message: "An account with this email already exists.",
+        errors: { email: "This email is already registered." },
+      });
+    }
+
     console.error("Profile update failed:", error);
     return res.status(500).json({ success: false, message: "Unable to update your profile right now." });
   }

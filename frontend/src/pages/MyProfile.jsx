@@ -334,14 +334,14 @@ function MyProfile() {
         setProfile(response.user);
 
         const savedNotifications =
-          response.user?.preferences?.notifications?.enabled;
+          response.user?.preferences?.notifications?.email;
 
         if (savedNotifications !== undefined) {
           setNotificationsEnabled(savedNotifications);
         }
 
         const savedLanguage =
-          response.user?.preferences?.platform?.language;
+          response.user?.preferences?.language;
 
         if (savedLanguage) {
           setLanguage(savedLanguage);
@@ -354,7 +354,7 @@ function MyProfile() {
           setPreferredLocation(savedPreferredLocation);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const saveProfile = async (event) => {
@@ -546,10 +546,13 @@ function MyProfile() {
     setError("");
 
     try {
+
       const response = await updateCurrentUser({
         preferences: {
+          ...(profile?.preferences || {}),
           notifications: {
-            enabled: notificationsEnabled,
+            ...(profile?.preferences?.notifications || {}),
+            email: notificationsEnabled,
           },
         },
       });
@@ -572,11 +575,11 @@ function MyProfile() {
     setError("");
 
     try {
+
       const response = await updateCurrentUser({
         preferences: {
-          platform: {
-            language,
-          },
+          ...(profile?.preferences || {}),
+          language,
         },
       });
 
@@ -670,7 +673,7 @@ function MyProfile() {
                 @{profile?.username || "username"}
               </p>
 
-              <p>{profile?.email || "â€”"}</p>
+              <p>{profile?.email || "—"}</p>
 
               <p>{profile?.phone || "Phone not added"}</p>
 
@@ -909,7 +912,7 @@ function MyProfile() {
                     </form>
                   ) : (
                     <div className="profile-information-value">
-                      {profile?.email || "â€”"}
+                      {profile?.email || "—"}
 
                       <span className="profile-verified">
                         Verified
@@ -1304,7 +1307,7 @@ function MyProfile() {
             </span>
 
             <span className="profile-account-arrow">
-               ›
+              ›
             </span>
           </button>
 
@@ -1324,7 +1327,7 @@ function MyProfile() {
             </span>
 
             <span className="profile-account-arrow">
-               ›
+              ›
             </span>
           </button>
 
