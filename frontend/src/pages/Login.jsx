@@ -6,7 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
-import loginHero from "../assets/inspirations/authentication/login1.png";
+import loginHero from "../assets/inspirations/authentication/login1.png";\n\nconst API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\\/$/, "");
 
 function MailIcon() {
   return (
@@ -131,14 +131,14 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState("");\n  const [socialMessage, setSocialMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const requestedSource = location.state?.from || new URLSearchParams(location.search).get("returnTo") || "/";
   const breadcrumbPath = requestedSource.startsWith("/") && !requestedSource.startsWith("//") ? requestedSource.split("?")[0] : "/";
-  const breadcrumbLabel = breadcrumbPath === "/"
+  useEffect(() => {\n    const authError = new URLSearchParams(location.search).get("authError");\n    const messages = {\n      google_not_configured: "Google sign-in is not configured yet. Please use your email and password.",\n      google_cancelled: "Google sign-in was cancelled.",\n      google_state_invalid: "We could not verify this Google sign-in attempt. Please try again.",\n      google_exchange_failed: "Google sign-in could not be completed. Please try again.",\n      google_email_unverified: "Google must verify your email address before you can use it to sign in.",\n      account_inactive: "This account is inactive. Please contact support.",\n      google_sign_in_failed: "Google sign-in failed. Please try again.",\n    };\n    if (authError && messages[authError]) setFormError(messages[authError]);\n  }, [location.search]);\n\n  const breadcrumbLabel = breadcrumbPath === "/"
     ? "Home"
     : breadcrumbPath.startsWith("/for-providers")
       ? "For Providers"
@@ -311,7 +311,7 @@ const Login = () => {
                   <div className="h-px flex-1 bg-slate-200" />
                 </div>
 
-                {formError && (
+                {socialMessage && (\n                  <div role="status" className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-5 text-amber-800">{socialMessage}</div>\n                )}\n\n                {formError && (
                   <div
                     role="alert"
                     className="mb-4 min-h-[46px] rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
