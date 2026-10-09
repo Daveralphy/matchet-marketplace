@@ -145,7 +145,7 @@ function validateRegistration(body) {
 
 async function requestPasswordReset(req, res) {
   const email = normalize(req.body?.email).toLowerCase();
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return res.status(400).json({ success: false, message: "Enter a valid email address.", errors: { email: "Enter a valid email address." } });
   }
 
@@ -268,8 +268,8 @@ async function finishGoogleSignIn(req, res) {
 
     if (!user) {
       const fullName = normalize(profile.name);
-      const firstName = normalize(profile.given_name) || fullName.split(/\\s+/)[0] || "Matchet";
-      const lastName = normalize(profile.family_name) || fullName.split(/\\s+/).slice(1).join(" ") || "User";
+      const firstName = normalize(profile.given_name) || fullName.split(/\s+/)[0] || "Matchet";
+      const lastName = normalize(profile.family_name) || fullName.split(/\s+/).slice(1).join(" ") || "User";
       const username = await uniqueUsername(firstName, lastName);
       const generatedPassword = crypto.randomBytes(48).toString("hex");
       const passwordHash = await bcrypt.hash(generatedPassword, 12);
