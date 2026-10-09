@@ -50,17 +50,19 @@ async function exchangeGoogleSignIn(req, res) {
 
   try {
     const codeHash = crypto.createHash("sha256").update(code).digest("hex");
-    const user = await User.findOne({
-      googleLoginCodeHash: codeHash,
-      googleLoginCodeExpiresAt: { $gt: new Date() },
-      isActive: true,
-    });
+    const user = await User.findOneAndUpdate(
+      {
+        googleLoginCodeHash: codeHash,
+        googleLoginCodeExpiresAt: { $gt: new Date() },
+        isActive: true,
+      },
+      {
+        $set: { lastLoginAt: new Date() },
+        $unset: { googleLoginCodeHash: "", googleLoginCodeExpiresAt: "" },
+      },
+      { new: true },
+    );
     if (!user) return res.status(400).json({ success: false, message: "This Google sign-in session is invalid or expired. Please try again." });
-
-    user.googleLoginCodeHash = undefined;
-    user.googleLoginCodeExpiresAt = undefined;
-    user.lastLoginAt = new Date();
-    await user.save();
     setAuthCookie(res, signAuthToken(user._id));
     return res.status(200).json({ success: true, user: serializeUser(user) });
   } catch (error) {
@@ -186,18 +188,21 @@ async function resetPassword(req, res) {
 
   try {
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
-    const user = await User.findOne({
-      passwordResetTokenHash: tokenHash,
-      passwordResetExpiresAt: { $gt: new Date() },
-      isActive: true,
-    }).select("+passwordHash");
+    const passwordHash = await bcrypt.hash(password, 12);
+    const user = await User.findOneAndUpdate(
+      {
+        passwordResetTokenHash: tokenHash,
+        passwordResetExpiresAt: { $gt: new Date() },
+        isActive: true,
+      },
+      {
+        $set: { passwordHash },
+        $unset: { passwordResetTokenHash: "", passwordResetExpiresAt: "" },
+      },
+      { new: true },
+    );
 
     if (!user) return res.status(400).json({ success: false, message: "This password reset link is invalid or has expired. Request a new one to continue." });
-
-    user.passwordHash = await bcrypt.hash(password, 12);
-    user.passwordResetTokenHash = undefined;
-    user.passwordResetExpiresAt = undefined;
-    await user.save();
     return res.status(200).json({ success: true, message: "Your password has been reset. You can now log in with your new password." });
   } catch (error) {
     console.error("Password reset failed:", error);
