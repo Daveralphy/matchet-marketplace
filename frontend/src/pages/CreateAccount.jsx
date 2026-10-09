@@ -430,7 +430,7 @@ const CreateAccount = () => {
                       } catch {
                         setSocialMessage("Apple sign-in is not available yet. Please use Google or create an account with your email.");
                       }
-                    }
+                    }}
                     className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
                   >
                     <svg
