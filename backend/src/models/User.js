@@ -63,7 +63,9 @@ const userSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true, index: true },
   lastLoginAt: { type: Date },
   passwordResetTokenHash: { type: String, select: false },
-  passwordResetExpiresAt: { type: Date, select: false },\n  passwordResetTokenHash: { type: String, select: false },\n  passwordResetExpiresAt: { type: Date, select: false },
+  passwordResetExpiresAt: { type: Date, select: false },
+  googleLoginCodeHash: { type: String, select: false },
+  googleLoginCodeExpiresAt: { type: Date, select: false },\n  passwordResetTokenHash: { type: String, select: false },\n  passwordResetExpiresAt: { type: Date, select: false },
 }, { timestamps: true });
 
 
