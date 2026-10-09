@@ -100,3 +100,10 @@ export function resetPassword(data) {
     body: JSON.stringify(data),
   });
 }
+
+export function exchangeGoogleSignIn(code) {
+  return request("/api/auth/google/exchange", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
+}
