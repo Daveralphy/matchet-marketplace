@@ -8,7 +8,7 @@ const Payout = require("../models/Payout");
 const Product = require("../models/Product");
 const Service = require("../models/Service");
 
-const CLIENT_URL = () => (process.env.CLIENT_URL || "http://localhost:5173").replace(/\\/$/, "");
+const CLIENT_URL = () => (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, "");
 const GOOGLE_SCOPES = "openid email profile";
 
 function googleRedirectUri() {
