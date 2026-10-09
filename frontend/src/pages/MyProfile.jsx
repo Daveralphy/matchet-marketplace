@@ -1130,7 +1130,7 @@ function MyProfile() {
 
         {/* Preferences */}
 
-        < section className="profile-section" >
+        <section className="profile-section">
 
           <div className="profile-section-header">
             <h2>Preferences</h2>
@@ -1349,7 +1349,7 @@ function MyProfile() {
 
         {/* Account actions */}
 
-        < div className="profile-account-actions" >
+        <div className="profile-account-actions">
 
           <button
             type="button"
