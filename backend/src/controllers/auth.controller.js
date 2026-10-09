@@ -184,11 +184,10 @@ async function changePassword(req, res) {
 
     const user = await User.findById(req.user._id).select("+passwordHash");
 
-    if (user.role === "admin") {
-      return res.status(403).json({
+    if (!user || !user.isActive) {
+      return res.status(401).json({
         success: false,
-        message:
-          "Administrator accounts cannot be closed through this page. Please contact the system administrator.",
+        message: "Your session is no longer valid.",
       });
     }
 
@@ -244,6 +243,14 @@ async function deleteAccount(req, res) {
       return res.status(401).json({
         success: false,
         message: "Your session is no longer valid.",
+      });
+    }
+
+    if (user.role === "admin") {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Administrator accounts cannot be closed through this page. Please contact the system administrator.",
       });
     }
 
