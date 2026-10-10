@@ -9,6 +9,7 @@ import { MATCHING_METRICS, MATCH_RECOMMENDATIONS } from "../data/homeMatchingMoc
 import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } from "../data/homeCommunityMock";
 import { MOBILE_APP_SECTIONS } from "../data/homeMobileAppMock";
 import { useSavedItems } from "../context/SavedItemsContext";
+import { useAuth } from "../context/AuthContext";
 import mockup2 from "../assets/inspirations/homepage/mockup2.png";
 import mockup3 from "../assets/inspirations/homepage/mockup3.png";
 import appStoreBadge from "../assets/inspirations/homepage/app-store-badge.svg";
@@ -1312,7 +1313,9 @@ function CommunitySection({ isAuthenticated }) {
   );
 }
 
-export default function Home({ isAuthenticated = false, userName }) {
+export default function Home() {
+  const { user, isAuthenticated } = useAuth();
+  const userName = user?.firstName?.trim() || user?.username?.trim() || user?.email?.split("@")[0] || "there";
   const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
   const [marketplace, setMarketplace] = useState({
     products: [],
@@ -1364,7 +1367,7 @@ export default function Home({ isAuthenticated = false, userName }) {
           <div className="relative z-20 flex w-full flex-col justify-center px-6 pb-0 pt-10 sm:px-10 sm:pt-12 lg:min-h-[535px] lg:w-[51%] lg:px-12 lg:pb-12 lg:pt-12 xl:px-[50px]">
             <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
               {isAuthenticated
-                ? "WELCOME BACK, DAVERALPHY"
+                ? `WELCOME BACK, ${userName}`
                 : "A SMARTER WAY TO BUY, BOOK, AND WORK"}
             </p>
 
