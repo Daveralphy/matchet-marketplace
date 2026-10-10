@@ -50,19 +50,28 @@ function Gallery({service}) {
 
 function ServiceDetails({service,related}) {
  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
+ const [shareMessage, setShareMessage] = useState("");
  const saved = isSaved("service", service.id);
  const handleSave = async () => { if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved("service", service.id); };
+ const handleShare = async () => {
+  const url = window.location.href;
+  try {
+   if (navigator.share) await navigator.share({ title: service.title, text: `View ${service.title} on Matchet`, url });
+   else if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(url); setShareMessage("Service link copied."); }
+   else setShareMessage("Copy this page URL to share the service.");
+  } catch (error) { if (error?.name !== "AbortError") setShareMessage("Unable to share automatically. Copy this page URL instead."); }
+ };
  return <main className="w-full bg-[#fbfcfd] px-4 pb-12 sm:px-6 lg:px-8"><div className="mx-auto max-w-[1470px] pt-5">
   <nav className="mb-5 flex flex-wrap items-center gap-2 text-[11px] text-[#69739a]"><Link to="/">Home</Link><span>›</span><Link to="/services">Services</Link><span>›</span><span>{service.category}</span><span>›</span><span>{service.title}</span></nav>
   <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
-   <section><Gallery service={service}/><div className="mt-16 flex gap-8 text-[12px] text-[#10183f]"><button className="flex items-center gap-2"><Icon name="share"/> Share this service</button><button className="flex items-center gap-2"><Icon name="flag"/> Report service</button></div></section>
+   <section><Gallery service={service}/><div className="mt-16 flex flex-wrap gap-6 text-[12px] text-[#10183f]"><button type="button" onClick={handleShare} className="flex items-center gap-2"><Icon name="share"/> Share this service</button><Link to={`/report-problem?reference=${encodeURIComponent(service.title + " (" + service.id + ")")}&kind=${encodeURIComponent("Service listing")}`} className="flex items-center gap-2"><Icon name="flag"/> Report service</Link>{shareMessage && <span role="status" className="basis-full text-[#69739a]">{shareMessage}</span>}</div></section>
    <section className="space-y-5">
     <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
      <p className="text-[12px] font-medium text-[#69739a]">{service.category}</p><h1 className="mt-1 text-[31px] font-bold leading-[1.05] tracking-[-0.045em] text-[#10183f] sm:text-[38px]">{service.title}</h1>
      <div className="mt-3 flex items-center gap-3 text-[13px]">{Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? <><Stars rating={service.rating}/><strong>{Number(service.rating).toFixed(1)}</strong><span className="text-[#69739a]">({service.reviews} reviews)</span></> : <span className="text-[#69739a]">No reviews yet</span>}</div>
      <p className="mt-3 text-[14px] leading-6 text-[#69739a]">{service.description}</p>
      <div className="mt-5 flex items-center justify-between gap-4"><p className="text-[30px] font-bold tracking-[-0.04em] text-[#10183f]">{service.price}</p><span className="rounded-[8px] bg-[#e7f8ec] px-3 py-2 text-[11px] font-medium text-[#07863a]">● {service.availability}</span></div>
-     <div className="mt-6 flex gap-3"><button onClick={handleSave} aria-pressed={saved} className={`flex h-[52px] flex-1 items-center justify-center gap-2 rounded-[8px] border font-medium transition-colors ${saved ? "border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : "border-[#dfe5ec] text-[#10183f]"}`}><Icon name="heart"/>{saved?"Unsave":"Save service"}</button><button className="h-[52px] flex-1 rounded-[8px] bg-[#087d35] font-medium text-white">Request booking</button></div>
+     <div className="mt-6 flex gap-3"><button onClick={handleSave} aria-pressed={saved} className={`flex h-[52px] flex-1 items-center justify-center gap-2 rounded-[8px] border font-medium transition-colors ${saved ? "border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : "border-[#dfe5ec] text-[#10183f]"}`}><Icon name="heart"/>{saved?"Unsave":"Save service"}</button><Link to={`/contact?subject=${encodeURIComponent("Service booking")}&service=${encodeURIComponent(service.title)}&reference=${encodeURIComponent(service.id)}`} className="flex h-[52px] flex-1 items-center justify-center rounded-[8px] bg-[#087d35] text-center font-medium text-white">Ask about booking</Link></div>
      <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">{[{icon:"shield",title:"Verified provider",text:service.providerVerified?"Provider verified":"Provider status available"},{icon:"clock",title:"Response time",text:service.responseTime},{icon:"calendar",title:"Availability",text:service.bookingNotice}].map(x=><div key={x.title} className="text-[10px] text-[#69739a]"><Icon name={x.icon} size={23}/><p className="mt-1 font-semibold text-[#10183f]">{x.title}</p><p className="mt-0.5 leading-4">{x.text}</p></div>)}</div>
     </div>
     <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
