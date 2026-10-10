@@ -145,12 +145,11 @@ function HowItWorksPage() {
         { title: "3. Purchase securely", body: "For supported product purchases, checkout redirects you to Paystack. Matchet confirms the order only after payment is verified.", href: "/cart", linkLabel: "View your cart" },
         { title: "4. Sell or provide services", body: "Create an account and complete the relevant onboarding process to apply to sell products or offer services.", href: "/for-providers", linkLabel: "Learn about providing services" },
       ]}
-      actions={[{ href: "/create-account", label: "Create an account" }]}
     />
   );
 }
 
-function ProviderResourcesPage() {
+function ProviderResourcesPage {
   return (
     <PublicInfoPage
       title="Resources for service providers"
