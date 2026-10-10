@@ -9,6 +9,7 @@ import Input from "../components/common/Input";
 import loginHero from "../assets/inspirations/authentication/login1.png";
 
 const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
+const GOOGLE_AUTH_URL = (import.meta.env.VITE_AUTH_URL || import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "https://matchet-api-staging.vercel.app" : "http://localhost:5000")).replace(/\/$/, "");
 
 function MailIcon() {
   return (
@@ -275,7 +276,7 @@ const Login = () => {
                   <button
                     type="button"
                     disabled={isSubmitting}
-                    onClick={() => { window.location.assign(API_BASE_URL + "/api/auth/google"); }}
+                    onClick={() => { window.location.assign(GOOGLE_AUTH_URL + "/api/auth/google"); }}
                     className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
                   >
                     <svg
