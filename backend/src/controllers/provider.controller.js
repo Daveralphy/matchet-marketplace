@@ -1847,6 +1847,9 @@ async function updateSellerProduct(req,res){
 }
 async function deleteSellerProduct(req, res) {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.productId)) {
+      return res.status(400).json({ success: false, message: "Invalid product ID." });
+    }
     const activeOrder = await Order.exists({
       "items.productId": req.params.productId,
       paymentStatus: { $in: ["pending", "paid"] },
