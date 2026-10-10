@@ -1902,7 +1902,6 @@ async function getSellerEarnings(req, res) {
     const eligible = orders.filter(o => o.paymentStatus === "paid" && o.orderStatus !== "cancelled" && o.orderStatus !== "pending" && o.paymentStatus !== "refunded");
     // Settlement eligibility is stricter than sales reporting: only delivered, paid,
     // non-cancelled orders without unresolved payment/inventory review are eligible.
-    const settlementEligibleOrders = orders.filter(o => o.paymentStatus === "paid" && o.orderStatus === "delivered" && !o.requiresManualReview);
     const thisMonth = eligible.filter(o => o.createdAt >= start);
     const previousMonth = eligible.filter(o => o.createdAt >= previous && o.createdAt < start);
     const sales = thisMonth.reduce((sum,o)=>sum+sellerAmount(o),0);
