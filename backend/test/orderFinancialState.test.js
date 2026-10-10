@@ -55,3 +55,61 @@ test("messages cannot be sent to the sender's own account", async () => {
 
   await assert.rejects(message.validate(), /receiverId/);
 });
+
+
+test("seller settlement excludes unresolved orders and reserves pending payouts from availability", async (t) => {
+  const StoreProfile = require("../src/models/StoreProfile");
+  const providerController = require("../src/controllers/provider.controller");
+  const originals = {
+    orderFind: Order.find,
+    orderAggregate: Order.aggregate,
+    payoutFind: Payout.find,
+    storeFindOne: StoreProfile.findOne,
+  };
+  const sellerId = new mongoose.Types.ObjectId();
+  let payoutFilter;
+  let settlementPipeline;
+
+  t.after(() => {
+    Order.find = originals.orderFind;
+    Order.aggregate = originals.orderAggregate;
+    Payout.find = originals.payoutFind;
+    StoreProfile.findOne = originals.storeFindOne;
+  });
+
+  Order.find = () => ({
+    sort() { return this; },
+    limit() { return this; },
+    lean: async () => [],
+  });
+  Payout.find = (filter) => {
+    payoutFilter = filter;
+    return {
+      sort() { return this; },
+      lean: async () => [
+        { _id: "completed-payout", amount: 200, status: "completed", createdAt: new Date() },
+        { _id: "pending-payout", amount: 100, status: "pending", createdAt: new Date() },
+      ],
+    };
+  };
+  StoreProfile.findOne = () => ({ lean: async () => null });
+  Order.aggregate = async (pipeline) => {
+    settlementPipeline = pipeline;
+    return [{ total: 1200, orderIds: ["delivered-order"] }];
+  };
+
+  let response;
+  const res = { json(payload) { response = payload; return payload; } };
+  await providerController.getSellerEarnings({ user: { _id: sellerId } }, res);
+
+  assert.equal(payoutFilter.recipientType, "seller");
+  assert.equal(payoutFilter.providerId, sellerId);
+  assert.equal(settlementPipeline[0].$match.paymentStatus, "paid");
+  assert.equal(settlementPipeline[0].$match.orderStatus, "delivered");
+  assert.deepEqual(settlementPipeline[0].$match.requiresManualReview, { $ne: true });
+  assert.equal(response.success, true);
+  assert.equal(response.data.kpis.settlementEligibleOrders, 1);
+  assert.equal(response.data.kpis.paidOut, 200);
+  assert.equal(response.data.kpis.pendingPayout, 100);
+  assert.equal(response.data.kpis.availableForSettlement, 900);
+});
