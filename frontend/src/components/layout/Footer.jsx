@@ -5,50 +5,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/logo/matchet_logonamedark.png";
 
-function SocialIcon({ type }) {
-  const common = {
-    width: 20,
-    height: 20,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.8,
-    strokeLinecap: "round",
-    strokeLinejoin: "round",
-    "aria-hidden": true,
-  };
-
-  const paths = {
-    linkedin: (
-      <>
-        <rect x="4" y="4" width="16" height="16" rx="2" />
-        <path d="M8 10v6M8 7.5v.01M12 16v-3.2a2.8 2.8 0 0 1 5.6 0V16M12 10v6" />
-      </>
-    ),
-    instagram: (
-      <>
-        <rect x="4" y="4" width="16" height="16" rx="4" />
-        <circle cx="12" cy="12" r="3.5" />
-        <path d="M17.5 6.5h.01" />
-      </>
-    ),
-    x: (
-      <>
-        <path d="M5 4 19 20" />
-        <path d="M19 4 5 20" />
-      </>
-    ),
-    youtube: (
-      <>
-        <path d="M21 8.2a2.5 2.5 0 0 0-1.8-1.8C17.6 6 12 6 12 6s-5.6 0-7.2.4A2.5 2.5 0 0 0 3 8.2 26 26 0 0 0 2.7 12 26 26 0 0 0 3 15.8a2.5 2.5 0 0 0 1.8 1.8C6.4 18 12 18 12 18s5.6 0 7.2-.4a2.5 2.5 0 0 0 1.8-1.8 26 26 0 0 0 .3-3.8 26 26 0 0 0-.3-3.8Z" />
-        <path d="m10 9 5 3-5 3Z" />
-      </>
-    ),
-  };
-
-  return <svg {...common}>{paths[type]}</svg>;
-}
-
 function FooterLogo() {
   const [failed, setFailed] = useState(false);
 
