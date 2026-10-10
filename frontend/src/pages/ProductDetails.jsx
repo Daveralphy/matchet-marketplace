@@ -164,6 +164,18 @@ function ProductDetail({ product, related }) {
   const saved = isSaved("product", product.id);
   const alreadyInCart = cartItems.some((item) => String(item.id || item.productId || item.product?._id) === String(product.id));
 
+  useEffect(() => {
+    const previousTitle = document.title;
+    const description = document.querySelector('meta[name="description"]');
+    const previousDescription = description?.getAttribute("content");
+    document.title = `${product.title} | Matchet Marketplace`;
+    if (description && product.description) description.setAttribute("content", String(product.description).slice(0, 155));
+    return () => {
+      document.title = previousTitle;
+      if (description && previousDescription !== null) description.setAttribute("content", previousDescription);
+    };
+  }, [product.title, product.description]);
+
   const handleAddToCart = async () => {
     if (alreadyInCart || cartBusy) return;
     setCartBusy(true);
