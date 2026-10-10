@@ -116,7 +116,7 @@ async function reserveInventory(order) {
 async function releaseInventory(order, note) {
   const claimed = await Order.findOneAndUpdate(
     { _id: order._id, paymentStatus: { $in: ["pending", "failed"] }, inventoryReservationStatus: "reserved" },
-    { $set: { inventoryReservationStatus: "reserving" } },
+    { $set: { inventoryReservationStatus: "releasing" } },
     { new: true },
   );
   if (!claimed) return false;
@@ -126,7 +126,7 @@ async function releaseInventory(order, note) {
       await restoreProductInventory(item.productId, item.quantity);
     }
     await Order.updateOne(
-      { _id: claimed._id, inventoryReservationStatus: "reserving", paymentStatus: { $in: ["pending", "failed"] } },
+      { _id: claimed._id, inventoryReservationStatus: "releasing", paymentStatus: { $in: ["pending", "failed"] } },
       {
         $set: { inventoryReservationStatus: "released" },
         $push: { statusHistory: { status: "inventory_released", note } },
