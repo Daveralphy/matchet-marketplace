@@ -52,6 +52,17 @@ function ServiceDetails({service,related}) {
  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
  const [shareMessage, setShareMessage] = useState("");
  const saved = isSaved("service", service.id);
+ useEffect(() => {
+  const previousTitle = document.title;
+  const description = document.querySelector('meta[name="description"]');
+  const previousDescription = description?.getAttribute("content");
+  document.title = `${service.title} | Matchet Services`;
+  if (description && service.description) description.setAttribute("content", String(service.description).slice(0, 155));
+  return () => {
+   document.title = previousTitle;
+   if (description && previousDescription !== null) description.setAttribute("content", previousDescription);
+  };
+ }, [service.title, service.description]);
  const handleSave = async () => { if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved("service", service.id); };
  const handleShare = async () => {
   const url = window.location.href;
