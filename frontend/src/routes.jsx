@@ -96,7 +96,6 @@ function AccessDeniedPage({ title = "You do not have access to this page.", mess
         <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
         <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
         <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
-          <a href="/login" style={{ padding: "12px 20px", borderRadius: "8px", background: "#10183f", color: "#fff", textDecoration: "none", fontWeight: 600 }}>Log in</a>
           <a href="/" style={{ padding: "12px 20px", borderRadius: "8px", border: "1px solid #dfe3ec", color: "#10183f", textDecoration: "none", fontWeight: 600 }}>Back to marketplace</a>
         </div>
       </section>
@@ -247,7 +246,6 @@ function ProviderAccessPage({ state }) {
         <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
         <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
           {state === "missing" || state === "incomplete" ? <a href="/provider/onboarding">Continue application</a> : <a href="/provider/application-status">View application status</a>}
-          <a href="/login">Log in</a>
           <a href="/">Back to marketplace</a>
         </div>
       </section>
@@ -269,7 +267,6 @@ function SellerAccessPage({ state }) {
         <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
         <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
           {state === "missing" && <a href="/register">Start seller onboarding</a>}
-          <a href="/login">Log in</a>
           <a href="/">Back to marketplace</a>
         </div>
       </section>
