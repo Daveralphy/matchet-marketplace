@@ -85,6 +85,14 @@ function Placeholder({ name }) {
 }
 
 
+function Placeholder({ name }) {
+  return <h1>{name}</h1>;
+}
+
+function BlankPage() {
+  return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
+}
+
 function AccessDeniedPage({ title = "You do not have access to this page.", message = "Your account does not have the required access for this area." }) {
   return (
     <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
@@ -530,15 +538,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/categories",
-    element: <MarketplaceLayout><Placeholder name="Categories" /></MarketplaceLayout>,
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
     path: "/how-it-works",
-    element: <MarketplaceLayout><Placeholder name="How Matchet Works" /></MarketplaceLayout>,
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
     path: "/provider-resources",
-    element: <MarketplaceLayout><Placeholder name="Provider Resources" /></MarketplaceLayout>,
+    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
     path: "/provider/services",
