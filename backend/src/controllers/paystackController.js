@@ -204,7 +204,7 @@ async function expireStaleReservations() {
       const transaction = await paystackRequest(`/transaction/verify/${encodeURIComponent(order.paymentReference)}`);
       if (transaction.status === "success") {
         await finalizeSuccessfulPayment(order, transaction, order.buyerId);
-      } else if (["failed", "abandoned", "reversed"].includes(String(transaction.status || "").toLowerCase()) || transaction.status === "ongoing") {
+      } else if (["failed", "abandoned", "reversed", "pending", "ongoing"].includes(String(transaction.status || "").toLowerCase())) {
         await markPaymentFailed(order, "The checkout reservation expired before Paystack confirmed payment.");
       }
     } catch (error) {
@@ -381,7 +381,14 @@ async function handlePaystackWebhook(req, res) {
     if (!order || order.paymentStatus === "paid") return res.status(200).json({ received: true });
 
     const result = await finalizeSuccessfulPayment(order, transaction, order.buyerId);
-    if (!result.valid) console.error("Paystack webhook did not match order:", String(order._id));
+    if (!result.valid) {
+      console.error("Paystack webhook did not match order:", String(order._id));
+      return res.status(200).json({ received: true });
+    }
+    if (!result.paid) {
+      // Ask Paystack to retry if another callback currently owns the reservation transition.
+      return res.status(500).json({ success: false, message: "Payment confirmation is still being processed." });
+    }
     if (result.requiresManualReview) console.error("Paid order requires inventory review:", String(order._id));
     return res.status(200).json({ received: true });
   } catch (error) {
