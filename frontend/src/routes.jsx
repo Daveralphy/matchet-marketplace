@@ -70,6 +70,7 @@ import PublicProviderServices from "./pages/PublicProviderServices";
 import ForProviders from "./pages/ForProviders";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import CheckoutVerification from "./pages/CheckoutVerification";
 import {
   ContactPage,
   CookiePolicy,
@@ -475,6 +476,10 @@ const router = createBrowserRouter([
         <Checkout />
       </MarketplaceLayout>
     ),
+  },
+  {
+    path: "/checkout/verify",
+    element: <MarketplaceLayout><CheckoutVerification /></MarketplaceLayout>,
   },
 
   {
