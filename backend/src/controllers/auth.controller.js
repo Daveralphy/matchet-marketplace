@@ -110,6 +110,7 @@ function serializeUser(user) {
       provider: Boolean(user.capabilities?.provider || user.role === "provider"),
     },
     isActive: user.isActive,
+    passwordSet: user.passwordSet !== false,
     createdAt: user.createdAt,
   };
 }
@@ -196,7 +197,7 @@ async function resetPassword(req, res) {
         isActive: true,
       },
       {
-        $set: { passwordHash },
+        $set: { passwordHash, passwordSet: true },
         $unset: { passwordResetTokenHash: "", passwordResetExpiresAt: "" },
       },
       { new: true },
@@ -284,6 +285,7 @@ async function finishGoogleSignIn(req, res) {
         username,
         email,
         passwordHash,
+        passwordSet: false,
         avatar: profile.picture ? { url: profile.picture } : undefined,
         role: "customer",
       });
