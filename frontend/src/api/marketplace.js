@@ -8,7 +8,7 @@ export async function getMarketplaceProviderById(id) {
   }
 }
 
-const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
+const API_BASE_URL = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:5000")).replace(/\/$/, "");
 
 async function request(path, options = {}) {
   const method = String(options.method || "GET").toUpperCase();
@@ -183,3 +183,11 @@ export async function removeSavedItem(id){return request("/api/saved-items/"+enc
 export async function clearSavedItems(type){return request("/api/saved-items"+(type?"?type="+encodeURIComponent(type):""),{method:"DELETE"});}
 
 export async function createBuyerOrder(payload) { const p = await request("/api/orders", { method: "POST", body: JSON.stringify(payload) }); return p.order ?? null; }
+
+export async function initializePaystackPayment(payload) {
+  return request("/api/payments/paystack/initialize", { method: "POST", body: JSON.stringify(payload) });
+}
+
+export async function verifyPaystackPayment(reference) {
+  return request("/api/payments/paystack/verify/" + encodeURIComponent(reference));
+}
