@@ -138,7 +138,6 @@ async function sendProviderMessage(req, res) {
 
     const [existingConversation, relatedBooking, relatedOrder] = await Promise.all([
       Message.exists({
-        conversationId: expectedConversationId,
         $or: [
           { senderId: providerId, receiverId },
           { senderId: receiverId, receiverId: providerId },
