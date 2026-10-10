@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { changePassword } from "../api/auth";
+import { showToast } from "../utils/toast";
 import "./BuyerAccount.css";
 import "./AccountForms.css";
 
@@ -9,22 +10,18 @@ export default function AccountSecurity() {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [message, setMessage] = useState("");
-    const [error, setError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     async function handleSubmit(event) {
         event.preventDefault();
-        setMessage("");
-        setError("");
 
         if (newPassword.length < 8) {
-            setError("Your new password must be at least 8 characters.");
+            showToast("Your new password must be at least 8 characters.", "error");
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            setError("Your new passwords do not match.");
+            showToast("Your new passwords do not match.", "error");
             return;
         }
 
@@ -36,12 +33,12 @@ export default function AccountSecurity() {
                 newPassword,
             });
 
-            setMessage(response.message || "Password changed successfully.");
+            showToast(response.message || "Password changed successfully.", "success");
             setCurrentPassword("");
             setNewPassword("");
             setConfirmPassword("");
         } catch (err) {
-            setError(err.message || "Unable to change your password. Please try again.");
+            showToast(err.message || "Unable to change your password. Please try again.", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -106,21 +103,7 @@ export default function AccountSecurity() {
                                 minLength={8}
                                 required
                             />
-                        </div>
-
-                        {error && (
-                            <p className="account-form-message account-form-error" role="alert">
-                                {error}
-                            </p>
-                        )}
-
-                        {message && (
-                            <p className="account-form-message account-form-success" role="status">
-                                {message}
-                            </p>
-                        )}
-
-                        <div className="account-form-actions">
+                        </div>\n<div className="account-form-actions">
                             <button type="submit" disabled={isSubmitting}>
                                 {isSubmitting ? "Changing password..." : "Change password"}
                             </button>
