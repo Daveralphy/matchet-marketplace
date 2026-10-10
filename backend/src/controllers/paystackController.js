@@ -52,12 +52,20 @@ async function initializePaystackPayment(req, res) {
       return res.status(400).json({ success: false, message: "Add an email address to your account before paying." });
     }
 
-    const normalizedItems = items.map((item) => ({
+    const requestedItems = items.map((item) => ({
       productId: String(item.productId || ""),
       quantity: Number(item.quantity),
     }));
-    if (normalizedItems.some((item) => !item.productId || !Number.isSafeInteger(item.quantity) || item.quantity < 1 || item.quantity > 100)) {
+    if (requestedItems.some((item) => !item.productId || !Number.isSafeInteger(item.quantity) || item.quantity < 1 || item.quantity > 100)) {
       return res.status(400).json({ success: false, message: "One or more cart items are invalid. Refresh your cart and try again." });
+    }
+    const quantityByProduct = new Map();
+    for (const item of requestedItems) {
+      quantityByProduct.set(item.productId, (quantityByProduct.get(item.productId) || 0) + item.quantity);
+    }
+    const normalizedItems = Array.from(quantityByProduct, ([productId, quantity]) => ({ productId, quantity }));
+    if (normalizedItems.some((item) => item.quantity > 100)) {
+      return res.status(400).json({ success: false, message: "A product quantity exceeds the checkout limit." });
     }
 
     const productIds = normalizedItems.map((item) => item.productId);
@@ -79,10 +87,11 @@ async function initializePaystackPayment(req, res) {
       if (Number(product.inventory || 0) < input.quantity) {
         return res.status(400).json({ success: false, message: `Not enough stock for ${product.name}.` });
       }
-      subtotal += Number(product.price || 0) * input.quantity;
-      if (product.shipping?.homeDelivery) {
-        deliveryFee += Number(product.shipping.deliveryFee || 0) * input.quantity;
+      if (product.shipping?.homeDelivery === false) {
+        return res.status(400).json({ success: false, message: `${product.name} is not available for home delivery. Pickup is not available yet.` });
       }
+      subtotal += Number(product.price || 0) * input.quantity;
+      deliveryFee += Number(product.shipping?.deliveryFee || 0) * input.quantity;
       orderItems.push({
         productId: product._id,
         sellerId: product.sellerId,
@@ -149,6 +158,9 @@ async function initializePaystackPayment(req, res) {
           },
         }),
       });
+      if (!transaction.authorization_url || transaction.reference !== reference) {
+        throw new Error("Paystack returned an invalid checkout response.");
+      }
     } catch (error) {
       await Order.deleteOne({ _id: order._id });
       console.error("Paystack initialization failed:", error.message);
