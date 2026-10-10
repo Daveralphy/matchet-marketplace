@@ -246,7 +246,7 @@ Fields:
 - `refundReference`: String, optional, unique when present, records a provider-confirmed full refund
 - `refundedAmount`: Number, default 0
 - `refundedAt`: Date, optional
-- `inventoryReservationStatus`: `none | reserving | reserved | released | consumed`
+- `inventoryReservationStatus`: `none | reserving | reserved | releasing | released | consumed`
 - `inventoryReservationExpiresAt`: Date, optional, used for checkout reservation expiry
 - `requiresManualReview`: Boolean, default false, blocks seller fulfilment when true
 - `inventoryRestockStatus`: `none | restocking | restocked`, tracks cancellation stock restoration
