@@ -1883,10 +1883,20 @@ async function getSellerEarnings(req, res) {
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
     const previous = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const [orders, payouts, store] = await Promise.all([
+    const [orders, payouts, store, settlementRows] = await Promise.all([
       Order.find({ "items.sellerId": sellerId }).sort({ createdAt: -1 }).limit(500).lean(),
       Payout.find({ providerId: sellerId, recipientType: "seller" }).sort({ createdAt: -1 }).limit(200).lean(),
       StoreProfile.findOne({ userId: sellerId }).lean(),
+      Order.aggregate([
+        { $match: { "items.sellerId": sellerId, paymentStatus: "paid", orderStatus: "delivered", requiresManualReview: { $ne: true } } },
+        { $unwind: "$items" },
+        { $match: { "items.sellerId": sellerId } },
+        { $group: {
+          _id: null,
+          total: { $sum: { $multiply: [{ $ifNull: ["$items.priceSnapshot", 0] }, { $ifNull: ["$items.quantity", 0] }] } },
+          orderIds: { $addToSet: "$_id" },
+        } },
+      ]),
     ]);
     const sellerAmount = order => order.items.filter(i => String(i.sellerId) === String(sellerId)).reduce((sum,i) => sum + (Number(i.priceSnapshot)||0)*(Number(i.quantity)||0), 0);
     const eligible = orders.filter(o => o.paymentStatus === "paid" && o.orderStatus !== "cancelled" && o.orderStatus !== "pending" && o.paymentStatus !== "refunded");
@@ -1900,7 +1910,8 @@ async function getSellerEarnings(req, res) {
     const months = Array.from({length:6},(_,i)=>{ const d=new Date(now.getFullYear(),now.getMonth()-5+i,1); const n=new Date(d.getFullYear(),d.getMonth()+1,1); return {label:d.toLocaleString("en-NG",{month:"short",year:"numeric"}),amount:eligible.filter(o=>o.createdAt>=d&&o.createdAt<n).reduce((sum,o)=>sum+sellerAmount(o),0)}; });
     const paidOut=payouts.filter(p=>p.status==="completed").reduce((sum,p)=>sum+Number(p.amount||0),0);
     const pendingPayout=payouts.filter(p=>["pending","processing"].includes(p.status)).reduce((sum,p)=>sum+Number(p.amount||0),0);
-    const settlementEarned = settlementEligibleOrders.reduce((sum, order) => sum + sellerAmount(order), 0);
+    const settlementEarned = Number(settlementRows[0]?.total || 0);
+    const settlementEligibleOrderCount = settlementRows[0]?.orderIds?.length || 0;
     const committedPayouts = payouts.filter(p => ["completed", "pending", "processing"].includes(p.status)).reduce((sum, p) => sum + Number(p.amount || 0), 0);
     const availableForSettlement = Math.max(0, settlementEarned - committedPayouts);
     const settlementReconciliationWarning = committedPayouts > settlementEarned;
@@ -1913,7 +1924,7 @@ async function getSellerEarnings(req, res) {
     const orderTransactions=eligible.slice(0,8).map(o=>({id:o._id,date:o.createdAt,type:"Order",description:"Order #"+String(o._id).slice(-6).toUpperCase(),amount:sellerAmount(o),status:o.orderStatus==="delivered"?"Completed":"Pending"}));
     const payoutTransactions=payouts.slice(0,8).map(p=>({id:p._id,date:p.paidAt||p.createdAt,type:"Payout",description:"Payout to "+(p.method?.bankName||"bank")+" (•••• "+(p.method?.accountLast4||"----")+")",amount:Number(p.amount||0),status:p.status==="completed"?"Completed":p.status}));
     const bank=store?.payoutDetails||store?.onboardingData?.bankInformation||store?.onboardingData?.bankDetails||{};
-    return res.json({success:true,data:{kpis:{sales,orders:thisMonth.length,paidOut,pendingPayout,availableForSettlement,settlementEligibleOrders:settlementEligibleOrders.length,settlementReconciliationWarning,pendingOrders:eligible.filter(o=>o.orderStatus!=="delivered").length,salesChange:previousSales?Math.round((sales-previousSales)/previousSales*100):null},chart:months,breakdown,transactions:[...orderTransactions,...payoutTransactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,8),payoutDetails:{bankName:bank.bankName||bank.bank||"",accountLast4:String(bank.accountNumber||bank.accountNo||"").slice(-4),verified:Boolean(bank.bankName||bank.bank)}}});
+    return res.json({success:true,data:{kpis:{sales,orders:thisMonth.length,paidOut,pendingPayout,availableForSettlement,settlementEligibleOrders:settlementEligibleOrderCount,settlementReconciliationWarning,pendingOrders:eligible.filter(o=>o.orderStatus!=="delivered").length,salesChange:previousSales?Math.round((sales-previousSales)/previousSales*100):null},chart:months,breakdown,transactions:[...orderTransactions,...payoutTransactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,8),payoutDetails:{bankName:bank.bankName||bank.bank||"",accountLast4:String(bank.accountNumber||bank.accountNo||"").slice(-4),verified:Boolean(bank.bankName||bank.bank)}}});
   } catch(error){ console.error("Seller earnings error:",error); return res.status(500).json({success:false,message:process.env.NODE_ENV==="production"?"Unable to load your earnings right now.":error.message}); }
 }
 module.exports.getSellerEarnings = getSellerEarnings;
