@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 const SUPPORT_EMAIL = "support@matchet.com";
 const LAST_UPDATED = "October 10, 2026";
@@ -91,10 +91,14 @@ export function CookiePolicy() {
 }
 
 export function ContactPage() {
+  const [searchParams] = useSearchParams();
+  const requestedSubject = searchParams.get("subject") || "General enquiry";
+  const requestedService = searchParams.get("service") || "";
+  const requestedReference = searchParams.get("reference") || "";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("General enquiry");
-  const [message, setMessage] = useState("");
+  const [subject, setSubject] = useState(requestedSubject);
+  const [message, setMessage] = useState(() => requestedService ? `I would like to ask about booking this service: ${requestedService}. Reference: ${requestedReference}. Please let me know how to proceed.` : "");
 
   function submit(event) {
     event.preventDefault();
@@ -109,7 +113,7 @@ export function ContactPage() {
           <label className="block text-sm font-medium text-slate-800">Your name<input required value={name} onChange={e => setName(e.target.value)} className="mt-2 block w-full rounded-lg border border-slate-300 px-3 py-3 font-normal" autoComplete="name" /></label>
           <label className="block text-sm font-medium text-slate-800">Your email<input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="mt-2 block w-full rounded-lg border border-slate-300 px-3 py-3 font-normal" autoComplete="email" /></label>
         </div>
-        <label className="block text-sm font-medium text-slate-800">What is this about?<select value={subject} onChange={e => setSubject(e.target.value)} className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 font-normal"><option>General enquiry</option><option>Account access</option><option>Order or delivery</option><option>Service booking</option><option>Seller or provider account</option><option>Privacy request</option></select></label>
+        <label className="block text-sm font-medium text-slate-800">What is this about?<select value={subject} onChange={e => setSubject(e.target.value)} className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 font-normal"><option>General enquiry</option><option>Account access</option><option>Order or delivery</option><option>Service booking</option><option>Seller or provider account</option><option>Privacy request</option><option>Service listing</option></select></label>
         <label className="block text-sm font-medium text-slate-800">How can we help?<textarea required rows={6} value={message} onChange={e => setMessage(e.target.value)} className="mt-2 block w-full rounded-lg border border-slate-300 px-3 py-3 font-normal" /></label>
         <p className="text-sm text-slate-500">Submitting opens your email application with the details filled in. Do not include passwords or full payment card details.</p>
         <button className="rounded-lg bg-emerald-700 px-5 py-3 font-semibold text-white hover:bg-emerald-800" type="submit">Prepare email</button>
@@ -129,8 +133,9 @@ export function SafetyPage() {
 }
 
 export function ReportProblemPage() {
-  const [kind, setKind] = useState("Suspicious listing or user");
-  const [reference, setReference] = useState("");
+  const [searchParams] = useSearchParams();
+  const [kind, setKind] = useState(searchParams.get("kind") || "Suspicious listing or user");
+  const [reference, setReference] = useState(searchParams.get("reference") || "");
   const [details, setDetails] = useState("");
   const [replyEmail, setReplyEmail] = useState("");
 
