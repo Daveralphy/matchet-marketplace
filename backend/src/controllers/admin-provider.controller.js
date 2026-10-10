@@ -394,7 +394,7 @@ async function recordOrderRefund(req, res) {
       return res.status(400).json({ success: false, message: "Confirm that the refund has completed in the payment provider dashboard and provide its refund reference." });
     }
 
-    if (!/^[a-f\\d]{24}$/i.test(String(req.params.orderId || ""))) {
+    if (!/^[a-f\d]{24}$/i.test(String(req.params.orderId || ""))) {
       return res.status(400).json({ success: false, message: "Invalid order ID." });
     }
     const order = await Order.findById(req.params.orderId);
