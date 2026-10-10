@@ -32,6 +32,16 @@ function reservationExpiry() {
   return new Date(Date.now() + RESERVATION_MINUTES * 60 * 1000);
 }
 
+function isValidPaystackTransaction(order, transaction, buyerId) {
+  return transaction?.status === "success"
+    && String(transaction.reference || "") === String(order.paymentReference || "")
+    && String(transaction.currency || "").toUpperCase() === "NGN"
+    && Number(transaction.amount) === Math.round(Number(order.total) * 100)
+    && String(transaction.metadata?.orderId || "") === String(order._id)
+    && String(transaction.metadata?.buyerId || "") === String(order.buyerId)
+    && (!buyerId || String(order.buyerId) === String(buyerId));
+}
+
 // Each stock decrement is conditional, so two simultaneous checkouts cannot reserve
 // the same units. The order state acts as a per-order lock for duplicate callbacks.
 async function reserveInventory(order) {
@@ -135,16 +145,7 @@ async function markPaymentFailed(order, note) {
 }
 
 async function finalizeSuccessfulPayment(order, transaction, buyerId) {
-  const reference = String(transaction?.reference || "");
-  const valid = transaction?.status === "success"
-    && reference === String(order.paymentReference || "")
-    && String(transaction.currency || "").toUpperCase() === "NGN"
-    && Number(transaction.amount) === Math.round(Number(order.total) * 100)
-    && String(transaction.metadata?.orderId || "") === String(order._id)
-    && String(transaction.metadata?.buyerId || "") === String(order.buyerId)
-    && (!buyerId || String(order.buyerId) === String(buyerId));
-
-  if (!valid) return { valid: false, paid: false };
+  if (!isValidPaystackTransaction(order, transaction, buyerId)) return { valid: false, paid: false };
 
   let current = await Order.findById(order._id);
   if (!current) return { valid: false, paid: false };
@@ -396,4 +397,5 @@ module.exports = {
   reserveInventory,
   releaseInventory,
   finalizeSuccessfulPayment,
+  isValidPaystackTransaction,
 };
