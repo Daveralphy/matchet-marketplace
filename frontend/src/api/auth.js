@@ -86,3 +86,24 @@ export function deleteAccount(data) {
     body: JSON.stringify(data),
   });
 }
+
+export function requestPasswordReset(email) {
+  return request("/api/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function resetPassword(data) {
+  return request("/api/auth/reset-password", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function exchangeGoogleSignIn(code) {
+  return request("/api/auth/google/exchange", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
+}

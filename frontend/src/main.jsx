@@ -9,6 +9,7 @@ import { FormProvider } from "./context/FormContext";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import "./styles/globals.css";
+import ToastViewport from "./components/common/ToastViewport";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -16,6 +17,7 @@ createRoot(document.getElementById("root")).render(
       <FormProvider>
         <CartProvider>
           <RouterProvider router={router} />
+          <ToastViewport />
         </CartProvider>
       </FormProvider>
     </AuthProvider>

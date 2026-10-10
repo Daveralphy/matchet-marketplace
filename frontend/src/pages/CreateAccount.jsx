@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import loginHero from "../assets/inspirations/authentication/login1.png";
+import { showToast } from "../utils/toast";
+
+const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
+const GOOGLE_AUTH_URL = (import.meta.env.VITE_AUTH_URL || import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "https://matchet-api-staging.vercel.app" : "http://localhost:5000")).replace(/\/$/, "");
 
 function UserIcon() {
   return (
@@ -245,7 +249,6 @@ const CreateAccount = () => {
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState("");
   const { register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -305,7 +308,6 @@ const CreateAccount = () => {
       return;
     }
 
-    setFormError("");
     setIsSubmitting(true);
 
     try {
@@ -318,7 +320,7 @@ const CreateAccount = () => {
       });
       navigate("/", { replace: true });
     } catch (error) {
-      setFormError(error.message || "We could not create your account right now. Please try again.");
+      showToast(error.message || "We could not create your account right now. Please try again.", "error");
       if (error.errors) {
         setErrors((previous) => ({ ...previous, ...error.errors }));
       }
@@ -387,6 +389,7 @@ const CreateAccount = () => {
                   <button
                     type="button"
                     disabled={isSubmitting}
+                    onClick={() => { window.location.assign(GOOGLE_AUTH_URL + "/api/auth/google"); }}
                     className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
                   >
                     <svg
@@ -418,6 +421,15 @@ const CreateAccount = () => {
                   <button
                     type="button"
                     disabled={isSubmitting}
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(API_BASE_URL + "/api/auth/apple", { credentials: "include" });
+                        const payload = await response.json().catch(() => ({}));
+                        showToast(payload.message || "Apple sign-in is not available yet. Please use Google or create an account with your email.", "warning");
+                      } catch {
+                        showToast("Apple sign-in is not available yet. Please use Google or create an account with your email.", "warning");
+                      }
+                    }}
                     className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
                   >
                     <svg
@@ -438,18 +450,7 @@ const CreateAccount = () => {
                   <div className="h-px flex-1 bg-slate-200" />
                   <span className="text-[13px] text-[#747ca1]">or</span>
                   <div className="h-px flex-1 bg-slate-200" />
-                </div>
-
-                {formError && (
-                  <div
-                    role="alert"
-                    className="mb-4 min-h-[46px] rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
-                  >
-                    {formError}
-                  </div>
-                )}
-
-                <form
+                </div>\n<form
                   onSubmit={handleSubmit}
                   noValidate
                   className="flex flex-col gap-4"
