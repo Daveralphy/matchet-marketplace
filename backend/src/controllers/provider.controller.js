@@ -1746,6 +1746,10 @@ async function updateSellerOrderStatus(req, res) {
       try {
         for (const item of claimed.items) {
           await Product.updateOne({ _id: item.productId }, { $inc: { inventory: item.quantity } });
+          await Product.updateOne(
+            { _id: item.productId, status: "outOfStock", inventory: { $gt: 0 } },
+            { $set: { status: "active" } },
+          );
         }
         claimed.inventoryRestockStatus = "restocked";
         claimed.statusHistory.push({ status: "inventory_restocked", note: "Inventory restored after cancellation. Payment refund still requires manual review." });
