@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Do not expose account, checkout, or workspace pages to search crawlers.
+Disallow: /login
+Disallow: /create-account
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /auth/
+Disallow: /checkout
+Disallow: /cart
+Disallow: /account/
+Disallow: /seller/
+Disallow: /provider/
+Disallow: /admin/
+
+Sitemap: https://matchet.com/sitemap.xml
