@@ -1,5 +1,6 @@
 const express = require("express");
 const orderRoutes = require("./routes/orderRoutes");
+const paystackRoutes = require("./routes/paystackRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const savedItemRoutes = require("./routes/savedItem.routes");
 const mongoose = require("mongoose");
@@ -68,6 +69,12 @@ app.use(
   "/api/orders",
   requireDatabase("Matchet is temporarily unable to reach the orders database. Please try again in a moment."),
   orderRoutes,
+);
+
+app.use(
+  "/api/payments/paystack",
+  requireDatabase("Matchet is temporarily unable to reach the payment database. Please try again in a moment."),
+  paystackRoutes,
 );
 
 app.use(
