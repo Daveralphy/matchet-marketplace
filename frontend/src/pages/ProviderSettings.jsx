@@ -178,7 +178,7 @@ export default function ProviderSettings() {
             <SettingRow icon="shield" title="Identity verification" description="Provider verification status" value={security?.identityVerification || "Not verified"} />
             <SettingRow icon="shield" title="Provider account status" description="Current provider profile status" value={security?.providerStatus || "Not available"} />
             <SettingRow icon="settings" title="Last sign in" description="Most recent successful account login" value={formatDate(security?.lastLoginAt)} />
-            <SettingRow icon="settings" title="Password" description="Your password is stored securely and never displayed" action="Change password" />
+            <SettingRow icon="settings" title="Password" description="Your password is stored securely and never displayed" action="Change password" href="/account/security" />
           </section>
         )}
 
