@@ -137,7 +137,7 @@ async function releaseInventory(order, note) {
     // Keep the order in the intermediate state rather than risk restoring the same
     // stock twice. This requires operational review if a database write fails midway.
     await Order.updateOne(
-      { _id: claimed._id, inventoryReservationStatus: "reserving" },
+      { _id: claimed._id, inventoryReservationStatus: "releasing" },
       { $set: { requiresManualReview: true } },
     ).catch(() => {});
     throw error;
