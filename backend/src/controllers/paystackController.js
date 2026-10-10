@@ -32,6 +32,14 @@ function reservationExpiry() {
   return new Date(Date.now() + RESERVATION_MINUTES * 60 * 1000);
 }
 
+async function restoreProductInventory(productId, quantity) {
+  await Product.updateOne({ _id: productId }, { $inc: { inventory: quantity } });
+  await Product.updateOne(
+    { _id: productId, status: "outOfStock", inventory: { $gt: 0 } },
+    { $set: { status: "active" } },
+  );
+}
+
 function isValidPaystackTransaction(order, transaction, buyerId) {
   return transaction?.status === "success"
     && String(transaction.reference || "") === String(order.paymentReference || "")
@@ -74,7 +82,7 @@ async function reserveInventory(order) {
     );
     if (!product) {
       for (const prior of reserved) {
-        await Product.updateOne({ _id: prior.productId }, { $inc: { inventory: prior.quantity } });
+        await restoreProductInventory(prior.productId, prior.quantity);
       }
       await Order.updateOne(
         { _id: claimed._id, inventoryReservationStatus: "reserving" },
@@ -84,6 +92,9 @@ async function reserveInventory(order) {
         },
       );
       return false;
+    }
+    if (Number(product.inventory) === 0) {
+      await Product.updateOne({ _id: product._id, status: "active", inventory: 0 }, { $set: { status: "outOfStock" } });
     }
     reserved.push({ productId: item.productId, quantity: item.quantity });
   }
@@ -95,7 +106,7 @@ async function reserveInventory(order) {
   if (!result.modifiedCount) {
     // A competing state transition occurred. Restore this reservation before returning.
     for (const item of reserved) {
-      await Product.updateOne({ _id: item.productId }, { $inc: { inventory: item.quantity } });
+      await restoreProductInventory(item.productId, item.quantity);
     }
     return false;
   }
@@ -112,7 +123,7 @@ async function releaseInventory(order, note) {
 
   try {
     for (const item of claimed.items) {
-      await Product.updateOne({ _id: item.productId }, { $inc: { inventory: item.quantity } });
+      await restoreProductInventory(item.productId, item.quantity);
     }
     await Order.updateOne(
       { _id: claimed._id, inventoryReservationStatus: "reserving", paymentStatus: { $in: ["pending", "failed"] } },
