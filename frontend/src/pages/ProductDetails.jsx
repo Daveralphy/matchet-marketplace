@@ -158,6 +158,7 @@ function ProductDetail({ product, related }) {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [cartBusy, setCartBusy] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
   const { addItem, items: cartItems } = useCart();
   const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
   const saved = isSaved("product", product.id);
@@ -180,6 +181,17 @@ function ProductDetail({ product, related }) {
     await toggleSaved("product", product.id);
   };
 
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      if (navigator.share) await navigator.share({ title: product.title, text: `View ${product.title} on Matchet`, url });
+      else if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(url); setShareMessage("Product link copied."); }
+      else setShareMessage("Copy this page URL to share the product.");
+    } catch (error) {
+      if (error?.name !== "AbortError") setShareMessage("Unable to share automatically. Copy this page URL instead.");
+    }
+  };
+
   return (
     <main className="w-full bg-[#fbfcfd] px-4 pb-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1470px] pt-5">
@@ -197,9 +209,10 @@ function ProductDetail({ product, related }) {
           <section>
             <ProductGallery product={product} />
 
-            <div className="mt-16 flex gap-8 text-[12px] text-[#10183f]">
-              <button type="button" className="flex items-center gap-2"><Icon name="share" /> Share this product</button>
-              <button type="button" className="flex items-center gap-2"><Icon name="flag" /> Report product</button>
+            <div className="mt-16 flex flex-wrap gap-6 text-[12px] text-[#10183f]">
+              <button type="button" onClick={handleShare} className="flex items-center gap-2"><Icon name="share" /> Share this product</button>
+              <Link to={`/report-problem?kind=${encodeURIComponent("Product listing")}&reference=${encodeURIComponent(product.title + " (" + product.id + ")")}`} className="flex items-center gap-2"><Icon name="flag" /> Report product</Link>
+              {shareMessage && <span role="status" className="basis-full text-[#69739a]">{shareMessage}</span>}
             </div>
           </section>
 
@@ -271,7 +284,7 @@ function ProductDetail({ product, related }) {
               <div className="flex items-center gap-2 text-[14px] font-semibold text-[#10183f]"><Icon name="truck" /> Delivery & availability</div>
               <div className="mt-4 flex items-center justify-between text-[12px]">
                 <span className="flex items-center gap-2"><Icon name="pin" /> {product.location}</span>
-                <button type="button" className="text-[#0759e8]">Change location</button>
+                <Link to={`/explore?location=${encodeURIComponent(product.location || "")}`} className="text-[#0759e8]">Browse nearby</Link>
               </div>
               <div className="mt-4 rounded-[9px] bg-[#eaf9ee] p-4">
                 <div className="flex gap-3"><Icon name="truck" size={24} />
@@ -299,7 +312,7 @@ function ProductDetail({ product, related }) {
               <Link key={item.id} to={`/products/${item.id}`} className="rounded-[10px] border border-[#e4e8ee] bg-white p-2.5">
                 <ProductVisual product={item} />
                 <h3 className="mt-2 truncate text-[12px] font-medium text-[#10183f]">{item.title}</h3>
-                <div className="mt-1 flex items-center gap-2 text-[10px]"><Stars rating={item.rating} /><span>{Number(item.rating).toFixed(1)}</span><span className="text-[#7b84a3]">({item.reviews ?? 0})</span></div>
+                <div className="mt-1 flex items-center gap-2 text-[10px]">{Number(item.reviews) > 0 ? <><Stars rating={item.rating} /><span>{Number(item.rating).toFixed(1)}</span><span className="text-[#7b84a3]">({item.reviews} reviews)</span></> : <span className="text-[#7b84a3]">No reviews yet</span>}</div>
                 <p className="mt-2 text-[15px] font-bold text-[#10183f]">{item.price}</p>
                 <p className="mt-1 truncate text-[10px] text-[#69739a]">{item.seller} · {item.location}</p>
               </Link>
