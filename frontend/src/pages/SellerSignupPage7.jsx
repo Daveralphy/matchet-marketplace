@@ -1,5 +1,3 @@
-// TODO: Need logic for "Submit for review" button
-
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
@@ -495,7 +493,7 @@ export default function SellerSignupPageSeven() {
 
           <p className="importantText">
             By submitting, you agree to Matchet's{" "}
-            <Link to="#">Seller Terms and Conditions</Link>. We will review your
+            <Link to="/terms">Terms of Service</Link>. We will review your
             information and notify you once your seller profile has been
             approved.
           </p>
@@ -525,6 +523,7 @@ export default function SellerSignupPageSeven() {
               }
             }}
             className="save-button"
+            disabled={submitting}
           >
             {submitting ? "Submitting..." : "Submit for review →"}
           </button>
