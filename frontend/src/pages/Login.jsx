@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import Button from "../components/common/Button";
 import Input from "../components/common/Input";
 import loginHero from "../assets/inspirations/authentication/login1.png";
+import { showToast } from "../utils/toast";
 
 const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 const GOOGLE_AUTH_URL = (import.meta.env.VITE_AUTH_URL || import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "https://matchet-api-staging.vercel.app" : "http://localhost:5000")).replace(/\/$/, "");
@@ -134,8 +135,6 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [touched, setTouched] = useState({});
   const [errors, setErrors] = useState({});
-  const [formError, setFormError] = useState("");
-  const [socialMessage, setSocialMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -153,7 +152,7 @@ const Login = () => {
       account_inactive: "This account is inactive. Please contact support.",
       google_sign_in_failed: "Google sign-in failed. Please try again.",
     };
-    if (authError && messages[authError]) setFormError(messages[authError]);
+    if (authError && messages[authError]) showToast(messages[authError], "error");
   }, [location.search]);
 
   const breadcrumbLabel = breadcrumbPath === "/"
@@ -192,7 +191,6 @@ const Login = () => {
       return;
     }
 
-    setFormError("");
     setIsSubmitting(true);
 
     try {
@@ -210,7 +208,7 @@ const Login = () => {
         navigate("/", { replace: true });
       }
     } catch (error) {
-      setFormError(error.status === 401 ? "The email/username or password you entered is incorrect. Please check your details and try again." : error.message || "We could not log you in right now. Please try again.");
+      showToast(error.status === 401 ? "The email/username or password you entered is incorrect. Please check your details and try again." : error.message || "We could not log you in right now. Please try again.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -312,9 +310,9 @@ const Login = () => {
                       try {
                         const response = await fetch(API_BASE_URL + "/api/auth/apple", { credentials: "include" });
                         const payload = await response.json().catch(() => ({}));
-                        setSocialMessage(payload.message || "Apple sign-in is not available yet. Please use Google or your email and password.");
+                        showToast(payload.message || "Apple sign-in is not available yet. Please use Google or your email and password.", "warning");
                       } catch {
-                        setSocialMessage("Apple sign-in is not available yet. Please use Google or your email and password.");
+                        showToast("Apple sign-in is not available yet. Please use Google or your email and password.", "warning");
                       }
                     }}
                     className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
@@ -338,21 +336,7 @@ const Login = () => {
                   <span className="text-[13px] text-[#747ca1]">or</span>
                   <div className="h-px flex-1 bg-slate-200" />
                 </div>
-
-                {socialMessage && (
-                  <div role="status" className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-5 text-amber-800">{socialMessage}</div>
-                )}
-
-                {formError && (
-                  <div
-                    role="alert"
-                    className="mb-4 min-h-[46px] rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
-                  >
-                    {formError}
-                  </div>
-                )}
-
-                <form
+<form
                   onSubmit={handleSubmit}
                   noValidate
                   className="flex flex-col gap-4"
