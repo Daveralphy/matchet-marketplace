@@ -123,3 +123,37 @@ test("concurrent reservations cannot sell more units than inventory", async (t) 
   assert.equal(["reserved", "released"].includes(orders.get("order-2").inventoryReservationStatus), true);
   assert.equal(orders.get("order-1").inventoryReservationStatus === "reserved" || orders.get("order-2").inventoryReservationStatus === "reserved", true);
 });
+
+
+test("duplicate successful payment confirmation is idempotent for an already-paid order", async (t) => {
+  const Order = require("../src/models/Order");
+  const Product = require("../src/models/Product");
+  const { finalizeSuccessfulPayment } = require("../src/controllers/paystackController");
+  const alreadyPaidOrder = {
+    ...order,
+    paymentStatus: "paid",
+    orderStatus: "confirmed",
+    inventoryReservationStatus: "consumed",
+  };
+  const originalFindById = Order.findById;
+  const originalProductFindOneAndUpdate = Product.findOneAndUpdate;
+  let inventoryWrites = 0;
+
+  t.after(() => {
+    Order.findById = originalFindById;
+    Product.findOneAndUpdate = originalProductFindOneAndUpdate;
+  });
+
+  Order.findById = async () => alreadyPaidOrder;
+  Product.findOneAndUpdate = async () => {
+    inventoryWrites += 1;
+    throw new Error("Duplicate confirmation must not change inventory.");
+  };
+
+  const result = await finalizeSuccessfulPayment(alreadyPaidOrder, transaction, order.buyerId);
+
+  assert.equal(result.valid, true);
+  assert.equal(result.paid, true);
+  assert.equal(result.order, alreadyPaidOrder);
+  assert.equal(inventoryWrites, 0);
+});
