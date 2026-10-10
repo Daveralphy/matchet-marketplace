@@ -17,6 +17,7 @@ function serializeUser(user) {
     username: user.username,
     email: user.email,
     phone: user.phone || "",
+    bio: user.bio || "",
     avatar: user.avatar || null,
     location: user.location || null,
     preferences: user.preferences || {},
@@ -143,6 +144,7 @@ async function updateMe(req, res) {
     if (body.firstName !== undefined) user.firstName = normalize(body.firstName);
     if (body.lastName !== undefined) user.lastName = normalize(body.lastName);
     if (body.phone !== undefined) user.phone = normalize(body.phone);
+    if (body.bio !== undefined) user.bio = normalize(body.bio);
     if (body.avatar !== undefined) user.avatar = body.avatar || null;
     if (body.location !== undefined) user.location = { ...(user.location?.toObject?.() || user.location || {}), ...(body.location || {}) };
     if (body.preferences !== undefined) user.preferences = { ...(user.preferences || {}), ...(body.preferences || {}) };

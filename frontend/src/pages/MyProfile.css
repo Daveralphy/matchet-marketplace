@@ -499,6 +499,28 @@
 .profile-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .profile-edit-grid label{display:flex;flex-direction:column;gap:7px;color:#24305f;font-size:13px;font-weight:600}
 .profile-edit-grid input{height:44px;border:1px solid #dfe3ec;border-radius:10px;padding:0 12px;outline:none;font:inherit;font-weight:400}
+.profile-edit-grid textarea {
+  height: 44px;
+  min-height:  44px;
+  border: 1px solid #dfe3ec;
+  border-radius: 10px;
+  padding: 12px;
+  outline: none;
+  font: inherit;
+  font-weight: 400;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.profile-edit-grid textarea:focus {
+  border-color: #07983f;
+  box-shadow: 0 0 0 3px rgba(7, 152, 63, 0.1);
+}
+.profile-edit-grid label small {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 400;
+}
 .profile-edit-grid input:focus{border-color:#07983f;box-shadow:0 0 0 3px rgba(7,152,63,.1)}
 .profile-save-button{margin-top:20px;border:0;border-radius:10px;background:#07983f;color:#fff;padding:12px 20px;font-weight:600;cursor:pointer}
 .profile-save-button:disabled{opacity:.6;cursor:not-allowed}

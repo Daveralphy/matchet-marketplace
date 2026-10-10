@@ -382,6 +382,7 @@ function MyProfile() {
         firstName: form.get("firstName"),
         lastName: form.get("lastName"),
         phone: form.get("phone"),
+        bio: form.get("bio"),
         location: {
           ...existingLocation,
           ...(selectedProfileLocation
@@ -720,7 +721,7 @@ function MyProfile() {
               </p>
 
               <p className="profile-bio">
-                A short description about the user.
+                {profile?.bio || "No bio added yet."}
               </p>
             </div>
 
@@ -796,7 +797,6 @@ function MyProfile() {
                   required
                 />
               </label>
-
               <label>
                 Phone number
                 <input
@@ -804,7 +804,6 @@ function MyProfile() {
                   defaultValue={profile?.phone || ""}
                 />
               </label>
-
               <label className="location-field">
                 Location
                 <LocationSearch
@@ -853,6 +852,17 @@ function MyProfile() {
                   defaultValue={profile?.location?.addressLine1 || ""}
                   placeholder="House number, street, area..."
                 />
+              </label>
+              <label>
+                Bio
+                <textarea
+                  name="bio"
+                  defaultValue={profile?.bio || ""}
+                  maxLength={300}
+                  rows={4}
+                  placeholder="Tell people a little about yourself..."
+                />
+                <small>Maximum 300 characters.</small>
               </label>
             </div>
 
