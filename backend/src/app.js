@@ -43,7 +43,12 @@ const requireDatabase = (message) => (req, res, next) => {
 
 app.use(
   "/api/auth",
-  requireDatabase("Matchet is temporarily unable to reach the account database. Please try again in a moment."),
+  (req, res, next) => {
+    // Apple sign-in is a placeholder response and does not depend on MongoDB.
+    // Let it return its handled "not available yet" message even during DB outages.
+    if (req.path === "/apple") return next();
+    return requireDatabase("Matchet is temporarily unable to reach the account database. Please try again in a moment.")(req, res, next);
+  },
   authRoutes,
 );
 

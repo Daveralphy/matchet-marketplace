@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema({
   preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
   isActive: { type: Boolean, default: true, index: true },
   lastLoginAt: { type: Date },
+  passwordResetTokenHash: { type: String, select: false },
+  passwordResetExpiresAt: { type: Date, select: false },
+  googleLoginCodeHash: { type: String, select: false },
+  googleLoginCodeExpiresAt: { type: Date, select: false },
 }, { timestamps: true });
 
 
