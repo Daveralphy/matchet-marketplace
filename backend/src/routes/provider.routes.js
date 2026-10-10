@@ -1,6 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { requireActiveProvider, requireActiveSeller } = require("../middleware/providerAccess");
+const { requireActiveProvider, requireActiveSeller, requireActiveSellerOrProvider } = require("../middleware/providerAccess");
 const { searchProviderLocations, getOnboardingProgress, getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, deleteSellerProduct, createProviderService, updateProviderService, deleteProviderService, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
@@ -36,9 +36,9 @@ router.delete("/services/:serviceId", requireAuth, requireActiveProvider, delete
 router.get("/bookings", requireAuth, requireActiveProvider, getProviderBookings);
 router.get("/earnings", requireAuth, requireActiveProvider, getProviderEarnings);
 router.get("/reviews", requireAuth, requireActiveProvider, getProviderReviews);
-router.get("/messages", requireAuth, requireActiveProvider, getProviderMessages);
-router.get("/messages/:conversationId", requireAuth, requireActiveProvider, getProviderConversation);
-router.post("/messages", requireAuth, requireActiveProvider, sendProviderMessage);
+router.get("/messages", requireAuth, requireActiveSellerOrProvider, getProviderMessages);
+router.get("/messages/:conversationId", requireAuth, requireActiveSellerOrProvider, getProviderConversation);
+router.post("/messages", requireAuth, requireActiveSellerOrProvider, sendProviderMessage);
 
 module.exports = router;
 
