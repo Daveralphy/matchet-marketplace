@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
+const Order = require("../models/Order");
 const Message = require("../models/Message");
 const User = require("../models/User");
 
@@ -140,7 +141,7 @@ async function sendProviderMessage(req, res) {
     const recipient = await User.findById(receiverId).select("_id").lean();
     if (!recipient) return res.status(404).json({ success: false, message: "Recipient not found." });
 
-    const [existingConversation, relatedBooking] = await Promise.all([
+    const [existingConversation, relatedBooking, relatedOrder] = await Promise.all([
       Message.exists({
         conversationId: expectedConversationId,
         $or: [
@@ -149,11 +150,12 @@ async function sendProviderMessage(req, res) {
         ],
       }),
       Booking.exists({ providerId, buyerId: receiverId }),
+      Order.exists({ buyerId: receiverId, "items.sellerId": providerId }),
     ]);
-    // Providers may reply to a customer-initiated thread or contact a customer with a booking,
-    // but cannot open arbitrary conversations with unrelated accounts.
-    if (!existingConversation && !relatedBooking) {
-      return res.status(403).json({ success: false, message: "You can message customers who have contacted you or have a booking with you." });
+    // Replies are allowed for an existing thread. New threads require a real buyer/seller
+    // order relationship or customer/provider booking relationship.
+    if (!existingConversation && !relatedBooking && !relatedOrder) {
+      return res.status(403).json({ success: false, message: "You can message customers who have an order or booking with you, or reply to an existing conversation." });
     }
 
     const message = await Message.create({
