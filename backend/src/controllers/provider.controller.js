@@ -1885,7 +1885,7 @@ async function getSellerEarnings(req, res) {
     const previous = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const [orders, payouts, store, settlementRows] = await Promise.all([
       Order.find({ "items.sellerId": sellerId }).sort({ createdAt: -1 }).limit(500).lean(),
-      Payout.find({ providerId: sellerId, recipientType: "seller" }).sort({ createdAt: -1 }).limit(200).lean(),
+      Payout.find({ providerId: sellerId, recipientType: "seller" }).sort({ createdAt: -1 }).lean(),
       StoreProfile.findOne({ userId: sellerId }).lean(),
       Order.aggregate([
         { $match: { "items.sellerId": sellerId, paymentStatus: "paid", orderStatus: "delivered", requiresManualReview: { $ne: true } } },
