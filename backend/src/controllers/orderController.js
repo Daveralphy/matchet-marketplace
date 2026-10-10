@@ -8,6 +8,7 @@ async function createBuyerOrder(req,res){
     const { items = [], deliveryMethod = "delivery", shippingAddress = {} } = req.body || {};
     if (!Array.isArray(items) || !items.length) return res.status(400).json({success:false,message:"Your cart is empty."});
     if (!["delivery","pickup"].includes(deliveryMethod)) return res.status(400).json({success:false,message:"Choose a valid delivery method."});
+    if (deliveryMethod === "pickup") return res.status(409).json({success:false,message:"Pickup is not available yet because no confirmed pickup stations are configured. Please choose home delivery."});
 
     const productIds = items.map((item) => item.productId).filter(Boolean);
     const products = await Product.find({ _id: { $in: productIds }, status: "active" }).lean();
@@ -61,7 +62,7 @@ async function createBuyerOrder(req,res){
       total: subtotal + deliveryFee,
       currency: currency || "NGN",
       deliveryMethod,
-      pickupStation: deliveryMethod === "pickup" ? { name: "Nearest Matchet pickup station", status: "pending" } : undefined,
+      pickupStation: undefined,
       shippingAddress: address,
       statusHistory: [{status:"pending",note: deliveryMethod === "pickup" ? "Order will be routed to a nearby pickup station." : "Order placed for home delivery."}],
     });
