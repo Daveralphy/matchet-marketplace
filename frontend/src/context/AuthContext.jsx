@@ -43,7 +43,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => readCachedUser());
-  const [loading, setLoading] = useState(() => Boolean(sessionStorage.getItem(USER_HINT_KEY)));
+  const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState([]);
 
   const notificationKey = (account) => account ? `matchet_notifications:${account.id || account.email}` : "matchet_notifications:anonymous";
@@ -96,10 +96,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (!sessionStorage.getItem(USER_HINT_KEY)) {
-      setLoading(false);
-      return;
-    }
+    // The HttpOnly auth cookie is the source of truth. Always check it on app
+    // startup instead of treating a sessionStorage hint as proof of a session.
+    // This also restores valid logins in a new tab or after client storage clears.
     refreshUser();
   }, [refreshUser]);
 
