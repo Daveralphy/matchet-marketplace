@@ -85,10 +85,6 @@ function Placeholder({ name }) {
 }
 
 
-function Placeholder({ name }) {
-  return <h1>{name}</h1>;
-}
-
 function BlankPage() {
   return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
 }
