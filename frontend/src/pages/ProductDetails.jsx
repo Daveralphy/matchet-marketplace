@@ -162,6 +162,7 @@ function ProductDetail({ product, related }) {
   const { addItem, items: cartItems } = useCart();
   const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
   const saved = isSaved("product", product.id);
+  const stockCount = Math.max(0, Number(product.stockCount || 0));
   const alreadyInCart = cartItems.some((item) => String(item.id || item.productId || item.product?._id) === String(product.id));
 
   useEffect(() => {
@@ -181,6 +182,7 @@ function ProductDetail({ product, related }) {
     setCartBusy(true);
     try {
       const source = document.querySelector(".product-detail-fly-source img") || document.querySelector(".product-detail-fly-source");
+      if (stockCount < 1 || quantity > stockCount) return;
       const result = await addItem(product, quantity, source);
       if (result?.requiresAuth) { window.location.href = "/login"; return; }
       setAdded(true);
@@ -261,9 +263,9 @@ function ProductDetail({ product, related }) {
               <div className="mt-6 flex items-center gap-3">
                 <span className="text-[13px] font-semibold text-[#10183f]">Quantity</span>
                 <div className="flex h-11 overflow-hidden rounded-[8px] border border-[#dfe5ec]">
-                  <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="w-11 text-lg">−</button>
+                  <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="w-11 text-lg" disabled={quantity <= 1} aria-label="Decrease quantity">−</button>
                   <span className="flex w-14 items-center justify-center border-x border-[#dfe5ec] text-[13px]">{quantity}</span>
-                  <button type="button" onClick={() => setQuantity((value) => value + 1)} className="w-11 text-lg">+</button>
+                  <button type="button" onClick={() => setQuantity((value) => Math.min(stockCount || 1, value + 1))} disabled={quantity >= stockCount || stockCount < 1} className="w-11 text-lg" aria-label="Increase quantity">+</button>
                 </div>
                 <button type="button" onClick={handleSave} aria-pressed={saved} className={`ml-auto flex h-11 items-center gap-2 rounded-[8px] border px-4 text-[12px] font-medium transition-colors ${saved ? "border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : "border-[#dfe5ec] text-[#10183f]"}`}>
                   <Icon name="heart" /> {saved ? "Unsave" : "Save"}
@@ -271,10 +273,10 @@ function ProductDetail({ product, related }) {
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <button type="button" onClick={handleAddToCart} disabled={alreadyInCart || cartBusy} className={`flex h-[52px] items-center justify-center gap-2 rounded-[8px] border font-medium transition-all duration-200 ${alreadyInCart ? "cursor-not-allowed border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : added ? "scale-[1.02] border-[#087d35] bg-[#eaf9ee] text-[#087d35]" : "border-[#07863a] bg-white text-[#07863a]"}`}>
-                  <Icon name="cart" /> {alreadyInCart ? "In cart ✓" : added ? "Added to cart ✓" : cartBusy ? "Adding..." : "Add to cart"}
+                <button type="button" onClick={handleAddToCart} disabled={alreadyInCart || cartBusy || stockCount < 1 || quantity > stockCount} className={`flex h-[52px] items-center justify-center gap-2 rounded-[8px] border font-medium transition-all duration-200 ${alreadyInCart ? "cursor-not-allowed border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : added ? "scale-[1.02] border-[#087d35] bg-[#eaf9ee] text-[#087d35]" : "border-[#07863a] bg-white text-[#07863a]"}`}>
+                  <Icon name="cart" /> {stockCount < 1 ? "Out of stock" : alreadyInCart ? "In cart ✓" : added ? "Added to cart ✓" : cartBusy ? "Adding..." : "Add to cart"}
                 </button>
-                <Link to={"/checkout/" + product.id} state={{ quantity }} className="flex h-[52px] items-center justify-center rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</Link>
+                {stockCount > 0 ? <Link to={"/checkout/" + product.id} state={{ quantity }} className="flex h-[52px] items-center justify-center rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</Link> : <button type="button" disabled className="h-[52px] rounded-[8px] bg-slate-300 font-medium text-slate-600">Out of stock</button>}
               </div>
 
               <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">
