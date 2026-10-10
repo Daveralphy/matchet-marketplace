@@ -114,4 +114,13 @@ function ServiceDetails({service,related}) {
   </section>
  </div></main>;
 }
-export default function ServiceDetailsPage(){const {id}=useParams();useEffect(()=>{window.scrollTo({top:0,behavior:"auto"})},[id]);const [service,setService]=useState(null);const [related,setRelated]=useState([]);useEffect(()=>{let active=true;Promise.all([getServiceById(id),getRelatedServices(id)]).then(([s,r])=>{if(active){setService(s);setRelated(r)}});return()=>{active=false}},[id]);if(!service)return <main className="mx-auto min-h-[60vh] max-w-[1470px] animate-pulse px-4 py-8 sm:px-6 lg:px-8"><div className="grid gap-8 lg:grid-cols-2"><div className="h-[480px] rounded-xl bg-slate-100"/><div className="space-y-4"><div className="h-6 w-24 rounded bg-slate-100"/><div className="h-10 w-3/4 rounded bg-slate-100"/><div className="h-5 w-1/3 rounded bg-slate-100"/><div className="h-24 rounded bg-slate-100"/><div className="h-12 w-40 rounded bg-slate-100"/></div></div></main>;return <ServiceDetails service={service} related={related}/>;}
+export default function ServiceDetailsPage(){
+ const {id}=useParams();
+ const [service,setService]=useState(null);
+ const [related,setRelated]=useState([]);
+ const [loadError,setLoadError]=useState("");
+ useEffect(()=>{window.scrollTo({top:0,behavior:"auto"});let active=true;setService(null);setLoadError("");Promise.all([getServiceById(id),getRelatedServices(id)]).then(([s,r])=>{if(!active)return;if(!s){setLoadError("We could not find this service. It may have been removed or is no longer available.");return;}setService(s);setRelated(r)}).catch(error=>{if(active)setLoadError(error?.message||"Unable to load this service right now.")});return()=>{active=false}},[id]);
+ if(loadError)return <main className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-12 text-center"><h1 className="text-2xl font-bold text-[#10183f]">Service unavailable</h1><p className="mt-3 text-sm leading-6 text-[#69739a]">{loadError}</p><div className="mt-6 flex gap-3"><button type="button" onClick={()=>window.location.reload()} className="rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white">Try again</button><Link to="/services" className="rounded-lg border border-slate-200 px-5 py-3 font-semibold text-[#10183f]">Browse services</Link></div></main>;
+ if(!service)return <main className="mx-auto min-h-[60vh] max-w-[1470px] animate-pulse px-4 py-8 sm:px-6 lg:px-8"><div className="grid gap-8 lg:grid-cols-2"><div className="h-[480px] rounded-xl bg-slate-100"/><div className="space-y-4"><div className="h-6 w-24 rounded bg-slate-100"/><div className="h-10 w-3/4 rounded bg-slate-100"/><div className="h-5 w-1/3 rounded bg-slate-100"/><div className="h-24 rounded bg-slate-100"/><div className="h-12 w-40 rounded bg-slate-100"/></div></div></main>;
+ return <ServiceDetails service={service} related={related}/>;
+}
