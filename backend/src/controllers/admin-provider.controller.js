@@ -4,6 +4,7 @@ const Notification = require("../models/Notification");
 const StoreProfile = require("../models/StoreProfile");
 const Product = require("../models/Product");
 const Service = require("../models/Service");
+const Order = require("../models/Order");
 
 function requireAdmin(req, res, next) {
   if (req.user?.role !== "admin") {
@@ -383,6 +384,64 @@ async function updateListingStatus(req, res) {
   }
 }
 
+
+async function recordOrderRefund(req, res) {
+  try {
+    const { refundReference, refundAmount, providerConfirmed } = req.body || {};
+    const reference = String(refundReference || "").trim();
+    const amount = Number(refundAmount);
+    if (providerConfirmed !== true || reference.length < 3 || reference.length > 120) {
+      return res.status(400).json({ success: false, message: "Confirm that the refund has completed in the payment provider dashboard and provide its refund reference." });
+    }
+
+    const order = await Order.findById(req.params.orderId);
+    if (!order) return res.status(404).json({ success: false, message: "Order not found." });
+    if (order.paymentStatus === "refunded") {
+      if (order.refundReference === reference) {
+        return res.json({ success: true, alreadyRecorded: true, data: { id: order._id, paymentStatus: order.paymentStatus, refundReference: order.refundReference, refundedAmount: order.refundedAmount, refundedAt: order.refundedAt } });
+      }
+      return res.status(409).json({ success: false, message: "A refund is already recorded for this order." });
+    }
+    if (order.paymentStatus !== "paid") {
+      return res.status(409).json({ success: false, message: "Only a paid order can be marked as refunded." });
+    }
+    if (order.orderStatus !== "cancelled" && !order.requiresManualReview) {
+      return res.status(409).json({ success: false, message: "Only cancelled orders or orders flagged for manual review can be refunded through this workflow." });
+    }
+    if (order.inventoryReservationStatus === "reserving" || order.inventoryRestockStatus === "restocking") {
+      return res.status(409).json({ success: false, message: "Inventory reconciliation must finish before the refund can be recorded." });
+    }
+    if (!Number.isFinite(amount) || Math.round(amount * 100) !== Math.round(Number(order.total) * 100)) {
+      return res.status(400).json({ success: false, message: "This endpoint records full refunds only. The refund amount must match the order total." });
+    }
+
+    const updated = await Order.findOneAndUpdate(
+      { _id: order._id, paymentStatus: "paid", refundReference: { $exists: false }, inventoryReservationStatus: { $ne: "reserving" }, inventoryRestockStatus: { $ne: "restocking" } },
+      {
+        $set: { paymentStatus: "refunded", refundReference: reference, refundedAmount: amount, refundedAt: new Date(), requiresManualReview: false },
+        $push: { statusHistory: { status: "refunded", note: "Administrator recorded a full refund confirmed in the payment provider dashboard. Reference: " + reference } },
+      },
+      { new: true, runValidators: true },
+    );
+
+    if (!updated) {
+      const latest = await Order.findById(order._id).lean();
+      if (latest?.paymentStatus === "refunded" && latest.refundReference === reference) {
+        return res.json({ success: true, alreadyRecorded: true, data: { id: latest._id, paymentStatus: latest.paymentStatus, refundReference: latest.refundReference, refundedAmount: latest.refundedAmount, refundedAt: latest.refundedAt } });
+      }
+      return res.status(409).json({ success: false, message: "This order changed while the refund was being recorded. Refresh and review its current status." });
+    }
+
+    return res.json({ success: true, data: { id: updated._id, paymentStatus: updated.paymentStatus, refundReference: updated.refundReference, refundedAmount: updated.refundedAmount, refundedAt: updated.refundedAt, statusHistory: updated.statusHistory } });
+  } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ success: false, message: "That refund reference has already been recorded." });
+    }
+    console.error("Admin refund record error:", error);
+    return res.status(500).json({ success: false, message: "Unable to record this refund right now." });
+  }
+}
+
 module.exports = {
   requireAdmin,
   getAdminDashboard,
@@ -394,4 +453,5 @@ module.exports = {
   listListings,
   updateUserStatus,
   updateListingStatus,
+  recordOrderRefund,
 };
