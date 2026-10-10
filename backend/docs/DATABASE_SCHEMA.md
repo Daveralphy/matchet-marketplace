@@ -241,7 +241,14 @@ Fields:
 - `paymentStatus`: `pending | paid | failed | refunded`
 - `orderStatus`: `pending | confirmed | processing | shipped | delivered | cancelled`
 - `shippingAddress`: Object, required
-- `paymentReference`: String, optional
+- `paymentReference`: String, optional, indexed
+- `refundReference`: String, optional, unique when present, records a provider-confirmed full refund
+- `refundedAmount`: Number, default 0
+- `refundedAt`: Date, optional
+- `inventoryReservationStatus`: `none | reserving | reserved | released | consumed`
+- `inventoryReservationExpiresAt`: Date, optional, used for checkout reservation expiry
+- `requiresManualReview`: Boolean, default false, blocks seller fulfilment when true
+- `inventoryRestockStatus`: `none | restocking | restocked`, tracks cancellation stock restoration
 - `createdAt`, `updatedAt`: timestamps
 
 Order item:
@@ -258,6 +265,23 @@ Order item:
 ```
 
 Snapshots preserve what the buyer actually purchased even if the Product later changes.
+
+## 9.1 Payout
+
+Payout records are kept separate by recipient capability so seller settlement records cannot be mixed into provider earnings.
+
+Fields:
+
+- `providerId`: ObjectId, required, ref User (the existing field name for the recipient account)
+- `recipientType`: `provider | seller`, default `provider`
+- `amount`: Number, required, non-negative
+- `currency`: String, required
+- `status`: `pending | processing | completed | failed`
+- `method`: Object containing bank name and account last four digits only
+- `scheduledFor`, `paidAt`: Date, optional
+- `createdAt`, `updatedAt`: timestamps
+
+The current application reads payout records for earnings displays but does not initiate bank transfers. Seller settlement eligibility is calculated from paid, delivered orders without unresolved manual review, less seller payout records already pending or completed. Any actual transfer must be confirmed by an authorized operator and reconciled against the bank/payment provider before it is recorded.
 
 ## 10. Booking
 
