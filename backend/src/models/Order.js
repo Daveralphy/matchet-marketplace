@@ -42,7 +42,7 @@ const orderSchema = new mongoose.Schema({
   refundReference: { type: String, trim: true },
   refundedAmount: { type: Number, min: 0, default: 0 },
   refundedAt: { type: Date },
-  inventoryReservationStatus: { type: String, enum: ["none", "reserving", "reserved", "released", "consumed"], default: "none", index: true },
+  inventoryReservationStatus: { type: String, enum: ["none", "reserving", "reserved", "releasing", "released", "consumed"], default: "none", index: true },
   inventoryReservationExpiresAt: { type: Date, index: true },
   requiresManualReview: { type: Boolean, default: false, index: true },
   inventoryRestockStatus: { type: String, enum: ["none", "restocking", "restocked"], default: "none", index: true },
