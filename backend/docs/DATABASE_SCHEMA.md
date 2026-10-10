@@ -1,8 +1,8 @@
 # Matchet Marketplace Database Schema
 
-**Schema Version:** 1.1.1  
+**Schema Version:** 1.1.2  
 **Status:** Approved  
-**Last Updated:** 2026-09-30
+**Last Updated:** 2026-10-10
 
 ## 1. Purpose
 
@@ -44,7 +44,7 @@ The existing authenticated session is used throughout. No second login or accoun
 
 ## 3. Collections
 
-The initial application schema contains these 12 collections/models:
+The application schema contains these 13 collections/models:
 
 1. User
 2. ProviderProfile
@@ -58,6 +58,7 @@ The initial application schema contains these 12 collections/models:
 10. Notification
 11. SavedItem
 12. Cart
+13. Payout
 
 ## 4. User
 
