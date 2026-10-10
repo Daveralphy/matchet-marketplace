@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteAccount } from "../api/auth";
+import { showToast } from "../utils/toast";
 import { useAuth } from "../context/AuthContext";
 import "./BuyerAccount.css";
 import "./AccountForms.css";
@@ -13,19 +14,17 @@ export default function DeleteAccount() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setError("");
 
     if (!currentPassword) {
-      setError("Please enter your current password.");
+      showToast("Please enter your current password.", "error");
       return;
     }
 
     if (!confirmed) {
-      setError("Please confirm that you understand the consequences.");
+      showToast("Please confirm that you understand the consequences.", "error");
       return;
     }
 
@@ -39,10 +38,7 @@ export default function DeleteAccount() {
 
       navigate("/", { replace: true });
     } catch (requestError) {
-      setError(
-        requestError.message ||
-          "Unable to close your account right now."
-      );
+      showToast(requestError.message || "Unable to close your account right now.", "error");
     } finally {
       setLoading(false);
     }
@@ -120,18 +116,7 @@ export default function DeleteAccount() {
                   be signed out.
                 </small>
               </span>
-            </label>
-
-            {error && (
-              <p
-                className="account-form-message account-form-error"
-                role="alert"
-              >
-                {error}
-              </p>
-            )}
-
-            <div className="account-form-actions">
+            </label>\n<div className="account-form-actions">
               <button type="submit" disabled={loading || !confirmed}>
                 {loading ? "Closing account..." : "Close my account"}
               </button>
