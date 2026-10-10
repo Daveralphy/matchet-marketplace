@@ -1,7 +1,7 @@
 # Matchet Marketplace Database Schema
 
 **Schema Version:** 1.1.2  
-**Status:** Approved  
+**Status:** Audit update pending regression verification  
 **Last Updated:** 2026-10-10
 
 ## 1. Purpose
