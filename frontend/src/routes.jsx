@@ -792,7 +792,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/listings",
-    element: <RequireProvider><MarketplaceLayout><Placeholder name="Provider Listings" /></MarketplaceLayout></RequireProvider>,
+    element: <Navigate to="/provider/services" replace />,
   },
   {
     path: "*",
