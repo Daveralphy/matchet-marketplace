@@ -125,13 +125,22 @@ async function releaseInventory(order, note) {
     for (const item of claimed.items) {
       await restoreProductInventory(item.productId, item.quantity);
     }
-    await Order.updateOne(
+    const released = await Order.updateOne(
       { _id: claimed._id, inventoryReservationStatus: "releasing", paymentStatus: { $in: ["pending", "failed"] } },
       {
         $set: { inventoryReservationStatus: "released" },
         $push: { statusHistory: { status: "inventory_released", note } },
       },
     );
+    if (!released.modifiedCount) {
+      // Stock has been restored, but the order did not reach the released state.
+      // Do not report success: require reconciliation rather than risk another restore.
+      await Order.updateOne(
+        { _id: claimed._id, inventoryReservationStatus: "releasing" },
+        { $set: { requiresManualReview: true } },
+      ).catch(() => {});
+      return false;
+    }
     return true;
   } catch (error) {
     // Keep the order in the intermediate state rather than risk restoring the same
