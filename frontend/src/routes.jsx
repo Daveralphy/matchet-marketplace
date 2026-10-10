@@ -81,10 +81,6 @@ import {
   TermsOfService,
 } from "./pages/PublicTrustPages";
 
-function Placeholder({ name }) {
-  return <h1>{name}</h1>;
-}
-
 
 function PublicInfoPage({ title, intro, sections, actions = [] }) {
   return (
