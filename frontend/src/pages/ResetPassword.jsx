@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../api/auth";
+import { showToast } from "../utils/toast";
 
 export default function ResetPassword() {
   useEffect(() => { document.title = "Reset Password | Matchet"; }, []);
@@ -9,24 +10,20 @@ export default function ResetPassword() {
   const token = searchParams.get("token") || "";
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [complete, setComplete] = useState(false);
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setMessage("");
-    setError("");
-    if (password.length < 8) return setError("Password must be at least 8 characters.");
-    if (password !== confirmPassword) return setError("The passwords do not match.");
+    if (password.length < 8) return showToast("Password must be at least 8 characters.", "error");
+    if (password !== confirmPassword) return showToast("The passwords do not match.", "error");
     setSubmitting(true);
     try {
       const response = await resetPassword({ token, password });
-      setMessage(response.message || "Your password has been reset successfully.");
+      showToast(response.message || "Your password has been reset successfully.", "success");
       setComplete(true);
     } catch (requestError) {
-      setError(requestError.message || "This reset link is invalid or expired. Please request a new one.");
+      showToast(requestError.message || "This reset link is invalid or expired. Please request a new one.", "error");
     } finally {
       setSubmitting(false);
     }
@@ -38,8 +35,8 @@ export default function ResetPassword() {
         <h1 className="text-3xl font-extrabold tracking-tight text-[#10183f]">Create a new password</h1>
         <p className="mt-3 text-sm leading-6 text-[#747ca1]">Choose a password with at least 8 characters.</p>
         {!token && <div role="alert" className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">This reset link is missing its security token. Request a new link to continue.</div>}
-        {message && <div role="status" className="mt-5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">{message}</div>}
-        {error && <div role="alert" className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+        
+        
         {!complete && token && <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div><label htmlFor="new-password" className="mb-2 block text-sm font-medium text-[#10183f]">New password</label><input id="new-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="h-12 w-full rounded-lg border border-slate-200 px-4 text-sm outline-none focus:border-[#07983f]" /></div>
           <div><label htmlFor="confirm-password" className="mb-2 block text-sm font-medium text-[#10183f]">Confirm new password</label><input id="confirm-password" type="password" autoComplete="new-password" required minLength={8} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} className="h-12 w-full rounded-lg border border-slate-200 px-4 text-sm outline-none focus:border-[#07983f]" /></div>
