@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getProviderSettings, updateProviderSettingsPreferences } from "../api/provider";
 import "../styles/provider-dashboard.css";
@@ -17,13 +18,13 @@ function formatDate(value) {
   return new Intl.DateTimeFormat("en-NG", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
 
-function SettingRow({ icon, title, description, value, action, danger = false }) {
+function SettingRow({ icon, title, description, value, action, href, danger = false }) {
   return (
     <div className={"provider-settings-row" + (danger ? " danger" : "")}>
       <div className="provider-settings-row-icon"><Icon name={icon} /></div>
       <div className="provider-settings-row-copy"><strong>{title}</strong><small>{description}</small></div>
       {value !== undefined && <div className="provider-settings-value">{value}</div>}
-      {action && <button type="button" className={danger ? "provider-danger-button" : "provider-outline-button"}>{action}</button>}
+      {action && href && <Link to={href} className={danger ? "provider-danger-button" : "provider-outline-button"}>{action}</Link>}{action && !href && <span className="provider-settings-value">{action}</span>}
     </div>
   );
 }
@@ -44,7 +45,9 @@ function EmptyState({ title, description }) {
 }
 
 export default function ProviderSettings() {
-  const [activeTab, setActiveTab] = useState("account");
+  const [searchParams] = useSearchParams();
+  const requestedTab = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState(["account", "notifications", "payments", "security", "privacy", "platform"].includes(requestedTab) ? requestedTab : "account");
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -130,20 +133,20 @@ export default function ProviderSettings() {
           <div className="provider-settings-layout">
             <section className="provider-card provider-settings-card">
               <div className="provider-settings-card-heading"><h2>Account settings</h2><p>Manage your basic account information and login preferences.</p></div>
-              <SettingRow icon="message" title="Email address" description="Used for login and important notifications" value={account?.email || "Not configured"} action="Change" />
-              <SettingRow icon="user" title="Phone number" description="Used for account verification and alerts" value={account?.phone || "Not configured"} action="Change" />
-              <SettingRow icon="settings" title="Password" description="Keep your account secure" value="••••••••" action="Change" />
-              <SettingRow icon="settings" title="Language" description="Choose your preferred language" value={data?.platform?.language || "Not configured"} action="Configure" />
+              <SettingRow icon="message" title="Email address" description="Used for login and important notifications" value={account?.email || "Not configured"} action="View account settings" href="/account/settings" />
+              <SettingRow icon="user" title="Phone number" description="Used for account verification and alerts" value={account?.phone || "Not configured"} action="View account settings" href="/account/settings" />
+              <SettingRow icon="settings" title="Password" description="Keep your account secure" value="••••••••" action="Security settings" href="/account/security" />
+              <SettingRow icon="settings" title="Language" description="Choose your preferred language" value={data?.platform?.language || "Not configured"} />
               <SettingRow icon="user" title="Account status" description={account?.isActive ? "Your account is active" : "Your account is inactive"} value={account?.isActive ? "Active" : "Inactive"} />
               <SettingRow icon="shield" title="Provider application" description="Current provider verification state" value={data?.application?.verificationStatus || "Not submitted"} />
               <SettingRow icon="clock" title="Response time" description="Response time supplied during provider onboarding" value={data?.onboarding?.providerResponseTime || "Not provided"} />
               <SettingRow icon="calendar" title="Minimum booking notice" description="Advance notice supplied during provider onboarding" value={data?.onboarding?.providerMinimumNoticeRequired || "Not provided"} />
               <SettingRow icon="calendar" title="Maximum advance booking" description="Booking window supplied during provider onboarding" value={data?.onboarding?.providerMaximumAdvanceBooking || "Not provided"} />
-              <SettingRow icon="settings" title="Delete account" description="Permanently delete your account and all associated data" action="Delete account" danger />
+              <SettingRow icon="settings" title="Delete account" description="Permanently delete your account and all associated data" action="Delete account" href="/account/delete" danger />
             </section>
             <aside className="provider-settings-side">
-              <section className="provider-card"><h2>Quick actions</h2><SettingRow icon="settings" title="Change password" description="Update your password" action="›" /><SettingRow icon="user" title="Manage devices" description="View and sign out from active devices" action="›" /><SettingRow icon="settings" title="Sign out" description="Sign out of your account on this device" action="›" /></section>
-              <section className="provider-card provider-settings-help"><h2>Need help?</h2><p>If you have questions about your account settings, our support team is here to help.</p><button type="button" className="provider-outline-button">Contact support&nbsp; →</button></section>
+              <section className="provider-card"><h2>Quick actions</h2><SettingRow icon="settings" title="Change password" description="Update your password" action="Open security settings" href="/account/security" /><SettingRow icon="user" title="Manage devices" description="Device management is not available yet." /><SettingRow icon="settings" title="Sign out" description="Use the account menu to sign out securely." /></section>
+              <section className="provider-card provider-settings-help"><h2>Need help?</h2><p>If you have questions about your account settings, our support team is here to help.</p><Link to="/contact?subject=Provider%20account%20support" className="provider-outline-button">Contact support&nbsp; →</Link></section>
             </aside>
           </div>
         )}
@@ -162,7 +165,7 @@ export default function ProviderSettings() {
             <div className="provider-settings-card-heading"><h2>Payment settings</h2><p>Review the payout method associated with your provider account.</p></div>
             {payments?.method?.bankName ? (
               <>
-                <SettingRow icon="wallet" title={payments.method.bankName} description="Payout account" value={payments.method.accountLast4 ? "•••• " + payments.method.accountLast4 : "Account number not available"} action="Edit" />
+                <SettingRow icon="wallet" title={payments.method.bankName} description="Payout account" value={payments.method.accountLast4 ? "•••• " + payments.method.accountLast4 : "Account number not available"} action="Payout editing unavailable" />
                 <SettingRow icon="wallet" title="Latest payout status" description="Status of your most recent payout record" value={payments.payoutStatus || "Not available"} />
               </>
             ) : <EmptyState title="No payout method configured" description="Your payout method will appear here once payout information has been saved." />}
