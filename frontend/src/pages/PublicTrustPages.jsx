@@ -47,7 +47,7 @@ function Section({ title, children }) {
 }
 
 function Updated() {
-  return <p className="text-sm text-slate-500">Last updated: {LAST_UPDATED}. These pages describe the current service at a general level and should be reviewed before launch by the business and its legal adviser.</p>;
+  return <p className="text-sm text-slate-500">Last updated: {LAST_UPDATED}.</p>;
 }
 
 export function PrivacyPolicy() {
@@ -62,7 +62,6 @@ export function PrivacyPolicy() {
     <Section title="Your choices and requests"><p>You can review or update some account details through your account pages. You may also contact support to ask about access, correction, deletion, or other privacy requests. Account deletion may be limited while orders, bookings, or other unresolved obligations remain open.</p><p>For privacy questions, email <a className="font-semibold text-emerald-700 underline" href={`mailto:${SUPPORT_EMAIL}?subject=Privacy%20request`}>{SUPPORT_EMAIL}</a>.</p></Section>
     <Section title="Children"><p>Matchet is not intended for children who cannot legally enter into the transactions offered through the marketplace. Do not create an account or provide personal information if you are not legally able to use the service.</p></Section>
     <Section title="Changes to this policy"><p>We may update this policy as the service changes. The updated date above indicates when this page was last revised. Material changes should be communicated through an appropriate channel.</p></Section>
-    <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-900">Before launch, Matchet should verify this policy against its actual analytics, hosting, email, payment, authentication, and file-upload providers, and add any legally required company details and retention periods.</p>
   </PageShell>;
 }
 
@@ -77,7 +76,6 @@ export function TermsOfService() {
     <Section title="Suspension and account closure"><p>Matchet may restrict access when necessary to investigate suspected abuse, protect users, enforce these terms, or comply with legal requirements. You may request account closure through the account controls, subject to any unresolved orders, bookings, payouts, disputes, or legal retention obligations.</p></Section>
     <Section title="Availability and changes"><p>We aim to keep Matchet available and reliable, but features may change and temporary interruptions can occur. We do not promise uninterrupted or error-free service. Nothing in these terms removes rights that cannot legally be excluded.</p></Section>
     <Section title="Contact"><p>Questions about these terms can be sent to <a className="font-semibold text-emerald-700 underline" href={`mailto:${SUPPORT_EMAIL}?subject=Terms%20question`}>{SUPPORT_EMAIL}</a>.</p></Section>
-    <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-900">These terms are a starting point, not a substitute for legal review. Matchet must confirm its legal entity, governing law, dispute process, consumer obligations, and final transaction policies before launch.</p>
   </PageShell>;
 }
 
@@ -89,7 +87,6 @@ export function CookiePolicy() {
     <Section title="Analytics and advertising"><p>This policy does not claim that Matchet uses analytics or advertising cookies. The business should confirm whether any analytics, advertising, embedded media, or third-party tracking tools are enabled in each deployed environment and update this page accordingly.</p></Section>
     <Section title="Managing storage"><p>You can manage or clear cookies and site data through your browser settings. Clearing storage may sign you out or remove locally saved application state. Browser controls do not necessarily provide a complete opt-out from every technology used by a website.</p></Section>
     <Section title="Questions"><p>For questions about browser storage or privacy, contact <a className="font-semibold text-emerald-700 underline" href={`mailto:${SUPPORT_EMAIL}?subject=Cookie%20policy`}>{SUPPORT_EMAIL}</a>.</p></Section>
-    <p className="rounded-lg bg-amber-50 p-4 text-sm text-amber-900">Before launch, audit the production build and third-party scripts to produce a verified cookie and storage inventory, including purposes, providers, and lifetimes.</p>
   </PageShell>;
 }
 
