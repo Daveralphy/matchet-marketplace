@@ -370,7 +370,7 @@ async function getProviderEarnings(req, res) {
       })
         .select("priceSnapshot scheduledDate")
         .lean(),
-      Payout.find({ providerId }).sort({ createdAt: -1 }).limit(100).lean(),
+      Payout.find({ providerId, recipientType: { $ne: "seller" } }).sort({ createdAt: -1 }).limit(100).lean(),
       Service.find({ providerId }).select("title category").lean(),
     ]);
 
@@ -1873,7 +1873,7 @@ async function getSellerEarnings(req, res) {
     const previous = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const [orders, payouts, store] = await Promise.all([
       Order.find({ "items.sellerId": sellerId }).sort({ createdAt: -1 }).limit(500).lean(),
-      Payout.find({ providerId: sellerId }).sort({ createdAt: -1 }).limit(200).lean(),
+      Payout.find({ providerId: sellerId, recipientType: "seller" }).sort({ createdAt: -1 }).limit(200).lean(),
       StoreProfile.findOne({ userId: sellerId }).lean(),
     ]);
     const sellerAmount = order => order.items.filter(i => String(i.sellerId) === String(sellerId)).reduce((sum,i) => sum + (Number(i.priceSnapshot)||0)*(Number(i.quantity)||0), 0);
