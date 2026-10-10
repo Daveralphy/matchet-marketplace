@@ -9,7 +9,7 @@ import "./AccountForms.css";
 
 export default function DeleteAccount() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [confirmed, setConfirmed] = useState(false);
@@ -17,6 +17,11 @@ export default function DeleteAccount() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    if (user?.passwordSet === false) {
+      showToast("Set a password through the password reset flow before closing your account.", "error");
+      return;
+    }
 
     if (!currentPassword) {
       showToast("Please enter your current password.", "error");
@@ -84,21 +89,31 @@ export default function DeleteAccount() {
           </div>
 
           <form className="account-form" onSubmit={handleSubmit}>
-            <label className="account-form-field">
-              <span>Current password</span>
-              <small>
-                Confirm your identity before closing your account.
-              </small>
-
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(event) => setCurrentPassword(event.target.value)}
-                autoComplete="current-password"
-                required
-                disabled={loading}
-              />
-            </label>
+{user?.passwordSet === false ? (
+              <div className="account-form-field">
+                <span>Password setup required</span>
+                <p>
+                  This account was created with Google and does not have a password you set.
+                  For security, set a password first, then return here to close your account.
+                </p>
+                <Link className="text-emerald-700 underline" to="/forgot-password">
+                  Set a password using email recovery
+                </Link>
+              </div>
+            ) : (
+              <label className="account-form-field">
+                <span>Current password</span>
+                <small>Confirm your identity before closing your account.</small>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={(event) => setCurrentPassword(event.target.value)}
+                  autoComplete="current-password"
+                  required
+                  disabled={loading}
+                />
+              </label>
+            )}
 
             <label className="account-form-checkbox">
               <input
@@ -117,7 +132,7 @@ export default function DeleteAccount() {
                 </small>
               </span>
             </label>\n<div className="account-form-actions">
-              <button type="submit" disabled={loading || !confirmed}>
+              <button type="submit" disabled={loading || !confirmed || user?.passwordSet === false}>
                 {loading ? "Closing account..." : "Close my account"}
               </button>
 
