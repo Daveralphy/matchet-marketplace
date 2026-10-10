@@ -408,7 +408,7 @@ async function recordOrderRefund(req, res) {
     if (order.orderStatus !== "cancelled" && !order.requiresManualReview) {
       return res.status(409).json({ success: false, message: "Only cancelled orders or orders flagged for manual review can be refunded through this workflow." });
     }
-    if (order.inventoryReservationStatus === "reserving" || order.inventoryRestockStatus === "restocking") {
+    if (["reserving", "releasing"].includes(order.inventoryReservationStatus) || order.inventoryRestockStatus === "restocking") {
       return res.status(409).json({ success: false, message: "Inventory reconciliation must finish before the refund can be recorded." });
     }
     if (!Number.isFinite(amount) || Math.round(amount * 100) !== Math.round(Number(order.total) * 100)) {
@@ -416,7 +416,7 @@ async function recordOrderRefund(req, res) {
     }
 
     const updated = await Order.findOneAndUpdate(
-      { _id: order._id, paymentStatus: "paid", refundReference: { $exists: false }, inventoryReservationStatus: { $ne: "reserving" }, inventoryRestockStatus: { $ne: "restocking" } },
+      { _id: order._id, paymentStatus: "paid", refundReference: { $exists: false }, inventoryReservationStatus: { $nin: ["reserving", "releasing"] }, inventoryRestockStatus: { $ne: "restocking" } },
       {
         $set: { paymentStatus: "refunded", refundReference: reference, refundedAmount: amount, refundedAt: new Date(), requiresManualReview: false },
         $push: { statusHistory: { status: "refunded", note: "Administrator recorded a full refund confirmed in the payment provider dashboard. Reference: " + reference } },
