@@ -51,3 +51,75 @@ test("rejects a transaction that is not successful", () => {
 test("rejects a different authenticated buyer", () => {
   assert.equal(isValidPaystackTransaction(order, transaction, "66a000000000000000000003"), false);
 });
+
+
+test("concurrent reservations cannot sell more units than inventory", async (t) => {
+  const Order = require("../src/models/Order");
+  const Product = require("../src/models/Product");
+  const { reserveInventory } = require("../src/controllers/paystackController");
+
+  const originals = {
+    orderFindOneAndUpdate: Order.findOneAndUpdate,
+    orderFindById: Order.findById,
+    orderUpdateOne: Order.updateOne,
+    productFindOneAndUpdate: Product.findOneAndUpdate,
+    productUpdateOne: Product.updateOne,
+  };
+  t.after(() => {
+    Order.findOneAndUpdate = originals.orderFindOneAndUpdate;
+    Order.findById = originals.orderFindById;
+    Order.updateOne = originals.orderUpdateOne;
+    Product.findOneAndUpdate = originals.productFindOneAndUpdate;
+    Product.updateOne = originals.productUpdateOne;
+  });
+
+  const stock = new Map([["product-1", { _id: "product-1", inventory: 1, status: "active" }]]);
+  const orders = new Map([
+    ["order-1", { _id: "order-1", paymentStatus: "pending", inventoryReservationStatus: "none", items: [{ productId: "product-1", quantity: 1 }], statusHistory: [] }],
+    ["order-2", { _id: "order-2", paymentStatus: "pending", inventoryReservationStatus: "none", items: [{ productId: "product-1", quantity: 1 }], statusHistory: [] }],
+  ]);
+
+  Order.findOneAndUpdate = async (filter, update) => {
+    const order = orders.get(String(filter._id));
+    if (!order || !filter.paymentStatus.$in.includes(order.paymentStatus) || !filter.inventoryReservationStatus.$in.includes(order.inventoryReservationStatus)) return null;
+    Object.assign(order, update.$set || {});
+    return { ...order, items: order.items.map((item) => ({ ...item })) };
+  };
+  Order.findById = (id) => ({ lean: async () => ({ ...orders.get(String(id)), items: orders.get(String(id)).items.map((item) => ({ ...item })) }) });
+  Order.updateOne = async (filter, update) => {
+    const order = orders.get(String(filter._id));
+    if (!order) return { modifiedCount: 0 };
+    if (filter.inventoryReservationStatus && order.inventoryReservationStatus !== filter.inventoryReservationStatus) return { modifiedCount: 0 };
+    if (filter.paymentStatus?.$in && !filter.paymentStatus.$in.includes(order.paymentStatus)) return { modifiedCount: 0 };
+    Object.assign(order, update.$set || {});
+    if (update.$push?.statusHistory) order.statusHistory.push(update.$push.statusHistory);
+    return { modifiedCount: 1 };
+  };
+  Product.findOneAndUpdate = async (filter, update) => {
+    const product = stock.get(String(filter._id));
+    if (!product || product.status !== filter.status || product.inventory < filter.inventory.$gte) return null;
+    product.inventory += update.$inc.inventory;
+    return { ...product };
+  };
+  Product.updateOne = async (filter, update) => {
+    const product = stock.get(String(filter._id));
+    if (!product) return { modifiedCount: 0 };
+    if (filter.status && product.status !== filter.status) return { modifiedCount: 0 };
+    if (filter.inventory === 0 && product.inventory !== 0) return { modifiedCount: 0 };
+    if (filter.inventory?.$gt !== undefined && !(product.inventory > filter.inventory.$gt)) return { modifiedCount: 0 };
+    if (update.$inc) product.inventory += update.$inc.inventory;
+    if (update.$set?.status) product.status = update.$set.status;
+    return { modifiedCount: 1 };
+  };
+
+  const outcomes = await Promise.all([
+    reserveInventory(orders.get("order-1")),
+    reserveInventory(orders.get("order-2")),
+  ]);
+
+  assert.equal(outcomes.filter(Boolean).length, 1);
+  assert.equal(stock.get("product-1").inventory, 0);
+  assert.equal(["reserved", "released"].includes(orders.get("order-1").inventoryReservationStatus), true);
+  assert.equal(["reserved", "released"].includes(orders.get("order-2").inventoryReservationStatus), true);
+  assert.equal(orders.get("order-1").inventoryReservationStatus === "reserved" || orders.get("order-2").inventoryReservationStatus === "reserved", true);
+});
