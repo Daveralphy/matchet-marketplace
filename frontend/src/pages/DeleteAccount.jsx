@@ -114,6 +114,15 @@ export default function DeleteAccount() {
                 />
               </label>
             )}
+            {user?.passwordSet !== false && (
+              <p className="text-sm text-slate-600">
+                Signed up with Google or do not know your password?{" "}
+                <Link className="text-emerald-700 underline" to="/forgot-password">
+                  Reset your password
+                </Link>{" "}
+                before closing your account.
+              </p>
+            )}
 
             <label className="account-form-checkbox">
               <input
