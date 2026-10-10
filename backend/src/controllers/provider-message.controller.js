@@ -21,6 +21,21 @@ function canonicalConversationId(firstId, secondId) {
   return [String(firstId), String(secondId)].sort().join(":");
 }
 
+function getConversationCustomerId(conversationId, providerId) {
+  if (typeof conversationId !== "string" || conversationId.length > 100) return null;
+  const providerIdString = String(providerId);
+  const participants = conversationId.split(":");
+  if (
+    participants.length !== 2
+    || !participants.every((id) => mongoose.Types.ObjectId.isValid(id))
+    || !participants.includes(providerIdString)
+  ) return null;
+
+  const customerId = participants.find((id) => id !== providerIdString);
+  if (!customerId || conversationId !== canonicalConversationId(providerIdString, customerId)) return null;
+  return customerId;
+}
+
 async function getProviderMessages(req, res) {
   try {
     const providerId = req.user._id;
@@ -59,16 +74,8 @@ async function getProviderConversation(req, res) {
   try {
     const providerId = req.user._id;
     const { conversationId } = req.params;
-    if (typeof conversationId !== "string" || conversationId.length > 100) {
-      return res.status(400).json({ success: false, message: "A valid conversation is required." });
-    }
-
-    const participants = conversationId.split(":");
-    if (participants.length !== 2 || !participants.every((id) => mongoose.Types.ObjectId.isValid(id)) || !participants.includes(String(providerId))) {
-      return res.status(404).json({ success: false, message: "Conversation not found." });
-    }
-    const customerId = participants.find((id) => id !== String(providerId));
-    if (!customerId || conversationId !== canonicalConversationId(providerId, customerId)) {
+    const customerId = getConversationCustomerId(conversationId, providerId);
+    if (!customerId) {
       return res.status(404).json({ success: false, message: "Conversation not found." });
     }
 
@@ -181,4 +188,4 @@ async function sendProviderMessage(req, res) {
   }
 }
 
-module.exports = { getProviderMessages, getProviderConversation, sendProviderMessage, canonicalConversationId };
+module.exports = { getProviderMessages, getProviderConversation, sendProviderMessage, canonicalConversationId, getConversationCustomerId };
