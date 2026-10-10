@@ -124,7 +124,6 @@ const loggedInColumns = [
       ["My Orders", "/orders"],
       ["My Bookings", "/bookings"],
       ["Saved Items", "/saved-items"],
-      ["Messages", "/messages"],
       ["My Profile", "/profile"],
     ],
   },
@@ -140,7 +139,7 @@ const loggedInColumns = [
   {
     title: "For Providers",
     links: [
-      ["My Listings", "/provider/listings"],
+      ["My Products", "/seller/products"],
       ["My Services", "/provider/services"],
       ["Provider Dashboard", "/provider/dashboard"],
       ["Provider Resources", "/provider-resources"],
@@ -172,67 +171,25 @@ function FooterColumn({ title, links }) {
 }
 
 function SocialLinks() {
-  const socials = [
-    ["linkedin", "LinkedIn"],
-    ["instagram", "Instagram"],
-    ["x", "X"],
-    ["youtube", "YouTube"],
-  ];
-
   return (
-    <div className="mt-6 flex items-center gap-4">
-      {socials.map(([type, label]) => (
-        <a
-          key={type}
-          href="#"
-          aria-label={label}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-        >
-          <SocialIcon type={type} />
-        </a>
-      ))}
-    </div>
+    <p className="mt-6 max-w-[280px] text-sm leading-6 text-slate-400">
+      Official social channels will be listed here when they are ready.
+    </p>
   );
 }
 
 function Newsletter() {
-  const [email, setEmail] = useState("");
-
   return (
     <div className="lg:border-l lg:border-white/20 lg:pl-10">
       <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#75f17f]">
         Stay in the loop
       </p>
-
       <h2 className="mt-3 text-[20px] font-semibold leading-6 text-white">
-        Get the latest updates
+        Updates are coming soon
       </h2>
-
       <p className="mt-2 max-w-[290px] text-[15px] leading-6 text-slate-300">
-        New features, popular services, and more, straight to your inbox.
+        Newsletter sign-up is not available yet. Check back for updates to Matchet.
       </p>
-
-      <form
-        className="mt-5 flex h-14 w-full overflow-hidden rounded-lg border border-white/70"
-        onSubmit={(event) => event.preventDefault()}
-      >
-        <input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Enter your email"
-          aria-label="Email address"
-          className="min-w-0 flex-1 bg-transparent px-4 text-[14px] text-white outline-none placeholder:text-slate-400"
-        />
-
-        <button
-          type="submit"
-          aria-label="Subscribe"
-          className="m-1 flex w-10 shrink-0 items-center justify-center rounded-lg bg-[#75f17f] text-[#061c2d] transition-transform hover:scale-[0.98]"
-        >
-          <span className="text-[25px] leading-none">→</span>
-        </button>
-      </form>
     </div>
   );
 }
