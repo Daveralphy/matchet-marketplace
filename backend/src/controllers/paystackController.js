@@ -11,10 +11,10 @@ function paystackConfigured() {
 }
 
 async function paystackRequest(path, options = {}) {
-  const response = await fetch(\`\${PAYSTACK_API}\${path}\`, {
+  const response = await fetch(`${PAYSTACK_API}${path}`, {
     ...options,
     headers: {
-      Authorization: \`Bearer \${process.env.PAYSTACK_SECRET_KEY}\`,
+      Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
       "Content-Type": "application/json",
       ...(options.headers || {}),
     },
@@ -200,7 +200,7 @@ async function expireStaleReservations() {
 
   for (const order of stale) {
     try {
-      const transaction = await paystackRequest(\`/transaction/verify/\${encodeURIComponent(order.paymentReference)}\`);
+      const transaction = await paystackRequest(`/transaction/verify/${encodeURIComponent(order.paymentReference)}`);
       if (transaction.status === "success") {
         await finalizeSuccessfulPayment(order, transaction, order.buyerId);
       } else if (["failed", "abandoned", "reversed"].includes(String(transaction.status || "").toLowerCase()) || transaction.status === "ongoing") {
@@ -247,8 +247,8 @@ async function initializePaystackPayment(req, res) {
     for (const input of normalizedItems) {
       const product = byId.get(input.productId);
       if (String(product.currency || "NGN").toUpperCase() !== "NGN") return res.status(400).json({ success: false, message: "Paystack checkout currently supports NGN products only. Please remove other currencies from your cart." });
-      if (Number(product.inventory || 0) < input.quantity) return res.status(409).json({ success: false, message: \`Not enough stock for \${product.name}.\` });
-      if (product.shipping?.homeDelivery === false) return res.status(400).json({ success: false, message: \`\${product.name} is not available for home delivery. Pickup is not available yet.\` });
+      if (Number(product.inventory || 0) < input.quantity) return res.status(409).json({ success: false, message: `Not enough stock for ${product.name}.` });
+      if (product.shipping?.homeDelivery === false) return res.status(400).json({ success: false, message: `${product.name} is not available for home delivery. Pickup is not available yet.` });
       subtotal += Number(product.price || 0) * input.quantity;
       deliveryFee += Number(product.shipping?.deliveryFee || 0) * input.quantity;
       orderItems.push({
@@ -276,7 +276,7 @@ async function initializePaystackPayment(req, res) {
       postalCode: shippingAddress.postalCode || "",
     };
 
-    const reference = \`MAT-\${Date.now()}-\${crypto.randomBytes(6).toString("hex")}\`;
+    const reference = `MAT-${Date.now()}-${crypto.randomBytes(6).toString("hex")}`;
     order = await Order.create({
       buyerId: req.user._id, items: orderItems, subtotal, deliveryFee, total, currency: "NGN",
       deliveryMethod: "delivery", shippingAddress: address, paymentStatus: "pending",
@@ -303,7 +303,7 @@ async function initializePaystackPayment(req, res) {
         method: "POST",
         body: JSON.stringify({
           email: req.user.email, amount: Math.round(total * 100), currency: "NGN", reference,
-          callback_url: \`\${clientUrl}/checkout/verify\`,
+          callback_url: `${clientUrl}/checkout/verify`,
           metadata: { orderId: String(order._id), buyerId: String(req.user._id), custom_fields: [{ display_name: "Matchet order", variable_name: "order_id", value: String(order._id) }] },
         }),
       });
@@ -336,7 +336,7 @@ async function verifyPaystackPayment(req, res) {
 
     let transaction;
     try {
-      transaction = await paystackRequest(\`/transaction/verify/\${encodeURIComponent(reference)}\`);
+      transaction = await paystackRequest(`/transaction/verify/${encodeURIComponent(reference)}`);
     } catch (error) {
       console.error("Paystack verification request failed:", error.message);
       return res.status(502).json({ success: false, message: "We could not verify your payment yet. Please retry in a moment." });
