@@ -11,6 +11,7 @@ const {
   listListings,
   updateUserStatus,
   updateListingStatus,
+  recordOrderRefund,
 } = require("../controllers/admin-provider.controller");
 
 const router = express.Router();
@@ -24,5 +25,6 @@ router.get("/users", requireAuth, requireAdmin, listUsers);
 router.patch("/users/:userId/status", requireAuth, requireAdmin, updateUserStatus);
 router.get("/listings", requireAuth, requireAdmin, listListings);
 router.patch("/listings/:type/:listingId/status", requireAuth, requireAdmin, updateListingStatus);
+router.patch("/orders/:orderId/refund", requireAuth, requireAdmin, recordOrderRefund);
 
 module.exports = router;
