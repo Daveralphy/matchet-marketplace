@@ -1,4 +1,4 @@
-const BACKEND_URL = String(process.env.VITE_API_URL || "").replace(/\/$/, "");
+const BACKEND_URL = String(process.env.BACKEND_API_URL || process.env.VITE_API_URL || "").replace(/\/$/, "");
 
 function getRequestBody(req) {
   return new Promise((resolve, reject) => {
