@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getProviderEarnings } from "../api/provider";
 import "../styles/provider-dashboard.css";
@@ -48,7 +49,7 @@ export default function ProviderEarnings() {
       <div className="provider-page provider-earnings-page">
         <div className="provider-heading">
           <div><h1>Earnings</h1><span>Track your income, view payouts, and manage your payment details.</span></div>
-          <button className="provider-blue-button" type="button"><Icon name="wallet" size={18} /> Manage payout method</button>
+          <Link to="/provider/settings?tab=payments" className="provider-blue-button"><Icon name="wallet" size={18} /> View payment settings</Link>
         </div>
 
         {error && <div className="provider-message-error" role="alert">{error}</div>}
@@ -82,7 +83,7 @@ export default function ProviderEarnings() {
 
         <div className="provider-earnings-bottom">
           <section className="provider-card provider-transactions">
-            <div className="provider-section-heading"><h2>Recent transactions</h2><button type="button">View all</button></div>
+            <div className="provider-section-heading"><h2>Recent transactions</h2></div>
             {loading ? <div className="provider-services-loading">Loading transactions...</div> : transactions.length === 0 ? <div className="provider-message-empty">No transactions yet.</div> : <div className="provider-transactions-table">
               <div className="provider-transactions-header"><span>Date</span><span>Type</span><span>Description</span><span>Amount</span><span>Status</span></div>
               {transactions.map((transaction) => <div className="provider-transaction-row" key={transaction.id + transaction.type}><span>{formatDate(transaction.date)}</span><span><Icon name={transaction.type === "payout" ? "wallet" : "calendar"} size={18} /> {transaction.type === "payout" ? "Payout" : "Booking"}</span><span>{transaction.description}</span><b>{money(transaction.amount, transaction.currency)}</b><span className={"status " + transaction.status}>{transaction.status}</span></div>)}
@@ -91,10 +92,10 @@ export default function ProviderEarnings() {
 
           <aside>
             <section className="provider-card provider-payout-card">
-              <div className="provider-section-heading"><h2>Payout method</h2><button type="button">Edit</button></div>
-              {data?.payoutMethod ? <><div className="provider-payout-method"><div><Icon name="wallet" size={25} /></div><strong>{data.payoutMethod.bankName || "Bank account"}</strong><span>•••• {data.payoutMethod.accountLast4 || "----"}</span></div><div className="provider-payout-note">Payout information is stored with your provider account.</div></> : <div className="provider-message-empty provider-payout-empty"><strong>No payout method added</strong><span>Add your payout details when you are ready to receive payouts.</span><button type="button" className="provider-outline-button">Add payout method</button></div>}
+              <div className="provider-section-heading"><h2>Payout method</h2></div>
+              {data?.payoutMethod ? <><div className="provider-payout-method"><div><Icon name="wallet" size={25} /></div><strong>{data.payoutMethod.bankName || "Bank account"}</strong><span>•••• {data.payoutMethod.accountLast4 || "----"}</span></div><div className="provider-payout-note">Payout information is stored with your provider account.</div></> : <div className="provider-message-empty provider-payout-empty"><strong>No payout method added</strong><span>Add your payout details when you are ready to receive payouts.</span><Link to="/provider/settings?tab=payments" className="provider-outline-button">View payment settings</Link></div>}
             </section>
-            <section className="provider-card provider-help-card"><h2>Need help?</h2><p>If you have questions about your earnings or payouts, our support team is here to help.</p><button type="button" className="provider-outline-button">Contact support →</button></section>
+            <section className="provider-card provider-help-card"><h2>Need help?</h2><p>If you have questions about your earnings or payouts, our support team is here to help.</p><Link to="/contact?subject=Provider%20earnings%20or%20payout" className="provider-outline-button">Contact support →</Link></section>
           </aside>
         </div>
       </div>
