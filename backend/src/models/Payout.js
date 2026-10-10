@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const payoutSchema = new mongoose.Schema({
   providerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
+  recipientType: { type: String, enum: ["provider", "seller"], default: "provider", index: true },
   amount: { type: Number, required: true, min: 0 },
   currency: { type: String, required: true, trim: true, uppercase: true, maxlength: 3 },
   status: {
