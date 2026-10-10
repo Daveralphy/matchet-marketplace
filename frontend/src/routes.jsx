@@ -70,14 +70,20 @@ import PublicProviderServices from "./pages/PublicProviderServices";
 import ForProviders from "./pages/ForProviders";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import {
+  ContactPage,
+  CookiePolicy,
+  PrivacyPolicy,
+  ReportProblemPage,
+  SafetyPage,
+  SitemapPage,
+  TermsOfService,
+} from "./pages/PublicTrustPages";
 
 function Placeholder({ name }) {
   return <h1>{name}</h1>;
 }
 
-function BlankPage() {
-  return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
-}
 
 function AccessDeniedPage({ title = "You do not have access to this page.", message = "Your account does not have the required access for this area." }) {
   return (
@@ -524,15 +530,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/categories",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><Placeholder name="Categories" /></MarketplaceLayout>,
   },
   {
     path: "/how-it-works",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><Placeholder name="How Matchet Works" /></MarketplaceLayout>,
   },
   {
     path: "/provider-resources",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><Placeholder name="Provider Resources" /></MarketplaceLayout>,
   },
   {
     path: "/provider/services",
@@ -564,35 +570,35 @@ const router = createBrowserRouter([
   },
   {
     path: "/safety",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><SafetyPage /></MarketplaceLayout>,
   },
   {
     path: "/report-problem",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><ReportProblemPage /></MarketplaceLayout>,
   },
   {
     path: "/contact",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><ContactPage /></MarketplaceLayout>,
   },
   {
     path: "/terms",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><TermsOfService /></MarketplaceLayout>,
   },
   {
     path: "/privacy",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><PrivacyPolicy /></MarketplaceLayout>,
   },
   {
     path: "/cookies",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><CookiePolicy /></MarketplaceLayout>,
   },
   {
     path: "/sitemap",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><SitemapPage /></MarketplaceLayout>,
   },
   {
     path: "/provider/services-legacy",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <Navigate to="/provider/services" replace />,
   },
   {
     path: "/provider-resources",
