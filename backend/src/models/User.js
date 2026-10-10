@@ -58,6 +58,7 @@ const userSchema = new mongoose.Schema({
     provider: { type: Boolean, default: false },
   },
   phone: { type: String, trim: true },
+  bio: { type: String, trim: true, maxlength: 300, default: "" },
   avatar: { type: imageSchema },
   location: { type: locationSchema },
   preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
