@@ -2,7 +2,7 @@
 // Edited by: Brima
 
 import { useEffect, useState } from "react";
-import { createBrowserRouter, Navigate, useLocation } from "react-router-dom";
+import { createBrowserRouter, Link, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
 import BuyerOrders from "./pages/BuyerOrders";
@@ -86,8 +86,104 @@ function Placeholder({ name }) {
 }
 
 
-function BlankPage() {
-  return <main className="min-h-[60vh] w-full" aria-label="Blank page" />;
+function PublicInfoPage({ title, intro, sections, actions = [] }) {
+  return (
+    <main className="min-h-[60vh] bg-[#fbfcfd] px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl">
+        <header className="max-w-3xl">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#07863a]">Matchet Marketplace</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#10183f] sm:text-4xl">{title}</h1>
+          <p className="mt-4 text-base leading-7 text-[#69739a]">{intro}</p>
+        </header>
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {sections.map((section) => (
+            <section key={section.title} className="rounded-xl border border-[#e1e6ec] bg-white p-5">
+              <h2 className="text-lg font-semibold text-[#10183f]">{section.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-[#69739a]">{section.body}</p>
+              {section.href && (
+                <Link to={section.href} className="mt-4 inline-flex font-semibold text-[#07863a] hover:underline">
+                  {section.linkLabel || "Learn more"} →
+                </Link>
+              )}
+            </section>
+          ))}
+        </div>
+        {actions.length > 0 && (
+          <div className="mt-8 flex flex-wrap gap-3">
+            {actions.map((action) => (
+              <Link key={action.href} to={action.href} className="rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white">
+                {action.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
+
+function CategoriesPage() {
+  return (
+    <PublicInfoPage
+      title="Explore marketplace categories"
+      intro="Browse products and services available on Matchet. Listings shown on the marketplace come from sellers and service providers."
+      sections={[
+        { title: "Products", body: "Explore available products, compare listing details, and review delivery information before checkout.", href: "/products", linkLabel: "Browse products" },
+        { title: "Services", body: "Find service providers, review their service details, and choose the service that fits your needs.", href: "/services", linkLabel: "Browse services" },
+        { title: "Discover nearby", body: "Use Explore to discover marketplace listings and providers relevant to your location.", href: "/explore", linkLabel: "Open Explore" },
+        { title: "Need help?", body: "If you need help using Matchet, visit the support page.", href: "/help", linkLabel: "Get support" },
+      ]}
+      actions={[{ href: "/products", label: "Explore products" }, { href: "/services", label: "Explore services" }]}
+    />
+  );
+}
+
+function HowItWorksPage() {
+  return (
+    <PublicInfoPage
+      title="How Matchet works"
+      intro="Matchet brings product sellers, service providers, and customers together in one marketplace."
+      sections={[
+        { title: "1. Discover", body: "Browse products and services. Read the listing details and check the information provided by the seller or service provider.", href: "/explore", linkLabel: "Start exploring" },
+        { title: "2. Review your choice", body: "Compare prices, descriptions, delivery information, and provider details before you make a decision.", href: "/products", linkLabel: "View products" },
+        { title: "3. Purchase securely", body: "For supported product purchases, checkout redirects you to Paystack. Matchet confirms the order only after payment is verified.", href: "/cart", linkLabel: "View your cart" },
+        { title: "4. Sell or provide services", body: "Create an account and complete the relevant onboarding process to apply to sell products or offer services.", href: "/for-providers", linkLabel: "Learn about providing services" },
+      ]}
+      actions={[{ href: "/create-account", label: "Create an account" }]}
+    />
+  );
+}
+
+function ProviderResourcesPage() {
+  return (
+    <PublicInfoPage
+      title="Resources for service providers"
+      intro="Use these resources to understand how to get started on Matchet and manage your service provider account."
+      sections={[
+        { title: "Become a provider", body: "Review the provider information and start the application process when you are ready.", href: "/for-providers", linkLabel: "Provider overview" },
+        { title: "Provider onboarding", body: "Complete your provider profile and submit the required application information for review.", href: "/provider/onboarding", linkLabel: "Start onboarding" },
+        { title: "Manage your services", body: "After your provider account is approved, use your provider workspace to manage your services and bookings.", href: "/provider/dashboard", linkLabel: "Provider workspace" },
+        { title: "Support and safety", body: "If you have questions or need to report a problem, use Matchet's support resources.", href: "/help", linkLabel: "Get support" },
+      ]}
+      actions={[{ href: "/for-providers", label: "Get started" }, { href: "/safety", label: "Read safety guidance" }]}
+    />
+  );
+}
+
+function NotFoundPage() {
+  return (
+    <main className="flex min-h-[60vh] items-center justify-center bg-[#fbfcfd] px-4 py-12">
+      <section className="max-w-lg text-center">
+        <p className="text-sm font-semibold uppercase tracking-wide text-[#07863a]">404 error</p>
+        <h1 className="mt-2 text-3xl font-bold text-[#10183f]">We could not find that page</h1>
+        <p className="mt-3 text-sm leading-6 text-[#69739a]">The link may be incorrect or the page may have moved. Return to the marketplace or browse products and services.</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Link to="/" className="rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white">Go to homepage</Link>
+          <Link to="/explore" className="rounded-lg border border-[#e1e6ec] px-5 py-3 font-semibold text-[#10183f]">Explore marketplace</Link>
+        </div>
+      </section>
+    </main>
+  );
 }
 
 function AccessDeniedPage({ title = "You do not have access to this page.", message = "Your account does not have the required access for this area." }) {
@@ -536,15 +632,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/categories",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><CategoriesPage /></MarketplaceLayout>,
   },
   {
     path: "/how-it-works",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><HowItWorksPage /></MarketplaceLayout>,
   },
   {
     path: "/provider-resources",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
+    element: <MarketplaceLayout><ProviderResourcesPage /></MarketplaceLayout>,
   },
   {
     path: "/provider/services",
@@ -605,10 +701,6 @@ const router = createBrowserRouter([
   {
     path: "/provider/services-legacy",
     element: <Navigate to="/provider/services" replace />,
-  },
-  {
-    path: "/provider-resources",
-    element: <MarketplaceLayout><BlankPage /></MarketplaceLayout>,
   },
   {
     path: "/provider/dashboard",
@@ -701,6 +793,10 @@ const router = createBrowserRouter([
   {
     path: "/provider/listings",
     element: <RequireProvider><MarketplaceLayout><Placeholder name="Provider Listings" /></MarketplaceLayout></RequireProvider>,
+  },
+  {
+    path: "*",
+    element: <MarketplaceLayout><NotFoundPage /></MarketplaceLayout>,
   },
 ]);
 
