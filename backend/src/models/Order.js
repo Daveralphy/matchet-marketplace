@@ -42,6 +42,7 @@ const orderSchema = new mongoose.Schema({
   inventoryReservationStatus: { type: String, enum: ["none", "reserving", "reserved", "released", "consumed"], default: "none", index: true },
   inventoryReservationExpiresAt: { type: Date, index: true },
   requiresManualReview: { type: Boolean, default: false, index: true },
+  inventoryRestockStatus: { type: String, enum: ["none", "restocking", "restocked"], default: "none", index: true },
   statusHistory: { type: [orderStatusHistorySchema], default: [] },
   sellerNotes: { type: String, trim: true, default: "" },
 }, { timestamps: true });
