@@ -5,6 +5,9 @@
   <url><loc>https://matchet.com/products</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://matchet.com/services</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://matchet.com/for-providers</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://matchet.com/categories</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://matchet.com/how-it-works</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://matchet.com/provider-resources</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://matchet.com/help</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://matchet.com/contact</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://matchet.com/safety</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
