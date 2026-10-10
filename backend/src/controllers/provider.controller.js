@@ -1696,16 +1696,75 @@ async function updateSellerOrderStatus(req, res) {
   try {
     const sellerId = req.user._id;
     const { status } = req.body || {};
-    const allowed = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"];
-    if (!allowed.includes(status)) return res.status(400).json({ success: false, message: "Invalid order status." });
+    const allowed = ["confirmed", "processing", "shipped", "delivered", "cancelled"];
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid order status." });
+    }
+
     const order = await Order.findOne({ _id: req.params.orderId, "items.sellerId": sellerId });
     if (!order) return res.status(404).json({ success: false, message: "Order not found." });
+    if (order.paymentStatus !== "paid") {
+      return res.status(409).json({ success: false, message: "Only paid orders can be processed. Verify payment before changing order status." });
+    }
+    if (order.requiresManualReview) {
+      return res.status(409).json({ success: false, message: "This order needs support review before it can be processed." });
+    }
+
+    const transitions = {
+      confirmed: ["processing", "cancelled"],
+      processing: ["shipped", "cancelled"],
+      shipped: ["delivered"],
+      delivered: [],
+      cancelled: [],
+      pending: ["confirmed", "cancelled"],
+    };
     const previous = order.orderStatus;
-    order.orderStatus = status;
-    if (!Array.isArray(order.statusHistory)) order.statusHistory = [];
-    if (previous !== status) order.statusHistory.push({ status, note: "Updated by seller", at: new Date() });
-    await order.save();
-    return res.json({ success: true, data: { id: order._id, status: order.orderStatus, statusHistory: order.statusHistory } });
+    if (previous === status) {
+      return res.json({ success: true, data: { id: order._id, status: order.orderStatus, statusHistory: order.statusHistory } });
+    }
+    if (!transitions[previous]?.includes(status)) {
+      return res.status(409).json({ success: false, message: `Order cannot move from ${previous} to ${status}.` });
+    }
+
+    if (status === "cancelled") {
+      // No automated Paystack refund flow exists yet. Mark the paid cancellation for
+      // manual refund review, and restore stock only for orders that have not shipped.
+      const claimed = await Order.findOneAndUpdate(
+        { _id: order._id, "items.sellerId": sellerId, orderStatus: previous, paymentStatus: "paid", inventoryRestockStatus: "none" },
+        {
+          $set: { orderStatus: "cancelled", inventoryRestockStatus: "restocking", requiresManualReview: true },
+          $push: { statusHistory: { status: "cancelled", note: "Cancelled by seller. Refund must be reviewed and processed manually; stock restoration is being recorded." } },
+        },
+        { new: true },
+      );
+      if (!claimed) return res.status(409).json({ success: false, message: "This order has changed. Refresh and try again." });
+
+      try {
+        for (const item of claimed.items) {
+          await Product.updateOne({ _id: item.productId }, { $inc: { inventory: item.quantity } });
+        }
+        claimed.inventoryRestockStatus = "restocked";
+        claimed.statusHistory.push({ status: "inventory_restocked", note: "Inventory restored after cancellation. Payment refund still requires manual review." });
+        await claimed.save();
+      } catch (error) {
+        await Order.updateOne({ _id: claimed._id }, { $set: { requiresManualReview: true } }).catch(() => {});
+        console.error("Cancelled order inventory restoration failed:", error);
+        return res.status(500).json({ success: false, message: "The order was cancelled, but stock restoration needs administrator review. Do not retry the cancellation." });
+      }
+
+      return res.json({ success: true, requiresManualReview: true, message: "Order cancelled. A support administrator must review the refund.", data: { id: claimed._id, status: claimed.orderStatus, paymentStatus: claimed.paymentStatus, inventoryRestockStatus: claimed.inventoryRestockStatus, statusHistory: claimed.statusHistory } });
+    }
+
+    const updated = await Order.findOneAndUpdate(
+      { _id: order._id, "items.sellerId": sellerId, orderStatus: previous, paymentStatus: "paid", requiresManualReview: { $ne: true } },
+      {
+        $set: { orderStatus: status },
+        $push: { statusHistory: { status, note: "Updated by seller", at: new Date() } },
+      },
+      { new: true },
+    );
+    if (!updated) return res.status(409).json({ success: false, message: "This order has changed. Refresh and try again." });
+    return res.json({ success: true, data: { id: updated._id, status: updated.orderStatus, statusHistory: updated.statusHistory } });
   } catch (error) {
     console.error("Seller order status error:", error);
     return res.status(500).json({ success: false, message: "Unable to update this order right now." });
