@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 const SUPPORT_EMAIL = "support@matchet.com";
@@ -23,6 +23,18 @@ const pageLinks = [
 ];
 
 function PageShell({ eyebrow = "MAT CHET SUPPORT", title, intro, children }) {
+  useEffect(() => {
+    const previousTitle = document.title;
+    const description = document.querySelector('meta[name="description"]');
+    const previousDescription = description?.getAttribute("content");
+    document.title = `${title} | Matchet Marketplace`;
+    if (description && intro) description.setAttribute("content", intro);
+    return () => {
+      document.title = previousTitle;
+      if (description && previousDescription !== null) description.setAttribute("content", previousDescription);
+    };
+  }, [title, intro]);
+
   return (
     <main className="min-h-[60vh] bg-white px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
       <div className="mx-auto max-w-4xl">
