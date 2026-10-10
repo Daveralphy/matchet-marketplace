@@ -53,4 +53,37 @@ async function requireActiveSeller(req, res, next) {
   next();
 }
 
-module.exports = { requireActiveProvider, requireActiveSeller };
+
+async function requireActiveSellerOrProvider(req, res, next) {
+  try {
+    const userId = req.user?._id;
+    if (!userId) return res.status(401).json({ success: false, message: "Please sign in to access messages." });
+
+    if (req.user?.capabilities?.seller) {
+      const store = await StoreProfile.findOne({ userId });
+      if (store?.status === "active" && store?.verificationStatus === "verified") {
+        req.storeProfile = store;
+        req.messagingProfileType = "seller";
+        return next();
+      }
+    }
+
+    const provider = await ProviderProfile.findOne({ userId });
+    if (provider?.status === "active" && provider?.verificationStatus === "verified") {
+      req.providerProfile = provider;
+      req.messagingProfileType = "provider";
+      return next();
+    }
+
+    return res.status(403).json({
+      success: false,
+      message: "Messaging is available to approved sellers and service providers.",
+      code: "MESSAGING_PROFILE_REQUIRED",
+    });
+  } catch (error) {
+    console.error("Messaging access check failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to verify messaging access right now." });
+  }
+}
+
+module.exports = { requireActiveProvider, requireActiveSeller, requireActiveSellerOrProvider };
