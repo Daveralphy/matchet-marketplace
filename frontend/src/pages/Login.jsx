@@ -8,7 +8,7 @@ import Button from "../components/common/Button";
 import Input from "../components/common/Input";
 import loginHero from "../assets/inspirations/authentication/login1.png";
 
-const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\\/$/, "");
+const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 function MailIcon() {
   return (
