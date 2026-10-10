@@ -23,7 +23,7 @@ app.use(
   }),
 );
 
-app.use(express.json({ limit: "20mb" }));
+app.use(express.json({ limit: "20mb", verify: (req, res, buffer) => { req.rawBody = Buffer.from(buffer); } }));
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 app.use(cookieParser());
 
