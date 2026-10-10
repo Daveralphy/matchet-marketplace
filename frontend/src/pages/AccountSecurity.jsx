@@ -103,7 +103,8 @@ export default function AccountSecurity() {
                                 minLength={8}
                                 required
                             />
-                        </div>\n<div className="account-form-actions">
+                        </div>
+                        <div className="account-form-actions">
                             <button type="submit" disabled={isSubmitting}>
                                 {isSubmitting ? "Changing password..." : "Change password"}
                             </button>
