@@ -450,7 +450,8 @@ const CreateAccount = () => {
                   <div className="h-px flex-1 bg-slate-200" />
                   <span className="text-[13px] text-[#747ca1]">or</span>
                   <div className="h-px flex-1 bg-slate-200" />
-                </div>\n<form
+                </div>
+<form
                   onSubmit={handleSubmit}
                   noValidate
                   className="flex flex-col gap-4"
