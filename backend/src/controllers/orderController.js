@@ -5,7 +5,8 @@ const Cart = require("../models/Cart");
 
 async function createBuyerOrder(req,res){
   try {
-    return res.status(503).json({success:false,message:"Online payment is not configured yet. No order has been created. Please try again when Matchet payments are available.",code:"PAYMENTS_NOT_CONFIGURED"});
+    // Keep order creation disabled until a real payment provider is integrated and verified.
+    if (process.env.PAYMENTS_ENABLED !== "true") return res.status(503).json({success:false,message:"Online payment is not configured yet. No order has been created. Please try again when Matchet payments are available.",code:"PAYMENTS_NOT_CONFIGURED"});
     const { items = [], deliveryMethod = "delivery", shippingAddress = {} } = req.body || {};
     if (!Array.isArray(items) || !items.length) return res.status(400).json({success:false,message:"Your cart is empty."});
     if (!["delivery","pickup"].includes(deliveryMethod)) return res.status(400).json({success:false,message:"Choose a valid delivery method."});
