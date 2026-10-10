@@ -149,7 +149,7 @@ function HowItWorksPage() {
   );
 }
 
-function ProviderResourcesPage {
+function ProviderResourcesPage() {
   return (
     <PublicInfoPage
       title="Resources for service providers"
