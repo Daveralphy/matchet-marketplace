@@ -54,7 +54,7 @@ function withProductUiFields(product) {
     buyerProtection: product.buyerProtection || "Matchet buyer protection applies.",
     deliveryEstimate: product.deliveryEstimate || "Based on your location",
     deliveryFee: product.deliveryFee || "Calculated at checkout",
-    pickupAvailable: product.pickupAvailable ?? false,
+    pickupAvailable: false,
   };
 }
 
