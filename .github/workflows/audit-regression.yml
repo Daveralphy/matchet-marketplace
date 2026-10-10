@@ -37,7 +37,12 @@ jobs:
           node --check src/controllers/paystackController.js
           node --check src/controllers/provider-message.controller.js
           node --check src/controllers/provider.controller.js
+          node --check src/controllers/admin-provider.controller.js
           node --check src/middleware/providerAccess.js
+          node --check src/routes/admin.routes.js
+          node --check src/routes/paystackRoutes.js
+          node --check src/models/Order.js
+          node --check src/models/Payout.js
 
   frontend-build:
     name: Frontend production build
