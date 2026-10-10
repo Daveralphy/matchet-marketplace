@@ -1727,6 +1727,10 @@ async function updateSellerOrderStatus(req, res) {
     }
 
     if (status === "cancelled") {
+      const orderSellerIds = new Set(order.items.map((item) => String(item.sellerId)));
+      if (orderSellerIds.size > 1) {
+        return res.status(409).json({ success: false, message: "This order contains items from multiple sellers. Contact support to coordinate cancellation and refund so another seller\u2019s fulfilment is not affected." });
+      }
       // No automated Paystack refund flow exists yet. Mark the paid cancellation for
       // manual refund review, and restore stock only for orders that have not shipped.
       const claimed = await Order.findOneAndUpdate(
