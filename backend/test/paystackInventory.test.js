@@ -157,3 +157,39 @@ test("duplicate successful payment confirmation is idempotent for an already-pai
   assert.equal(result.order, alreadyPaidOrder);
   assert.equal(inventoryWrites, 0);
 });
+
+
+test("inventory release reports failure and flags review when final state transition loses a race", async (t) => {
+  const Order = require("../src/models/Order");
+  const Product = require("../src/models/Product");
+  const { releaseInventory } = require("../src/controllers/paystackController");
+  const originalFindOneAndUpdate = Order.findOneAndUpdate;
+  const originalUpdateOne = Order.updateOne;
+  const originalProductUpdateOne = Product.updateOne;
+  const updates = [];
+  const claimed = {
+    _id: "order-release-race",
+    paymentStatus: "pending",
+    inventoryReservationStatus: "releasing",
+    items: [{ productId: "product-release-race", quantity: 2 }],
+  };
+
+  t.after(() => {
+    Order.findOneAndUpdate = originalFindOneAndUpdate;
+    Order.updateOne = originalUpdateOne;
+    Product.updateOne = originalProductUpdateOne;
+  });
+
+  Order.findOneAndUpdate = async () => claimed;
+  Product.updateOne = async () => ({ modifiedCount: 1 });
+  Order.updateOne = async (filter, update) => {
+    updates.push({ filter, update });
+    if (update.$set?.inventoryReservationStatus === "released") return { modifiedCount: 0 };
+    return { modifiedCount: 1 };
+  };
+
+  const result = await releaseInventory(claimed, "test release");
+
+  assert.equal(result, false);
+  assert.equal(updates.some(({ update }) => update.$set?.requiresManualReview === true), true);
+});
