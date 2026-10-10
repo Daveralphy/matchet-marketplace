@@ -1847,6 +1847,15 @@ async function updateSellerProduct(req,res){
 }
 async function deleteSellerProduct(req, res) {
   try {
+    const activeOrder = await Order.exists({
+      "items.productId": req.params.productId,
+      paymentStatus: { $in: ["pending", "paid"] },
+      orderStatus: { $nin: ["cancelled", "delivered"] },
+    });
+    if (activeOrder) {
+      return res.status(409).json({ success: false, message: "This product is linked to an active order or checkout. Archive it instead of deleting it until the order is resolved." });
+    }
+
     const product = await Product.findOneAndDelete({
       _id: req.params.productId,
       sellerId: req.user._id,
