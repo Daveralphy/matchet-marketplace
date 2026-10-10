@@ -222,4 +222,54 @@ async function verifyPaystackPayment(req, res) {
   }
 }
 
-module.exports = { initializePaystackPayment, verifyPaystackPayment };
+
+async function handlePaystackWebhook(req, res) {
+  const signature = req.headers["x-paystack-signature"];
+  const secret = process.env.PAYSTACK_SECRET_KEY;
+  if (!secret || !signature || !req.rawBody) {
+    return res.status(400).json({ success: false, message: "Invalid webhook request." });
+  }
+
+  const expected = crypto.createHmac("sha512", secret).update(req.rawBody).digest("hex");
+  const suppliedBuffer = Buffer.from(String(signature));
+  const expectedBuffer = Buffer.from(expected);
+  if (suppliedBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(suppliedBuffer, expectedBuffer)) {
+    return res.status(401).json({ success: false, message: "Webhook signature verification failed." });
+  }
+
+  try {
+    const event = req.body;
+    if (event?.event !== "charge.success" || !event?.data?.reference) {
+      return res.status(200).json({ received: true });
+    }
+
+    const transaction = event.data;
+    const order = await Order.findOne({ paymentReference: String(transaction.reference) });
+    if (!order || order.paymentStatus === "paid") {
+      return res.status(200).json({ received: true });
+    }
+
+    const valid = transaction.status === "success"
+      && String(transaction.currency || "").toUpperCase() === "NGN"
+      && Number(transaction.amount) === Math.round(Number(order.total) * 100)
+      && String(transaction.metadata?.orderId || "") === String(order._id)
+      && String(transaction.metadata?.buyerId || "") === String(order.buyerId);
+
+    if (!valid) {
+      console.error("Paystack webhook transaction did not match order:", String(order._id));
+      return res.status(200).json({ received: true });
+    }
+
+    order.paymentStatus = "paid";
+    order.orderStatus = "confirmed";
+    order.statusHistory.push({ status: "confirmed", note: "Payment verified through Paystack webhook." });
+    await order.save();
+    await Cart.findOneAndUpdate({ userId: order.buyerId }, { items: [] });
+    return res.status(200).json({ received: true });
+  } catch (error) {
+    console.error("Paystack webhook handling failed:", error);
+    return res.status(500).json({ success: false, message: "Webhook processing failed." });
+  }
+}
+
+module.exports = { initializePaystackPayment, verifyPaystackPayment, handlePaystackWebhook };
