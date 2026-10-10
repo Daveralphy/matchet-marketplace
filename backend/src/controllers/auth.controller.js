@@ -78,13 +78,13 @@ function appleSignIn(req, res) {
     process.env.APPLE_REDIRECT_URI
   );
   if (!appleConfigured) {
-    return res.status(503).json({
+    return res.status(200).json({
       success: false,
       code: "APPLE_NOT_CONFIGURED",
       message: "Apple sign-in is not available yet. Please continue with Google or your email and password.",
     });
   }
-  return res.status(501).json({
+  return res.status(200).json({
     success: false,
     code: "APPLE_SIGN_IN_PENDING",
     message: "Apple sign-in credentials are configured, but the Apple authentication flow still needs to be enabled. Please use another sign-in method for now.",
