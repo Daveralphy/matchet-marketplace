@@ -335,18 +335,28 @@ export default function ProductDetailsPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [related, setRelated] = useState([]);
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
     let active = true;
+    setLoadError("");
+    setProduct(null);
     Promise.all([getProductById(id), getRelatedProducts(id)]).then(([nextProduct, nextRelated]) => {
       if (!active) return;
+      if (!nextProduct) { setLoadError("We could not find this product. It may have been removed or is no longer available."); return; }
       setProduct(nextProduct);
       recordMarketplaceView(nextProduct);
       setRelated(nextRelated);
+    }).catch((error) => {
+      if (active) setLoadError(error?.message || "Unable to load this product right now.");
     });
     return () => { active = false; };
   }, [id]);
+
+  if (loadError) {
+    return <main className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-12 text-center"><h1 className="text-2xl font-bold text-[#10183f]">Product unavailable</h1><p className="mt-3 text-sm leading-6 text-[#69739a]">{loadError}</p><div className="mt-6 flex gap-3"><button type="button" onClick={() => window.location.reload()} className="rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white">Try again</button><Link to="/products" className="rounded-lg border border-slate-200 px-5 py-3 font-semibold text-[#10183f]">Browse products</Link></div></main>;
+  }
 
   if (!product) {
     return (
