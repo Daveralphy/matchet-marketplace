@@ -1,5 +1,5 @@
 import { uploadFiles } from "./uploads";
-const API_BASE_URL = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "" : "http://localhost:5000")).replace(/\/$/, "");
+const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 
 const CACHE_PREFIX = "matchet_provider_cache:";
 const CACHE_TTL = 5 * 60 * 1000;
