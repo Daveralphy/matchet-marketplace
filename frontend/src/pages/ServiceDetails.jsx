@@ -93,7 +93,7 @@ function ServiceDetails({service,related}) {
       {related.length ? related.map(item=><Link key={item.id} to={`/services/${item.id}`} className="rounded-[10px] border border-[#e4e8ee] bg-white p-2.5">
         <ServiceVisual service={item}/>
         <h3 className="mt-2 truncate text-[12px] font-medium text-[#10183f]">{item.title}</h3>
-        <div className="mt-1 text-[10px]"><Stars rating={item.rating}/> <span>{Number(item.rating).toFixed(1)} ({item.reviews||0})</span></div>
+        <div className="mt-1 text-[10px]">{Number(item.reviews) > 0 ? <><Stars rating={item.rating}/> <span>{Number(item.rating).toFixed(1)} ({item.reviews} reviews)</span></> : <span className="text-[#69739a]">No reviews yet</span>}</div>
         <p className="mt-2 text-[15px] font-bold text-[#10183f]">{item.price}</p>
         <p className="mt-1 truncate text-[10px] text-[#69739a]">{item.seller} · {item.location}</p>
       </Link>) : (
