@@ -214,11 +214,15 @@ export async function searchMarketplace({ type = "all", query = "", location = "
       item.bio,
       item.experience,
     ].filter(Boolean).join(" ").toLowerCase();
-    const itemLocation = String(item.location || "").toLowerCase();
-    const locationMatches = !normalizedLocation
-      || itemLocation.includes(normalizedLocation)
-      || normalizedLocation.includes(itemLocation)
-      || normalizedLocation.split(",").map((part) => part.trim()).filter(Boolean).some((part) => itemLocation.includes(part));
+    const itemLocation = String(item.location || "").trim().toLowerCase();
+    const locationParts = normalizedLocation.split(",").map((part) => part.trim()).filter(Boolean);
+    const locationMatches = !normalizedLocation || (
+      Boolean(itemLocation) && (
+        itemLocation.includes(normalizedLocation)
+        || normalizedLocation.includes(itemLocation)
+        || locationParts.some((part) => itemLocation.includes(part))
+      )
+    );
     return (!normalizedQuery || haystack.includes(normalizedQuery))
       && locationMatches;
   });
