@@ -203,12 +203,13 @@ async function finalizeSuccessfulPayment(order, transaction, buyerId) {
 }
 
 async function expireStaleReservations() {
-  if (!paystackConfigured()) return;
+  if (!paystackConfigured()) return 0;
   const stale = await Order.find({
     paymentStatus: "pending",
     inventoryReservationStatus: "reserved",
     inventoryReservationExpiresAt: { $lte: new Date() },
   }).sort({ inventoryReservationExpiresAt: 1 }).limit(20);
+  let checked = 0;
 
   for (const order of stale) {
     try {
@@ -218,10 +219,32 @@ async function expireStaleReservations() {
       } else if (["failed", "abandoned", "reversed", "pending", "ongoing"].includes(String(transaction.status || "").toLowerCase())) {
         await markPaymentFailed(order, "The checkout reservation expired before Paystack confirmed payment.");
       }
+      checked += 1;
     } catch (error) {
       // A verification outage is not evidence of failure. Leave the reservation intact.
       console.warn("Could not safely expire checkout reservation:", String(order._id), error.message);
     }
+  }
+  return checked;
+}
+
+async function expirePaystackReservations(req, res) {
+  const secret = process.env.CRON_SECRET;
+  const supplied = String(req.headers.authorization || "");
+  const expected = secret ? `Bearer ${secret}` : "";
+  const suppliedBuffer = Buffer.from(supplied);
+  const expectedBuffer = Buffer.from(expected);
+  if (!secret) return res.status(503).json({ success: false, message: "Reservation cleanup is not configured." });
+  if (suppliedBuffer.length !== expectedBuffer.length || !crypto.timingSafeEqual(suppliedBuffer, expectedBuffer)) {
+    return res.status(401).json({ success: false, message: "Unauthorized." });
+  }
+
+  try {
+    const checked = await expireStaleReservations();
+    return res.json({ success: true, checked, message: "Expired checkout reservations were checked safely." });
+  } catch (error) {
+    console.error("Scheduled reservation cleanup failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to check expired reservations right now." });
   }
 }
 
@@ -416,4 +439,5 @@ module.exports = {
   releaseInventory,
   finalizeSuccessfulPayment,
   isValidPaystackTransaction,
+  expirePaystackReservations,
 };
