@@ -35,8 +35,6 @@ async function getProviderMessages(req, res) {
       const customer = isMine ? message.receiverId : message.senderId;
       if (!customer) continue;
       const expectedId = canonicalConversationId(providerId, customer._id);
-      // Ignore legacy/malformed conversation IDs so unrelated participants cannot be grouped together.
-      if (message.conversationId !== expectedId) continue;
       if (!conversations.has(expectedId)) {
         conversations.set(expectedId, {
           conversationId: expectedId,
@@ -65,21 +63,18 @@ async function getProviderConversation(req, res) {
       return res.status(400).json({ success: false, message: "A valid conversation is required." });
     }
 
-    const initialMessages = await Message.find({
-      conversationId,
-      $or: [{ senderId: providerId }, { receiverId: providerId }],
-    }).sort({ createdAt: 1 }).limit(500).lean();
-
-    if (!initialMessages.length) return res.status(404).json({ success: false, message: "Conversation not found." });
-
-    const first = initialMessages[0];
-    const customerId = String(first.senderId) === String(providerId) ? first.receiverId : first.senderId;
+    const participants = conversationId.split(":");
+    if (participants.length !== 2 || !participants.every((id) => mongoose.Types.ObjectId.isValid(id)) || !participants.includes(String(providerId))) {
+      return res.status(404).json({ success: false, message: "Conversation not found." });
+    }
+    const customerId = participants.find((id) => id !== String(providerId));
     if (!customerId || conversationId !== canonicalConversationId(providerId, customerId)) {
       return res.status(404).json({ success: false, message: "Conversation not found." });
     }
 
+    // Query by the exact participant pair, not conversationId alone. This prevents
+    // cross-user message leakage and still reads older messages with legacy thread IDs.
     const messages = await Message.find({
-      conversationId,
       $or: [
         { senderId: providerId, receiverId: customerId },
         { senderId: customerId, receiverId: providerId },
@@ -91,7 +86,7 @@ async function getProviderConversation(req, res) {
     if (!messages.length) return res.status(404).json({ success: false, message: "Conversation not found." });
 
     await Message.updateMany(
-      { conversationId, receiverId: providerId, senderId: customerId, readAt: null },
+      { receiverId: providerId, senderId: customerId, readAt: null },
       { $set: { readAt: new Date() } },
     );
 
