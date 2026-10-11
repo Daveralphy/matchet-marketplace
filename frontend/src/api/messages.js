@@ -16,8 +16,9 @@ async function request(path, options = {}) {
   return payload;
 }
 
-export function getInbox() {
-  return request("/api/messages");
+export function getInbox(options = {}) {
+  const query = options.syncTransactions ? "?syncTransactions=true" : "";
+  return request("/api/messages" + query);
 }
 
 export function startConversation(recipientId) {
