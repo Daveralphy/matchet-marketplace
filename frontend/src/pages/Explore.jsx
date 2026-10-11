@@ -481,7 +481,8 @@ function ExploreProductCard({ item, listView = false }) {
       </article>
     );
   }
-  return <MarketplaceItemCard item={item} view={listView ? "list" : "grid"} saved={saved} onSave={handleSave} showPrimaryAction={false} />;
+  const handlePrimaryAction = (event) => { event.preventDefault(); event.stopPropagation(); window.location.href = (item.type === "service" ? "/services/" : "/products/") + item.id; };
+  return <MarketplaceItemCard item={item} view={listView ? "list" : "grid"} saved={saved} onSave={handleSave} onPrimaryAction={handlePrimaryAction} primaryLabel={item.type === "service" ? "Book Now" : "View Product"} primaryIcon={item.type === "service" ? "calendar" : "cart"} />;
 }
 function ResultsControl({ icon, children, active = false, onClick }) {
   return (
