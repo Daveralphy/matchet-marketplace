@@ -173,7 +173,22 @@ async function getConversation(req, res) {
       .lean();
 
     if (!messages.length && !before) {
-      return res.status(404).json({ success: false, message: "Conversation not found." });
+      const [participant, related] = await Promise.all([
+        User.findById(otherId).select("_id firstName lastName avatar isActive").lean(),
+        hasRelationship(userId, otherId),
+      ]);
+      if (!participant || !participant.isActive || !related) {
+        return res.status(404).json({ success: false, message: "Conversation not found." });
+      }
+      return res.json({
+        success: true,
+        data: {
+          conversationId,
+          participant: serializeUser(participant),
+          messages: [],
+          pagination: { limit: pageSize, hasMore: false, nextBefore: null },
+        },
+      });
     }
 
     const hasMore = messages.length > pageSize;
