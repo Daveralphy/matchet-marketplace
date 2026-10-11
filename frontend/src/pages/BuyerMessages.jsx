@@ -137,14 +137,9 @@ export default function BuyerMessages() {
             ...current,
             ...conversationResponse.data,
             messages,
-            pagination: {
-              ...(current.pagination || {}),
-              ...(conversationResponse.data?.pagination || {}),
-              // Keep the older-page cursor when the newest-page response has no older pages.
-              hasMore: Boolean(current.pagination?.hasMore || conversationResponse.data?.pagination?.hasMore),
-              nextBefore: current.pagination?.nextBefore || conversationResponse.data?.pagination?.nextBefore || null,
-              nextBeforeId: current.pagination?.nextBeforeId || conversationResponse.data?.pagination?.nextBeforeId || null,
-            },
+            // Polling refreshes the newest messages, not the older-history cursor.
+            // Keep pagination state managed by the explicit "Load older messages" action.
+            pagination: current.pagination || conversationResponse.data?.pagination || { hasMore: false, nextBefore: null, nextBeforeId: null },
           };
         });
       } catch {
