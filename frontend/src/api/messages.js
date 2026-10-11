@@ -20,8 +20,12 @@ export function getInbox() {
   return request("/api/messages");
 }
 
-export function getConversation(conversationId) {
-  return request("/api/messages/" + encodeURIComponent(conversationId));
+export function getConversation(conversationId, options = {}) {
+  const params = new URLSearchParams();
+  if (options.before) params.set("before", options.before);
+  if (options.limit) params.set("limit", String(options.limit));
+  const query = params.toString();
+  return request("/api/messages/" + encodeURIComponent(conversationId) + (query ? "?" + query : ""));
 }
 
 export function sendMessage(payload) {
