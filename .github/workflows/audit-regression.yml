@@ -35,6 +35,8 @@ jobs:
       - name: Check changed critical controllers
         run: |
           node --check src/controllers/paystackController.js
+          node --check src/controllers/message.controller.js
+          node --check src/routes/message.routes.js
           node --check src/controllers/provider-message.controller.js
           node --check src/controllers/provider.controller.js
           node --check src/controllers/admin-provider.controller.js
