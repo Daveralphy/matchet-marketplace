@@ -101,14 +101,13 @@ async function ensureTransactionOpeningMessages(userId) {
     for (const sellerId of sellers.keys()) {
       if (String(userId) !== buyerId && String(userId) !== sellerId) continue;
       const sourceRef = "order:" + String(order._id) + ":seller:" + sellerId;
-      const exists = await Message.exists({
+      const existingSeed = await Message.findOne({ sourceRef }).select("_id orderCard").lean();
+      const existingThread = existingSeed ? true : await Message.exists({
         $or: [
-          { sourceRef },
           { senderId: buyerId, receiverId: sellerId },
           { senderId: sellerId, receiverId: buyerId },
         ],
       });
-      if (exists) continue;
       const sellerItems = (order.items || []).filter((item) => String(item.sellerId) === sellerId);
       const amount = sellerItems.reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0);
       const currency = String(order.currency || "NGN").toUpperCase();
@@ -126,6 +125,14 @@ async function ensureTransactionOpeningMessages(userId) {
         status: order.orderStatus || "pending",
         placedAt: order.createdAt,
       };
+      if (existingSeed) {
+        // Upgrade automatic opening messages created by the earlier text-only implementation.
+        if (!existingSeed.orderCard) {
+          await Message.updateOne({ _id: existingSeed._id }, { $set: { content, orderCard } });
+        }
+        continue;
+      }
+      if (existingThread) continue;
       try {
         await Message.create({
           conversationId: canonicalConversationId(buyerId, sellerId),
