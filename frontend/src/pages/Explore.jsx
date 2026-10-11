@@ -878,7 +878,7 @@ function ExploreResultsSection({ isAuthenticated }) {
           <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">Start exploring</Link>
         </div>
       ) : (
-        <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"}>
+        <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-[repeat(auto-fill,220px)] gap-3"}>
           {visibleItems.length ? visibleItems.map((item) => (
             <ExploreProductCard key={item.id + item.type} item={item} listView={listView} />
           )) : (
