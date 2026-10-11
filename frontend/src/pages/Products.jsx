@@ -778,8 +778,8 @@ function ProductCatalogue({ isAuthenticated }) {
 
           <div className={`mt-4 grid gap-3 ${view === "grid" ? "grid-cols-2 xl:grid-cols-5" : "grid-cols-1"}`}>
             {productsLoading ? Array.from({ length: 6 }, (_, index) => (
-              <div key={index} className="animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
-                <div className="aspect-square bg-slate-200" />
+              <div key={index} className="h-[300px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
+                <div className="h-[152px] bg-slate-200" />
                 <div className="space-y-3 p-3"><div className="h-3 w-1/3 rounded bg-slate-200" /><div className="h-4 w-4/5 rounded bg-slate-200" /><div className="h-3 w-1/2 rounded bg-slate-100" /></div>
               </div>
             )) : sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} />) : products.length === 0 ? (
