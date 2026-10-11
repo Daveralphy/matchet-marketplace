@@ -19,7 +19,7 @@ const messageSchema = new mongoose.Schema({
   readAt: { type: Date },
 }, { timestamps: true });
 
-messageSchema.pre("validate", function validateMessage(next) {
+messageSchema.pre("validate", function validateMessage() {
   const hasContent = typeof this.content === "string" && this.content.trim().length > 0;
   const hasAttachments = Array.isArray(this.attachments) && this.attachments.length > 0;
 
@@ -30,8 +30,6 @@ messageSchema.pre("validate", function validateMessage(next) {
   if (this.senderId && this.receiverId && this.senderId.equals(this.receiverId)) {
     this.invalidate("receiverId", "A message cannot be sent to the same user.");
   }
-
-  next();
 });
 
 messageSchema.index({ conversationId: 1, createdAt: 1 });
