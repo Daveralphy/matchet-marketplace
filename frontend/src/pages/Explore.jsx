@@ -651,7 +651,7 @@ function ExploreResultsSection({ isAuthenticated }) {
   const [sourceItems, setSourceItems] = useState([]);
   const [itemsLoading, setItemsLoading] = useState(true);
   const [providerItems, setProviderItems] = useState([]);
-  const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
+  const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const selectedLocation = useMarketplaceLocation();
   const [sortBy, setSortBy] = useState("relevance");
@@ -690,6 +690,7 @@ function ExploreResultsSection({ isAuthenticated }) {
 
   const tabs = [
     { id: "all", label: "All", icon: "grid" },
+    { id: "recommended", label: "Recommended", icon: "sparkles" },
     { id: "products", label: "Products", icon: "products" },
     { id: "services", label: "Services", icon: "service" },
     { id: "providers", label: "Providers", icon: "provider" },
@@ -797,12 +798,7 @@ function ExploreResultsSection({ isAuthenticated }) {
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-2">
-        {isAuthenticated && (
-          <ResultsControl icon="sparkles" active={activeTab === "recommended"} onClick={() => updateTab("recommended")}>
-            Recommended
-          </ResultsControl>
-        )}
-        {tabs.map((tab) => (
+        {tabs.filter((tab) => tab.id !== "recommended" || isAuthenticated).map((tab) => (
           <ResultsControl
             key={tab.id}
             icon={tab.icon}
