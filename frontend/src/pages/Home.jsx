@@ -387,7 +387,7 @@ function MarketplaceCard({ item, compact = false }) {
   );
 }
 
-function MarketplaceSection({ eyebrow, title, accent, subtitle, items, viewPath = "/explore" }) {
+function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading = false, viewPath = "/explore" }) {
   const railRef = useRef(null);
 
   const scrollRail = (direction) => {
@@ -474,7 +474,20 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, viewPath 
         </div>
       </div>
 
-      {items.length ? (
+      {loading ? (
+        <div className="mt-6 flex gap-4 overflow-hidden pb-2" aria-label="Loading marketplace items" aria-busy="true">
+          {Array.from({ length: 5 }, (_, index) => (
+            <div key={index} className="w-[172px] shrink-0 animate-pulse overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.04)]">
+              <div className="h-[178px] bg-slate-200" />
+              <div className="space-y-3 p-3">
+                <div className="h-4 w-2/3 rounded bg-slate-200" />
+                <div className="h-4 w-1/2 rounded bg-slate-200" />
+                <div className="h-3 w-3/4 rounded bg-slate-100" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : items.length ? (
         <div
           ref={railRef}
           className="mt-6 flex gap-4 overflow-x-auto pb-2 scrollbar-none"
@@ -494,7 +507,7 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, viewPath 
 }
 
 
-function NearbyMarketplaceSection({ isAuthenticated, items }) {
+function NearbyMarketplaceSection({ isAuthenticated, items, loading = false }) {
   const railRef = useRef(null);
 
   const title = isAuthenticated ? "Continue" : "Popular";
@@ -1318,6 +1331,7 @@ export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const userName = user?.firstName?.trim() || user?.username?.trim() || user?.email?.split("@")[0] || "there";
   const selectedLocation = useMarketplaceLocation();
+  const [marketplaceLoading, setMarketplaceLoading] = useState(true);
   const [marketplace, setMarketplace] = useState({
     products: [],
     services: [],
@@ -1328,6 +1342,7 @@ export default function Home() {
 
   useEffect(() => {
     let active = true;
+    setMarketplaceLoading(true);
 
     getMarketplaceData(selectedLocation)
       .then(({ products, services }) => {
@@ -1348,6 +1363,9 @@ export default function Home() {
       })
       .catch((error) => {
         console.error("Homepage marketplace loading error:", error);
+      })
+      .finally(() => {
+        if (active) setMarketplaceLoading(false);
       });
 
     return () => {
@@ -1422,7 +1440,7 @@ export default function Home() {
         items={marketplace.services}
         viewPath="/services"
       />
-      <NearbyMarketplaceSection isAuthenticated={isAuthenticated} items={isAuthenticated ? marketplace.continueExploring : marketplace.popularNearby} />
+      <NearbyMarketplaceSection isAuthenticated={isAuthenticated} items={isAuthenticated ? marketplace.continueExploring : marketplace.popularNearby} loading={marketplaceLoading} />
       <MatchingSection isAuthenticated={isAuthenticated} userName={userName} />
       <CommunitySection isAuthenticated={isAuthenticated} />
       <MobileAppSection isAuthenticated={isAuthenticated} userName={userName} />
