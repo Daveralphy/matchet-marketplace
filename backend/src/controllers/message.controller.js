@@ -309,8 +309,23 @@ async function sendMessage(req, res) {
     if (error instanceof mongoose.Error.ValidationError || error instanceof mongoose.Error.CastError) {
       return res.status(400).json({ success: false, message: "The message content or recipient is invalid." });
     }
-    console.error("Send message error:", error);
-    return res.status(500).json({ success: false, message: "Unable to send your message right now." });
+    console.error("Send message error:", {
+      name: error?.name,
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack,
+      senderId: String(req.user?._id || ""),
+      receiverId: typeof receiverId === "string" ? receiverId : String(receiverId || ""),
+    });
+    const payload = { success: false, message: "Unable to send your message right now." };
+    if (process.env.NODE_ENV !== "production") {
+      payload.debug = {
+        name: error?.name || "Error",
+        message: error?.message || "Unknown error",
+        code: error?.code || null,
+      };
+    }
+    return res.status(500).json(payload);
   }
 }
 
