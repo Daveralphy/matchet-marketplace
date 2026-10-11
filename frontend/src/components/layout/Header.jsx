@@ -47,6 +47,12 @@ const PROFILE_ITEMS = [
     icon: "box",
   },
   {
+    label: "Messages",
+    description: "Chat with buyers, sellers, and service providers",
+    path: "/messages",
+    icon: "message",
+  },
+  {
     label: "My Bookings",
     description: "View your service bookings",
     path: "/bookings",
@@ -137,6 +143,11 @@ function Icon({ name, size = 22, strokeWidth = 1.9 }) {
         <path d="m4 7 8-4 8 4v10l-8 4-8-4Z" />
         <path d="m4 7 8 4 8-4" />
         <path d="M12 11v10" />
+      </>
+    ),
+    message: (
+      <>
+        <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H7l-4 2 1.2-4A7.5 7.5 0 1 1 20 11.5Z" />
       </>
     ),
     calendar: (
