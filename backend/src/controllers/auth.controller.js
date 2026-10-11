@@ -597,7 +597,11 @@ async function deleteAccount(req, res) {
   }
 }
 async function me(req, res) {
-  return res.status(200).json({ success: true, user: serializeUser(req.user) });
+  return res.status(200).json({
+    success: true,
+    authenticated: Boolean(req.user),
+    user: req.user ? serializeUser(req.user) : null,
+  });
 }
 
 function logout(_req, res) {
