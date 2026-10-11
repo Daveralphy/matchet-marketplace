@@ -33,7 +33,7 @@ export function MarketplaceItemCard({
   const actionName = primaryIcon === "calendar" ? "Book Now" : "Add to Cart";
 
   return (
-    <article className={`group min-w-0 overflow-hidden rounded-[22px] bg-white p-3.5 shadow-[0_8px_26px_rgba(16,24,63,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(16,24,63,0.13)] ${isList ? "grid grid-cols-[116px_minmax(0,1fr)] items-center gap-3 sm:grid-cols-[156px_minmax(0,1fr)_190px] sm:gap-5 sm:p-4" : "flex h-[465px] flex-col"} ${className}`}>
+    <article className={`group relative min-w-0 overflow-hidden rounded-[22px] bg-white p-3.5 shadow-[0_8px_26px_rgba(16,24,63,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(16,24,63,0.13)] ${isList ? "grid grid-cols-[116px_minmax(0,1fr)] items-center gap-3 sm:grid-cols-[156px_minmax(0,1fr)_190px] sm:gap-5 sm:p-4" : "flex h-[465px] flex-col"} ${className}`}>
       <Link to={href} className={`relative block shrink-0 overflow-hidden rounded-[16px] bg-[#edf1ed] ${isList ? "h-[116px] w-[116px] sm:h-[156px] sm:w-[156px]" : "h-[235px] w-full"}`}>
         {image ? <img src={image} alt={title} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.025]" loading="lazy" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : <span className="absolute inset-0 flex items-center justify-center text-3xl text-[#10183f]/30" aria-hidden="true">{item.type === "service" ? "✳" : "◇"}</span>}
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/70 via-[#10183f]/20 to-transparent" />
