@@ -1,6 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
+import { MarketplaceItemCard } from "../components/marketplace/MarketplaceItemCard";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getMarketplaceData, getMarketplaceProducts, getProductExperience } from "../data/marketplaceApi";
@@ -424,7 +425,7 @@ function ProductImage({ product }) {
   return <MarketplaceProductVisual product={product} size="catalogue" />;
 }
 
-function ProductCatalogueCard({ product }) {
+function ProductCatalogueCard({ product, view = "grid" }) {
   const { addItem, items: cartItems } = useCart();
   const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
   const [added, setAdded] = useState(false);
@@ -432,75 +433,15 @@ function ProductCatalogueCard({ product }) {
   const alreadyInCart = cartItems.some((item) => String(item.id || item.productId || item.product?._id) === String(product.id));
   const saved = isSaved("product", product.id);
   const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved("product", product.id); };
-
   const handleAddToCart = async (event) => {
-    event.preventDefault();
-    event.stopPropagation();
+    event.preventDefault(); event.stopPropagation();
     if (alreadyInCart || cartBusy) return;
     setCartBusy(true);
-    try {
-      const source = event.currentTarget.closest(".relative")?.querySelector("img") || event.currentTarget;
-      const result = await addItem(product, 1, source);
-      if (result?.requiresAuth) { window.location.href = "/login"; return; }
-      setAdded(true);
-      window.setTimeout(() => setAdded(false), 1600);
-    } finally { setCartBusy(false); }
+    try { const result = await addItem(product, 1, event.currentTarget); if (result?.requiresAuth) { window.location.href = "/login"; return; } setAdded(true); window.setTimeout(() => setAdded(false), 1600); }
+    finally { setCartBusy(false); }
   };
-  const rating = Number(product.rating) || 0;
-
-  return (
-    <Link to={`/products/${product.id}`} className="group flex h-[430px] min-w-0 flex-col overflow-hidden rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_10px_28px_rgba(16,24,63,0.1)]">
-      <div className="relative h-[220px] w-full shrink-0 overflow-hidden rounded-[14px]">
-        <ProductImage product={product} />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
-        {added && <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-[#10183f]/90 px-3 py-2 text-[11px] font-semibold text-white shadow-lg">Item added to cart</div>}
-        <button
-          type="button"
-          aria-label={saved ? "Unsave " + product.title : "Save " + product.title}
-          aria-pressed={saved}
-          onClick={handleSave}
-          className={saved ? "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-[#10183f] text-white shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 scale-105" : "absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200"}
-        >
-          <Icon name="heart" size={16} />
-        </button>
-      </div>
-
-      <div className="flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3">
-        <div className="flex items-center justify-between gap-2"><span className="truncate text-[10px] font-medium text-[#6f7899]">{product.category || "Product"}</span><span className="shrink-0 text-[11px] text-[#10183f]"><span className="text-[#f4a900]">★</span> {rating.toFixed(1)} {product.reviews != null ? <span className="text-[#7b84a3]">({product.reviews})</span> : null}</span></div>
-        <h3 className="mt-2 line-clamp-2 min-h-[40px] text-[15px] font-semibold leading-5 text-[#10183f]">
-          {product.title}
-        </h3>
-
-        <p className="mt-1.5 truncate text-[17px] font-bold tracking-[-0.02em] text-[#07863a]">
-          {product.price}
-        </p>
-
-        <div className="mt-auto flex min-h-9 items-center gap-1.5 pt-1.5">
-          <span className="text-[13px] text-[#f4a900]">★</span>
-          <span className="text-[10px] font-medium text-[#10183f]">{rating.toFixed(1)}</span>
-          {product.reviews != null && (
-            <span className="text-[10px] text-[#7b84a3]">({product.reviews})</span>
-          )}
-          <button
-            type="button"
-            aria-label={alreadyInCart ? `${product.title} is in cart` : `Add ${product.title} to cart`}
-            onClick={handleAddToCart}
-            disabled={alreadyInCart || cartBusy}
-            className={`ml-auto flex h-10 items-center justify-center gap-2 rounded-[10px] px-4 text-[11px] font-semibold text-white ${alreadyInCart || cartBusy ? "cursor-not-allowed bg-[#6cae8a]" : "bg-[#078b4b] hover:bg-[#067940]"} w-full`}
-          >
-            <Icon name="cart" size={17} /> {alreadyInCart ? "In Cart" : added ? "Added" : "Add to Cart"}
-          </button>
-        </div>
-
-        <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[9px] text-[#7b84a3]">
-          {product.sellerVerified && <Icon name="shield" size={12} strokeWidth={2.2} />}
-          <span className="truncate">{product.seller} · {product.location}</span>
-        </div>
-      </div>
-    </Link>
-  );
+  return <MarketplaceItemCard item={{...product, type:"product", image:product.image || product.images?.find?.((entry)=>entry?.isPrimary)?.url || product.images?.[0]?.url}} view={view} saved={saved} onSave={handleSave} onPrimaryAction={handleAddToCart} primaryLabel={alreadyInCart ? "In Cart" : added ? "Added" : "Add to Cart"} primaryDisabled={alreadyInCart || cartBusy} primaryIcon="cart" />;
 }
-
 function FilterSection({ title, children }) {
   return (
     <section className="border-b border-[#edf0f3] py-4 first:pt-0">
@@ -778,13 +719,13 @@ function ProductCatalogue({ isAuthenticated }) {
             </div>
           </div>
 
-          <div className={`mt-4 grid gap-3 ${view === "grid" ? "grid-cols-2 xl:grid-cols-5" : "grid-cols-1"}`}>
+          <div className={`mt-4 grid gap-4 ${view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" : "grid-cols-1"}`}>
             {productsLoading ? Array.from({ length: 6 }, (_, index) => (
               <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
                 <div className="h-[160px] bg-slate-200" />
                 <div className="space-y-3 p-3"><div className="h-3 w-1/3 rounded bg-slate-200" /><div className="h-4 w-4/5 rounded bg-slate-200" /><div className="h-3 w-1/2 rounded bg-slate-100" /></div>
               </div>
-            )) : sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} />) : products.length === 0 ? (
+            )) : sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} view={view} />) : products.length === 0 ? (
               <div className="col-span-full flex min-h-[260px] items-center justify-center rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 text-center">
                 <div><p className="text-[13px] font-semibold text-[#10183f]">No products available yet</p><p className="mt-1 text-[11px] text-[#69739a]">Live products will appear here when sellers publish active listings.</p></div>
               </div>
