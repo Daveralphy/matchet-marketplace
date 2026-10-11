@@ -894,11 +894,6 @@ function ExploreResultsSection({ isAuthenticated }) {
         </div>
       )}
 
-      {!itemsLoading && visibleItems.length === 0 && (
-        <div className="mt-5 rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-12 text-center text-[12px] text-[#69739a]">
-          No results match your current search and filters.
-        </div>
-      )}
 
       {visibleCount < filteredItems.length && (
         <div className="mt-5 flex justify-center">
