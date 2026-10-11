@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { getInbox, startConversation, getConversation, sendMessage } from "../api/messages";
+import { getInbox, startConversation, getConversation, sendMessage, updateConversationState } from "../api/messages";
 import "./BuyerMessages.css";
 
 const formatTime = (value) => {
@@ -39,6 +39,8 @@ export default function BuyerMessages() {
   const requestedConversationId = useRef("");
   const chatBodyRef = useRef(null);
   const shouldAutoScroll = useRef(true);
+  const [openMenuId, setOpenMenuId] = useState("");
+  const menuRef = useRef(null);
 
   const loadInbox = useCallback(async (preserveSelection = true, syncTransactions = false) => {
     try {
@@ -167,6 +169,45 @@ export default function BuyerMessages() {
   }, [conversations, search, filter]);
 
   const unreadCount = conversations.reduce((total, item) => total + Number(item.unreadCount || 0), 0);
+
+  useEffect(() => {
+    if (!openMenuId) return undefined;
+    const closeOnOutsideClick = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) setOpenMenuId("");
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setOpenMenuId("");
+    };
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("touchstart", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("touchstart", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [openMenuId]);
+
+  async function handleConversationAction(conversation, action) {
+    setOpenMenuId("");
+    try {
+      await updateConversationState(conversation.conversationId, action);
+      if (action === "delete" || action === "archive") {
+        setConversations((current) => current.filter((item) => item.conversationId !== conversation.conversationId));
+        if (selectedId === conversation.conversationId) {
+          setSelectedId("");
+          setActiveConversation(null);
+        }
+      } else if (action === "read") {
+        setConversations((current) => current.map((item) => item.conversationId === conversation.conversationId ? { ...item, unreadCount: 0 } : item));
+      } else if (action === "unread") {
+        setConversations((current) => current.map((item) => item.conversationId === conversation.conversationId ? { ...item, unreadCount: Math.max(1, Number(item.unreadCount || 0)) } : item));
+      }
+      setError("");
+    } catch (requestError) {
+      setError(requestError.message || "Unable to update this conversation.");
+    }
+  }
 
   useEffect(() => {
     if (!shouldAutoScroll.current || !chatBodyRef.current) return;
