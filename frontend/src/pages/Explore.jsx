@@ -861,7 +861,7 @@ function ExploreResultsSection({ isAuthenticated }) {
       </div>
 
 {itemsLoading ? (
-        <div className="mt-5 grid grid-cols-[repeat(auto-fill,220px)] justify-between gap-3" aria-label="Loading marketplace results" aria-busy="true">
+        <div className="mt-5 grid grid-cols-[repeat(auto-fill,250px)] justify-between gap-3" aria-label="Loading marketplace results" aria-busy="true">
           {Array.from({ length: 6 }, (_, index) => (
             <div key={index} className="h-[280px] w-[220px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
               <div className="h-[150px] bg-slate-200" />
