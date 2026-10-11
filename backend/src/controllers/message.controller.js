@@ -154,7 +154,11 @@ async function getConversation(req, res) {
       ? Math.min(Math.max(requestedLimit, 1), MAX_PAGE_SIZE)
       : DEFAULT_PAGE_SIZE;
     const before = req.query.before ? new Date(req.query.before) : null;
-    if (req.query.before && Number.isNaN(before.getTime())) {
+    const beforeId = req.query.beforeId ? String(req.query.beforeId) : "";
+    if (
+      (req.query.before && Number.isNaN(before.getTime())) ||
+      (beforeId && !mongoose.Types.ObjectId.isValid(beforeId))
+    ) {
       return res.status(400).json({ success: false, message: "The message history cursor is invalid." });
     }
 
@@ -163,7 +167,14 @@ async function getConversation(req, res) {
         { senderId: userId, receiverId: otherId },
         { senderId: otherId, receiverId: userId },
       ],
-      ...(before ? { createdAt: { $lt: before } } : {}),
+      ...(before ? {
+        $and: [{
+          $or: [
+            { createdAt: { $lt: before } },
+            ...(beforeId ? [{ createdAt: before, _id: { $lt: new mongoose.Types.ObjectId(beforeId) } }] : []),
+          ],
+        }],
+      } : {}),
     };
     const messages = await Message.find(pairFilter)
       .sort({ createdAt: -1, _id: -1 })
@@ -186,7 +197,7 @@ async function getConversation(req, res) {
           conversationId,
           participant: serializeUser(participant),
           messages: [],
-          pagination: { limit: pageSize, hasMore: false, nextBefore: null },
+          pagination: { limit: pageSize, hasMore: false, nextBefore: null, nextBeforeId: null },
         },
       });
     }
@@ -215,6 +226,7 @@ async function getConversation(req, res) {
           limit: pageSize,
           hasMore,
           nextBefore: hasMore && page.length ? page[0].createdAt : null,
+          nextBeforeId: hasMore && page.length ? page[0]._id : null,
         },
       },
     });
