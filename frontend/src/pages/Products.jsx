@@ -449,7 +449,7 @@ function ProductCatalogueCard({ product }) {
   const rating = Number(product.rating) || 0;
 
   return (
-    <Link to={`/products/${product.id}`} className="group flex h-[300px] min-w-0 flex-col overflow-hidden rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+    <Link to={`/products/${product.id}`} className="group flex h-[280px] min-w-0 flex-col overflow-hidden rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
       <div className="relative w-full shrink-0">
         <ProductImage product={product} />
         {added && <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-[#10183f]/90 px-3 py-2 text-[11px] font-semibold text-white shadow-lg">Item added to cart</div>}
@@ -778,8 +778,8 @@ function ProductCatalogue({ isAuthenticated }) {
 
           <div className={`mt-4 grid gap-3 ${view === "grid" ? "grid-cols-2 xl:grid-cols-5" : "grid-cols-1"}`}>
             {productsLoading ? Array.from({ length: 6 }, (_, index) => (
-              <div key={index} className="h-[300px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
-                <div className="h-[152px] bg-slate-200" />
+              <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
+                <div className="h-[125px] bg-slate-200" />
                 <div className="space-y-3 p-3"><div className="h-3 w-1/3 rounded bg-slate-200" /><div className="h-4 w-4/5 rounded bg-slate-200" /><div className="h-3 w-1/2 rounded bg-slate-100" /></div>
               </div>
             )) : sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} />) : products.length === 0 ? (
