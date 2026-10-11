@@ -65,12 +65,12 @@ async function ensureTransactionOpeningMessages(userId) {
   // The first order or booking between two accounts becomes the opening message.
   // Existing conversations are left untouched.
   const [orders, bookings] = await Promise.all([
-    Order.find({ $or: [{ buyerId: userId }, { "items.sellerId": userId }] })
+    Order.find({ $or: [{ buyerId: userId }, { "items.sellerId": userId }], orderStatus: { $ne: "cancelled" }, paymentStatus: { $nin: ["failed", "refunded"] } })
       .sort({ createdAt: 1, _id: 1 })
       .limit(500)
       .select("_id buyerId items sellerId nameSnapshot quantity priceSnapshot total currency orderStatus createdAt")
       .lean(),
-    Booking.find({ $or: [{ buyerId: userId }, { providerId: userId }] })
+    Booking.find({ $or: [{ buyerId: userId }, { providerId: userId }], status: { $nin: ["cancelled", "declined"] } })
       .sort({ createdAt: 1, _id: 1 })
       .limit(500)
       .select("_id buyerId providerId serviceId scheduledDate scheduledTime priceSnapshot status createdAt")
@@ -87,8 +87,10 @@ async function ensureTransactionOpeningMessages(userId) {
     }
     for (const sellerId of sellers.keys()) {
       if (String(userId) !== buyerId && String(userId) !== sellerId) continue;
+      const sourceRef = "order:" + String(order._id) + ":seller:" + sellerId;
       const exists = await Message.exists({
         $or: [
+          { sourceRef },
           { senderId: buyerId, receiverId: sellerId },
           { senderId: sellerId, receiverId: buyerId },
         ],
@@ -112,6 +114,7 @@ async function ensureTransactionOpeningMessages(userId) {
       try {
         await Message.create({
           conversationId: canonicalConversationId(buyerId, sellerId),
+          sourceRef,
           senderId: buyerId,
           receiverId: sellerId,
           content,
@@ -127,8 +130,10 @@ async function ensureTransactionOpeningMessages(userId) {
     const buyerId = String(booking.buyerId);
     const providerId = String(booking.providerId);
     if (!buyerId || !providerId || buyerId === providerId) continue;
+    const sourceRef = "booking:" + String(booking._id) + ":provider:" + providerId;
     const exists = await Message.exists({
       $or: [
+        { sourceRef },
         { senderId: buyerId, receiverId: providerId },
         { senderId: providerId, receiverId: buyerId },
       ],
@@ -149,6 +154,7 @@ async function ensureTransactionOpeningMessages(userId) {
     try {
       await Message.create({
         conversationId: canonicalConversationId(buyerId, providerId),
+        sourceRef,
         senderId: buyerId,
         receiverId: providerId,
         content,
