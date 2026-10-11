@@ -470,14 +470,14 @@ function ExploreProductCard({ item, listView = false }) {
   const isProvider = item.type === "provider";
   if (isProvider) {
     return (
-      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "flex h-[300px] flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
+      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "flex h-[280px] flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
         <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[150px]" : "h-[125px]"} w-full shrink-0`}>
           <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone || "bg-[#eef1ef]"}`}>
             {item.image ? <img src={item.image} alt={item.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
             <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name="provider" size={58} strokeWidth={1.15} /></span>
           </div>
         </div>
-        <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "flex min-h-0 flex-1 flex-col px-2.5 pb-2.5 pt-2"}>
+        <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "flex min-h-0 flex-1 flex-col px-3 pb-3 pt-2.5"}>
           <div className="flex items-center justify-between gap-1.5">
             <span className="max-w-[150px] truncate text-[8px] font-medium text-[#6f7899]">{item.category}</span>
             <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]"><span className="text-[#f4b400]">★</span>{item.rating}</span>
@@ -493,7 +493,7 @@ function ExploreProductCard({ item, listView = false }) {
   }
   return (
     <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "flex h-[300px] flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
-      <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[160px]" : "h-[150px]"} w-full shrink-0`}>
+      <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[150px]" : "h-[125px]"} w-full shrink-0`}>
         <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone}`}>
           {item.image ? <img src={item.image} alt={item.title || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
           <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
@@ -503,7 +503,7 @@ function ExploreProductCard({ item, listView = false }) {
 
       <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "flex min-h-0 flex-1 flex-col px-2.5 pb-2.5 pt-2"}>
         <div className="flex items-center justify-between gap-1.5">
-          <span className={`max-w-[105px] truncate text-[8px] font-medium text-[#6f7899] ${listView ? "text-[9px]" : ""}`}>
+          <span className={`max-w-[112px] truncate text-[9px] font-medium text-[#6f7899] ${listView ? "text-[9px]" : ""}`}>
             {item.category}
           </span>
           <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]">
@@ -511,17 +511,23 @@ function ExploreProductCard({ item, listView = false }) {
           </span>
         </div>
 
-        <h3 className="mt-1.5 truncate text-[10px] font-semibold leading-4 text-[#10183f] sm:text-[11px]">
+        <h3 className="mt-2 truncate text-[12px] font-semibold tracking-[-0.015em] text-[#10183f]">
           {item.title}
         </h3>
 
-        <p className="mt-1 truncate text-[11px] font-bold leading-4 text-[#07863a]">
+        <p className="mt-1.5 truncate text-[13px] font-bold tracking-[-0.02em] text-[#07863a]">
           {item.price}
         </p>
 
-        <p className="mt-1 truncate text-[8px] text-[#7b84a3]">
-          {item.seller} · {item.location}
-        </p>
+        <div className="mt-auto flex min-w-0 items-center gap-2 pt-2.5">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#e4f8eb] text-[10px] font-semibold text-[#07863a]">
+            {(item.seller || "M").trim().charAt(0).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-[10px] font-medium text-[#10183f]">{item.seller}</p>
+            <p className="mt-0.5 truncate text-[9px] text-[#7b84a3]">{item.location}</p>
+          </div>
+        </div>
       </div>
     </Link>
   );
@@ -861,8 +867,8 @@ function ExploreResultsSection({ isAuthenticated }) {
 {itemsLoading ? (
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6" aria-label="Loading marketplace results" aria-busy="true">
           {Array.from({ length: 6 }, (_, index) => (
-            <div key={index} className="h-[300px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
-              <div className="h-[160px] bg-slate-200" />
+            <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
+              <div className="h-[150px] bg-slate-200" />
               <div className="space-y-3 p-3">
                 <div className="h-3 w-1/3 rounded bg-slate-200" />
                 <div className="h-4 w-4/5 rounded bg-slate-200" />
