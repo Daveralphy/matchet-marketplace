@@ -61,9 +61,108 @@ async function getUnreadCount(req, res) {
   }
 }
 
+async function ensureTransactionOpeningMessages(userId) {
+  // The first order or booking between two accounts becomes the opening message.
+  // Existing conversations are left untouched.
+  const [orders, bookings] = await Promise.all([
+    Order.find({ $or: [{ buyerId: userId }, { "items.sellerId": userId }] })
+      .sort({ createdAt: 1, _id: 1 })
+      .limit(500)
+      .select("_id buyerId items sellerId nameSnapshot quantity priceSnapshot total currency orderStatus createdAt")
+      .lean(),
+    Booking.find({ $or: [{ buyerId: userId }, { providerId: userId }] })
+      .sort({ createdAt: 1, _id: 1 })
+      .limit(500)
+      .select("_id buyerId providerId serviceId scheduledDate scheduledTime priceSnapshot status createdAt")
+      .populate("serviceId", "title")
+      .lean(),
+  ]);
+
+  for (const order of orders) {
+    const buyerId = String(order.buyerId);
+    const sellers = new Map();
+    for (const item of order.items || []) {
+      const sellerId = String(item.sellerId || "");
+      if (sellerId && sellerId !== buyerId) sellers.set(sellerId, true);
+    }
+    for (const sellerId of sellers.keys()) {
+      if (String(userId) !== buyerId && String(userId) !== sellerId) continue;
+      const exists = await Message.exists({
+        $or: [
+          { senderId: buyerId, receiverId: sellerId },
+          { senderId: sellerId, receiverId: buyerId },
+        ],
+      });
+      if (exists) continue;
+      const items = (order.items || [])
+        .filter((item) => String(item.sellerId) === sellerId)
+        .map((item) => `${item.nameSnapshot || "Product"} × ${Number(item.quantity || 1)}`)
+        .join(", ");
+      const amount = (order.items || [])
+        .filter((item) => String(item.sellerId) === sellerId)
+        .reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0);
+      const currency = String(order.currency || "NGN").toUpperCase();
+      const content = [
+        `Order placed: #${String(order._id).slice(-8).toUpperCase()}`,
+        items ? `Items: ${items}` : "",
+        `Order value with this seller: ${currency} ${amount.toLocaleString("en-NG")}`,
+        `Order status: ${order.orderStatus || "pending"}`,
+        "This conversation was started automatically from the order. You can use this chat to coordinate the purchase.",
+      ].filter(Boolean).join("\n");
+      try {
+        await Message.create({
+          conversationId: canonicalConversationId(buyerId, sellerId),
+          senderId: buyerId,
+          receiverId: sellerId,
+          content,
+        });
+      } catch (error) {
+        // Concurrent inbox loads may race to create the same opening message.
+        if (!(error?.code === 11000)) throw error;
+      }
+    }
+  }
+
+  for (const booking of bookings) {
+    const buyerId = String(booking.buyerId);
+    const providerId = String(booking.providerId);
+    if (!buyerId || !providerId || buyerId === providerId) continue;
+    const exists = await Message.exists({
+      $or: [
+        { senderId: buyerId, receiverId: providerId },
+        { senderId: providerId, receiverId: buyerId },
+      ],
+    });
+    if (exists) continue;
+    const serviceName = booking.serviceId?.title || "Service booking";
+    const date = booking.scheduledDate ? new Date(booking.scheduledDate).toLocaleDateString("en-NG") : "Not specified";
+    const currency = String(booking.priceSnapshot?.currency || "NGN").toUpperCase();
+    const amount = Number(booking.priceSnapshot?.amount || 0).toLocaleString("en-NG");
+    const content = [
+      "New service booking",
+      `Service: ${serviceName}`,
+      `Scheduled date: ${date} at ${booking.scheduledTime || "a time to be confirmed"}`,
+      `Booking amount: ${currency} ${amount}`,
+      `Booking status: ${booking.status || "pending"}`,
+      "This conversation was started automatically from the booking. You can use this chat to coordinate the service.",
+    ].join("\n");
+    try {
+      await Message.create({
+        conversationId: canonicalConversationId(buyerId, providerId),
+        senderId: buyerId,
+        receiverId: providerId,
+        content,
+      });
+    } catch (error) {
+      if (!(error?.code === 11000)) throw error;
+    }
+  }
+}
+
 async function getInbox(req, res) {
   try {
     const userId = req.user._id;
+    await ensureTransactionOpeningMessages(userId);
     const messages = await Message.find({ $or: [{ senderId: userId }, { receiverId: userId }] })
       .sort({ createdAt: -1, _id: -1 })
       .limit(INBOX_SCAN_LIMIT)
