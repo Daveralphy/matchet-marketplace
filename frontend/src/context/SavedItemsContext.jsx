@@ -30,13 +30,16 @@ export function SavedItemsProvider({ children }) {
     if (!authLoading) loadSavedItems();
   }, [authLoading, loadSavedItems]);
 
+  const getReferenceId = (value) => {
+    if (value && typeof value === "object") return String(value._id || value.id || "");
+    return String(value ?? "");
+  };
+
   const isSaved = useCallback(
-    (itemType, itemId) =>
-      items.some((item) => {
-        const ref = itemType === "product" ? item.productId : item.serviceId;
-        const refId = typeof ref === "object" ? ref?._id : ref;
-        return item.itemType === itemType && String(refId) === String(itemId);
-      }),
+    (itemType, itemId) => items.some((item) => {
+      const ref = itemType === "product" ? item.productId : item.serviceId;
+      return item.itemType === itemType && getReferenceId(ref) === getReferenceId(itemId);
+    }),
     [items],
   );
 
@@ -46,8 +49,7 @@ export function SavedItemsProvider({ children }) {
 
       const existing = items.find((item) => {
         const ref = itemType === "product" ? item.productId : item.serviceId;
-        const refId = typeof ref === "object" ? ref?._id : ref;
-        return item.itemType === itemType && String(refId) === String(itemId);
+        return item.itemType === itemType && getReferenceId(ref) === getReferenceId(itemId);
       });
 
       try {
@@ -59,10 +61,17 @@ export function SavedItemsProvider({ children }) {
 
         const item = await saveItem(
           itemType === "product"
-            ? { itemType, productId: itemId }
-            : { itemType, serviceId: itemId },
+            ? { itemType, productId: getReferenceId(itemId) }
+            : { itemType, serviceId: getReferenceId(itemId) },
         );
-        setItems((current) => [...current, item]);
+        setItems((current) => {
+          const exists = current.some((entry) => entry._id === item?._id)
+            || current.some((entry) => {
+              const ref = itemType === "product" ? entry.productId : entry.serviceId;
+              return entry.itemType === itemType && getReferenceId(ref) === getReferenceId(itemId);
+            });
+          return exists ? current : [...current, item];
+        });
         return { saved: true };
       } catch (error) {
         if (error?.status === 401) {
