@@ -29,7 +29,7 @@ function OrderMessageCard({ orderCard, isBuyerView }) {
   const money = (amount) => (orderCard.currency || "NGN") + " " + Number(amount || 0).toLocaleString("en-NG");
   return (
     <section className="account-order-message-card" aria-label="Order summary">
-      <div className="account-order-message-kicker"><span className="account-order-message-icon">✓</span><div><strong>Placed order</strong><span>Order #{orderId.slice(-8).toUpperCase()}</span></div></div>
+      <div className="account-order-message-kicker"><span className="account-order-message-icon">✓</span><div><strong>Placed order for</strong><span>Order #{orderId.slice(-8).toUpperCase()}</span></div></div>
       <div className="account-order-message-items">
         {(orderCard.items || []).map((item, index) => (
           <div className="account-order-message-item" key={orderId + "-" + index}>
