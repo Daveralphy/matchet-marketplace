@@ -671,7 +671,7 @@ export default function Header({
                   {[
                     ...MOBILE_NAV_ITEMS,
                     ...(isAuthenticated
-                      ? PROFILE_ITEMS.slice(0, 5)
+                      ? PROFILE_ITEMS.slice(0, 6)
                       : [
                           { label: "Sign in", path: "/login" },
                           {
@@ -1004,7 +1004,7 @@ export default function Header({
                     <div className="space-y-1">
                       {PROFILE_ITEMS.map((item, index) => (
                         <div key={item.path}>
-                          {index === 4 && (
+                          {index === 5 && (
                             <div className="my-2 h-px bg-slate-200" />
                           )}
 
