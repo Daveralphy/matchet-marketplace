@@ -7,7 +7,7 @@ import { useForm } from "../context/FormContext.jsx";
 import { useAuth } from "../context/AuthContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
-import { getProviderCapabilities, getSellerOnboardingDraft, saveSellerOnboardingDraft } from "../api/provider";
+import { getProviderCapabilities, getSellerOnboardingDraft, saveSellerOnboardingDraft, highlightOnboardingFields } from "../api/provider";
 import { uploadFile } from "../api/uploads";
 import LocationSearch from "../components/LocationSearch";
 
@@ -33,7 +33,18 @@ export default function SellerSignupPageOne() {
       const code = phone.startsWith("+234") ? "+234" : phone.startsWith("+44") ? "+44" : phone.startsWith("+1") ? "+1" : "";
       updateField("countryCode", code);
       updateField("phoneNumber", code ? phone.slice(code.length).trim() : phone);
-      if (user.location?.city) updateField("location", user.location.city.toLowerCase() === "lagos" ? "lagos-nigeria" : user.location.city);
+      if (user.location?.city && !formData.location) {
+        const locationData = {
+          city: user.location.city || "",
+          state: user.location.state || "",
+          country: user.location.country || "",
+        };
+        const label = [locationData.city, locationData.state, locationData.country].filter(Boolean).join(", ");
+        if (label) {
+          updateField("location", label);
+          updateField("locationData", { ...locationData, label });
+        }
+      }
       if (user.avatar?.url) updateField("profileImage", user.avatar);
     }
 
@@ -71,18 +82,31 @@ export default function SellerSignupPageOne() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const locationInput = e.currentTarget.elements.location;
+    if (formData.location && !formData.locationData) {
+      locationInput?.setCustomValidity("Please select a location from the suggestions.");
+    }
     if (!e.target.checkValidity()) {
       e.target.reportValidity();
+      locationInput?.setCustomValidity("");
       return;
     }
+    locationInput?.setCustomValidity("");
 
     try {
       const response = await saveSellerOnboardingDraft(formData, 1);
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/register/page2");
     } catch (error) {
-      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
-      alert(error.message || "Please complete the highlighted fields before continuing.");
+      const invalidFields = error.missingFields?.length ? error.missingFields : Object.keys(error.errors || {});
+      if (invalidFields.length) {
+        highlightOnboardingFields(invalidFields, error.errors);
+        return;
+      }
+      const safeMessage = /validation failed|cast to embedded|objectexpectederror|casterror/i.test(error.message || "")
+        ? "Please check the highlighted fields and try again."
+        : error.message || "Unable to save your progress. Please try again.";
+      alert(safeMessage);
     }
   };
 
@@ -652,10 +676,13 @@ export default function SellerSignupPageOne() {
 
               <label htmlFor="location">Location *</label>
               <LocationSearch
+                name="location"
+                id="location"
                 value={formData.location}
                 onChange={(value) => {
                   userEditedSellerStepOneRef.current = true;
                   updateField("location", value);
+                  updateField("locationData", null);
                 }}
                 onSelect={(location) => {
                   userEditedSellerStepOneRef.current = true;

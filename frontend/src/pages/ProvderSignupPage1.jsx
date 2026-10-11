@@ -4,7 +4,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "../context/FormContext.jsx";
-import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, searchProviderLocations, highlightOnboardingFields } from "../api/provider";
+import { getProviderCapabilities, getProviderOnboardingDraft, saveProviderOnboardingDraft, highlightOnboardingFields } from "../api/provider";
+import LocationSearch from "../components/LocationSearch";
 import { uploadFile } from "../api/uploads";
 import { useAuth } from "../context/AuthContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
@@ -67,14 +68,21 @@ export default function ProviderSignupPageOne() {
       const location = [user.location.city, user.location.state, user.location.country]
         .filter(Boolean)
         .join(", ");
-      if (location) updateField("providerLocation", location);
+      if (location) {
+        updateField("providerLocation", location);
+        updateField("providerLocationData", {
+          city: user.location.city || "",
+          state: user.location.state || "",
+          country: user.location.country || "",
+          label: location,
+        });
+      }
     }
   }, [user, formData.providerFirstName, formData.providerLastName, formData.providerEmail, formData.providerPhoneNumber, formData.providerProfileImage, formData.providerLocation, updateField]);
   const [profilePreview, setProfilePreview] = useState(null);
   const [selectedProviderType, setSelectedProviderType] = useState(formData.providerType || "");
   const [selectedProviderCountryCode, setSelectedProviderCountryCode] = useState(formData.providerCountryCode || "");
   const [shortBio, setShortBio] = useState(formData.providerBio || "");
-  const [locationQuery, setLocationQuery] = useState(formData.providerLocation || "");
 
   useEffect(() => {
     if (!userEditedStepOneRef.current && formData.providerType) {
@@ -87,12 +95,6 @@ export default function ProviderSignupPageOne() {
       setSelectedProviderCountryCode(formData.providerCountryCode);
     }
   }, [formData.providerCountryCode]);
-
-  useEffect(() => {
-    setLocationQuery(formData.providerLocation || "");
-  }, [formData.providerLocation]);
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
-  const [locationLoading, setLocationLoading] = useState(false);
 
   useEffect(() => {
     const image = formData.providerProfileImage;
@@ -115,27 +117,6 @@ export default function ProviderSignupPageOne() {
     }
     setProfilePreview(null);
   }, [formData.providerProfileImage]);
-
-  useEffect(() => {
-    const query = locationQuery.trim();
-    if (query.length < 2 || query === formData.providerLocation) {
-      setLocationSuggestions([]);
-      return undefined;
-    }
-    let active = true;
-    const timer = setTimeout(async () => {
-      setLocationLoading(true);
-      try {
-        const response = await searchProviderLocations(query);
-        if (active) setLocationSuggestions(response?.data?.locations || []);
-      } catch {
-        if (active) setLocationSuggestions([]);
-      } finally {
-        if (active) setLocationLoading(false);
-      }
-    }, 300);
-    return () => { active = false; clearTimeout(timer); };
-  }, [locationQuery, formData.providerLocation]);
 
   const providerTypes = [
     { value: "Individual", title: "Individual", description: "I offer services on my own" },
@@ -170,10 +151,16 @@ export default function ProviderSignupPageOne() {
     event.preventDefault();
 
     const form = event.currentTarget;
+    const locationInput = form.elements.providerLocation;
+    if (formData.providerLocation && !formData.providerLocationData) {
+      locationInput?.setCustomValidity("Please select a location from the suggestions.");
+    }
     if (!form.checkValidity()) {
       form.reportValidity();
+      locationInput?.setCustomValidity("");
       return;
     }
+    locationInput?.setCustomValidity("");
 
     try {
       const submittedFormData = {
@@ -191,10 +178,15 @@ export default function ProviderSignupPageOne() {
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page2");
     } catch (error) {
-      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) {
-        highlightOnboardingFields(error.missingFields);
+      const invalidFields = error.missingFields?.length ? error.missingFields : Object.keys(error.errors || {});
+      if (invalidFields.length) {
+        highlightOnboardingFields(invalidFields, error.errors);
+        return;
       }
-      alert(error.message || "Please complete the highlighted fields before continuing.");
+      const safeMessage = /validation failed|cast to embedded|objectexpectederror|casterror/i.test(error.message || "")
+        ? "Please check the highlighted fields and try again."
+        : error.message || "Unable to save your progress. Please try again.";
+      alert(safeMessage);
     }
   };
 
@@ -310,42 +302,24 @@ export default function ProviderSignupPageOne() {
 
                 <div style={{ position: "relative" }}>
                   <label htmlFor="providerLocation">Location</label>
-                  <input
-                    type="text"
-                    id="providerLocation"
+                  <LocationSearch
                     name="providerLocation"
-                    value={locationQuery}
+                    id="providerLocation"
+                    value={formData.providerLocation || ""}
                     placeholder="Search city or area"
-                    autoComplete="off"
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      userEditedStepOneRef.current = true;
-                      setLocationQuery(value);
-                      if (value !== formData.providerLocation) updateField("providerLocation", "");
-                    }}
+                    className="w-full"
                     required
+                    onChange={(value) => {
+                      userEditedStepOneRef.current = true;
+                      updateField("providerLocation", value);
+                      updateField("providerLocationData", null);
+                    }}
+                    onSelect={(location) => {
+                      userEditedStepOneRef.current = true;
+                      updateField("providerLocation", location.label);
+                      updateField("providerLocationData", location);
+                    }}
                   />
-                  {(locationLoading || locationSuggestions.length > 0) && locationQuery !== formData.providerLocation && (
-                    <div style={{ position: "absolute", zIndex: 20, top: "100%", left: 0, right: 0, marginTop: 4, background: "#fff", border: "1px solid #dfe4ef", borderRadius: 8, boxShadow: "0 8px 24px rgba(16,24,63,.12)", overflow: "hidden" }}>
-                      {locationLoading && <div style={{ padding: "10px 12px", color: "#687099" }}>Searching locations...</div>}
-                      {!locationLoading && locationSuggestions.map((location) => (
-                        <button
-                          key={location.label + location.coordinates.coordinates.join(",")}
-                          type="button"
-                          style={{ display: "block", width: "100%", border: 0, background: "#fff", padding: "10px 12px", textAlign: "left", cursor: "pointer" }}
-                          onClick={() => {
-                            userEditedStepOneRef.current = true;
-                            setLocationQuery(location.label);
-                            updateField("providerLocation", location.label);
-                            updateField("providerLocationData", location);
-                            setLocationSuggestions([]);
-                          }}
-                        >
-                          {location.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
 

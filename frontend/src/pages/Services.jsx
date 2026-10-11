@@ -9,6 +9,7 @@ import person1 from "../assets/inspirations/services/person1.png";
 import person2 from "../assets/inspirations/services/person2.png";
 import { getServiceCategoryCollections, getServiceCollection, getServiceExperience, getServiceReviews } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
+import { useMarketplaceLocation } from "../hooks/useMarketplaceLocation";
 
 const SERVICE_CATEGORIES = [
   { label: "Home Services", icon: "home" },
@@ -137,6 +138,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
 
 function SearchBar() {
   const navigate = useNavigate();
+  const currentLocation = useMarketplaceLocation();
   const [query, setQuery] = useState("");
 
   const [suggestions, setSuggestions] = useState([]);
@@ -145,11 +147,11 @@ function SearchBar() {
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await getServiceCollection(localStorage.getItem("matchet_location") || "Lagos, Nigeria").then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
+      const results = await getServiceCollection(currentLocation).then((items) => items.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [query]);
+  }, [query, currentLocation]);
 
   const submitSearch = () => {
     const value = query.trim();
@@ -835,7 +837,7 @@ function ServicesListingSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [services, setServices] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+  const selectedLocation = useMarketplaceLocation();
 
   useEffect(() => {
     let active = true;
@@ -848,12 +850,6 @@ function ServicesListingSection({ isAuthenticated }) {
       active = false;
     };
   }, [isAuthenticated, search, selectedLocation]);
-
-  useEffect(() => {
-    const handleLocationChange = (event) => setSelectedLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
-    window.addEventListener("matchet-location-change", handleLocationChange);
-    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
-  }, []);
 
   return (
     <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>

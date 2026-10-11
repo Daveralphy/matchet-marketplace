@@ -128,8 +128,15 @@ export default function ProviderSignupPageFive() {
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/provider/onboarding/page4");
     } catch (error) {
-      if (error.code === "ONBOARDING_STEP_INCOMPLETE" || error.missingFields?.length) highlightOnboardingFields(error.missingFields);
-      alert(error.message || "Please complete the highlighted fields before continuing.");
+      const invalidFields = error.missingFields?.length ? error.missingFields : Object.keys(error.errors || {});
+      if (invalidFields.length) {
+        highlightOnboardingFields(invalidFields, error.errors);
+        return;
+      }
+      const safeMessage = /validation failed|cast to embedded|objectexpectederror|casterror/i.test(error.message || "")
+        ? "Please check the highlighted fields and try again."
+        : error.message || "Unable to save your progress. Please try again.";
+      alert(safeMessage);
     }
   };
 

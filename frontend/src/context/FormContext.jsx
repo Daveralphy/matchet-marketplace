@@ -222,6 +222,90 @@ export function FormProvider({ children }) {
     setFormData((prev) => { const next = { ...prev }; const isService = currentFlow === "service"; Object.keys(next).forEach((key) => { if (isService ? key.startsWith("provider") : !key.startsWith("provider")) next[key] = Array.isArray(next[key]) ? [] : key === "providerProfileImage" ? null : key === "providerAvailability" ? { monday:{enabled:false,startTime:"",endTime:""},tuesday:{enabled:false,startTime:"",endTime:""},wednesday:{enabled:false,startTime:"",endTime:""},thursday:{enabled:false,startTime:"",endTime:""},friday:{enabled:false,startTime:"",endTime:""},saturday:{enabled:false,startTime:"",endTime:""},sunday:{enabled:false,startTime:"",endTime:""} } : ""; }); return next; });
   }, []);
 
+  useEffect(() => {
+    const isManagedField = (field) =>
+      field instanceof HTMLElement &&
+      field.matches("input, select, textarea") &&
+      Boolean(field.closest(".seller-signup-page-container, .provider-signup-page-container, .seller-product-form, .seller-edit-page"));
+
+    const showError = (field, message) => {
+      field.classList.add("onboarding-field-error");
+      field.setAttribute("aria-invalid", "true");
+      let error = field.parentElement?.querySelector(":scope > .onboarding-inline-error");
+      if (!error) {
+        error = document.createElement("span");
+        error.className = "onboarding-inline-error";
+        error.setAttribute("role", "alert");
+        field.insertAdjacentElement("afterend", error);
+      }
+      error.textContent = message;
+    };
+
+    const clearError = (field) => {
+      field.classList.remove("onboarding-field-error");
+      field.removeAttribute("aria-invalid");
+      field.parentElement?.querySelector(":scope > .onboarding-inline-error")?.remove();
+    };
+
+    const handleInvalid = (event) => {
+      const field = event.target;
+      if (!isManagedField(field)) return;
+      event.preventDefault();
+      let message = "Please fill out this field.";
+      if (field.name?.toLowerCase().includes("location")) message = "Please select a location.";
+      else if (field.validity?.typeMismatch && field.type === "email") message = "Please enter a valid email address.";
+      else if (field.validity?.typeMismatch && field.type === "url") message = "Please enter a valid URL.";
+      else if (field instanceof HTMLSelectElement) message = "Please select an option.";
+      else if (field.validity?.patternMismatch) message = "Please use the required format.";
+      showError(field, message);
+    };
+
+    const handleChange = (event) => {
+      if (isManagedField(event.target)) clearError(event.target);
+    };
+
+    const applyPendingErrors = () => {
+      let pending;
+      try { pending = JSON.parse(sessionStorage.getItem("matchet_onboarding_field_errors") || "null"); } catch {}
+      if (!pending || !Array.isArray(pending.fields) || !pending.fields.length) return;
+      const remaining = [];
+      let matched = false;
+      pending.fields.forEach((name) => {
+        const field = Array.from(document.querySelectorAll("input[name], select[name], textarea[name]"))
+          .find((item) => item.name === name && isManagedField(item));
+        if (!field) {
+          remaining.push(name);
+          return;
+        }
+        matched = true;
+        const supplied = pending.errors?.[name];
+        const message = typeof supplied === "string" && supplied.trim()
+          ? supplied
+          : supplied?.message || (name.toLowerCase().includes("location") ? "Please select a location." : "Please complete this field.");
+        showError(field, message);
+      });
+      if (matched) {
+        try {
+          if (remaining.length) sessionStorage.setItem("matchet_onboarding_field_errors", JSON.stringify({ ...pending, fields: remaining }));
+          else sessionStorage.removeItem("matchet_onboarding_field_errors");
+        } catch {}
+      }
+    };
+
+    document.addEventListener("invalid", handleInvalid, true);
+    document.addEventListener("input", handleChange, true);
+    document.addEventListener("change", handleChange, true);
+    const observer = new MutationObserver(applyPendingErrors);
+    if (document.body) observer.observe(document.body, { childList: true, subtree: true });
+    applyPendingErrors();
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("invalid", handleInvalid, true);
+      document.removeEventListener("input", handleChange, true);
+      document.removeEventListener("change", handleChange, true);
+    };
+  }, []);
+
   const persistTimerRef = useRef(null);
 
   const schedulePersist = useCallback((next, flow) => {
@@ -264,9 +348,16 @@ export function FormProvider({ children }) {
   }, []);
 
   return (
-    <FormContext.Provider value={{ formData, updateField, mergeFormData, setOnboardingFlow, clearForm }}>
-      {children}
-    </FormContext.Provider>
+    <>
+      <style>{`
+        .onboarding-field-error { border-color: #dc2626 !important; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important; }
+        .onboarding-inline-error { display: block; margin-top: 5px; color: #dc2626; font-size: 12px; font-weight: 500; line-height: 1.4; }
+        .onboarding-section-error { border-color: #fecaca !important; }
+      `}</style>
+      <FormContext.Provider value={{ formData, updateField, mergeFormData, setOnboardingFlow, clearForm }}>
+        {children}
+      </FormContext.Provider>
+    </>
   );
 }
 

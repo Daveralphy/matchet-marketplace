@@ -343,15 +343,32 @@ export function searchProviderLocations(query) {
 }
 
 
-export function highlightOnboardingFields(fields = []) {
-  const names = new Set(fields);
+export function highlightOnboardingFields(fields = [], fieldErrors = {}) {
+  const names = new Set(Array.isArray(fields) ? fields : Object.keys(fields || {}));
   const elements = Array.from(document.querySelectorAll("input[name], select[name], textarea[name]")).filter((el) => names.has(el.name));
   elements.forEach((el) => {
+    const supplied = fieldErrors && typeof fieldErrors === "object" ? fieldErrors[el.name] : "";
+    const message = typeof supplied === "string" && supplied.trim()
+      ? supplied
+      : supplied?.message || (el.name.toLowerCase().includes("location")
+        ? "Please select a location."
+        : "Please complete this field.");
     el.classList.add("onboarding-field-error");
+    el.setAttribute("aria-invalid", "true");
     const group = el.closest("label, .provider-signup-form-field-group, .provider-payment-card, .provider-availability-booking-card, .seller-signup-form-field-group");
     if (group) group.classList.add("onboarding-section-error");
+    let error = el.parentElement?.querySelector(":scope > .onboarding-inline-error");
+    if (!error) {
+      error = document.createElement("span");
+      error.className = "onboarding-inline-error";
+      error.setAttribute("role", "alert");
+      el.insertAdjacentElement("afterend", error);
+    }
+    error.textContent = message;
     const clear = () => {
       el.classList.remove("onboarding-field-error");
+      el.removeAttribute("aria-invalid");
+      error?.remove();
       if (group) group.classList.remove("onboarding-section-error");
     };
     el.addEventListener("input", clear, { once: true });

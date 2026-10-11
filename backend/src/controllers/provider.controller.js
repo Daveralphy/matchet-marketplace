@@ -10,6 +10,27 @@ const Payout = require("../models/Payout");
 const Order = require("../models/Order");
 const User = require("../models/User");
 
+function normalizeProductLocation(value) {
+  if (value === undefined || value === null || value === "") return undefined;
+  if (typeof value === "string") {
+    const parts = value.split(",").map((part) => part.trim()).filter(Boolean);
+    if (!parts.length) return undefined;
+    const [city, state, country] = parts.length >= 3
+      ? [parts[0], parts[1], parts.slice(2).join(", ")]
+      : parts.length === 2
+        ? [parts[0], "", parts[1]]
+        : [parts[0], "", ""];
+    return { city, state, country };
+  }
+  if (typeof value !== "object" || Array.isArray(value)) return undefined;
+  const location = {
+    city: String(value.city || "").trim(),
+    state: String(value.state || "").trim(),
+    country: String(value.country || "").trim(),
+  };
+  return Object.values(location).some(Boolean) ? location : undefined;
+}
+
 function isValidImageAsset(value) {
   return Boolean(
     value &&
@@ -1828,9 +1849,19 @@ async function createSellerProduct(req,res){
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
     const safeStatus=canPublish ? status : "draft";
     const safeImages = normalizeImageAssets(images, 5);
-    const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images:safeImages,status:safeStatus,location,details,sku,currency:String(currency).toUpperCase(),shipping:{homeDelivery:Boolean(shipping.homeDelivery),pickup:Boolean(shipping.pickup),deliveryFee:Number(shipping.deliveryFee)||0,pickupStationRequired:true}});
+    const normalizedLocation = normalizeProductLocation(location);
+     const product=await Product.create({sellerId:req.user._id,name,description,shortDescription,category,price:Number(price),inventory:Number(inventory),images:safeImages,status:safeStatus,...(normalizedLocation ? { location: normalizedLocation } : {}),details,sku,currency:String(currency).toUpperCase(),shipping:{homeDelivery:Boolean(shipping.homeDelivery),pickup:Boolean(shipping.pickup),deliveryFee:Number(shipping.deliveryFee)||0,pickupStationRequired:true}});
     return res.status(201).json({success:true,data:product});
-  } catch(error){return res.status(400).json({success:false,message:error.message});}
+  } catch(error){
+    if (error.name === "ValidationError") {
+      const errors = Object.fromEntries(Object.entries(error.errors || {}).map(([field, detail]) => [field, detail.message || "Please check this field."]));
+      return res.status(400).json({success:false,message:"Please check the highlighted product fields.",errors});
+    }
+    if (error.name === "CastError" && /location/i.test(error.path || "")) {
+      return res.status(400).json({success:false,message:"Please select a valid location.",errors:{location:"Please select a valid location."}});
+    }
+    return res.status(400).json({success:false,message:error.message});
+  }
 }
 async function updateSellerProduct(req,res){
   try {
@@ -1839,11 +1870,24 @@ async function updateSellerProduct(req,res){
     const allowed=["name","description","shortDescription","category","price","inventory","images","location","status","details","currency","shipping"];
     const store=await StoreProfile.findOne({userId:req.user._id}).select("status verificationStatus").lean();
     const canPublish=store?.status==="active" && store?.verificationStatus==="verified";
-    allowed.forEach(k=>{if(req.body[k]!==undefined)product[k]=k==="images" ? normalizeImageAssets(req.body[k], 5) : req.body[k]});
+    allowed.forEach(k=>{if(k !== "location" && req.body[k]!==undefined)product[k]=k==="images" ? normalizeImageAssets(req.body[k], 5) : req.body[k]});
+    if (req.body.location !== undefined) {
+      const normalizedLocation = normalizeProductLocation(req.body.location);
+      product.location = normalizedLocation || undefined;
+    }
     if (!canPublish) product.status="draft";
     await product.save();
     return res.json({success:true,data:product});
-  } catch(error){return res.status(400).json({success:false,message:error.message});}
+  } catch(error){
+    if (error.name === "ValidationError") {
+      const errors = Object.fromEntries(Object.entries(error.errors || {}).map(([field, detail]) => [field, detail.message || "Please check this field."]));
+      return res.status(400).json({success:false,message:"Please check the highlighted product fields.",errors});
+    }
+    if (error.name === "CastError" && /location/i.test(error.path || "")) {
+      return res.status(400).json({success:false,message:"Please select a valid location.",errors:{location:"Please select a valid location."}});
+    }
+    return res.status(400).json({success:false,message:error.message});
+  }
 }
 async function deleteSellerProduct(req, res) {
   try {
