@@ -192,7 +192,12 @@ async function getInbox(req, res) {
   try {
     const userId = req.user._id;
     if (req.query.syncTransactions === "true") await ensureTransactionOpeningMessages(userId);
-    const messages = await Message.find({ $or: [{ senderId: userId }, { receiverId: userId }], hiddenFor: { $ne: userId }, archivedFor: { $ne: userId } })
+    const inboxFilter = {
+      $or: [{ senderId: userId }, { receiverId: userId }],
+      hiddenFor: { $ne: userId },
+      archivedFor: req.query.archived === "true" ? userId : { $ne: userId },
+    };
+    const messages = await Message.find(inboxFilter)
       .sort({ createdAt: -1, _id: -1 })
       .limit(INBOX_SCAN_LIMIT)
       .populate("senderId", "firstName lastName avatar")
