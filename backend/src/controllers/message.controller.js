@@ -99,6 +99,49 @@ async function getInbox(req, res) {
   }
 }
 
+async function startConversation(req, res) {
+  try {
+    const userId = req.user._id;
+    const recipientId = req.params.recipientId;
+    if (!mongoose.Types.ObjectId.isValid(recipientId) || String(recipientId) === String(userId)) {
+      return res.status(400).json({ success: false, message: "Choose a valid recipient." });
+    }
+
+    const recipient = await User.findById(recipientId).select("_id firstName lastName avatar isActive").lean();
+    if (!recipient || !recipient.isActive) {
+      return res.status(404).json({ success: false, message: "Recipient not found." });
+    }
+
+    const conversationId = canonicalConversationId(userId, recipientId);
+    const existingThread = await Message.exists({
+      $or: [
+        { senderId: userId, receiverId: recipientId },
+        { senderId: recipientId, receiverId: userId },
+      ],
+    });
+    if (!existingThread && !(await hasRelationship(userId, recipientId))) {
+      return res.status(403).json({
+        success: false,
+        message: "You can start a conversation after an order or service booking connects your accounts.",
+        code: "MESSAGE_RELATIONSHIP_REQUIRED",
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        conversationId,
+        participant: serializeUser(recipient),
+        messages: [],
+        pagination: { limit: DEFAULT_PAGE_SIZE, hasMore: false, nextBefore: null },
+      },
+    });
+  } catch (error) {
+    console.error("Start conversation error:", error);
+    return res.status(500).json({ success: false, message: "Unable to start this conversation right now." });
+  }
+}
+
 async function getConversation(req, res) {
   try {
     const userId = req.user._id;
@@ -244,4 +287,4 @@ async function sendMessage(req, res) {
   }
 }
 
-module.exports = { getInbox, getConversation, sendMessage, getUnreadCount, canonicalConversationId, getOtherParticipantId };
+module.exports = { getInbox, startConversation, getConversation, sendMessage, getUnreadCount, canonicalConversationId, getOtherParticipantId };
