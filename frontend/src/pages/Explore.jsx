@@ -861,8 +861,8 @@ function ExploreResultsSection({ isAuthenticated }) {
 {itemsLoading ? (
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6" aria-label="Loading marketplace results" aria-busy="true">
           {Array.from({ length: 6 }, (_, index) => (
-            <div key={index} className="animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
-              <div className="aspect-square bg-slate-200" />
+            <div key={index} className="h-[300px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
+              <div className="h-[152px] bg-slate-200" />
               <div className="space-y-3 p-3">
                 <div className="h-3 w-1/3 rounded bg-slate-200" />
                 <div className="h-4 w-4/5 rounded bg-slate-200" />
