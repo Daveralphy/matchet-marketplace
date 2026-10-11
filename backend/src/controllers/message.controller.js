@@ -49,6 +49,16 @@ function serializeMessage(message, userId) {
   };
 }
 
+async function getUnreadCount(req, res) {
+  try {
+    const unreadCount = await Message.countDocuments({ receiverId: req.user._id, readAt: null });
+    return res.json({ success: true, data: { unreadCount } });
+  } catch (error) {
+    console.error("Unread message count error:", error);
+    return res.status(500).json({ success: false, message: "Unable to load unread message count right now." });
+  }
+}
+
 async function getInbox(req, res) {
   try {
     const userId = req.user._id;
@@ -206,4 +216,4 @@ async function sendMessage(req, res) {
   }
 }
 
-module.exports = { getInbox, getConversation, sendMessage, canonicalConversationId, getOtherParticipantId };
+module.exports = { getInbox, getConversation, sendMessage, getUnreadCount, canonicalConversationId, getOtherParticipantId };
