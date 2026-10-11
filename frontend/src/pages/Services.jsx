@@ -777,7 +777,7 @@ function ServicesListingSection({ isAuthenticated }) {
       if (active) setSourceServices(items);
     }).catch((error) => {
       console.error("Services listing loading error:", error);
-      if (active) setServices([]);
+      if (active) setSourceServices([]);
     }).finally(() => {
       if (active) setServicesLoading(false);
     });
