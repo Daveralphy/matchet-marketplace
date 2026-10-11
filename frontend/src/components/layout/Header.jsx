@@ -10,6 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 import { searchMarketplace } from "../../data/marketplaceApi";
 import LocationSearch from "../LocationSearch";
 import { initializeMarketplaceLocation } from "../../hooks/useMarketplaceLocation";
+import { getUnreadCount } from "../../api/messages";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
@@ -242,6 +243,7 @@ export default function Header({
   const [locationOpen, setLocationOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
@@ -253,6 +255,22 @@ export default function Header({
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
   const mobileMenuRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    if (!isAuthenticated) {
+      setUnreadMessagesCount(0);
+      return () => { active = false; };
+    }
+    getUnreadCount()
+      .then((response) => {
+        if (active) setUnreadMessagesCount(Number(response.data?.unreadCount || 0));
+      })
+      .catch(() => {
+        // Messaging may be temporarily unavailable; do not break the global header.
+      });
+    return () => { active = false; };
+  }, [isAuthenticated, location.pathname]);
 
   useEffect(() => {
     let active = true;
@@ -1020,8 +1038,13 @@ export default function Header({
                             </span>
 
                             <span className="min-w-0">
-                              <span className="block text-[14px] font-medium text-[#071449]">
+                              <span className="flex items-center gap-2 text-[14px] font-medium text-[#071449]">
                                 {item.label}
+                                {item.path === "/messages" && unreadMessagesCount > 0 && (
+                                  <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[#2459dc] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                                    {unreadMessagesCount > 99 ? "99+" : unreadMessagesCount}
+                                  </span>
+                                )}
                               </span>
 
                               <span className="block text-[11px] text-slate-400">
