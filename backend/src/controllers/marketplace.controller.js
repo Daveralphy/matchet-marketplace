@@ -25,17 +25,7 @@ function locationLabel(location) {
 
 
 function escapeRegex(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\function locationFilter(value) {
-  const parts = String(value || "").split(",").map((part) => part.trim()).filter(Boolean);
-  if (!parts.length) return null;
-  return {
-    $or: parts.flatMap((part) => ([
-      { "location.city": { $regex: part, $options: "i" } },
-      { "location.state": { $regex: part, $options: "i" } },
-      { "location.country": { $regex: part, $options: "i" } },
-    ])),
-  };
-}");
+  return String(value).split("").map((character) => ".*+?^${}()|[]\\".includes(character) ? `\\${character}` : character).join("");
 }
 
 function locationParts(value) {
@@ -386,7 +376,6 @@ async function getServices(req, res) {
     const requestedLocation = clean(req.query.location);
     if (requestedLocation) {
       const serviceLocationFilter = locationFilter(requestedLocation);
-      const providerLocationFilter = locationFilter(requestedLocation, "serviceArea");
       const matchingProviderIds = approvedProviders
         .filter((profile) => locationMatches(profile.serviceArea, requestedLocation))
         .map((profile) => profile.userId)
