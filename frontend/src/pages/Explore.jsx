@@ -492,8 +492,8 @@ function ExploreProductCard({ item, listView = false }) {
     );
   }
   return (
-    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "flex h-[300px] flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
-      <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[160px]" : "h-[150px]"} w-full shrink-0`}>
+    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "group flex h-[280px] w-[220px] shrink-0 flex-col overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]"}>
+      <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[150px]" : "h-[125px]"} w-full shrink-0`}>
         <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone}`}>
           {item.image ? <img src={item.image} alt={item.title || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
           <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
