@@ -239,9 +239,9 @@ async function updateConversationState(req, res) {
       await Message.updateMany({ ...pair, receiverId: userId, readAt: null }, update);
     } else if (action === "unread") {
       // Mark the latest message from the other participant unread for this user.
-      const latest = await Message.findOne(pair).sort({ createdAt: -1, _id: -1 }).select("_id").lean();
-      if (latest) {
-        await Message.updateOne({ _id: latest._id, receiverId: userId }, { $unset: { readAt: 1 } });
+      const latestIncoming = await Message.findOne({ ...pair, receiverId: userId }).sort({ createdAt: -1, _id: -1 }).select("_id").lean();
+      if (latestIncoming) {
+        await Message.updateOne({ _id: latestIncoming._id, receiverId: userId }, { $unset: { readAt: 1 } });
       }
     } else if (action === "archive") {
       await Message.updateMany(pair, { $addToSet: { archivedFor: userId } });
