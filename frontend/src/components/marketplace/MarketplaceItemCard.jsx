@@ -45,7 +45,7 @@ export function MarketplaceItemCard({
       <div className={isList ? "col-start-2 row-start-1 min-w-0 py-1" : "flex min-h-0 flex-1 flex-col pt-3"}>
         <div className="flex min-w-0 items-center justify-between gap-2">
           <span className="truncate text-[10px] font-medium text-[#6f7899]">{sellerLabel || item.seller || item.businessName || item.providerName || category}</span>
-          {showRating && <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-[#10183f]"><span className="text-[#f4b400]">★</span>{rating.toFixed(1)}{reviews > 0 && <span className="font-normal text-[#7b84a3]">({reviews})</span>}</span>}
+          {showRating && <span className="flex shrink-0 items-center gap-1 text-[11px] font-semibold text-[#10183f]">{reviews > 0 ? <><span className="text-[#f4b400]">★</span>{rating.toFixed(1)}<span className="font-normal text-[#7b84a3]">({reviews})</span></> : <span className="font-medium text-[#7b84a3]">New</span>}</span>}
         </div>
         <Link to={href} className="mt-2 line-clamp-2 min-h-[40px] text-[15px] font-bold leading-5 tracking-[-0.015em] text-[#10183f] hover:text-[#07863a]">{title}</Link>
         <p className="mt-1.5 truncate text-[19px] font-bold tracking-[-0.02em] text-[#07863a]">{item.price || item.formattedPrice || ""}</p>
