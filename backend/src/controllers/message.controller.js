@@ -96,21 +96,23 @@ async function ensureTransactionOpeningMessages(userId) {
         ],
       });
       if (exists) continue;
-      const items = (order.items || [])
-        .filter((item) => String(item.sellerId) === sellerId)
-        .map((item) => `${item.nameSnapshot || "Product"} × ${Number(item.quantity || 1)}`)
-        .join(", ");
-      const amount = (order.items || [])
-        .filter((item) => String(item.sellerId) === sellerId)
-        .reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0);
+      const sellerItems = (order.items || []).filter((item) => String(item.sellerId) === sellerId);
+      const amount = sellerItems.reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0);
       const currency = String(order.currency || "NGN").toUpperCase();
-      const content = [
-        `Order placed: #${String(order._id).slice(-8).toUpperCase()}`,
-        items ? `Items: ${items}` : "",
-        `Order value with this seller: ${currency} ${amount.toLocaleString("en-NG")}`,
-        `Order status: ${order.orderStatus || "pending"}`,
-        "This conversation was started automatically from the order. You can use this chat to coordinate the purchase.",
-      ].filter(Boolean).join("\n");
+      const content = `Placed order #${String(order._id).slice(-8).toUpperCase()}`;
+      const orderCard = {
+        orderId: order._id,
+        items: sellerItems.map((item) => ({
+          name: item.nameSnapshot || "Product",
+          image: item.imageSnapshot || "",
+          quantity: Number(item.quantity || 1),
+          unitPrice: Number(item.priceSnapshot || 0),
+        })),
+        total: amount,
+        currency,
+        status: order.orderStatus || "pending",
+        placedAt: order.createdAt,
+      };
       try {
         await Message.create({
           conversationId: canonicalConversationId(buyerId, sellerId),
@@ -118,6 +120,7 @@ async function ensureTransactionOpeningMessages(userId) {
           senderId: buyerId,
           receiverId: sellerId,
           content,
+          orderCard,
         });
       } catch (error) {
         // Concurrent inbox loads may race to create the same opening message.
