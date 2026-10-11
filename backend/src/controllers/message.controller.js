@@ -6,7 +6,9 @@ const Booking = require("../models/Booking");
 
 const MAX_MESSAGE_LENGTH = 5000;
 const MAX_ATTACHMENTS = 5;
-const THREAD_LIMIT = 500;
+const INBOX_SCAN_LIMIT = 5000;
+const DEFAULT_PAGE_SIZE = 50;
+const MAX_PAGE_SIZE = 100;
 
 function canonicalConversationId(firstId, secondId) {
   return [String(firstId), String(secondId)].sort().join(":");
@@ -64,7 +66,7 @@ async function getInbox(req, res) {
     const userId = req.user._id;
     const messages = await Message.find({ $or: [{ senderId: userId }, { receiverId: userId }] })
       .sort({ createdAt: -1, _id: -1 })
-      .limit(THREAD_LIMIT)
+      .limit(INBOX_SCAN_LIMIT)
       .populate("senderId", "firstName lastName avatar")
       .populate("receiverId", "firstName lastName avatar")
       .lean();
@@ -104,32 +106,58 @@ async function getConversation(req, res) {
     const otherId = getOtherParticipantId(conversationId, userId);
     if (!otherId) return res.status(404).json({ success: false, message: "Conversation not found." });
 
-    const messages = await Message.find({
+    const requestedLimit = Number.parseInt(req.query.limit, 10);
+    const pageSize = Number.isFinite(requestedLimit)
+      ? Math.min(Math.max(requestedLimit, 1), MAX_PAGE_SIZE)
+      : DEFAULT_PAGE_SIZE;
+    const before = req.query.before ? new Date(req.query.before) : null;
+    if (req.query.before && Number.isNaN(before.getTime())) {
+      return res.status(400).json({ success: false, message: "The message history cursor is invalid." });
+    }
+
+    const pairFilter = {
       $or: [
         { senderId: userId, receiverId: otherId },
         { senderId: otherId, receiverId: userId },
       ],
-    }).sort({ createdAt: 1, _id: 1 }).limit(THREAD_LIMIT)
+      ...(before ? { createdAt: { $lt: before } } : {}),
+    };
+    const messages = await Message.find(pairFilter)
+      .sort({ createdAt: -1, _id: -1 })
+      .limit(pageSize + 1)
       .populate("senderId", "firstName lastName avatar")
       .populate("receiverId", "firstName lastName avatar")
       .lean();
 
-    if (!messages.length) return res.status(404).json({ success: false, message: "Conversation not found." });
+    if (!messages.length && !before) {
+      return res.status(404).json({ success: false, message: "Conversation not found." });
+    }
 
-    await Message.updateMany(
-      { senderId: otherId, receiverId: userId, readAt: null },
-      { $set: { readAt: new Date() } },
-    );
+    const hasMore = messages.length > pageSize;
+    const page = messages.slice(0, pageSize).reverse();
 
-    const participant = String(messages[0].senderId?._id) === String(userId)
-      ? messages[0].receiverId
-      : messages[0].senderId;
+    if (!before) {
+      await Message.updateMany(
+        { senderId: otherId, receiverId: userId, readAt: null },
+        { $set: { readAt: new Date() } },
+      );
+    }
+
+    const firstMessage = page[0];
+    const participant = firstMessage
+      ? (String(firstMessage.senderId?._id) === String(userId) ? firstMessage.receiverId : firstMessage.senderId)
+      : null;
     return res.json({
       success: true,
       data: {
         conversationId,
         participant: serializeUser(participant),
-        messages: messages.map((message) => serializeMessage(message, userId)),
+        messages: page.map((message) => serializeMessage(message, userId)),
+        pagination: {
+          limit: pageSize,
+          hasMore,
+          nextBefore: hasMore && page.length ? page[0].createdAt : null,
+        },
       },
     });
   } catch (error) {
