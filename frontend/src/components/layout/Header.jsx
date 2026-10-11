@@ -29,6 +29,12 @@ const MOBILE_NAV_ITEMS = [
 
 const PROFILE_ITEMS = [
   {
+    label: "Dashboard",
+    description: "Your orders, bookings, and saved items at a glance",
+    path: "/buyer/dashboard",
+    icon: "user",
+  },
+  {
     label: "My Profile",
     description: "View and edit your profile",
     path: "/profile",
