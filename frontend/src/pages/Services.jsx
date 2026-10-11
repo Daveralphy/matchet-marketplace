@@ -1,7 +1,6 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
-import { MarketplaceItemCard } from "../components/marketplace/MarketplaceItemCard";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import heroImageLoggedOut from "../assets/inspirations/services/hero 1.png";
@@ -758,10 +757,84 @@ function ServiceReviewsSection({ isAuthenticated }) {
 function ServiceListingCard({ service }) {
   const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
   const saved = isSaved("service", service.id);
-  const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved("service", service.id); };
-  const handleBook = (event) => { event.preventDefault(); event.stopPropagation(); window.location.href = "/services/" + service.id; };
-  return <MarketplaceItemCard item={{...service, type:"service", image:service.image || service.gallery?.[0]}} saved={saved} onSave={handleSave} onPrimaryAction={handleBook} primaryLabel="Book Now" primaryIcon="calendar" />;
+  const handleSave = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!isAuthenticated) { window.location.href = "/login"; return; }
+    await toggleSaved("service", service.id);
+  };
+
+  return (
+    <Link to={`/services/${service.id}`} className="group flex h-[430px] min-w-0 flex-col overflow-hidden rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_8px_24px_rgba(16,24,63,0.1)]">
+      <div className="relative">
+        <div className={`relative h-[220px] w-full shrink-0 overflow-hidden rounded-[14px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
+          {service.image || service.gallery?.[0] ? (
+            <img
+              src={service.image || service.gallery?.[0]}
+              alt=""
+              className="h-full w-full object-cover"
+              onError={(event) => {
+                event.currentTarget.style.display = "none";
+                event.currentTarget.nextElementSibling?.classList.remove("hidden");
+              }}
+            />
+          ) : null}
+          <div className={service.image || service.gallery?.[0] ? "absolute inset-0 hidden items-center justify-center" : "absolute inset-0 flex items-center justify-center"}>
+            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/45 text-[#10183f]/70 backdrop-blur-[2px]">
+              <Icon name={service.icon || (service.category === "Beauty & Care" || service.category === "Beauty & Wellness" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home")} size={42} strokeWidth={1.45} />
+            </span>
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
+          <span className="absolute bottom-3 left-3 max-w-[170px] truncate rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-semibold text-[#10183f] shadow-sm backdrop-blur-sm">{service.category || "Service"}</span>
+        </div>
+
+        {service.match && (
+          <span className="absolute left-2 top-2 rounded-full bg-white px-2.5 py-1 text-[9px] font-semibold text-[#07863a] shadow-sm">
+            ◈ {service.match}
+          </span>
+        )}
+
+        <button
+          type="button"
+          aria-label={saved ? `Unsave ${service.title}` : `Save ${service.title}`}
+          aria-pressed={saved}
+          onClick={handleSave}
+          className={`absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_2px_8px_rgba(16,24,63,0.1)] transition-all duration-200 ${saved ? "bg-[#10183f] text-white scale-105" : "bg-white text-[#10183f]"}`}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3">
+        <h3 className="line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] text-[#10183f]">
+          {service.title}
+        </h3>
+
+        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
+          {service.price}
+        </p>
+
+        <div className="mt-auto flex h-9 shrink-0 items-center gap-1.5 pt-1.5">
+          <span className="text-[13px] text-[#f4a900]">★</span>
+          <span className="text-[10px] font-medium text-[#10183f]">
+            {Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? Number(service.rating).toFixed(1) : "New"}
+          </span>
+          {service.reviews != null && Number(service.reviews) > 0 && (
+            <span className="text-[10px] text-[#7b84a3]">({service.reviews})</span>
+          )}
+        </div>
+
+        <div className="mt-1.5 flex min-w-0 items-center gap-1 text-[9px] text-[#7b84a3]">
+          {service.sellerVerified && <Icon name="shield" size={12} strokeWidth={2.2} />}
+          <span className="truncate">{service.seller} · {service.location}</span>
+        </div>
+      </div>
+    </Link>
+  );
 }
+
 function ServicesListingSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
