@@ -449,8 +449,8 @@ function ProductCatalogueCard({ product }) {
   const rating = Number(product.rating) || 0;
 
   return (
-    <Link to={`/products/${product.id}`} className="group block min-w-0 rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
-      <div className="relative">
+    <Link to={`/products/${product.id}`} className="group flex h-[300px] min-w-0 flex-col overflow-hidden rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+      <div className="relative w-full shrink-0">
         <ProductImage product={product} />
         {added && <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-[#10183f]/90 px-3 py-2 text-[11px] font-semibold text-white shadow-lg">Item added to cart</div>}
         <button
@@ -464,16 +464,16 @@ function ProductCatalogueCard({ product }) {
         </button>
       </div>
 
-      <div className="px-0.5 pb-1 pt-2">
+      <div className="flex min-h-0 flex-1 flex-col px-0.5 pb-1 pt-2">
         <h3 className="truncate text-[11px] font-medium leading-4 text-[#10183f] sm:text-[12px]">
           {product.title}
         </h3>
 
-        <p className="mt-1 text-[13px] font-bold tracking-[-0.02em] text-[#10183f] sm:text-[14px]">
+        <p className="mt-1 truncate text-[13px] font-bold tracking-[-0.02em] text-[#10183f] sm:text-[14px]">
           {product.price}
         </p>
 
-        <div className="mt-1.5 flex items-center gap-1.5">
+        <div className="mt-auto flex min-h-9 items-center gap-1.5 pt-1.5">
           <span className="text-[13px] text-[#f4a900]">★</span>
           <span className="text-[10px] font-medium text-[#10183f]">{rating.toFixed(1)}</span>
           {product.reviews != null && (
