@@ -62,7 +62,7 @@ export default function BuyerMessages() {
       if (requestId !== conversationRequestId.current) return;
       setActiveConversation({
         ...response.data,
-        pagination: response.data?.pagination || { hasMore: false, nextBefore: null },
+        pagination: response.data?.pagination || { hasMore: false, nextBefore: null, nextBeforeId: null },
       });
       setConversations((current) => current.map((item) => item.conversationId === id ? { ...item, unreadCount: 0 } : item));
       setError("");
@@ -113,11 +113,12 @@ export default function BuyerMessages() {
 
   async function loadOlderMessages() {
     const cursor = activeConversation?.pagination?.nextBefore;
+    const cursorId = activeConversation?.pagination?.nextBeforeId;
     const id = activeConversation?.conversationId;
-    if (!cursor || !id || conversationLoading) return;
+    if (!cursor || !cursorId || !id || conversationLoading) return;
     setConversationLoading(true);
     try {
-      const response = await getConversation(id, { before: cursor, limit: 50 });
+      const response = await getConversation(id, { before: cursor, beforeId: cursorId, limit: 50 });
       const older = response.data?.messages || [];
       setActiveConversation((current) => {
         if (!current || current.conversationId !== id) return current;
@@ -125,7 +126,7 @@ export default function BuyerMessages() {
         return {
           ...current,
           messages: [...older.filter((item) => !known.has(String(item.id || item._id))), ...(current.messages || [])],
-          pagination: response.data?.pagination || { hasMore: false, nextBefore: null },
+          pagination: response.data?.pagination || { hasMore: false, nextBefore: null, nextBeforeId: null },
         };
       });
     } catch (requestError) {
