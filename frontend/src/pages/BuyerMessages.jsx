@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getInbox, getConversation, sendMessage } from "../api/messages";
+import { getInbox, startConversation, getConversation, sendMessage } from "../api/messages";
 import "./BuyerMessages.css";
 
 const formatTime = (value) => {
@@ -76,7 +76,28 @@ export default function BuyerMessages() {
   }, []);
 
   useEffect(() => { loadInbox(false); }, [loadInbox]);
-  useEffect(() => { if (selectedId) loadSelectedConversation(selectedId); else setActiveConversation(null); }, [selectedId, loadSelectedConversation]);
+
+  useEffect(() => {
+    const recipientId = new URLSearchParams(window.location.search).get("recipient");
+    if (!recipientId) return;
+    let active = true;
+    startConversation(recipientId)
+      .then((response) => {
+        if (!active) return;
+        const conversation = response.data;
+        setSelectedId(conversation.conversationId);
+        setActiveConversation(conversation);
+      })
+      .catch((requestError) => {
+        if (active) setError(requestError.message || "You cannot start a conversation with this account.");
+      });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
+    if (selectedId) loadSelectedConversation(selectedId);
+    else setActiveConversation(null);
+  }, [selectedId, loadSelectedConversation]);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -155,7 +176,7 @@ export default function BuyerMessages() {
             </div>
             <div className="account-messages-conversations">
               {loading ? <div className="account-messages-empty">Loading conversations…</div> : filtered.length === 0 ? (
-                <div className="account-messages-empty"><span className="account-messages-empty-icon">✉</span><strong>{search || filter === "unread" ? "No matching conversations" : "No messages yet"}</strong><p>{search || filter === "unread" ? "Try a different search or filter." : "When you message a seller or service provider, your conversation will appear here."}</p></div>
+                <div className="account-messages-empty"><span className="account-messages-empty-icon">✉</span><strong>{search || filter === "unread" ? "No matching conversations" : "No messages yet"}</strong><p>{search || filter === "unread" ? "Try a different search or filter." : "Open a seller or provider from your orders or bookings to start an eligible conversation."}</p></div>
               ) : filtered.map((item) => (
                 <button type="button" key={item.conversationId} className={"account-message-thread" + (selectedId === item.conversationId ? " selected" : "")} onClick={() => setSelectedId(item.conversationId)}>
                   <Avatar user={item.participant} />
