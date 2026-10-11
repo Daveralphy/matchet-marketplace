@@ -500,3 +500,121 @@
 .provider-service-image-add span{font-size:28px;line-height:1;color:#07983f}
 .provider-service-image-add small{font-size:11px;font-weight:600}
 .provider-service-image-add input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+
+
+/* Mobile seller/provider navigation drawer fixes */
+@media (max-width: 760px) {
+  .provider-app .provider-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(300px, 86vw) !important;
+    height: 100dvh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px 14px 22px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #fff !important;
+    opacity: 1;
+    filter: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    z-index: 41;
+    transform: translateX(-105%);
+    transition: transform .25s ease;
+    box-shadow: none;
+  }
+
+  .provider-app.mobile-nav-open .provider-sidebar {
+    transform: translateX(0);
+    box-shadow: 15px 0 45px rgba(16, 24, 63, .16);
+  }
+
+  .provider-app .provider-sidebar nav {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .provider-app .provider-sidebar nav a {
+    display: flex;
+    flex: 0 0 46px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 13px;
+    padding: 0 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.2;
+    color: #34405f;
+  }
+
+  .provider-app .provider-sidebar nav a svg {
+    flex: 0 0 21px;
+    width: 21px;
+    height: 21px;
+  }
+
+  .provider-app .provider-sidebar nav a span {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .provider-app .provider-sidebar nav a.active {
+    background: #edf3ff;
+    color: #0755ee;
+  }
+
+  .provider-app .provider-sidebar .provider-brand-row {
+    flex: 0 0 auto;
+    min-height: 48px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .provider-app .provider-sidebar .provider-brand {
+    display: block;
+    padding: 0 8px;
+  }
+
+  .provider-app .provider-sidebar .provider-brand img {
+    display: block;
+    width: 125px;
+    max-width: 100%;
+  }
+
+  .provider-app .provider-sidebar .provider-sidebar-promo {
+    display: block;
+    flex: 0 0 auto;
+    margin-top: auto;
+    padding: 15px;
+  }
+
+  .provider-app .provider-mobile-overlay {
+    z-index: 39;
+    background: rgba(16, 24, 63, .42);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .provider-app.mobile-nav-open .provider-mobile-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .provider-app .provider-topbar {
+    z-index: 45;
+  }
+}
