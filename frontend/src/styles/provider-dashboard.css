@@ -521,7 +521,7 @@
     filter: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    z-index: 41;
+    z-index: 50;
     transform: translateX(-105%);
     transition: transform .25s ease;
     box-shadow: none;
