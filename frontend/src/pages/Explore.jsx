@@ -336,7 +336,7 @@ function HeartButton({ item }) {
 
 function ProviderCard({ provider }) {
   return (
-    <article className="rounded-[12px] border border-[#e4e9f0] bg-white p-3 shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
+    <article className="flex h-[300px] flex-col rounded-[12px] border border-[#e4e9f0] bg-white p-3 shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
       <div className="flex items-start gap-3">
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#eef1ef]">
           {provider.image ? (
@@ -470,14 +470,14 @@ function ExploreProductCard({ item, listView = false }) {
   const isProvider = item.type === "provider";
   if (isProvider) {
     return (
-      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
-        <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
+      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "flex h-[300px] flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
+        <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[152px] w-full shrink-0"}>
           <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone || "bg-[#eef1ef]"}`}>
             {item.image ? <img src={item.image} alt={item.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
             <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name="provider" size={58} strokeWidth={1.15} /></span>
           </div>
         </div>
-        <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "px-2.5 pb-2.5 pt-2"}>
+        <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "flex min-h-0 flex-1 flex-col px-2.5 pb-2.5 pt-2"}>
           <div className="flex items-center justify-between gap-1.5">
             <span className="max-w-[150px] truncate text-[8px] font-medium text-[#6f7899]">{item.category}</span>
             <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]"><span className="text-[#f4b400]">★</span>{item.rating}</span>
@@ -486,14 +486,14 @@ function ExploreProductCard({ item, listView = false }) {
           <p className="mt-1 truncate text-[9px] text-[#69739a]">{item.businessName && item.businessName !== item.name ? item.businessName : item.category}</p>
           <p className="mt-1 truncate text-[8px] text-[#7b84a3]">⌖ {item.location}</p>
           <p className="mt-1 line-clamp-2 text-[8px] leading-3.5 text-[#69739a]">{item.bio || item.experience || "Service provider on Matchet."}</p>
-          <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-2 flex h-8 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[9px] font-semibold text-[#07863a]">View their services →</Link>
+          <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-auto flex h-8 w-full shrink-0 items-center justify-center rounded-full bg-[#e9f9ed] text-[9px] font-semibold text-[#07863a]">View their services →</Link>
         </div>
       </article>
     );
   }
   return (
-    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "block overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
-      <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[105px] w-full"}>
+    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "flex h-[300px] flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
+      <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : "relative h-[152px] w-full shrink-0"}>
         <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone}`}>
           {item.image ? <img src={item.image} alt={item.title || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
           <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
@@ -501,7 +501,7 @@ function ExploreProductCard({ item, listView = false }) {
         <HeartButton item={item} />
       </div>
 
-      <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "px-2.5 pb-2.5 pt-2"}>
+      <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "flex min-h-0 flex-1 flex-col px-2.5 pb-2.5 pt-2"}>
         <div className="flex items-center justify-between gap-1.5">
           <span className={`max-w-[105px] truncate text-[8px] font-medium text-[#6f7899] ${listView ? "text-[9px]" : ""}`}>
             {item.category}
@@ -515,7 +515,7 @@ function ExploreProductCard({ item, listView = false }) {
           {item.title}
         </h3>
 
-        <p className="mt-1 text-[11px] font-bold leading-4 text-[#07863a]">
+        <p className="mt-1 truncate text-[11px] font-bold leading-4 text-[#07863a]">
           {item.price}
         </p>
 
