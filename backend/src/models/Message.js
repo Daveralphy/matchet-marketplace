@@ -10,9 +10,28 @@ const attachmentSchema = new mongoose.Schema({
   name: { type: String, trim: true },
 }, { _id: false });
 
+const orderCardItemSchema = new mongoose.Schema({
+  name: { type: String, trim: true },
+  image: { type: String, trim: true },
+  quantity: { type: Number, min: 1 },
+  unitPrice: { type: Number, min: 0 },
+}, { _id: false });
+
+const orderCardSchema = new mongoose.Schema({
+  orderId: { type: mongoose.Schema.Types.ObjectId, ref: "Order" },
+  items: { type: [orderCardItemSchema], default: [] },
+  total: { type: Number, min: 0 },
+  currency: { type: String, trim: true, uppercase: true, maxlength: 3 },
+  status: { type: String, trim: true },
+  placedAt: { type: Date },
+}, { _id: false });
+
 const messageSchema = new mongoose.Schema({
   conversationId: { type: String, required: true, index: true, trim: true },
   sourceRef: { type: String, trim: true },
+  orderCard: { type: orderCardSchema, default: undefined },
+  archivedFor: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  hiddenFor: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
   receiverId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
   content: { type: String, trim: true, maxlength: 5000 },
