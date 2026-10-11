@@ -1,6 +1,7 @@
 // Created by: Raphael Daveal
 // Edited by: Raphael Daveal
 
+import { MarketplaceItemCard } from "../components/marketplace/MarketplaceItemCard";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/inspirations/homepage/hero.png";
@@ -306,87 +307,10 @@ function getMarketplacePlaceholderIcon(item) {
 function MarketplaceCard({ item, compact = false }) {
   const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
   const saved = isSaved(item.type === "service" ? "service" : "product", item.id);
-  const handleSave = async (event) => {
-    event.preventDefault(); event.stopPropagation();
-    if (!isAuthenticated) { window.location.href = "/login"; return; }
-    await toggleSaved(item.type === "service" ? "service" : "product", item.id);
-  };
-  return (
-    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className="group flex h-[390px] w-[250px] shrink-0 flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]">
-      <div
-        className={[
-          "relative flex items-center justify-center overflow-hidden",
-          "h-[220px] shrink-0",
-          item.imageTone,
-        ].join(" ")}
-      >
-        {item.image ? (
-          <img
-            src={item.image}
-            alt={item.title || ""}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-            onError={(event) => {
-              event.currentTarget.style.display = "none";
-              event.currentTarget.nextElementSibling?.classList.remove("hidden");
-            }}
-          />
-        ) : null}
-        <span className={item.image ? "hidden text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105" : "text-[#10183f]/30 transition-transform duration-300 group-hover:scale-105"}>
-          <Icon name={getMarketplacePlaceholderIcon(item)} size={72} strokeWidth={1.25} />
-        </span>
-
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
-        <span className="absolute bottom-3 left-3 max-w-[170px] truncate rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-semibold text-[#10183f] shadow-sm backdrop-blur-sm">{item.category}</span>
-        <button
-          type="button"
-          aria-label={saved ? `Unsave ${item.title}` : `Save ${item.title}`}
-          aria-pressed={saved}
-          onClick={handleSave}
-          className={`absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full shadow-[0_3px_10px_rgba(16,24,63,0.12)] transition-all ${saved ? "bg-[#10183f] text-white scale-105" : "bg-white text-[#10183f] hover:text-[#07983f]"}`}
-        >
-          <HeartIcon size={17} />
-        </button>
-      </div>
-
-      <div className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3">
-        <div className="flex items-center justify-between gap-2">
-          <span className="max-w-[130px] truncate text-[10px] font-medium text-[#6f7899]">{item.type === "service" ? "Service" : "Product"}</span>
-
-          <span className="flex shrink-0 items-center gap-1 text-[9px] font-semibold text-[#10183f]">
-            <span className="text-[#f4b400]">★</span>
-            {item.rating}
-          </span>
-        </div>
-
-        <h3 className="mt-2 line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] tracking-[-0.015em] text-[#10183f]">
-          {item.title}
-        </h3>
-
-        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
-          {item.price}
-        </p>
-
-        <div className="mt-auto flex min-w-0 items-center gap-2 pt-3">
-          <span className={`flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full text-[11px] font-semibold ${item.avatarTone}`}>
-            {item.sellerImage ? <img src={item.sellerImage} alt={item.seller || ""} className="h-full w-full object-cover" /> : item.sellerInitial}
-          </span>
-
-          <div className="min-w-0">
-            <p className="truncate text-[10px] font-medium text-[#10183f]">
-              {item.seller}
-            </p>
-
-            <p className="mt-0.5 flex items-center gap-1 truncate text-[9px] text-[#7b84a3]">
-              <Icon name="pin" size={11} />
-              {item.location}
-            </p>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
+  const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved(item.type === "service" ? "service" : "product", item.id); };
+  const handlePrimaryAction = (event) => { event.preventDefault(); event.stopPropagation(); window.location.href = item.type === "service" ? "/services/" + item.id : "/products/" + item.id; };
+  return <MarketplaceItemCard item={item} saved={saved} onSave={handleSave} onPrimaryAction={handlePrimaryAction} primaryLabel={item.type === "service" ? "Book Now" : "View Product"} primaryIcon={item.type === "service" ? "calendar" : "cart"} />;
 }
-
 function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading = false, viewPath = "/explore" }) {
   const railRef = useRef(null);
 
