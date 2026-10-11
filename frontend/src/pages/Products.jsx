@@ -719,7 +719,7 @@ function ProductCatalogue({ isAuthenticated }) {
             </div>
           </div>
 
-          <div className={`mt-4 grid gap-4 ${view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" : "grid-cols-1"}`}>
+          <div className={`mt-4 grid gap-3 ${view === "grid" ? "grid-cols-2 xl:grid-cols-5" : "grid-cols-1"}`}>
             {productsLoading ? Array.from({ length: 6 }, (_, index) => (
               <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
                 <div className="h-[160px] bg-slate-200" />
