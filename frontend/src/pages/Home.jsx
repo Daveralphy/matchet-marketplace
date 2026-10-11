@@ -312,11 +312,11 @@ function MarketplaceCard({ item, compact = false }) {
     await toggleSaved(item.type === "service" ? "service" : "product", item.id);
   };
   return (
-    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className="group flex h-[280px] w-[220px] shrink-0 flex-col overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]">
+    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className="group flex h-[390px] w-[250px] shrink-0 flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]">
       <div
         className={[
           "relative flex items-center justify-center overflow-hidden",
-          (item.type === "product" ? "h-[150px] shrink-0" : "h-[125px] shrink-0"),
+          "h-[220px] shrink-0",
           item.imageTone,
         ].join(" ")}
       >
@@ -335,6 +335,8 @@ function MarketplaceCard({ item, compact = false }) {
           <Icon name={getMarketplacePlaceholderIcon(item)} size={72} strokeWidth={1.25} />
         </span>
 
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
+        <span className="absolute bottom-3 left-3 max-w-[170px] truncate rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-semibold text-[#10183f] shadow-sm backdrop-blur-sm">{item.category}</span>
         <button
           type="button"
           aria-label={saved ? `Unsave ${item.title}` : `Save ${item.title}`}
@@ -346,11 +348,9 @@ function MarketplaceCard({ item, compact = false }) {
         </button>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col px-3 pb-3 pt-2.5">
+      <div className="flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3">
         <div className="flex items-center justify-between gap-2">
-          <span className={`max-w-[112px] truncate rounded-full px-2.5 py-1 text-[9px] font-medium ${item.categoryTone}`}>
-            {item.category}
-          </span>
+          <span className="max-w-[130px] truncate text-[10px] font-medium text-[#6f7899]">{item.type === "service" ? "Service" : "Product"}</span>
 
           <span className="flex shrink-0 items-center gap-1 text-[9px] font-semibold text-[#10183f]">
             <span className="text-[#f4b400]">★</span>
@@ -358,11 +358,11 @@ function MarketplaceCard({ item, compact = false }) {
           </span>
         </div>
 
-        <h3 className="mt-2.5 truncate text-[12px] font-semibold tracking-[-0.015em] text-[#10183f]">
+        <h3 className="mt-2 line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] tracking-[-0.015em] text-[#10183f]">
           {item.title}
         </h3>
 
-        <p className="mt-2 text-[14px] font-bold tracking-[-0.02em] text-[#07863a]">
+        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
           {item.price}
         </p>
 

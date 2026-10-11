@@ -449,9 +449,10 @@ function ProductCatalogueCard({ product }) {
   const rating = Number(product.rating) || 0;
 
   return (
-    <Link to={`/products/${product.id}`} className="group flex h-[320px] min-w-0 flex-col overflow-hidden rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
-      <div className="relative w-full shrink-0">
+    <Link to={`/products/${product.id}`} className="group flex h-[390px] min-w-0 flex-col overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_6px_20px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_8px_24px_rgba(16,24,63,0.1)]">
+      <div className="relative h-[220px] w-full shrink-0 overflow-hidden rounded-[12px]">
         <ProductImage product={product} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
         {added && <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-[#10183f]/90 px-3 py-2 text-[11px] font-semibold text-white shadow-lg">Item added to cart</div>}
         <button
           type="button"
@@ -464,12 +465,12 @@ function ProductCatalogueCard({ product }) {
         </button>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col px-0.5 pb-1 pt-2">
-        <h3 className="truncate text-[11px] font-medium leading-4 text-[#10183f] sm:text-[12px]">
+      <div className="flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3">
+        <h3 className="line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] text-[#10183f]">
           {product.title}
         </h3>
 
-        <p className="mt-1 truncate text-[13px] font-bold tracking-[-0.02em] text-[#10183f] sm:text-[14px]">
+        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
           {product.price}
         </p>
 

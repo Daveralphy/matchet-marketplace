@@ -765,9 +765,9 @@ function ServiceListingCard({ service }) {
   };
 
   return (
-    <Link to={`/services/${service.id}`} className="group flex h-[280px] min-w-0 flex-col overflow-hidden rounded-[11px] border border-[#e5e9ef] bg-white p-2.5 shadow-[0_3px_12px_rgba(16,24,63,0.025)] transition-shadow hover:shadow-[0_8px_20px_rgba(16,24,63,0.07)]">
+    <Link to={`/services/${service.id}`} className="group flex h-[390px] min-w-0 flex-col overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_6px_20px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_8px_24px_rgba(16,24,63,0.1)]">
       <div className="relative">
-        <div className={`relative h-[125px] w-full shrink-0 overflow-hidden rounded-[8px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
+        <div className={`relative h-[220px] w-full shrink-0 overflow-hidden rounded-[12px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
           {service.image || service.gallery?.[0] ? (
             <img
               src={service.image || service.gallery?.[0]}
@@ -784,6 +784,8 @@ function ServiceListingCard({ service }) {
               <Icon name={service.icon || (service.category === "Beauty & Care" || service.category === "Beauty & Wellness" ? "beauty" : service.category === "Repairs" ? "tools" : service.category === "Food & Catering" ? "calendar" : "home")} size={42} strokeWidth={1.45} />
             </span>
           </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
+          <span className="absolute bottom-3 left-3 max-w-[170px] truncate rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-semibold text-[#10183f] shadow-sm backdrop-blur-sm">{service.category || "Service"}</span>
         </div>
 
         {service.match && (
@@ -805,12 +807,12 @@ function ServiceListingCard({ service }) {
         </button>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col px-0.5 pb-1 pt-2">
-        <h3 className="truncate text-[11px] font-medium leading-4 text-[#10183f] sm:text-[12px]">
+      <div className="flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3">
+        <h3 className="line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] text-[#10183f]">
           {service.title}
         </h3>
 
-        <p className="mt-1 truncate text-[13px] font-bold tracking-[-0.02em] text-[#10183f] sm:text-[14px]">
+        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
           {service.price}
         </p>
 
