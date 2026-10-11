@@ -8,3 +8,40 @@
 .account-messages-breadcrumb a{color:#6873a3;text-decoration:none;transition:color .15s ease}
 .account-messages-breadcrumb a:hover{color:#2459dc}
 .account-messages-breadcrumb span[aria-current="page"]{color:#18234e;font-weight:600}
+
+.account-message-thread-wrap{position:relative;display:flex;align-items:center;border-bottom:1px solid #f0f2f7;background:#fff}
+.account-message-thread-wrap:hover,.account-message-thread-wrap.selected{background:#f5f8ff}
+.account-message-thread-wrap .account-message-thread{flex:1;min-width:0;border-bottom:0;padding-right:4px;background:transparent}
+.account-message-thread-wrap .account-message-thread.selected{box-shadow:inset 3px 0 #2860ef}
+.account-message-thread-actions{position:relative;flex:0 0 34px;align-self:stretch;display:flex;align-items:center;justify-content:center;margin-right:7px}
+.account-message-menu-trigger{width:30px;height:34px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:#6f799b;font-size:22px;line-height:1;cursor:pointer}
+.account-message-menu-trigger:hover,.account-message-menu-trigger[aria-expanded="true"]{background:#eaf0ff;color:#2459dc}
+.account-message-menu{position:absolute;z-index:30;top:calc(100% - 5px);right:4px;width:190px;padding:5px;background:#fff;border:1px solid #e0e6f1;border-radius:10px;box-shadow:0 12px 32px #15234b1f}
+.account-message-menu button{display:block;width:100%;padding:10px 11px;border:0;border-radius:6px;background:transparent;color:#263153;text-align:left;font-size:12px;cursor:pointer}
+.account-message-menu button:hover{background:#f3f6fc}
+.account-message-menu button.danger{color:#bd3443}
+.account-message-bubble.has-order-card{width:min(100%,480px);max-width:min(92%,520px);padding:10px;background:transparent;border:0;box-shadow:none}
+.account-order-message-card{overflow:hidden;width:100%;background:#fff;border:1px solid #dfe6f1;border-radius:12px;box-shadow:0 2px 7px #1b2b500a;color:#10183f}
+.account-order-message-kicker{display:flex;align-items:center;gap:10px;padding:13px 14px;background:#f4f7ff;border-bottom:1px solid #e6ebf6}
+.account-order-message-icon{width:30px;height:30px;display:grid;place-items:center;flex:0 0 30px;border-radius:50%;background:#e3f7eb;color:#087d35;font-weight:800}
+.account-order-message-kicker div{display:grid;gap:3px}
+.account-order-message-kicker strong{font-size:13px}
+.account-order-message-kicker span:not(.account-order-message-icon){font-size:10px;color:#7782a2}
+.account-order-message-items{padding:2px 14px}
+.account-order-message-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #edf0f6}
+.account-order-message-item img,.account-order-message-placeholder{width:48px;height:48px;flex:0 0 48px;border-radius:7px;object-fit:cover;background:#f1f4fa}
+.account-order-message-placeholder{display:grid;place-items:center;color:#a1abc2;font-size:20px}
+.account-order-message-item>div{display:grid;gap:5px;min-width:0;flex:1}
+.account-order-message-item>div strong{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.account-order-message-item>div span{font-size:10px;color:#7b85a4}
+.account-order-message-item>b{font-size:11px;white-space:nowrap}
+.account-order-message-total{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;font-size:11px}
+.account-order-message-total span{color:#6f7998}
+.account-order-message-total strong{font-size:13px}
+.account-order-message-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-top:1px solid #e8edf5}
+.account-order-status{padding:5px 8px;border-radius:20px;background:#f0f2f7;color:#606b88;font-size:10px;text-transform:capitalize}
+.account-order-status.confirmed,.account-order-status.delivered,.account-order-status.completed{background:#e7f8ee;color:#087d35}
+.account-order-status.cancelled,.account-order-status.declined{background:#fff0f0;color:#b62f3d}
+.account-order-details-link{display:inline-flex;align-items:center;gap:7px;padding:9px 11px;border-radius:7px;background:#087d35;color:#fff!important;text-decoration:none;font-size:11px;font-weight:700;white-space:nowrap}
+.account-order-details-link:hover{background:#06672b}
+@media(max-width:760px){.account-message-menu{right:0;width:180px}.account-order-message-item img,.account-order-message-placeholder{width:42px;height:42px;flex-basis:42px}.account-message-bubble.has-order-card{max-width:96%}}
