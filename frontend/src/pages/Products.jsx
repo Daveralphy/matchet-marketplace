@@ -789,7 +789,7 @@ function ProductCatalogue({ isAuthenticated }) {
             ) : null}
           </div>
 
-          {!productsLoading && !sorted.length && (
+          {!productsLoading && products.length > 0 && !sorted.length && (
             <div className="flex min-h-[260px] items-center justify-center rounded-[12px] border border-dashed border-[#d9dfe7] bg-white text-[13px] text-[#69739a]">
               No products match your selected filters.
             </div>
