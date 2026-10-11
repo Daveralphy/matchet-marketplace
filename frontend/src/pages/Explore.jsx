@@ -468,6 +468,9 @@ function getMarketplacePlaceholderIcon(item) {
 }
 
 function ExploreProductCard({ item, listView = false }) {
+  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
+  const saved = isSaved(item.type === "service" ? "service" : "product", item.id);
+  const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved(item.type === "service" ? "service" : "product", item.id); };
   if (item.type === "provider") {
     return (
       <article className={listView ? "flex overflow-hidden rounded-[22px] bg-white p-3 shadow-[0_8px_26px_rgba(16,24,63,0.08)]" : "flex min-w-0 flex-col overflow-hidden rounded-[22px] bg-white p-3.5 shadow-[0_8px_26px_rgba(16,24,63,0.08)]"}>
@@ -478,9 +481,6 @@ function ExploreProductCard({ item, listView = false }) {
       </article>
     );
   }
-  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
-  const saved = isSaved(item.type === "service" ? "service" : "product", item.id);
-  const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved(item.type === "service" ? "service" : "product", item.id); };
   return <MarketplaceItemCard item={item} view={listView ? "list" : "grid"} saved={saved} onSave={handleSave} showPrimaryAction={false} />;
 }
 function ResultsControl({ icon, children, active = false, onClick }) {
