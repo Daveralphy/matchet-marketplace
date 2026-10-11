@@ -41,3 +41,10 @@ export function sendMessage(payload) {
 export function getUnreadCount() {
   return request("/api/messages/unread-count");
 }
+
+export function updateConversationState(conversationId, action) {
+  return request("/api/messages/" + encodeURIComponent(conversationId) + "/state", {
+    method: "PATCH",
+    body: JSON.stringify({ action }),
+  });
+}
