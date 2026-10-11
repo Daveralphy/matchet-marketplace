@@ -32,15 +32,18 @@ app.use(cookieParser());
 app.get("/api/location/detect", (req, res) => {
   const clean = (value) => {
     if (!value) return "";
-    try { return decodeURIComponent(String(value).replace(/\\+/g, " ")).trim(); }
+    try { return decodeURIComponent(String(value).replace(/\+/g, " ")).trim(); }
     catch { return String(value).trim(); }
   };
   const city = clean(req.headers["x-vercel-ip-city"]);
   const state = clean(req.headers["x-vercel-ip-country-region"]);
-  const countryCode = clean(req.headers["x-vercel-ip-country"]);
+  const countryCode = clean(req.headers["x-vercel-ip-country"]).toUpperCase();
   const countryNames = { NG: "Nigeria", US: "United States", GB: "United Kingdom", CA: "Canada", GH: "Ghana", KE: "Kenya", ZA: "South Africa", IN: "India", AU: "Australia" };
-  const country = countryNames[countryCode] || countryCode;
-  const label = [city, state, country].filter(Boolean).join(", ");
+  let country = countryNames[countryCode] || countryCode;
+  if (!countryNames[countryCode] && /^[A-Z]{2}$/.test(countryCode)) {
+    try { country = new Intl.DisplayNames(["en"], { type: "region" }).of(countryCode) || countryCode; } catch {}
+  }
+  const label = [city, state, country].filter(Boolean).filter((part, index, parts) => index === 0 || part.toLowerCase() !== parts[index - 1].toLowerCase()).join(", ");
   return res.json({
     success: true,
     data: {
@@ -71,7 +74,7 @@ app.get("/api/location/reverse", async (req, res) => {
     const city = address.city || address.town || address.village || address.municipality || address.county || "";
     const state = address.state || address.region || address.state_district || "";
     const country = address.country || "";
-    const label = [city, state, country].filter(Boolean).join(", ");
+    const label = [city, state, country].filter(Boolean).filter((part, index, parts) => index === 0 || part.toLowerCase() !== parts[index - 1].toLowerCase()).join(", ");
     if (!label) return res.status(404).json({ success: false, message: "Could not determine a nearby city." });
     return res.json({
       success: true,

@@ -517,7 +517,19 @@ export default function SellerSignupPageSeven() {
                 clearForm();
                 navigate("/register/page6");
               } catch (error) {
-                setSubmitError(error.message || "Unable to submit your seller application.");
+                const invalidFields = error.missingFields?.length ? error.missingFields : Object.keys(error.errors || {});
+                if (invalidFields.length) {
+                  try { sessionStorage.setItem("matchet_onboarding_field_errors", JSON.stringify({ flow: "seller", fields: invalidFields, errors: error.errors || {} })); } catch {}
+                  const isBusiness = (field) => /businessName|businessReg|businessCat|businessDesc|businessAddress|businessPhone|businessLogo/i.test(field);
+                  const isIdentity = (field) => /idType|idNumber|idImage|selfie/i.test(field);
+                  const isPayment = (field) => /bankName|accountNumber|accountName|accountType|bvn|tin/i.test(field);
+                  const target = invalidFields.some(isBusiness) ? "/register/page2" : invalidFields.some(isIdentity) ? "/register/page3" : invalidFields.some(isPayment) ? "/register/page4" : "/register";
+                  navigate(target);
+                  return;
+                }
+                setSubmitError(/validation failed|cast to embedded|objectexpectederror|casterror/i.test(error.message || "")
+                  ? "Some required information is missing or invalid. Please review your application and complete the highlighted fields."
+                  : error.message || "Unable to submit your seller application.");
               } finally {
                 setSubmitting(false);
               }

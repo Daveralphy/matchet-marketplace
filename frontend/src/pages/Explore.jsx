@@ -6,6 +6,8 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import heroImage from "../assets/inspirations/explore/hero.png";
 import { getCategoryCollections, getMarketplaceData, getMarketplaceViewHistory, getProviderCollection, searchMarketplace } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
+import LocationSearch from "../components/LocationSearch";
+import { saveMarketplaceLocation, useMarketplaceLocation } from "../hooks/useMarketplaceLocation";
 
 function Icon({ name, size = 18, strokeWidth = 1.9 }) {
   const common = {
@@ -105,6 +107,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
 
 function SearchBar() {
   const navigate = useNavigate();
+  const location = useMarketplaceLocation();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
@@ -113,11 +116,11 @@ function SearchBar() {
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await searchMarketplace({ query: value, location: localStorage.getItem("matchet_location") || "Lagos, Nigeria" });
+      const results = await searchMarketplace({ query: value, location });
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [query]);
+  }, [query, location]);
 
   const submitSearch = () => {
     if (!query.trim()) return;
@@ -401,15 +404,7 @@ function ProviderCard({ provider }) {
 
 function ProvidersSection({ isAuthenticated }) {
   const [providers, setProviders] = useState([]);
-  const [location, setLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
-
-  useEffect(() => {
-    const handleLocationChange = (event) => {
-      setLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
-    };
-    window.addEventListener("matchet-location-change", handleLocationChange);
-    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
-  }, []);
+  const location = useMarketplaceLocation();
 
   useEffect(() => {
     let active = true;
@@ -657,7 +652,7 @@ function ExploreResultsSection({ isAuthenticated }) {
   const [providerItems, setProviderItems] = useState([]);
   const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
-  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+  const selectedLocation = useMarketplaceLocation();
   const [sortBy, setSortBy] = useState("relevance");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewHistory, setViewHistory] = useState(() => getMarketplaceViewHistory());
@@ -677,12 +672,6 @@ function ExploreResultsSection({ isAuthenticated }) {
       active = false;
     };
   }, [selectedLocation]);
-
-  useEffect(() => {
-    const handleLocationChange = (event) => setSelectedLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
-    window.addEventListener("matchet-location-change", handleLocationChange);
-    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
-  }, []);
 
   useEffect(() => {
     const query = searchParams.get("q") || "";
@@ -827,17 +816,16 @@ function ExploreResultsSection({ isAuthenticated }) {
           />
         </div>
 
-        <select
-          value={selectedLocation}
-          onChange={(event) => setSelectedLocation(event.target.value)}
-          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
-          aria-label="Location"
-        >
-          <option value="Lagos, Nigeria">Lagos, Nigeria</option>
-          <option value="Abuja, Nigeria">Abuja, Nigeria</option>
-          <option value="Port Harcourt, Nigeria">Port Harcourt, Nigeria</option>
-          <option value="Kano, Nigeria">Kano, Nigeria</option>
-        </select>
+        <div className="w-[180px] max-w-full">
+          <LocationSearch
+            name="exploreLocation"
+            value={selectedLocation}
+            onChange={() => {}}
+            onSelect={(location) => saveMarketplaceLocation(location, "manual") }
+            placeholder="Search location..."
+            enableCurrentLocation
+          />
+        </div>
 
         <select
           value={selectedCategory}

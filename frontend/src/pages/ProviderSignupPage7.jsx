@@ -53,7 +53,19 @@ export default function ProviderSignupPageSeven() {
       clearForm();
       navigate("/provider/onboarding/page6");
     } catch (error) {
-      setSubmitError(error.message || "Unable to submit your application.");
+      const invalidFields = error.missingFields?.length ? error.missingFields : Object.keys(error.errors || {});
+      if (invalidFields.length) {
+        try { sessionStorage.setItem("matchet_onboarding_field_errors", JSON.stringify({ flow: "service", fields: invalidFields, errors: error.errors || {} })); } catch {}
+        const isIdentity = (field) => /providerIdType|providerIdNumber|providerIdImage|providerSelfie/i.test(field);
+        const isPayment = (field) => /providerBank|providerAccount|providerBvn|providerTin|providerAvailability|providerServiceArea|providerMinimumNotice|providerMaximumAdvance|providerResponseTime/i.test(field);
+        const isWork = (field) => /providerServiceName|providerServiceDesc|providerYearsofExperience|providerAreasofExpertise|providerCertification|providerPortfolio/i.test(field);
+        const target = invalidFields.some(isIdentity) ? "/provider/onboarding/page3" : invalidFields.some(isPayment) ? "/provider/onboarding/page4" : invalidFields.some(isWork) ? "/provider/onboarding/page2" : "/provider/onboarding";
+        navigate(target);
+        return;
+      }
+      setSubmitError(/validation failed|cast to embedded|objectexpectederror|casterror/i.test(error.message || "")
+        ? "Some required information is missing or invalid. Please review your application and complete the highlighted fields."
+        : error.message || "Unable to submit your application.");
     } finally {
       setSubmitting(false);
     }

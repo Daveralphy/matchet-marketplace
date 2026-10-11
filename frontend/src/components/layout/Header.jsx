@@ -9,6 +9,7 @@ import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { searchMarketplace } from "../../data/marketplaceApi";
 import LocationSearch from "../LocationSearch";
+import { initializeMarketplaceLocation } from "../../hooks/useMarketplaceLocation";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
@@ -203,7 +204,7 @@ export default function Header({
   avatarSrc = "",
   unreadNotifications = true,
   cartCount = 0,
-  initialLocation = "Lagos, Nigeria",
+  initialLocation = "",
   onLogout,
 }) {
   const location = useLocation();
@@ -219,7 +220,7 @@ export default function Header({
 
   const [selectedLocation, setSelectedLocation] = useState(
     () =>
-      window.localStorage.getItem("matchet_location") || initialLocation
+      window.localStorage.getItem("matchet_location") || initialLocation || ""
   );
   const [locationOpen, setLocationOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -235,6 +236,14 @@ export default function Header({
   const profileRef = useRef(null);
   const notificationsRef = useRef(null);
   const mobileMenuRef = useRef(null);
+
+  useEffect(() => {
+    let active = true;
+    initializeMarketplaceLocation().then((detectedOrSaved) => {
+      if (active) setSelectedLocation(detectedOrSaved || "");
+    });
+    return () => { active = false; };
+  }, []);
 
   const isActive = (path) =>
     path === "/"
@@ -253,6 +262,7 @@ export default function Header({
   const persistLocation = (value) => {
     setSelectedLocation(value);
     window.localStorage.setItem("matchet_location", value);
+    window.localStorage.setItem("matchet_location_source", "manual");
     window.dispatchEvent(new CustomEvent("matchet-location-change", { detail: value }));
   };
 
@@ -427,8 +437,9 @@ export default function Header({
                 <div ref={locationRef} className="relative min-w-0 flex-1 px-1">
                   <LocationSearch
                     value={selectedLocation}
-                    onChange={(value) => persistLocation(value)}
+                    onChange={() => {}}
                     onSelect={(location) => persistLocation(location.label)}
+                    enableCurrentLocation
                     placeholder="Search for a city, state, or country..."
                     className="w-full"
                   />

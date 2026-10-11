@@ -6,6 +6,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { getMarketplaceData, getMarketplaceProducts, getProductExperience } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
 import { useSavedItems } from "../context/SavedItemsContext";
+import { useMarketplaceLocation } from "../hooks/useMarketplaceLocation";
 import { formatCurrency } from "../context/CartContext";
 import heroImageLoggedOut from "../assets/inspirations/products/hero 1.png";
 import heroImageLoggedIn from "../assets/inspirations/products/hero 2.png";
@@ -225,6 +226,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
 
 function SearchBar() {
   const navigate = useNavigate();
+  const currentLocation = useMarketplaceLocation();
   const [query, setQuery] = useState("");
 
   const [suggestions, setSuggestions] = useState([]);
@@ -233,11 +235,11 @@ function SearchBar() {
     const value = query.trim();
     if (!value) { setSuggestions([]); return undefined; }
     const timer = window.setTimeout(async () => {
-      const results = await getMarketplaceData(localStorage.getItem("matchet_location") || "Lagos, Nigeria").then((data) => data.products.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
+      const results = await getMarketplaceData(currentLocation).then((data) => data.products.filter((item) => [item.title, item.category, item.seller, item.location].join(" ").toLowerCase().includes(value.toLowerCase())));
       if (active) setSuggestions(results.slice(0, 6));
     }, 120);
     return () => { active = false; window.clearTimeout(timer); };
-  }, [query]);
+  }, [query, currentLocation]);
 
   const submitSearch = () => {
     const value = query.trim();
@@ -649,7 +651,7 @@ function ProductCatalogue({ isAuthenticated }) {
   const [products, setProducts] = useState([]);
   const [view, setView] = useState(savedUiState.view || "grid");
   const [sort, setSort] = useState(savedUiState.sort || "recommended");
-  const [location, setLocation] = useState(() => localStorage.getItem("matchet_location") || initialLocation || "Lagos, Nigeria");
+  const [location, setLocation] = useState(() => localStorage.getItem("matchet_location") || initialLocation || "");
   const [search, setSearch] = useState(initialSearch || savedUiState.search || "");
   const [filters, setFilters] = useState(() => {
     const savedFilters = savedUiState.filters;
@@ -665,7 +667,7 @@ function ProductCatalogue({ isAuthenticated }) {
 
   useEffect(() => {
     const handleLocationChange = (event) => {
-      const next = event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria";
+      const next = event.detail || localStorage.getItem("matchet_location") || "";
       setLocation(next);
     };
     window.addEventListener("matchet-location-change", handleLocationChange);

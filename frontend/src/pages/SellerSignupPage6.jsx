@@ -2,7 +2,8 @@
 // Edited by: Raphael Daveal
 
 import { useNavigate } from "react-router-dom";
-import { saveSellerOnboardingDraft } from "../api/provider";import { useForm } from "../context/FormContext";
+import { saveSellerOnboardingDraft, highlightOnboardingFields } from "../api/provider";
+import { useForm } from "../context/FormContext";
 import SellerSignupSideImage from "../components/layout/SellerSignupSideImage";
 import SellerSignupFormHeader from "../components/layout/SellerSignupFormHeader";
 
@@ -34,7 +35,15 @@ export default function SellerSignupPageSix() {
       if (response?.data?.formData) mergeFormData(response.data.formData);
       navigate("/register/page5");
     } catch (error) {
-      alert(error.message || "Unable to save your progress. Please try again.");
+const invalidFields = error.missingFields?.length ? error.missingFields : Object.keys(error.errors || {});
+      if (invalidFields.length) {
+        highlightOnboardingFields(invalidFields, error.errors);
+        return;
+      }
+      const safeMessage = /validation failed|cast to embedded|objectexpectederror|casterror/i.test(error.message || "")
+        ? "Please check the highlighted fields and try again."
+        : error.message || "Unable to save your progress. Please try again.";
+      alert(safeMessage);
     }
   };
 

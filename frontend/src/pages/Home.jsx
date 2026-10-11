@@ -10,6 +10,7 @@ import { COMMUNITY_REVIEW_SECTION, calculateReviewStats, formatReviewCount } fro
 import { MOBILE_APP_SECTIONS } from "../data/homeMobileAppMock";
 import { useSavedItems } from "../context/SavedItemsContext";
 import { useAuth } from "../context/AuthContext";
+import { useMarketplaceLocation } from "../hooks/useMarketplaceLocation";
 import mockup2 from "../assets/inspirations/homepage/mockup2.png";
 import mockup3 from "../assets/inspirations/homepage/mockup3.png";
 import appStoreBadge from "../assets/inspirations/homepage/app-store-badge.svg";
@@ -1316,7 +1317,7 @@ function CommunitySection({ isAuthenticated }) {
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const userName = user?.firstName?.trim() || user?.username?.trim() || user?.email?.split("@")[0] || "there";
-  const [selectedLocation, setSelectedLocation] = useState(() => localStorage.getItem("matchet_location") || "Lagos, Nigeria");
+  const selectedLocation = useMarketplaceLocation();
   const [marketplace, setMarketplace] = useState({
     products: [],
     services: [],
@@ -1324,12 +1325,6 @@ export default function Home() {
     popularNearby: [],
     continueExploring: [],
   });
-
-  useEffect(() => {
-    const handleLocationChange = (event) => setSelectedLocation(event.detail || localStorage.getItem("matchet_location") || "Lagos, Nigeria");
-    window.addEventListener("matchet-location-change", handleLocationChange);
-    return () => window.removeEventListener("matchet-location-change", handleLocationChange);
-  }, []);
 
   useEffect(() => {
     let active = true;
