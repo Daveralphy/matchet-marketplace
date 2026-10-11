@@ -32,6 +32,12 @@ async function ensureDatabaseConnection() {
 
 module.exports = async (req, res) => {
   try {
+    // These endpoints do not use MongoDB, so location detection still works
+    // when the marketplace database is unavailable.
+    if (req.url?.startsWith("/api/location/")) {
+      return app(req, res);
+    }
+
     const connected = await ensureDatabaseConnection();
 
     if (!connected) {
