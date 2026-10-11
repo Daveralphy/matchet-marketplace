@@ -649,6 +649,7 @@ function CategoriesSection({ isAuthenticated }) {
 function ExploreResultsSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
   const [sourceItems, setSourceItems] = useState([]);
+  const [itemsLoading, setItemsLoading] = useState(true);
   const [providerItems, setProviderItems] = useState([]);
   const [activeTab, setActiveTab] = useState(isAuthenticated ? "recommended" : "all");
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
@@ -661,11 +662,20 @@ function ExploreResultsSection({ isAuthenticated }) {
 
   useEffect(() => {
     let active = true;
+    setItemsLoading(true);
 
     getMarketplaceData(selectedLocation).then(({ products, services, providers }) => {
       if (!active) return;
       setSourceItems([...products, ...services]);
       setProviderItems(Array.isArray(providers) ? providers : []);
+    }).catch((error) => {
+      console.error("Explore marketplace loading error:", error);
+      if (active) {
+        setSourceItems([]);
+        setProviderItems([]);
+      }
+    }).finally(() => {
+      if (active) setItemsLoading(false);
     });
 
     return () => {
@@ -765,7 +775,7 @@ function ExploreResultsSection({ isAuthenticated }) {
 
         <div className="flex shrink-0 items-center gap-2 self-start">
           <span className="text-[10px] font-semibold text-[#7b84a3] sm:text-[11px]">
-            {filteredItems.length.toLocaleString("en-NG")} results
+            {itemsLoading ? "Loading results..." : String(filteredItems.length.toLocaleString("en-NG")) + " results"}
           </span>
           <button
             type="button"
@@ -852,7 +862,20 @@ function ExploreResultsSection({ isAuthenticated }) {
         </select>
       </div>
 
-{activeTab === "recommended" && !hasRecommendationHistory ? (
+{itemsLoading ? (
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6" aria-label="Loading marketplace results" aria-busy="true">
+          {Array.from({ length: 6 }, (_, index) => (
+            <div key={index} className="animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
+              <div className="aspect-square bg-slate-200" />
+              <div className="space-y-3 p-3">
+                <div className="h-3 w-1/3 rounded bg-slate-200" />
+                <div className="h-4 w-4/5 rounded bg-slate-200" />
+                <div className="h-3 w-1/2 rounded bg-slate-100" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : activeTab === "recommended" && !hasRecommendationHistory ? (
         <div className="mt-6 rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
           <p className="text-[13px] font-semibold text-[#10183f]">We are still learning what matches you.</p>
           <p className="mx-auto mt-1 max-w-[480px] text-[11px] leading-5 text-[#69739a]">Keep viewing products and services you are interested in. As you explore more, Matchet will learn your interests and recommend more relevant options here.</p>
@@ -871,11 +894,6 @@ function ExploreResultsSection({ isAuthenticated }) {
         </div>
       )}
 
-      {visibleItems.length === 0 && (
-        <div className="mt-5 rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-12 text-center text-[12px] text-[#69739a]">
-          No results match your current search and filters.
-        </div>
-      )}
 
       {visibleCount < filteredItems.length && (
         <div className="mt-5 flex justify-center">
