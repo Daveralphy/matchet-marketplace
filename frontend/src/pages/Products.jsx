@@ -432,8 +432,9 @@ function ProductCatalogueCard({ product, view = "grid" }) {
   const [cartBusy, setCartBusy] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const alreadyInCart = cartItems.some((entry) => String(entry.id || entry.productId || entry.product?._id) === String(product.id));
-  const saved = isSaved("product", product.id);
-  const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved("product", product.id); };
+  const productId = product.id || product._id;
+  const saved = isSaved("product", productId);
+  const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved("product", productId); };
   const handleAddToCart = async (event) => {
     event.preventDefault(); event.stopPropagation();
     if (alreadyInCart || cartBusy) return;
@@ -724,7 +725,7 @@ function ProductCatalogue({ isAuthenticated }) {
             </div>
           </div>
 
-          <div className={`mt-4 grid gap-4 ${view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" : "grid-cols-1"}`}>
+          <div className={`mt-4 grid gap-4 ${view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"}`}>
             {productsLoading ? Array.from({ length: 6 }, (_, index) => (
               <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
                 <div className="h-[160px] bg-slate-200" />
