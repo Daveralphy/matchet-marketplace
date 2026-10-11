@@ -27,6 +27,7 @@ export function startConversation(recipientId) {
 export function getConversation(conversationId, options = {}) {
   const params = new URLSearchParams();
   if (options.before) params.set("before", options.before);
+  if (options.beforeId) params.set("beforeId", options.beforeId);
   if (options.limit) params.set("limit", String(options.limit));
   const query = params.toString();
   return request("/api/messages/" + encodeURIComponent(conversationId) + (query ? "?" + query : ""));
