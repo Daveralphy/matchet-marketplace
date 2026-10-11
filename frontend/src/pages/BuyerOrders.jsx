@@ -51,6 +51,15 @@ export default function BuyerOrders() {
                   <strong>₦{Number(order.total || 0).toLocaleString()}</strong>
                   <span>{order.paymentStatus}</span>
                 </div>
+                {Array.from(new Map((order.items || []).map((item) => {
+                  const seller = item.sellerId;
+                  const sellerId = typeof seller === "object" ? seller?._id : seller;
+                  return sellerId ? [String(sellerId), { id: String(sellerId), name: typeof seller === "object" ? [seller.firstName, seller.lastName].filter(Boolean).join(" ") : "" }] : ["", null];
+                }).filter(([id]) => id)).values()).map((seller) => (
+                  <Link key={seller.id} className="buyer-message-link" to={`/messages?recipient=${encodeURIComponent(seller.id)}`}>
+                    Message {seller.name || "seller"}
+                  </Link>
+                ))}
               </article>
             ))}
           </div>
