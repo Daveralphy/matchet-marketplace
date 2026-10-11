@@ -24,7 +24,7 @@ function Avatar({ user, large = false }) {
   return <span className={className}>{user?.initials || user?.name?.slice(0, 1)?.toUpperCase() || "M"}</span>;
 }
 
-function OrderMessageCard({ orderCard }) {
+function OrderMessageCard({ orderCard, isBuyerView }) {
   const orderId = String(orderCard.orderId || "");
   const money = (amount) => (orderCard.currency || "NGN") + " " + Number(amount || 0).toLocaleString("en-NG");
   return (
@@ -40,7 +40,7 @@ function OrderMessageCard({ orderCard }) {
         ))}
       </div>
       <div className="account-order-message-total"><span>Order total</span><strong>{money(orderCard.total)}</strong></div>
-      <div className="account-order-message-footer"><span className={"account-order-status " + String(orderCard.status || "pending").toLowerCase()}>{orderCard.status || "pending"}</span><Link to={"/orders/" + encodeURIComponent(orderId)} className="account-order-details-link">Go to order <span aria-hidden="true">→</span></Link></div>
+      <div className="account-order-message-footer"><span className={"account-order-status " + String(orderCard.status || "pending").toLowerCase()}>{orderCard.status || "pending"}</span><Link to={(isBuyerView ? "/orders/" : "/seller/orders/") + encodeURIComponent(orderId)} className="account-order-details-link">Go to order <span aria-hidden="true">→</span></Link></div>
     </section>
   );
 }
@@ -339,7 +339,7 @@ export default function BuyerMessages() {
                   {activeConversation.pagination?.hasMore && <button type="button" className="account-messages-load-older" onClick={loadOlderMessages} disabled={conversationLoading}>{conversationLoading ? "Loading…" : "Load older messages"}</button>}
                   {(activeConversation.messages || []).length === 0 ? <div className="account-messages-empty">No messages in this conversation yet.</div> : activeConversation.messages.map((item, index, list) => {
                     const showDate = index === 0 || new Date(item.createdAt).toDateString() !== new Date(list[index - 1].createdAt).toDateString();
-                    return <div key={item.id || item._id || index}>{showDate && <div className="account-message-date">{formatDate(item.createdAt)}</div>}<div className={"account-message-bubble-row " + (item.isMine ? "mine" : "theirs")}><div className={"account-message-bubble" + (item.orderCard ? " has-order-card" : "")}>{item.orderCard ? <OrderMessageCard orderCard={item.orderCard} /> : <p>{item.content}</p>}{item.attachments?.map((attachment, attachmentIndex) => <a key={attachment.publicId || attachmentIndex} href={attachment.url} target="_blank" rel="noreferrer">{attachment.name || "Open attachment"}</a>)}<time>{formatTime(item.createdAt)}{item.isMine && item.readAt ? " · Read" : ""}</time></div></div></div>;
+                    return <div key={item.id || item._id || index}>{showDate && <div className="account-message-date">{formatDate(item.createdAt)}</div>}<div className={"account-message-bubble-row " + (item.isMine ? "mine" : "theirs")}><div className={"account-message-bubble" + (item.orderCard ? " has-order-card" : "")}>{item.orderCard ? <OrderMessageCard orderCard={item.orderCard} isBuyerView={item.isMine} /> : <p>{item.content}</p>}{item.attachments?.map((attachment, attachmentIndex) => <a key={attachment.publicId || attachmentIndex} href={attachment.url} target="_blank" rel="noreferrer">{attachment.name || "Open attachment"}</a>)}<time>{formatTime(item.createdAt)}{item.isMine && item.readAt ? " · Read" : ""}</time></div></div></div>;
                   })}
                 </div>
                 <form className="account-messages-composer" onSubmit={handleSend}><input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Write a message…" maxLength={5000} aria-label="Write a message" disabled={sending || conversationLoading}/><button type="submit" disabled={sending || !draft.trim() || conversationLoading}>{sending ? "Sending…" : "Send"}</button></form>
