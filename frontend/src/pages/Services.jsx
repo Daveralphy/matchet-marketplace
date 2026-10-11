@@ -837,13 +837,20 @@ function ServicesListingSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
   const [services, setServices] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
   const selectedLocation = useMarketplaceLocation();
 
   useEffect(() => {
     let active = true;
+    setServicesLoading(true);
 
     getServiceCollection(selectedLocation).then((items) => {
       if (active) setServices(items.filter((item) => !search || [item.title, item.category, item.seller, item.businessName, item.location].join(" ").toLowerCase().includes(search.toLowerCase())));
+    }).catch((error) => {
+      console.error("Services listing loading error:", error);
+      if (active) setServices([]);
+    }).finally(() => {
+      if (active) setServicesLoading(false);
     });
 
     return () => {
@@ -888,7 +895,12 @@ function ServicesListingSection({ isAuthenticated }) {
       </div>
 
       <div className="mt-7 grid grid-cols-2 gap-3 xl:grid-cols-5">
-        {services.length ? services.map((service) => (
+        {servicesLoading ? Array.from({ length: 5 }, (_, index) => (
+          <div key={index} className="animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
+            <div className="aspect-square bg-slate-200" />
+            <div className="space-y-3 p-3"><div className="h-3 w-1/3 rounded bg-slate-200" /><div className="h-4 w-4/5 rounded bg-slate-200" /><div className="h-3 w-1/2 rounded bg-slate-100" /></div>
+          </div>
+        )) : services.length ? services.map((service) => (
           <ServiceListingCard key={service.id} service={service} />
         )) : (
           <div className="col-span-full rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-14 text-center">
