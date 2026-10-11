@@ -27,3 +27,7 @@ export function getConversation(conversationId) {
 export function sendMessage(payload) {
   return request("/api/messages", { method: "POST", body: JSON.stringify(payload) });
 }
+
+export function getUnreadCount() {
+  return request("/api/messages/unread-count");
+}
