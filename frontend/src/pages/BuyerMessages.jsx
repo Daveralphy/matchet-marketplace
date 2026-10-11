@@ -60,7 +60,10 @@ export default function BuyerMessages() {
     try {
       const response = await getConversation(id);
       if (requestId !== conversationRequestId.current) return;
-      setActiveConversation(response.data || null);
+      setActiveConversation({
+        ...response.data,
+        pagination: response.data?.pagination || { hasMore: false, nextBefore: null },
+      });
       setConversations((current) => current.map((item) => item.conversationId === id ? { ...item, unreadCount: 0 } : item));
       setError("");
     } catch (requestError) {
@@ -86,6 +89,30 @@ export default function BuyerMessages() {
   }, [conversations, search, filter]);
 
   const unreadCount = conversations.reduce((total, item) => total + Number(item.unreadCount || 0), 0);
+
+  async function loadOlderMessages() {
+    const cursor = activeConversation?.pagination?.nextBefore;
+    const id = activeConversation?.conversationId;
+    if (!cursor || !id || conversationLoading) return;
+    setConversationLoading(true);
+    try {
+      const response = await getConversation(id, { before: cursor, limit: 50 });
+      const older = response.data?.messages || [];
+      setActiveConversation((current) => {
+        if (!current || current.conversationId !== id) return current;
+        const known = new Set((current.messages || []).map((item) => String(item.id || item._id)));
+        return {
+          ...current,
+          messages: [...older.filter((item) => !known.has(String(item.id || item._id))), ...(current.messages || [])],
+          pagination: response.data?.pagination || { hasMore: false, nextBefore: null },
+        };
+      });
+    } catch (requestError) {
+      setError(requestError.message || "Could not load older messages.");
+    } finally {
+      setConversationLoading(false);
+    }
+  }
 
   async function handleSend(event) {
     event.preventDefault();
@@ -148,6 +175,7 @@ export default function BuyerMessages() {
               <>
                 <header className="account-messages-chat-header"><Avatar user={activeConversation.participant} large /><div><strong>{activeConversation.participant?.name || "Matchet user"}</strong><span>Matchet conversation</span></div></header>
                 <div className="account-messages-chat-body">
+                  {activeConversation.pagination?.hasMore && <button type="button" className="account-messages-load-older" onClick={loadOlderMessages} disabled={conversationLoading}>{conversationLoading ? "Loading…" : "Load older messages"}</button>}
                   {(activeConversation.messages || []).length === 0 ? <div className="account-messages-empty">No messages in this conversation yet.</div> : activeConversation.messages.map((item, index, list) => {
                     const showDate = index === 0 || new Date(item.createdAt).toDateString() !== new Date(list[index - 1].createdAt).toDateString();
                     return <div key={item.id || item._id || index}>{showDate && <div className="account-message-date">{formatDate(item.createdAt)}</div>}<div className={"account-message-bubble-row " + (item.isMine ? "mine" : "theirs")}><div className="account-message-bubble"><p>{item.content}</p>{item.attachments?.map((attachment, attachmentIndex) => <a key={attachment.publicId || attachmentIndex} href={attachment.url} target="_blank" rel="noreferrer">{attachment.name || "Open attachment"}</a>)}<time>{formatTime(item.createdAt)}{item.isMine && item.readAt ? " · Read" : ""}</time></div></div></div>;
