@@ -231,7 +231,7 @@ export default function BuyerMessages() {
     <main className="account-messages-page">
       <div className="account-messages-shell">
         <nav className="account-messages-breadcrumb" aria-label="Breadcrumb">
-          <Link to="/">Home</Link><span aria-hidden="true">›</span><Link to="/buyer/dashboard">My Account</Link><span aria-hidden="true">›</span><span aria-current="page">Messages</span>
+          <Link to="/">Home</Link><span aria-hidden="true">›</span><span aria-current="page">Messages</span>
         </nav>
         <header className="account-messages-heading">
           <div><p>Stay connected</p><h1>Messages</h1><span>Conversations with buyers, sellers, and service providers.</span></div>
