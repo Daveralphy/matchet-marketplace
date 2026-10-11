@@ -836,7 +836,7 @@ function ServiceListingCard({ service }) {
 function ServicesListingSection({ isAuthenticated }) {
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
-  const [services, setServices] = useState([]);
+  const [sourceServices, setSourceServices] = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const selectedLocation = useMarketplaceLocation();
 
@@ -845,7 +845,7 @@ function ServicesListingSection({ isAuthenticated }) {
     setServicesLoading(true);
 
     getServiceCollection(selectedLocation).then((items) => {
-      if (active) setServices(items.filter((item) => !search || [item.title, item.category, item.seller, item.businessName, item.location].join(" ").toLowerCase().includes(search.toLowerCase())));
+      if (active) setSourceServices(items);
     }).catch((error) => {
       console.error("Services listing loading error:", error);
       if (active) setServices([]);
@@ -856,7 +856,9 @@ function ServicesListingSection({ isAuthenticated }) {
     return () => {
       active = false;
     };
-  }, [isAuthenticated, search, selectedLocation]);
+  }, [selectedLocation]);
+
+  const services = sourceServices.filter((item) => !search || [item.title, item.category, item.seller, item.businessName, item.location].join(" ").toLowerCase().includes(search.toLowerCase()));
 
   return (
     <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
