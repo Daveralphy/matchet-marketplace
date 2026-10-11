@@ -471,20 +471,20 @@ function ExploreProductCard({ item, listView = false }) {
   if (isProvider) {
     return (
       <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : `flex ${item.type === "product" ? "h-[280px] w-[220px]" : "h-[300px] w-full"} min-w-0 flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white`}>
-        <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[150px]" : "h-[125px]"} w-full shrink-0`}>
+        <div className={listView ? "relative h-[180px] w-[140px] shrink-0" : "relative h-[220px] w-full shrink-0"}>
           <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone || "bg-[#eef1ef]"}`}>
             {item.image ? <img src={item.image} alt={item.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
             <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name="provider" size={58} strokeWidth={1.15} /></span>
           </div>
         </div>
-        <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "flex min-h-0 flex-1 flex-col px-2.5 pb-2.5 pt-2"}>
+        <div className={listView ? "min-w-0 flex-1 px-4 py-3" : "flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3"}>
           <div className="flex items-center justify-between gap-1.5">
             <span className="max-w-[150px] truncate text-[8px] font-medium text-[#6f7899]">{item.category}</span>
             <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]"><span className="text-[#f4b400]">★</span>{item.rating}</span>
           </div>
           <h3 className="mt-1.5 truncate text-[11px] font-semibold leading-4 text-[#10183f]">{item.name}</h3>
           <p className="mt-1 truncate text-[9px] text-[#69739a]">{item.businessName && item.businessName !== item.name ? item.businessName : item.category}</p>
-          <p className="mt-1 truncate text-[8px] text-[#7b84a3]">⌖ {item.location}</p>
+          <p className="mt-auto truncate pt-3 text-[10px] text-[#7b84a3]">⌖ {item.location}</p>
           <p className="mt-1 line-clamp-2 text-[8px] leading-3.5 text-[#69739a]">{item.bio || item.experience || "Service provider on Matchet."}</p>
           <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-auto flex h-8 w-full shrink-0 items-center justify-center rounded-full bg-[#e9f9ed] text-[9px] font-semibold text-[#07863a]">View their services →</Link>
         </div>
@@ -492,11 +492,13 @@ function ExploreProductCard({ item, listView = false }) {
     );
   }
   return (
-    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "group flex h-[280px] w-[220px] shrink-0 flex-col overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]"}>
+    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]" : "group flex h-[390px] w-[250px] shrink-0 flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]"}>
       <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[150px]" : "h-[125px]"} w-full shrink-0`}>
-        <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone}`}>
+        <div className={`relative flex h-full w-full items-center justify-center overflow-hidden ${item.imageTone}`}>
           {item.image ? <img src={item.image} alt={item.title || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
           <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
+          <span className="absolute bottom-3 left-3 max-w-[160px] truncate rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-semibold text-[#10183f] shadow-sm backdrop-blur-sm">{item.category}</span>
         </div>
         <HeartButton item={item} />
       </div>
@@ -511,11 +513,11 @@ function ExploreProductCard({ item, listView = false }) {
           </span>
         </div>
 
-        <h3 className="mt-1.5 truncate text-[10px] font-semibold leading-4 text-[#10183f] sm:text-[11px]">
+        <h3 className="mt-2 line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] text-[#10183f]">
           {item.title}
         </h3>
 
-        <p className="mt-1 truncate text-[11px] font-bold leading-4 text-[#07863a]">
+        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
           {item.price}
         </p>
 
