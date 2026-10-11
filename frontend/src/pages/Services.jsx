@@ -825,7 +825,7 @@ function ServicesListingSection({ isAuthenticated }) {
         </button>
       </div>
 
-      <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-7 grid grid-cols-2 gap-3 xl:grid-cols-5">
         {servicesLoading ? Array.from({ length: 5 }, (_, index) => (
           <div key={index} className="h-[430px] animate-pulse overflow-hidden rounded-[18px] bg-white p-3 shadow-sm" aria-hidden="true">
             <div className="h-[220px] rounded-[14px] bg-slate-200" />
