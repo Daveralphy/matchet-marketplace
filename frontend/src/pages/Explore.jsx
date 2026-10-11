@@ -492,8 +492,8 @@ function ExploreProductCard({ item, listView = false }) {
     );
   }
   return (
-    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "flex overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]" : "group flex h-[390px] w-[250px] shrink-0 flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]"}>
-      <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[150px]" : "h-[125px]"} w-full shrink-0`}>
+    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "grid min-w-0 grid-cols-[156px_minmax(0,1fr)] items-center gap-4 rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] sm:grid-cols-[180px_minmax(0,1fr)_190px]" : "group flex h-[430px] min-w-0 flex-col overflow-hidden rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_10px_28px_rgba(16,24,63,0.11)]"}>
+      <div className={listView ? "relative h-[156px] w-[156px] shrink-0 self-center rounded-[14px] overflow-hidden" : "relative h-[220px] w-full shrink-0 rounded-[14px] overflow-hidden"}>
         <div className={`relative flex h-full w-full items-center justify-center overflow-hidden ${item.imageTone}`}>
           {item.image ? <img src={item.image} alt={item.title || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
           <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
@@ -503,7 +503,7 @@ function ExploreProductCard({ item, listView = false }) {
         <HeartButton item={item} />
       </div>
 
-      <div className={listView ? "min-w-0 flex-1 px-3 py-2.5" : "flex min-h-0 flex-1 flex-col px-2.5 pb-2.5 pt-2"}>
+      <div className={listView ? "col-start-2 min-w-0 py-1" : "flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3"}>
         <div className="flex items-center justify-between gap-1.5">
           <span className={`max-w-[105px] truncate text-[8px] font-medium text-[#6f7899] ${listView ? "text-[9px]" : ""}`}>
             {item.category}
@@ -521,7 +521,7 @@ function ExploreProductCard({ item, listView = false }) {
           {item.price}
         </p>
 
-        <p className="mt-1 truncate text-[8px] text-[#7b84a3]">
+        <p className="mt-auto truncate pt-3 text-[10px] text-[#7b84a3]">
           {item.seller} · {item.location}
         </p>
       </div>
@@ -861,10 +861,10 @@ function ExploreResultsSection({ isAuthenticated }) {
       </div>
 
 {itemsLoading ? (
-        <div className="mt-5 grid grid-cols-[repeat(auto-fill,250px)] justify-between gap-3" aria-label="Loading marketplace results" aria-busy="true">
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Loading marketplace results" aria-busy="true">
           {Array.from({ length: 6 }, (_, index) => (
-            <div key={index} className="h-[280px] w-[220px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
-              <div className="h-[150px] bg-slate-200" />
+            <div key={index} className="h-[430px] animate-pulse overflow-hidden rounded-[18px] bg-white p-3 shadow-sm">
+              <div className="h-[220px] rounded-[14px] bg-slate-200" />
               <div className="space-y-3 p-3">
                 <div className="h-3 w-1/3 rounded bg-slate-200" />
                 <div className="h-4 w-4/5 rounded bg-slate-200" />
@@ -880,7 +880,7 @@ function ExploreResultsSection({ isAuthenticated }) {
           <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">Start exploring</Link>
         </div>
       ) : (
-        <div className={listView ? "mt-5 grid gap-3 sm:grid-cols-2" : "mt-5 grid grid-cols-[repeat(auto-fill,220px)] gap-3"}>
+        <div className={listView ? "mt-5 grid gap-3" : "mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"}>
           {visibleItems.length ? visibleItems.map((item) => (
             <ExploreProductCard key={item.id + item.type} item={item} listView={listView} />
           )) : (

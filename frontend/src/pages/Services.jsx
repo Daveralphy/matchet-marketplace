@@ -765,9 +765,9 @@ function ServiceListingCard({ service }) {
   };
 
   return (
-    <Link to={`/services/${service.id}`} className="group flex h-[390px] min-w-0 flex-col overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_6px_20px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_8px_24px_rgba(16,24,63,0.1)]">
+    <Link to={`/services/${service.id}`} className="group flex h-[430px] min-w-0 flex-col overflow-hidden rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_8px_24px_rgba(16,24,63,0.1)]">
       <div className="relative">
-        <div className={`relative h-[220px] w-full shrink-0 overflow-hidden rounded-[12px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
+        <div className={`relative h-[220px] w-full shrink-0 overflow-hidden rounded-[14px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
           {service.image || service.gallery?.[0] ? (
             <img
               src={service.image || service.gallery?.[0]}
@@ -900,8 +900,8 @@ function ServicesListingSection({ isAuthenticated }) {
 
       <div className="mt-7 grid grid-cols-2 gap-3 xl:grid-cols-5">
         {servicesLoading ? Array.from({ length: 5 }, (_, index) => (
-          <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
-            <div className="h-[125px] bg-slate-200" />
+          <div key={index} className="h-[430px] animate-pulse overflow-hidden rounded-[18px] bg-white p-3 shadow-sm" aria-hidden="true">
+            <div className="h-[220px] rounded-[14px] bg-slate-200" />
             <div className="space-y-3 p-3"><div className="h-3 w-1/3 rounded bg-slate-200" /><div className="h-4 w-4/5 rounded bg-slate-200" /><div className="h-3 w-1/2 rounded bg-slate-100" /></div>
           </div>
         )) : services.length ? services.map((service) => (
