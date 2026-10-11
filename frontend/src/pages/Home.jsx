@@ -312,11 +312,11 @@ function MarketplaceCard({ item, compact = false }) {
     await toggleSaved(item.type === "service" ? "service" : "product", item.id);
   };
   return (
-    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={`group block shrink-0 overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)] ${compact ? "w-[166px]" : "w-[172px] sm:w-[180px]"}`}>
+    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className="group flex h-[280px] w-[220px] shrink-0 flex-col overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.07)]">
       <div
         className={[
           "relative flex items-center justify-center overflow-hidden",
-          compact ? "h-[145px]" : "h-[178px]",
+          "h-[125px] shrink-0",
           item.imageTone,
         ].join(" ")}
       >
@@ -346,7 +346,7 @@ function MarketplaceCard({ item, compact = false }) {
         </button>
       </div>
 
-      <div className={compact ? "px-3 pb-3 pt-2.5" : "px-3 pb-3.5 pt-2.5"}>
+      <div className="flex min-h-0 flex-1 flex-col px-3 pb-3 pt-2.5">
         <div className="flex items-center justify-between gap-2">
           <span className={`max-w-[112px] truncate rounded-full px-2.5 py-1 text-[9px] font-medium ${item.categoryTone}`}>
             {item.category}
@@ -366,7 +366,7 @@ function MarketplaceCard({ item, compact = false }) {
           {item.price}
         </p>
 
-        <div className="mt-3 flex min-w-0 items-center gap-2">
+        <div className="mt-auto flex min-w-0 items-center gap-2 pt-3">
           <span className={`flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full text-[11px] font-semibold ${item.avatarTone}`}>
             {item.sellerImage ? <img src={item.sellerImage} alt={item.seller || ""} className="h-full w-full object-cover" /> : item.sellerInitial}
           </span>
@@ -477,8 +477,8 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading =
       {loading ? (
         <div className="mt-6 flex gap-4 overflow-hidden pb-2" aria-label="Loading marketplace items" aria-busy="true">
           {Array.from({ length: 5 }, (_, index) => (
-            <div key={index} className="w-[172px] shrink-0 animate-pulse overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.04)]">
-              <div className="h-[178px] bg-slate-200" />
+            <div key={index} className="h-[280px] w-[220px] shrink-0 animate-pulse overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.04)]">
+              <div className="h-[125px] bg-slate-200" />
               <div className="space-y-3 p-3">
                 <div className="h-4 w-2/3 rounded bg-slate-200" />
                 <div className="h-4 w-1/2 rounded bg-slate-200" />
@@ -604,8 +604,8 @@ function NearbyMarketplaceSection({ isAuthenticated, items, loading = false }) {
       {loading ? (
         <div className="mt-6 flex gap-4 overflow-hidden pb-2" aria-label="Loading marketplace items" aria-busy="true">
           {Array.from({ length: 5 }, (_, index) => (
-            <div key={index} className="w-[166px] shrink-0 animate-pulse overflow-hidden rounded-[12px] bg-white">
-              <div className="h-[145px] bg-slate-200" />
+            <div key={index} className="h-[280px] w-[220px] shrink-0 animate-pulse overflow-hidden rounded-[12px] bg-white">
+              <div className="h-[125px] bg-slate-200" />
               <div className="space-y-3 p-3"><div className="h-4 w-2/3 rounded bg-slate-200" /><div className="h-4 w-1/2 rounded bg-slate-200" /><div className="h-3 w-3/4 rounded bg-slate-100" /></div>
             </div>
           ))}
