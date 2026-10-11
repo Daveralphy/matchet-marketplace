@@ -468,67 +468,54 @@ function getMarketplacePlaceholderIcon(item) {
 
 function ExploreProductCard({ item, listView = false }) {
   const isProvider = item.type === "provider";
-  if (isProvider) {
-    return (
-      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : `flex ${item.type === "product" ? "h-[280px] w-[220px]" : "h-[300px] w-full"} min-w-0 flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white`}>
-        <div className={listView ? "relative h-[180px] w-[140px] shrink-0" : "relative h-[220px] w-full shrink-0"}>
-          <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone || "bg-[#eef1ef]"}`}>
-            {item.image ? <img src={item.image} alt={item.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
-            <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name="provider" size={58} strokeWidth={1.15} /></span>
-          </div>
-        </div>
-        <div className={listView ? "min-w-0 flex-1 px-4 py-3" : "flex min-h-0 flex-1 flex-col px-4 pb-4 pt-3"}>
-          <div className="flex items-center justify-between gap-1.5">
-            <span className="max-w-[150px] truncate text-[8px] font-medium text-[#6f7899]">{item.category}</span>
-            <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]"><span className="text-[#f4b400]">★</span>{item.rating}</span>
-          </div>
-          <h3 className="mt-1.5 truncate text-[11px] font-semibold leading-4 text-[#10183f]">{item.name}</h3>
-          <p className="mt-1 truncate text-[9px] text-[#69739a]">{item.businessName && item.businessName !== item.name ? item.businessName : item.category}</p>
-          <p className="mt-auto truncate pt-3 text-[10px] text-[#7b84a3]">⌖ {item.location}</p>
-          <p className="mt-1 line-clamp-2 text-[8px] leading-3.5 text-[#69739a]">{item.bio || item.experience || "Service provider on Matchet."}</p>
-          <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-auto flex h-8 w-full shrink-0 items-center justify-center rounded-full bg-[#e9f9ed] text-[9px] font-semibold text-[#07863a]">View their services →</Link>
-        </div>
-      </article>
-    );
-  }
+  const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
+  const saved = isSaved(isProvider ? "provider" : item.type === "service" ? "service" : "product", item.id);
+  const handleSave = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!isAuthenticated) { window.location.href = "/login"; return; }
+    await toggleSaved(isProvider ? "provider" : item.type === "service" ? "service" : "product", item.id);
+  };
+  const href = isProvider ? `/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}` : item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`;
+  const title = isProvider ? item.name : item.title;
+  const image = item.image;
+  const imageBlock = (
+    <div className={`relative shrink-0 overflow-hidden rounded-[16px] ${listView ? "h-[116px] w-[116px] sm:h-[156px] sm:w-[156px]" : "h-[210px] w-full"} ${item.imageTone || "bg-[#edf2ee]"}`}>
+      {image ? <img src={image} alt={title || ""} className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
+      <span className={image ? "hidden" : "absolute inset-0 flex items-center justify-center text-[#10183f]/30"}><Icon name={isProvider ? "provider" : getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/70 via-[#10183f]/20 to-transparent" />
+      <span className="absolute bottom-3 left-3 max-w-[170px] truncate rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-semibold text-[#10183f] shadow-sm">{item.category || (isProvider ? "Provider" : item.type === "service" ? "Service" : "Product")}</span>
+      <button type="button" aria-label={saved ? `Unsave ${title}` : `Save ${title}`} aria-pressed={saved} onClick={handleSave} className={`absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full shadow-md transition-colors ${saved ? "bg-[#10183f] text-white" : "bg-white text-[#10183f] hover:text-[#07863a]"}`}><HeartIcon size={20} /></button>
+    </div>
+  );
+  if (listView) return (
+    <article className="grid min-w-0 grid-cols-[116px_minmax(0,1fr)] items-center gap-3 rounded-[20px] bg-white p-3 shadow-[0_7px_24px_rgba(16,24,63,0.07)] sm:grid-cols-[156px_minmax(0,1fr)_190px] sm:gap-5 sm:p-4">
+      <Link to={href} className="group flex items-center">{imageBlock}</Link>
+      <div className="col-start-2 min-w-0 py-1 sm:col-start-2">
+        <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#7b84a3]"><span className="text-[15px] text-[#f4b400]">★</span><span className="font-medium text-[#10183f]">{item.rating || 0}</span>{item.reviews != null && <span>({item.reviews})</span>}</div>
+        <Link to={href} className="mt-1.5 block text-[16px] font-bold leading-5 text-[#10183f] sm:text-[19px]">{title}</Link>
+        <p className="mt-2 line-clamp-2 text-[12px] leading-5 text-[#69739a]">{item.description || item.bio || item.shortDescription || `Explore ${title} on Matchet.`}</p>
+        <p className="mt-3 truncate text-[11px] text-[#7b84a3]">{item.seller || item.businessName || ""}{(item.seller || item.businessName) ? " · " : ""}{item.location}</p>
+      </div>
+      <div className="col-span-2 flex items-center justify-between gap-3 border-t border-[#edf0f4] pt-3 sm:col-span-1 sm:flex-col sm:items-end sm:justify-center sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
+        {item.price && <p className="text-[19px] font-bold text-[#07863a]">{item.price}</p>}
+        <Link to={href} className="inline-flex h-10 min-w-[130px] items-center justify-center gap-2 rounded-[11px] bg-[#078b4b] px-4 text-[12px] font-bold text-white">{isProvider ? "View services" : item.type === "service" ? "Book Now" : "View product"}</Link>
+      </div>
+    </article>
+  );
   return (
-    <Link to={item.type === "service" ? `/services/${item.id}` : `/products/${item.id}`} className={listView ? "grid min-w-0 grid-cols-[156px_minmax(0,1fr)] items-center gap-4 rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] sm:grid-cols-[180px_minmax(0,1fr)_190px]" : "group flex h-[430px] min-w-0 flex-col overflow-hidden rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_10px_28px_rgba(16,24,63,0.11)]"}>
-      <div className={listView ? "relative h-[156px] w-[156px] shrink-0 self-center rounded-[14px] overflow-hidden" : "relative h-[220px] w-full shrink-0 rounded-[14px] overflow-hidden"}>
-        <div className={`relative flex h-full w-full items-center justify-center overflow-hidden ${item.imageTone}`}>
-          {item.image ? <img src={item.image} alt={item.title || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
-          <span className={item.image ? "hidden text-[#10183f]/30" : "text-[#10183f]/30"}><Icon name={getMarketplacePlaceholderIcon(item)} size={58} strokeWidth={1.15} /></span>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
-          <span className="absolute bottom-3 left-3 max-w-[160px] truncate rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-semibold text-[#10183f] shadow-sm backdrop-blur-sm">{item.category}</span>
-        </div>
-        <HeartButton item={item} />
+    <article className="group flex h-[410px] min-w-0 flex-col overflow-hidden rounded-[22px] bg-white p-3.5 shadow-[0_8px_26px_rgba(16,24,63,0.08)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(16,24,63,0.12)]">
+      <Link to={href} className="block">{imageBlock}</Link>
+      <div className="flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3">
+        <div className="flex items-center justify-between gap-2"><span className="truncate text-[11px] font-medium text-[#6f7899]">{item.category || (isProvider ? "Provider" : item.type)}</span><span className="shrink-0 text-[12px] font-semibold text-[#10183f]"><span className="text-[15px] text-[#f4b400]">★</span> {item.rating || 0}{item.reviews != null ? <span className="font-normal text-[#7b84a3]"> ({item.reviews})</span> : null}</span></div>
+        <Link to={href} className="mt-1.5 line-clamp-2 min-h-[40px] text-[16px] font-bold leading-5 text-[#10183f]">{title}</Link>
+        {item.price && <p className="mt-1.5 truncate text-[19px] font-bold tracking-[-0.02em] text-[#07863a]">{item.price}</p>}
+        <p className="mt-auto truncate pt-3 text-[10px] text-[#7b84a3]">{item.seller || item.businessName || title} · {item.location}</p>
+        {isProvider && <Link to={href} className="mt-3 flex h-11 shrink-0 items-center justify-center rounded-[12px] bg-[#e9f9ed] text-[12px] font-bold text-[#07863a]">View their services →</Link>}
       </div>
-
-      <div className={listView ? "col-start-2 min-w-0 py-1" : "flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3"}>
-        <div className="flex items-center justify-between gap-1.5">
-          <span className={`max-w-[105px] truncate text-[8px] font-medium text-[#6f7899] ${listView ? "text-[9px]" : ""}`}>
-            {item.category}
-          </span>
-          <span className="flex shrink-0 items-center gap-0.5 text-[8px] font-semibold text-[#10183f]">
-            <span className="text-[#f4b400]">★</span>{item.rating}
-          </span>
-        </div>
-
-        <h3 className="mt-2 line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] text-[#10183f]">
-          {item.title}
-        </h3>
-
-        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
-          {item.price}
-        </p>
-
-        <p className="mt-auto truncate pt-3 text-[10px] text-[#7b84a3]">
-          {item.seller} · {item.location}
-        </p>
-      </div>
-    </Link>
+    </article>
   );
 }
-
 function ResultsControl({ icon, children, active = false, onClick }) {
   return (
     <button
