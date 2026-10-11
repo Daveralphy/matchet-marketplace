@@ -93,3 +93,45 @@ test("getConversation rejects conversation IDs that do not include the authentic
   assert.equal(res.statusCode, 404);
   assert.equal(res.body.message, "Conversation not found.");
 });
+
+test("getConversation paginates newest messages and returns a stable cursor", async (t) => {
+  const idA = new mongoose.Types.ObjectId(userA);
+  const idB = new mongoose.Types.ObjectId(userB);
+  const older = { _id: new mongoose.Types.ObjectId("64b000000000000000000011"), senderId: { _id: idA, firstName: "Buyer" }, receiverId: { _id: idB, firstName: "Seller" }, content: "older", createdAt: new Date("2026-01-01T10:00:00.000Z"), attachments: [] };
+  const newer = { _id: new mongoose.Types.ObjectId("64b000000000000000000012"), senderId: { _id: idB, firstName: "Seller" }, receiverId: { _id: idA, firstName: "Buyer" }, content: "newer", createdAt: new Date("2026-01-01T10:00:00.000Z"), attachments: [] };
+  let appliedLimit;
+  const query = {
+    sort() { return this; },
+    limit(value) { appliedLimit = value; return this; },
+    populate() { return this; },
+    lean: async () => [newer, older],
+  };
+  const restores = [
+    stub(Message, "find", () => query),
+    stub(Message, "updateMany", async () => ({ modifiedCount: 1 })),
+  ];
+  t.after(() => restores.reverse().forEach((restore) => restore()));
+  const res = responseRecorder();
+  await controller.getConversation({
+    user: { _id: idA },
+    params: { conversationId: controller.canonicalConversationId(userA, userB) },
+    query: { limit: "1" },
+  }, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(appliedLimit, 2);
+  assert.equal(res.body.data.messages.length, 1);
+  assert.equal(res.body.data.messages[0].content, "newer");
+  assert.equal(res.body.data.pagination.hasMore, true);
+  assert.equal(String(res.body.data.pagination.nextBeforeId), String(newer._id));
+});
+
+test("getConversation rejects malformed pagination cursors", async () => {
+  const res = responseRecorder();
+  await controller.getConversation({
+    user: { _id: new mongoose.Types.ObjectId(userA) },
+    params: { conversationId: controller.canonicalConversationId(userA, userB) },
+    query: { before: "not-a-date" },
+  }, res);
+  assert.equal(res.statusCode, 400);
+  assert.equal(res.body.message, "The message history cursor is invalid.");
+});
