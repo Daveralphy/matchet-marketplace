@@ -1,5 +1,6 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
+const optionalAuth = require("../middleware/optionalAuth");
 const {
   register,
   login,
@@ -26,7 +27,7 @@ router.post("/forgot-password", requestPasswordReset);
 router.post("/reset-password", resetPassword);
 router.post("/register", register);
 router.post("/login", login);
-router.get("/me", requireAuth, me);
+router.get("/me", optionalAuth, me);
 router.patch("/me", requireAuth, updateMe);
 router.post("/change-password", requireAuth, changePassword);
 router.delete("/account", requireAuth, deleteAccount);
