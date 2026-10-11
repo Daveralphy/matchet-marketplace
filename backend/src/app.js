@@ -12,6 +12,7 @@ const adminRoutes = require("./routes/admin.routes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const marketplaceRoutes = require("./routes/marketplace.routes");
 const notificationRoutes = require("./routes/notification.routes");
+const messageRoutes = require("./routes/message.routes");
 const cartRoutes = require("./routes/cart.routes");
 
 const app = express();
@@ -116,6 +117,12 @@ app.use(
     return requireDatabase("Matchet is temporarily unable to reach the account database. Please try again in a moment.")(req, res, next);
   },
   authRoutes,
+);
+
+app.use(
+  "/api/messages",
+  requireDatabase("Matchet is temporarily unable to reach the messaging database. Please try again in a moment."),
+  messageRoutes,
 );
 
 app.use(
