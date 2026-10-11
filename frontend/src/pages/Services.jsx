@@ -765,9 +765,9 @@ function ServiceListingCard({ service }) {
   };
 
   return (
-    <Link to={`/services/${service.id}`} className="group flex h-[430px] min-w-0 flex-col overflow-hidden rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_8px_24px_rgba(16,24,63,0.1)]">
+    <Link to={`/services/${service.id}`} className="group flex h-[465px] min-w-0 flex-col overflow-hidden rounded-[22px] bg-white p-3.5 shadow-[0_8px_26px_rgba(16,24,63,0.08)] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(16,24,63,0.13)]">
       <div className="relative">
-        <div className={`relative h-[220px] w-full shrink-0 overflow-hidden rounded-[14px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
+        <div className={`relative h-[235px] w-full shrink-0 overflow-hidden rounded-[16px] ${service.imageTone || "bg-[#dfe7e2]"}`}>
           {service.image || service.gallery?.[0] ? (
             <img
               src={service.image || service.gallery?.[0]}
@@ -808,11 +808,11 @@ function ServiceListingCard({ service }) {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3">
-        <h3 className="line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] text-[#10183f]">
+        <h3 className="line-clamp-2 min-h-[40px] text-[16px] font-bold leading-5 text-[#10183f]">
           {service.title}
         </h3>
 
-        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
+        <p className="mt-1.5 truncate text-[19px] font-bold tracking-[-0.02em] text-[#07863a]">
           {service.price}
         </p>
 
@@ -831,6 +831,7 @@ function ServiceListingCard({ service }) {
           <span className="truncate">{service.seller} · {service.location}</span>
         </div>
       </div>
+      <div className="mt-auto flex h-[48px] shrink-0 items-center justify-center gap-3 rounded-[13px] bg-[#078b4b] text-[13px] font-bold text-white shadow-sm"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>Book Now</div>
     </Link>
   );
 }
@@ -898,7 +899,7 @@ function ServicesListingSection({ isAuthenticated }) {
         </button>
       </div>
 
-      <div className="mt-7 grid grid-cols-2 gap-3 xl:grid-cols-5">
+      <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {servicesLoading ? Array.from({ length: 5 }, (_, index) => (
           <div key={index} className="h-[430px] animate-pulse overflow-hidden rounded-[18px] bg-white p-3 shadow-sm" aria-hidden="true">
             <div className="h-[220px] rounded-[14px] bg-slate-200" />
