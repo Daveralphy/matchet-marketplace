@@ -486,9 +486,9 @@ function ProductCatalogueCard({ product }) {
             aria-label={alreadyInCart ? `${product.title} is in cart` : `Add ${product.title} to cart`}
             onClick={handleAddToCart}
             disabled={alreadyInCart || cartBusy}
-            className={`ml-auto flex h-9 w-9 items-center justify-center rounded-[9px] ${alreadyInCart ? "cursor-not-allowed bg-[#eaf9ee] text-[#07863a]" : "bg-[#e9f8ed] text-[#07863a]"}`}
+            className={`ml-auto flex h-10 items-center justify-center gap-2 rounded-[10px] px-4 text-[11px] font-semibold text-white ${alreadyInCart || cartBusy ? "cursor-not-allowed bg-[#6cae8a]" : "bg-[#078b4b] hover:bg-[#067940]"} w-full`}
           >
-            <Icon name="cart" size={17} />
+            <Icon name="cart" size={17} /> {alreadyInCart ? "In Cart" : added ? "Added" : "Add to Cart"}
           </button>
         </div>
 
