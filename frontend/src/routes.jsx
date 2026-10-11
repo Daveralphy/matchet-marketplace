@@ -6,6 +6,7 @@ import { createBrowserRouter, Link, Navigate, useLocation } from "react-router-d
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
 import BuyerOrders from "./pages/BuyerOrders";
+import BuyerDashboard from "./pages/BuyerDashboard";
 import BuyerBookings from "./pages/BuyerBookings";
 import AccountSettings from "./pages/AccountSettings";
 import AccountSecurity from "./pages/AccountSecurity";
@@ -507,6 +508,10 @@ const router = createBrowserRouter([
   {
     path: "/register/page6",
     element: <RequireOnboardingSubmitted flow="seller"><SellerSignupPageEight /></RequireOnboardingSubmitted>,
+  },
+  {
+    path: "/buyer/dashboard",
+    element: <RequireAuth><MarketplaceLayout><BuyerDashboard /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/account/saved-items",
