@@ -12,7 +12,7 @@ const attachmentSchema = new mongoose.Schema({
 
 const messageSchema = new mongoose.Schema({
   conversationId: { type: String, required: true, index: true, trim: true },
-  sourceRef: { type: String, trim: true, unique: true, sparse: true },
+  sourceRef: { type: String, trim: true },
   senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
   receiverId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
   content: { type: String, trim: true, maxlength: 5000 },
