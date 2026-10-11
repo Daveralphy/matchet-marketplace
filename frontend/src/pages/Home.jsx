@@ -316,7 +316,7 @@ function MarketplaceCard({ item, compact = false }) {
       <div
         className={[
           "relative flex items-center justify-center overflow-hidden",
-          "h-[125px] shrink-0",
+          (item.type === "product" ? "h-[150px] shrink-0" : "h-[125px] shrink-0"),
           item.imageTone,
         ].join(" ")}
       >
@@ -478,7 +478,7 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading =
         <div className="mt-6 flex gap-4 overflow-hidden pb-2" aria-label="Loading marketplace items" aria-busy="true">
           {Array.from({ length: 5 }, (_, index) => (
             <div key={index} className="h-[280px] w-[220px] shrink-0 animate-pulse overflow-hidden rounded-[12px] bg-white shadow-[0_6px_20px_rgba(16,24,63,0.04)]">
-              <div className="h-[125px] bg-slate-200" />
+              <div className="h-[150px] bg-slate-200" />
               <div className="space-y-3 p-3">
                 <div className="h-4 w-2/3 rounded bg-slate-200" />
                 <div className="h-4 w-1/2 rounded bg-slate-200" />

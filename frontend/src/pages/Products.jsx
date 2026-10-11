@@ -421,7 +421,7 @@ function HeroVisual({ isAuthenticated }) {
 
 
 function ProductImage({ product }) {
-  return <MarketplaceProductVisual product={product} size="standard" />;
+  return <MarketplaceProductVisual product={product} size="catalogue" />;
 }
 
 function ProductCatalogueCard({ product }) {
@@ -779,7 +779,7 @@ function ProductCatalogue({ isAuthenticated }) {
           <div className={`mt-4 grid gap-3 ${view === "grid" ? "grid-cols-2 xl:grid-cols-5" : "grid-cols-1"}`}>
             {productsLoading ? Array.from({ length: 6 }, (_, index) => (
               <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
-                <div className="h-[125px] bg-slate-200" />
+                <div className="h-[170px] bg-slate-200" />
                 <div className="space-y-3 p-3"><div className="h-3 w-1/3 rounded bg-slate-200" /><div className="h-4 w-4/5 rounded bg-slate-200" /><div className="h-3 w-1/2 rounded bg-slate-100" /></div>
               </div>
             )) : sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} />) : products.length === 0 ? (
