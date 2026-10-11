@@ -718,12 +718,13 @@ export default function Header({
                         ? "border-[#07983f] text-[#24305f]"
                         : "border-slate-200 text-[#24305f] hover:border-slate-300",
                     ].join(" ")}
+                    aria-label={selectedLocation ? `Location: ${selectedLocation}` : "Choose your location"}
                     aria-expanded={locationOpen}
                   >
                     <Icon name="pin" size={19} />
 
                     <span className="min-w-0 flex-1 truncate text-left">
-                      {selectedLocation}
+                      {selectedLocation || "Choose your location"}
                     </span>
 
                     <Icon
