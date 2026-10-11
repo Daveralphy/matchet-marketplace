@@ -6,6 +6,7 @@ import { createBrowserRouter, Link, Navigate, useLocation } from "react-router-d
 import { useAuth } from "./context/AuthContext";
 import SavedItems from "./pages/SavedItems";
 import BuyerOrders from "./pages/BuyerOrders";
+import BuyerOrderDetails from "./pages/BuyerOrderDetails";
 import BuyerMessages from "./pages/BuyerMessages";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import BuyerBookings from "./pages/BuyerBookings";
@@ -614,6 +615,10 @@ const router = createBrowserRouter([
   {
     path: "/messages",
     element: <RequireAuth><MarketplaceLayout><BuyerMessages /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/orders/:orderId",
+    element: <RequireAuth><MarketplaceLayout><BuyerOrderDetails /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/orders",
