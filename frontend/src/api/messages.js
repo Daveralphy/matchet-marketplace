@@ -17,8 +17,11 @@ async function request(path, options = {}) {
 }
 
 export function getInbox(options = {}) {
-  const query = options.syncTransactions ? "?syncTransactions=true" : "";
-  return request("/api/messages" + query);
+  const params = new URLSearchParams();
+  if (options.syncTransactions) params.set("syncTransactions", "true");
+  if (options.archived) params.set("archived", "true");
+  const query = params.toString();
+  return request("/api/messages" + (query ? "?" + query : ""));
 }
 
 export function startConversation(recipientId) {
