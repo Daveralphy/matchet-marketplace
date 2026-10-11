@@ -168,7 +168,7 @@ async function ensureTransactionOpeningMessages(userId) {
 async function getInbox(req, res) {
   try {
     const userId = req.user._id;
-    await ensureTransactionOpeningMessages(userId);
+    if (req.query.syncTransactions === "true") await ensureTransactionOpeningMessages(userId);
     const messages = await Message.find({ $or: [{ senderId: userId }, { receiverId: userId }] })
       .sort({ createdAt: -1, _id: -1 })
       .limit(INBOX_SCAN_LIMIT)
