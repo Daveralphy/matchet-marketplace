@@ -470,7 +470,7 @@ function ExploreProductCard({ item, listView = false }) {
   const isProvider = item.type === "provider";
   if (isProvider) {
     return (
-      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "flex h-[280px] flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
+      <article className={listView ? "flex overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white" : "flex h-[300px] flex-col overflow-hidden rounded-[10px] border border-[#e4e9f0] bg-white"}>
         <div className={listView ? "relative h-[125px] w-[145px] shrink-0" : `relative ${item.type === "product" ? "h-[150px]" : "h-[125px]"} w-full shrink-0`}>
           <div className={`relative flex h-full w-full items-center justify-center ${item.imageTone || "bg-[#eef1ef]"}`}>
             {item.image ? <img src={item.image} alt={item.name || ""} className="absolute inset-0 h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; event.currentTarget.nextElementSibling?.classList.remove("hidden"); }} /> : null}
@@ -861,8 +861,8 @@ function ExploreResultsSection({ isAuthenticated }) {
 {itemsLoading ? (
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6" aria-label="Loading marketplace results" aria-busy="true">
           {Array.from({ length: 6 }, (_, index) => (
-            <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
-              <div className="h-[125px] bg-slate-200" />
+            <div key={index} className="h-[300px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white">
+              <div className="h-[150px] bg-slate-200" />
               <div className="space-y-3 p-3">
                 <div className="h-3 w-1/3 rounded bg-slate-200" />
                 <div className="h-4 w-4/5 rounded bg-slate-200" />
