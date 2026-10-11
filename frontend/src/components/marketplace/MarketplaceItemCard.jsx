@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
-function HeartIcon() {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" /></svg>;
+function HeartIcon({ filled = false }) {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" /></svg>;
 }
 function PinIcon() {
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>;
@@ -28,7 +28,7 @@ export function MarketplaceItemCard({ item, view = "grid", onSave, saved = false
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/70 via-[#10183f]/20 to-transparent"/>
         <span className="absolute bottom-3 left-3 max-w-[80%] truncate rounded-full bg-white/85 px-2.5 py-1 text-[10px] font-medium text-[#10183f]">{item.category || (type === "service" ? "Service" : "Product")}</span>
       </Link>
-      {onSave && <button type="button" aria-label={saved ? `Unsave ${title}` : `Save ${title}`} aria-pressed={saved} onClick={onSave} className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#10183f] shadow-sm transition-colors hover:text-[#07863a] ${saved ? "text-[#07863a]" : ""}`}><span className="[&>svg]:h-[17px] [&>svg]:w-[17px]"><HeartIcon/></span></button>}
+      {onSave && <button type="button" aria-label={saved ? `Unsave ${title}` : `Save ${title}`} aria-pressed={saved} onClick={(event) => { event.preventDefault(); event.stopPropagation(); onSave(event); }} className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#10183f] shadow-sm transition-colors hover:text-[#07863a] ${saved ? "text-[#07863a]" : ""}`}><span className="[&>svg]:h-[17px] [&>svg]:w-[17px]"><HeartIcon filled={saved}/></span></button>}
     </div>
     <div className={`flex min-w-0 flex-col ${isList ? "py-1 sm:py-2" : "flex-1 pt-3"}`}>
       <div className="flex min-w-0 items-center justify-between gap-2">
