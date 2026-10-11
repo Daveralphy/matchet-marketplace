@@ -24,7 +24,8 @@ function locationLabel(location) {
 }
 
 
-function locationFilter(value) {
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\function locationFilter(value) {
   const parts = String(value || "").split(",").map((part) => part.trim()).filter(Boolean);
   if (!parts.length) return null;
   return {
@@ -34,6 +35,62 @@ function locationFilter(value) {
       { "location.country": { $regex: part, $options: "i" } },
     ])),
   };
+}");
+}
+
+function locationParts(value) {
+  return String(value || "").split(",").map((part) => part.trim()).filter(Boolean);
+}
+
+// Treat a full city/state/country selection as a geographic hierarchy.
+// A city selection can match that city or other listings in the same state
+// and country, but never every listing in the country.
+function locationFilter(value, prefix = "location") {
+  const parts = locationParts(value);
+  if (!parts.length) return null;
+
+  const field = (name) => `${prefix}.${name}`;
+  const match = (name, part) => ({
+    [field(name)]: { $regex: escapeRegex(part), $options: "i" },
+  });
+
+  if (parts.length >= 3) {
+    return {
+      $or: [
+        match("city", parts[0]),
+        { $and: [match("state", parts[1]), match("country", parts[2])] },
+      ],
+    };
+  }
+
+  if (parts.length === 2) {
+    return {
+      $or: [match("city", parts[0]), match("state", parts[1])],
+    };
+  }
+
+  return {
+    $or: ["city", "state", "country"].map((name) => match(name, parts[0])),
+  };
+}
+
+function locationMatches(location, value) {
+  const parts = locationParts(value);
+  if (!parts.length) return true;
+  const normalize = (part) => String(part || "").trim().toLowerCase();
+  const city = normalize(location?.city);
+  const state = normalize(location?.state);
+  const country = normalize(location?.country);
+  const includes = (actual, expected) => actual.includes(normalize(expected));
+
+  if (parts.length >= 3) {
+    return includes(city, parts[0]) ||
+      (includes(state, parts[1]) && includes(country, parts[2]));
+  }
+  if (parts.length === 2) {
+    return includes(city, parts[0]) || includes(state, parts[1]);
+  }
+  return [city, state, country].some((part) => includes(part, parts[0]));
 }
 
 function primaryImage(images = []) {
@@ -214,25 +271,14 @@ async function getProducts(req, res) {
 
     const requestedLocation = clean(req.query.location);
     if (requestedLocation) {
-      const locationParts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
-
-      const productLocationConditions = locationParts.flatMap((part) => ([
-        { "location.city": { $regex: part, $options: "i" } },
-        { "location.state": { $regex: part, $options: "i" } },
-        { "location.country": { $regex: part, $options: "i" } },
-      ]));
-
+      const productLocationFilter = locationFilter(requestedLocation);
       const matchingSellerIds = approvedStores
-        .filter((store) => {
-          const location = store.location || {};
-          const haystack = [location.city, location.state, location.country].filter(Boolean).join(" ").toLowerCase();
-          return locationParts.some((part) => haystack.includes(part.toLowerCase()));
-        })
+        .filter((store) => locationMatches(store.location, requestedLocation))
         .map((store) => store.userId)
         .filter(Boolean);
 
       filter.$or = [
-        ...(productLocationConditions.length ? [{ $or: productLocationConditions }] : []),
+        ...(productLocationFilter ? [productLocationFilter] : []),
         ...(matchingSellerIds.length ? [{ sellerId: { $in: matchingSellerIds } }] : []),
       ];
 
@@ -273,12 +319,8 @@ async function getProviders(req, res) {
     };
     const requestedLocation = clean(req.query.location);
     if (requestedLocation) {
-      const parts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
-      providerFilter.$or = parts.flatMap((part) => ([
-        { "serviceArea.city": { $regex: part, $options: "i" } },
-        { "serviceArea.state": { $regex: part, $options: "i" } },
-        { "serviceArea.country": { $regex: part, $options: "i" } },
-      ]));
+      const serviceAreaFilter = locationFilter(requestedLocation, "serviceArea");
+      if (serviceAreaFilter) Object.assign(providerFilter, serviceAreaFilter);
     }
     const profiles = await ProviderProfile.find(providerFilter)
       .populate({ path: "userId", select: "firstName lastName username email avatar" })
@@ -343,31 +385,15 @@ async function getServices(req, res) {
 
     const requestedLocation = clean(req.query.location);
     if (requestedLocation) {
-      const locationParts = requestedLocation.split(",").map((part) => part.trim()).filter(Boolean);
-
-      const locationConditions = locationParts.flatMap((part) => ([
-        { "location.city": { $regex: part, $options: "i" } },
-        { "location.state": { $regex: part, $options: "i" } },
-        { "location.country": { $regex: part, $options: "i" } },
-      ]));
-
-      const providerLocationConditions = locationParts.flatMap((part) => ([
-        { "serviceArea.city": { $regex: part, $options: "i" } },
-        { "serviceArea.state": { $regex: part, $options: "i" } },
-        { "serviceArea.country": { $regex: part, $options: "i" } },
-      ]));
-
+      const serviceLocationFilter = locationFilter(requestedLocation);
+      const providerLocationFilter = locationFilter(requestedLocation, "serviceArea");
       const matchingProviderIds = approvedProviders
-        .filter((profile) => {
-          const area = profile.serviceArea || {};
-          const haystack = [area.city, area.state, area.country].filter(Boolean).join(" ").toLowerCase();
-          return locationParts.some((part) => haystack.includes(part.toLowerCase()));
-        })
+        .filter((profile) => locationMatches(profile.serviceArea, requestedLocation))
         .map((profile) => profile.userId)
         .filter(Boolean);
 
       filter.$or = [
-        ...(locationConditions.length ? [{ $or: locationConditions }] : []),
+        ...(serviceLocationFilter ? [serviceLocationFilter] : []),
         ...(matchingProviderIds.length ? [{ providerId: { $in: matchingProviderIds } }] : []),
       ];
 
