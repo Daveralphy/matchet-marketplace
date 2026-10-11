@@ -37,6 +37,8 @@ export default function BuyerMessages() {
   const [error, setError] = useState("");
   const conversationRequestId = useRef(0);
   const requestedConversationId = useRef("");
+  const chatBodyRef = useRef(null);
+  const shouldAutoScroll = useRef(true);
 
   const loadInbox = useCallback(async (preserveSelection = true) => {
     try {
@@ -119,6 +121,8 @@ export default function BuyerMessages() {
         const inboxItems = inboxResponse.data?.conversations || [];
         setConversations(inboxItems);
         const incoming = conversationResponse.data?.messages || [];
+        const chatBody = chatBodyRef.current;
+        shouldAutoScroll.current = !chatBody || chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 100;
         setActiveConversation((current) => {
           if (!current || current.conversationId !== selectedId) return current;
           const merged = new Map();
@@ -169,7 +173,14 @@ export default function BuyerMessages() {
 
   const unreadCount = conversations.reduce((total, item) => total + Number(item.unreadCount || 0), 0);
 
+  useEffect(() => {
+    if (!shouldAutoScroll.current || !chatBodyRef.current) return;
+    chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+    shouldAutoScroll.current = false;
+  }, [activeConversation?.messages?.length]);
+
   async function loadOlderMessages() {
+    shouldAutoScroll.current = false;
     const cursor = activeConversation?.pagination?.nextBefore;
     const cursorId = activeConversation?.pagination?.nextBeforeId;
     const id = activeConversation?.conversationId;
@@ -257,7 +268,7 @@ export default function BuyerMessages() {
             ) : (
               <>
                 <header className="account-messages-chat-header"><Avatar user={activeConversation.participant} large /><div><strong>{activeConversation.participant?.name || "Matchet user"}</strong><span>Matchet conversation</span></div></header>
-                <div className="account-messages-chat-body">
+                <div className="account-messages-chat-body" ref={chatBodyRef}>
                   {activeConversation.pagination?.hasMore && <button type="button" className="account-messages-load-older" onClick={loadOlderMessages} disabled={conversationLoading}>{conversationLoading ? "Loading…" : "Load older messages"}</button>}
                   {(activeConversation.messages || []).length === 0 ? <div className="account-messages-empty">No messages in this conversation yet.</div> : activeConversation.messages.map((item, index, list) => {
                     const showDate = index === 0 || new Date(item.createdAt).toDateString() !== new Date(list[index - 1].createdAt).toDateString();
