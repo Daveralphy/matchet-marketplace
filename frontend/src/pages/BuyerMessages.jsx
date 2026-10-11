@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getInbox, getConversation, sendMessage } from "../api/messages";
 import "./BuyerMessages.css";
 
@@ -34,6 +34,7 @@ export default function BuyerMessages() {
   const [conversationLoading, setConversationLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const conversationRequestId = useRef(0);
 
   const loadInbox = useCallback(async (preserveSelection = true) => {
     try {
@@ -53,18 +54,21 @@ export default function BuyerMessages() {
   }, []);
 
   const loadSelectedConversation = useCallback(async (id) => {
-    if (!id) { setActiveConversation(null); return; }
+    const requestId = ++conversationRequestId.current;
+    if (!id) { setActiveConversation(null); setConversationLoading(false); return; }
     setConversationLoading(true);
     try {
       const response = await getConversation(id);
+      if (requestId !== conversationRequestId.current) return;
       setActiveConversation(response.data || null);
       setConversations((current) => current.map((item) => item.conversationId === id ? { ...item, unreadCount: 0 } : item));
       setError("");
     } catch (requestError) {
+      if (requestId !== conversationRequestId.current) return;
       setActiveConversation(null);
       setError(requestError.message || "We could not open this conversation.");
     } finally {
-      setConversationLoading(false);
+      if (requestId === conversationRequestId.current) setConversationLoading(false);
     }
   }, []);
 
