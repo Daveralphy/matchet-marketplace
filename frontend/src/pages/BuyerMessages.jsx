@@ -35,6 +35,7 @@ export default function BuyerMessages() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const conversationRequestId = useRef(0);
+  const requestedConversationId = useRef("");
 
   const loadInbox = useCallback(async (preserveSelection = true) => {
     try {
@@ -42,6 +43,7 @@ export default function BuyerMessages() {
       const items = response.data?.conversations || [];
       setConversations(items);
       setSelectedId((current) => {
+        if (requestedConversationId.current) return requestedConversationId.current;
         if (preserveSelection && current && items.some((item) => item.conversationId === current)) return current;
         return items[0]?.conversationId || "";
       });
@@ -85,6 +87,7 @@ export default function BuyerMessages() {
       .then((response) => {
         if (!active) return;
         const conversation = response.data;
+        requestedConversationId.current = conversation.conversationId;
         setSelectedId(conversation.conversationId);
         setActiveConversation(conversation);
       })
