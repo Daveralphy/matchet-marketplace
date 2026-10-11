@@ -424,7 +424,7 @@ function ProductImage({ product }) {
   return <MarketplaceProductVisual product={product} size="catalogue" />;
 }
 
-function ProductCatalogueCard({ product }) {
+function ProductCatalogueCard({ product, view = "grid" }) {
   const { addItem, items: cartItems } = useCart();
   const { isSaved, toggleSaved, isAuthenticated } = useSavedItems();
   const [added, setAdded] = useState(false);
@@ -449,8 +449,8 @@ function ProductCatalogueCard({ product }) {
   const rating = Number(product.rating) || 0;
 
   return (
-    <Link to={`/products/${product.id}`} className="group flex h-[430px] min-w-0 flex-col overflow-hidden rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_10px_28px_rgba(16,24,63,0.1)]">
-      <div className="relative h-[220px] w-full shrink-0 overflow-hidden rounded-[14px]">
+    <Link to={`/products/${product.id}`} className={view === "list" ? "grid min-w-0 grid-cols-[116px_minmax(0,1fr)] items-center gap-3 rounded-[20px] bg-white p-3 shadow-[0_7px_24px_rgba(16,24,63,0.07)] sm:grid-cols-[156px_minmax(0,1fr)_190px] sm:gap-5 sm:p-4" : "group flex h-[465px] min-w-0 flex-col overflow-hidden rounded-[22px] bg-white p-3.5 shadow-[0_8px_26px_rgba(16,24,63,0.08)] transition-all hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(16,24,63,0.13)]"}>
+      <div className={view === "list" ? "relative h-[116px] w-[116px] shrink-0 overflow-hidden rounded-[16px] sm:h-[156px] sm:w-[156px]" : "relative h-[235px] w-full shrink-0 overflow-hidden rounded-[16px]">
         <ProductImage product={product} />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
         {added && <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-[#10183f]/90 px-3 py-2 text-[11px] font-semibold text-white shadow-lg">Item added to cart</div>}
@@ -778,13 +778,13 @@ function ProductCatalogue({ isAuthenticated }) {
             </div>
           </div>
 
-          <div className={`mt-4 grid gap-3 ${view === "grid" ? "grid-cols-2 xl:grid-cols-5" : "grid-cols-1"}`}>
+          <div className={`mt-4 grid gap-4 ${view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" : "grid-cols-1"}`}>
             {productsLoading ? Array.from({ length: 6 }, (_, index) => (
               <div key={index} className="h-[280px] animate-pulse overflow-hidden rounded-[12px] border border-slate-100 bg-white" aria-hidden="true">
                 <div className="h-[160px] bg-slate-200" />
                 <div className="space-y-3 p-3"><div className="h-3 w-1/3 rounded bg-slate-200" /><div className="h-4 w-4/5 rounded bg-slate-200" /><div className="h-3 w-1/2 rounded bg-slate-100" /></div>
               </div>
-            )) : sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} />) : products.length === 0 ? (
+            )) : sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} view={view} />) : products.length === 0 ? (
               <div className="col-span-full flex min-h-[260px] items-center justify-center rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 text-center">
                 <div><p className="text-[13px] font-semibold text-[#10183f]">No products available yet</p><p className="mt-1 text-[11px] text-[#69739a]">Live products will appear here when sellers publish active listings.</p></div>
               </div>
