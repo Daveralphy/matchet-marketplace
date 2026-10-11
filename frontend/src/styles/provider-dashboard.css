@@ -618,3 +618,33 @@
     z-index: 45;
   }
 }
+
+
+/* Provider dashboard bottom row: keep the support panel at a readable width.
+   The older float/25% rule was shrinking the grid item inside the dashboard grid. */
+.provider-dashboard .provider-dashboard-bottom-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  align-items: stretch;
+}
+.provider-dashboard .provider-dashboard-bottom-grid > .provider-quick-actions {
+  min-width: 0;
+}
+.provider-dashboard .provider-dashboard-bottom-grid > .provider-help {
+  float: none;
+  width: auto;
+  min-width: 0;
+  min-height: 145px;
+  box-sizing: border-box;
+}
+.provider-dashboard .provider-help p {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+@media (max-width: 1100px) {
+  .provider-dashboard .provider-dashboard-bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .provider-dashboard .provider-dashboard-bottom-grid > .provider-help {
+    width: auto;
+  }
+}
