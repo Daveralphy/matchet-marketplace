@@ -309,7 +309,7 @@ function MarketplaceCard({ item, compact = false }) {
   const saved = isSaved(item.type === "service" ? "service" : "product", item.id);
   const handleSave = async (event) => { event.preventDefault(); event.stopPropagation(); if (!isAuthenticated) { window.location.href = "/login"; return; } await toggleSaved(item.type === "service" ? "service" : "product", item.id); };
   const handlePrimaryAction = (event) => { event.preventDefault(); event.stopPropagation(); window.location.href = item.type === "service" ? "/services/" + item.id : "/products/" + item.id; };
-  return <MarketplaceItemCard item={item} saved={saved} onSave={handleSave} onPrimaryAction={handlePrimaryAction} primaryLabel={item.type === "service" ? "Book Now" : "View Product"} primaryIcon={item.type === "service" ? "calendar" : "cart"} />;
+  return <MarketplaceItemCard item={item} saved={saved} onSave={handleSave} onPrimaryAction={handlePrimaryAction} primaryLabel={item.type === "service" ? "Book Now" : "View Product"} primaryIcon={item.type === "service" ? "calendar" : "cart"} className="w-[250px] shrink-0" />;
 }
 function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading = false, viewPath = "/explore" }) {
   const railRef = useRef(null);
