@@ -63,9 +63,9 @@ export default function BuyerMessages() {
   const [openMenuId, setOpenMenuId] = useState("");
   const menuRef = useRef(null);
 
-  const loadInbox = useCallback(async (preserveSelection = true, syncTransactions = false) => {
+  const loadInbox = useCallback(async (preserveSelection = true, syncTransactions = false, archived = false) => {
     try {
-      const response = await getInbox({ syncTransactions });
+      const response = await getInbox({ syncTransactions, archived });
       const items = response.data?.conversations || [];
       setConversations(items);
       setSelectedId((current) => {
@@ -103,7 +103,7 @@ export default function BuyerMessages() {
     }
   }, []);
 
-  useEffect(() => { loadInbox(false, true); }, [loadInbox]);
+  useEffect(() => { loadInbox(false, true, filter === "archived"); }, [loadInbox, filter]);
 
   useEffect(() => {
     const recipientId = new URLSearchParams(window.location.search).get("recipient");
@@ -137,7 +137,7 @@ export default function BuyerMessages() {
       if (document.visibilityState === "hidden") return;
       try {
         const [inboxResponse, conversationResponse] = await Promise.all([
-          getInbox(),
+          getInbox({ archived: filter === "archived" }),
           getConversation(selectedId),
         ]);
         if (!active) return;
@@ -177,7 +177,7 @@ export default function BuyerMessages() {
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [selectedId]);
+  }, [selectedId, filter]);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -185,7 +185,7 @@ export default function BuyerMessages() {
       const name = item.participant?.name || "";
       const text = item.lastMessage || "";
       const matches = !query || name.toLowerCase().includes(query) || text.toLowerCase().includes(query);
-      return matches && (filter === "all" || Number(item.unreadCount || 0) > 0);
+      return matches && (filter !== "unread" || Number(item.unreadCount || 0) > 0);
     });
   }, [conversations, search, filter]);
 
@@ -213,7 +213,7 @@ export default function BuyerMessages() {
     setOpenMenuId("");
     try {
       await updateConversationState(conversation.conversationId, action);
-      if (action === "delete" || action === "archive") {
+      if (action === "delete" || action === "archive" || action === "unarchive") {
         setConversations((current) => current.filter((item) => item.conversationId !== conversation.conversationId));
         if (selectedId === conversation.conversationId) {
           setSelectedId("");
@@ -303,6 +303,7 @@ export default function BuyerMessages() {
             <div className="account-messages-filters">
               <button type="button" className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>All</button>
               <button type="button" className={filter === "unread" ? "active" : ""} onClick={() => setFilter("unread")}>Unread{unreadCount > 0 ? ` (${unreadCount})` : ""}</button>
+              <button type="button" className={filter === "archived" ? "active" : ""} onClick={() => setFilter("archived")}>Archived</button>
             </div>
             <div className="account-messages-conversations">
               {loading ? <div className="account-messages-empty">Loading conversations…</div> : filtered.length === 0 ? (
@@ -318,7 +319,7 @@ export default function BuyerMessages() {
                     <button type="button" className="account-message-menu-trigger" aria-label={"Conversation options for " + (item.participant?.name || "Matchet user")} aria-haspopup="menu" aria-expanded={openMenuId === item.conversationId} onClick={(event) => { event.stopPropagation(); setOpenMenuId((current) => current === item.conversationId ? "" : item.conversationId); }}>⋮</button>
                     {openMenuId === item.conversationId && <div className="account-message-menu" role="menu">
                       <button type="button" role="menuitem" onClick={() => handleConversationAction(item, Number(item.unreadCount || 0) > 0 ? "read" : "unread")}>{Number(item.unreadCount || 0) > 0 ? "Mark as read" : "Mark as unread"}</button>
-                      <button type="button" role="menuitem" onClick={() => handleConversationAction(item, "archive")}>Archive conversation</button>
+                      <button type="button" role="menuitem" onClick={() => handleConversationAction(item, filter === "archived" ? "unarchive" : "archive")}>{filter === "archived" ? "Unarchive conversation" : "Archive conversation"}</button>
                       <button type="button" role="menuitem" className="danger" onClick={() => handleConversationAction(item, "delete")}>Delete conversation</button>
                     </div>}
                   </div>
