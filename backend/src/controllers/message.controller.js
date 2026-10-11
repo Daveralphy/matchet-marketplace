@@ -185,7 +185,7 @@ async function getInbox(req, res) {
   try {
     const userId = req.user._id;
     if (req.query.syncTransactions === "true") await ensureTransactionOpeningMessages(userId);
-    const messages = await Message.find({ $or: [{ senderId: userId }, { receiverId: userId }] })
+    const messages = await Message.find({ $or: [{ senderId: userId }, { receiverId: userId }], hiddenFor: { $ne: userId }, archivedFor: { $ne: userId } })
       .sort({ createdAt: -1, _id: -1 })
       .limit(INBOX_SCAN_LIMIT)
       .populate("senderId", "firstName lastName avatar")
@@ -217,6 +217,45 @@ async function getInbox(req, res) {
   } catch (error) {
     console.error("Inbox load error:", error);
     return res.status(500).json({ success: false, message: "Unable to load your messages right now." });
+  }
+}
+
+async function updateConversationState(req, res) {
+  try {
+    const userId = req.user._id;
+    const conversationId = req.params.conversationId;
+    const otherId = getOtherParticipantId(conversationId, userId);
+    if (!otherId) return res.status(404).json({ success: false, message: "Conversation not found." });
+    const { action } = req.body || {};
+    const pair = {
+      $or: [
+        { senderId: userId, receiverId: otherId },
+        { senderId: otherId, receiverId: userId },
+      ],
+    };
+    let update;
+    if (action === "read") {
+      update = { $set: { readAt: new Date() } };
+      await Message.updateMany({ ...pair, receiverId: userId, readAt: null }, update);
+    } else if (action === "unread") {
+      // Mark the latest message from the other participant unread for this user.
+      const latest = await Message.findOne(pair).sort({ createdAt: -1, _id: -1 }).select("_id").lean();
+      if (latest) {
+        await Message.updateOne({ _id: latest._id, receiverId: userId }, { $unset: { readAt: 1 } });
+      }
+    } else if (action === "archive") {
+      await Message.updateMany(pair, { $addToSet: { archivedFor: userId } });
+    } else if (action === "unarchive") {
+      await Message.updateMany(pair, { $pull: { archivedFor: userId } });
+    } else if (action === "delete") {
+      await Message.updateMany(pair, { $addToSet: { hiddenFor: userId } });
+    } else {
+      return res.status(400).json({ success: false, message: "Choose a valid conversation action." });
+    }
+    return res.json({ success: true, data: { conversationId, action } });
+  } catch (error) {
+    console.error("Update conversation state error:", error);
+    return res.status(500).json({ success: false, message: "Unable to update this conversation right now." });
   }
 }
 
@@ -450,4 +489,4 @@ async function sendMessage(req, res) {
   }
 }
 
-module.exports = { getInbox, startConversation, getConversation, sendMessage, getUnreadCount, canonicalConversationId, getOtherParticipantId };
+module.exports = { getInbox, startConversation, getConversation, sendMessage, getUnreadCount, updateConversationState, canonicalConversationId, getOtherParticipantId };
