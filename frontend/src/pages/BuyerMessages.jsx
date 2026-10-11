@@ -287,11 +287,21 @@ export default function BuyerMessages() {
               {loading ? <div className="account-messages-empty">Loading conversations…</div> : filtered.length === 0 ? (
                 <div className="account-messages-empty"><span className="account-messages-empty-icon">✉</span><strong>{search || filter === "unread" ? "No matching conversations" : "No messages yet"}</strong><p>{search || filter === "unread" ? "Try a different search or filter." : "Open a seller or provider from your orders or bookings to start an eligible conversation."}</p></div>
               ) : filtered.map((item) => (
-                <button type="button" key={item.conversationId} className={"account-message-thread" + (selectedId === item.conversationId ? " selected" : "")} onClick={() => setSelectedId(item.conversationId)}>
-                  <Avatar user={item.participant} />
-                  <span className="account-message-thread-copy"><strong>{item.participant?.name || "Matchet user"}</strong><span>{item.lastMessage || "Attachment"}</span></span>
-                  <span className="account-message-thread-meta"><time>{formatTime(item.lastMessageAt)}</time>{item.unreadCount > 0 && <b>{item.unreadCount}</b>}</span>
-                </button>
+                <div key={item.conversationId} className={"account-message-thread-wrap" + (selectedId === item.conversationId ? " selected" : "")}>
+                  <button type="button" className={"account-message-thread" + (selectedId === item.conversationId ? " selected" : "")} onClick={() => { setSelectedId(item.conversationId); setOpenMenuId(""); }}>
+                    <Avatar user={item.participant} />
+                    <span className="account-message-thread-copy"><strong>{item.participant?.name || "Matchet user"}</strong><span>{item.lastMessage || "Attachment"}</span></span>
+                    <span className="account-message-thread-meta"><time>{formatTime(item.lastMessageAt)}</time>{item.unreadCount > 0 && <b>{item.unreadCount}</b>}</span>
+                  </button>
+                  <div className="account-message-thread-actions" ref={openMenuId === item.conversationId ? menuRef : null}>
+                    <button type="button" className="account-message-menu-trigger" aria-label={"Conversation options for " + (item.participant?.name || "Matchet user")} aria-haspopup="menu" aria-expanded={openMenuId === item.conversationId} onClick={(event) => { event.stopPropagation(); setOpenMenuId((current) => current === item.conversationId ? "" : item.conversationId); }}>⋮</button>
+                    {openMenuId === item.conversationId && <div className="account-message-menu" role="menu">
+                      <button type="button" role="menuitem" onClick={() => handleConversationAction(item, Number(item.unreadCount || 0) > 0 ? "read" : "unread")}>{Number(item.unreadCount || 0) > 0 ? "Mark as read" : "Mark as unread"}</button>
+                      <button type="button" role="menuitem" onClick={() => handleConversationAction(item, "archive")}>Archive conversation</button>
+                      <button type="button" role="menuitem" className="danger" onClick={() => handleConversationAction(item, "delete")}>Delete conversation</button>
+                    </div>}
+                  </div>
+                </div>
               ))}
             </div>
           </aside>
