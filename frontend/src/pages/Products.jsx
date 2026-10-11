@@ -449,8 +449,8 @@ function ProductCatalogueCard({ product }) {
   const rating = Number(product.rating) || 0;
 
   return (
-    <Link to={`/products/${product.id}`} className="group flex h-[390px] min-w-0 flex-col overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_6px_20px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_8px_24px_rgba(16,24,63,0.1)]">
-      <div className="relative h-[220px] w-full shrink-0 overflow-hidden rounded-[12px]">
+    <Link to={`/products/${product.id}`} className="group flex h-[430px] min-w-0 flex-col overflow-hidden rounded-[18px] bg-white p-3 shadow-[0_6px_24px_rgba(16,24,63,0.07)] transition-shadow hover:shadow-[0_10px_28px_rgba(16,24,63,0.1)]">
+      <div className="relative h-[220px] w-full shrink-0 overflow-hidden rounded-[14px]">
         <ProductImage product={product} />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#10183f]/65 via-[#10183f]/20 to-transparent" />
         {added && <div className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-[#10183f]/90 px-3 py-2 text-[11px] font-semibold text-white shadow-lg">Item added to cart</div>}
@@ -466,11 +466,12 @@ function ProductCatalogueCard({ product }) {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col px-1 pb-1 pt-3">
-        <h3 className="line-clamp-2 min-h-[36px] text-[14px] font-semibold leading-[18px] text-[#10183f]">
+        <div className="flex items-center justify-between gap-2"><span className="truncate text-[10px] font-medium text-[#6f7899]">{product.category || "Product"}</span><span className="shrink-0 text-[11px] text-[#10183f]"><span className="text-[#f4a900]">★</span> {rating.toFixed(1)} {product.reviews != null ? <span className="text-[#7b84a3]">({product.reviews})</span> : null}</span></div>
+        <h3 className="mt-2 line-clamp-2 min-h-[40px] text-[15px] font-semibold leading-5 text-[#10183f]">
           {product.title}
         </h3>
 
-        <p className="mt-1.5 truncate text-[16px] font-bold tracking-[-0.02em] text-[#07863a]">
+        <p className="mt-1.5 truncate text-[17px] font-bold tracking-[-0.02em] text-[#07863a]">
           {product.price}
         </p>
 
