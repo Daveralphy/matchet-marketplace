@@ -20,6 +20,10 @@ export function getInbox() {
   return request("/api/messages");
 }
 
+export function startConversation(recipientId) {
+  return request("/api/messages/start/" + encodeURIComponent(recipientId));
+}
+
 export function getConversation(conversationId, options = {}) {
   const params = new URLSearchParams();
   if (options.before) params.set("before", options.before);
