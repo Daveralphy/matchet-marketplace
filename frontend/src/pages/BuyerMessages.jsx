@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { getInbox, startConversation, getConversation, sendMessage } from "../api/messages";
 import "./BuyerMessages.css";
 
@@ -102,6 +103,60 @@ export default function BuyerMessages() {
     else setActiveConversation(null);
   }, [selectedId, loadSelectedConversation]);
 
+  // Poll the inbox and selected thread so new messages appear without a manual refresh.
+  // Merge fetched messages with any older pages already loaded in this view.
+  useEffect(() => {
+    if (!selectedId) return undefined;
+    let active = true;
+    const refresh = async () => {
+      if (document.visibilityState === "hidden") return;
+      try {
+        const [inboxResponse, conversationResponse] = await Promise.all([
+          getInbox(),
+          getConversation(selectedId),
+        ]);
+        if (!active) return;
+        const inboxItems = inboxResponse.data?.conversations || [];
+        setConversations(inboxItems);
+        const incoming = conversationResponse.data?.messages || [];
+        setActiveConversation((current) => {
+          if (!current || current.conversationId !== selectedId) return current;
+          const merged = new Map();
+          for (const message of [...(current.messages || []), ...incoming]) {
+            merged.set(String(message.id || message._id), message);
+          }
+          const messages = [...merged.values()].sort((a, b) => {
+            const timeDifference = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+            return timeDifference || String(a.id || a._id).localeCompare(String(b.id || b._id));
+          });
+          return {
+            ...current,
+            ...conversationResponse.data,
+            messages,
+            pagination: {
+              ...(current.pagination || {}),
+              ...(conversationResponse.data?.pagination || {}),
+              // Keep the older-page cursor when the newest-page response has no older pages.
+              hasMore: Boolean(current.pagination?.hasMore || conversationResponse.data?.pagination?.hasMore),
+              nextBefore: current.pagination?.nextBefore || conversationResponse.data?.pagination?.nextBefore || null,
+              nextBeforeId: current.pagination?.nextBeforeId || conversationResponse.data?.pagination?.nextBeforeId || null,
+            },
+          };
+        });
+      } catch {
+        // Temporary polling failures should not interrupt composing or replace the visible thread.
+      }
+    };
+    const timer = window.setInterval(refresh, 3000);
+    const onVisibilityChange = () => { if (document.visibilityState === "visible") refresh(); };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [selectedId]);
+
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
     return conversations.filter((item) => {
@@ -164,6 +219,9 @@ export default function BuyerMessages() {
   return (
     <main className="account-messages-page">
       <div className="account-messages-shell">
+        <nav className="account-messages-breadcrumb" aria-label="Breadcrumb">
+          <Link to="/">Home</Link><span aria-hidden="true">›</span><Link to="/buyer/dashboard">My Account</Link><span aria-hidden="true">›</span><span aria-current="page">Messages</span>
+        </nav>
         <header className="account-messages-heading">
           <div><p>Stay connected</p><h1>Messages</h1><span>Conversations with buyers, sellers, and service providers.</span></div>
           {unreadCount > 0 && <span className="account-messages-unread">{unreadCount} unread</span>}
