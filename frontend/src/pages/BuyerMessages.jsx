@@ -40,9 +40,9 @@ export default function BuyerMessages() {
   const chatBodyRef = useRef(null);
   const shouldAutoScroll = useRef(true);
 
-  const loadInbox = useCallback(async (preserveSelection = true) => {
+  const loadInbox = useCallback(async (preserveSelection = true, syncTransactions = false) => {
     try {
-      const response = await getInbox();
+      const response = await getInbox({ syncTransactions });
       const items = response.data?.conversations || [];
       setConversations(items);
       setSelectedId((current) => {
@@ -80,7 +80,7 @@ export default function BuyerMessages() {
     }
   }, []);
 
-  useEffect(() => { loadInbox(false); }, [loadInbox]);
+  useEffect(() => { loadInbox(false, true); }, [loadInbox]);
 
   useEffect(() => {
     const recipientId = new URLSearchParams(window.location.search).get("recipient");
