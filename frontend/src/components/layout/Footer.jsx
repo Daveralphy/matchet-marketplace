@@ -202,7 +202,7 @@ export default function Footer({ isAuthenticated = false }) {
 
               <p className="mt-2 max-w-[280px] text-[14px] leading-6 text-slate-300 sm:text-[15px]">
                 Matchet connects you with trusted products and service
-                providers around you.
+                people and businesses around you.
               </p>
             </div>
 
