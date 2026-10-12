@@ -60,7 +60,7 @@ export default function SellerSignupFormHeader({ step }) {
 
       <div className="seller-signup-form-heading-copy">
         <h1>Sell products with Buy & Sell</h1>
-        <p>Set up your seller profile and start selling your products on Matchet.</p>
+        <p>Set up your profile to sell products on Matchet.</p>
       </div>
 
       <div className="seller-signup-stepper">
