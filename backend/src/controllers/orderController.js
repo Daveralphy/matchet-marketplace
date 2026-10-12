@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
@@ -105,7 +106,7 @@ async function createBuyerOrderReview(req, res) {
       return res.status(409).json({ success: false, message: "You can review products after the paid order has been delivered." });
     }
     const productId = String(req.body?.productId || "");
-    if (!require("mongoose").Types.ObjectId.isValid(productId)) {
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).json({ success: false, message: "Choose a valid product from this order." });
     }
     const item = (order.items || []).find((entry) => String(entry.productId) === productId);
