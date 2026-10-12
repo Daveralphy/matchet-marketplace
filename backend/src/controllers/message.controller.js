@@ -138,6 +138,7 @@ async function ensureTransactionOpeningMessages(userId) {
         await Message.create({
           conversationId: canonicalConversationId(buyerId, sellerId),
           sourceRef,
+          category: "product",
           senderId: buyerId,
           receiverId: sellerId,
           content,
@@ -179,6 +180,7 @@ async function ensureTransactionOpeningMessages(userId) {
       await Message.create({
         conversationId: canonicalConversationId(buyerId, providerId),
         sourceRef,
+        category: "service",
         senderId: buyerId,
         receiverId: providerId,
         content,
@@ -431,6 +433,7 @@ async function sendMessage(req, res) {
   try {
     const senderId = req.user._id;
     const { receiverId, conversationId, content, attachments } = req.body || {};
+    const category = ["product", "service"].includes(req.body?.category) ? req.body.category : "general";
     if (!mongoose.Types.ObjectId.isValid(receiverId) || String(receiverId) === String(senderId)) {
       return res.status(400).json({ success: false, message: "Choose a valid recipient." });
     }
@@ -468,6 +471,7 @@ async function sendMessage(req, res) {
 
     const created = await Message.create({
       conversationId: expectedId,
+      category,
       senderId,
       receiverId,
       content: cleanContent,
