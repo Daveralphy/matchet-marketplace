@@ -29,6 +29,7 @@ export default function MarketplaceLayout({ children }) {
   const [pageLoading, setPageLoading] = useState(true);
   const userName = user?.firstName || user?.username || "Daveralphy";
   const hideFooter =
+    location.pathname === "/for-providers" ||
     location.pathname === "/messages" ||
     location.pathname === "/seller/messages" ||
     location.pathname === "/provider/messages" ||
@@ -61,7 +62,7 @@ export default function MarketplaceLayout({ children }) {
       "/explore": "Explore | Matchet",
       "/products": "Products | Matchet",
       "/services": "Services | Matchet",
-      "/for-providers": "For Provider | Matchet",
+      "/for-providers": "Buy & Sell | Matchet",
       "/cart": "Cart | Matchet",
       "/checkout": "Checkout | Matchet",
     };
