@@ -4,3 +4,28 @@
 /* Admin visual system applied to marketplace workspaces */
 .seller-orders-page{padding:26px 0 42px;max-width:1380px;color:#10183f}.orders-head{margin-bottom:20px}.orders-head h1{font-size:25px;letter-spacing:-.5px}.orders-head p{font-size:10px}.order-stats{gap:13px;margin-bottom:14px}.order-stat{min-height:0;padding:16px 17px;border:1px solid #e6eaf2;border-radius:9px;box-shadow:3px 3px 14px rgba(23,38,83,.025)}.order-stat-icon{width:36px;height:36px;border-radius:8px}.order-stat strong{font-size:22px}.order-stat b{font-size:10px}.order-stat span{font-size:8px}.orders-content{gap:14px}.orders-table-card,.order-detail{border:1px solid #e6eaf2;border-radius:9px}.order-tabs{height:44px}.order-tabs button{font-size:9px}.order-filters{padding:14px 12px}.order-filters input,.order-filters select{font-size:9px}.order-table-wrap table{font-size:9px}.order-table-wrap th{font-size:8px}.order-table-wrap td{font-size:9px}.order-detail h2{font-size:12px}.detail-body{font-size:9px}
 @media(max-width:760px){.seller-orders-page{padding:20px 0}.orders-head h1{font-size:24px}.orders-head{display:block}.orders-head-actions{align-items:flex-start;margin-top:12px}}
+
+/* Seller order actions and cancellation dialog */
+.order-action-cell{position:relative;overflow:visible!important;white-space:nowrap}
+.order-action-cell .dots{width:32px;height:32px;border-radius:6px;cursor:pointer}
+.order-action-cell .dots:hover,.order-action-cell .dots[aria-expanded="true"]{background:#eef3ff;color:#1768eb}
+.order-action-menu{position:absolute;right:8px;top:calc(100% - 4px);z-index:20;min-width:150px;padding:5px;background:#fff;border:1px solid #e2e7f1;border-radius:8px;box-shadow:0 12px 30px rgba(16,24,63,.16);display:grid;gap:2px}
+.order-action-menu button{border:0;background:transparent;text-align:left;padding:10px 12px;border-radius:5px;font-size:11px;color:#17234e;cursor:pointer;white-space:nowrap}
+.order-action-menu button:hover{background:#f2f5fc}
+.order-action-menu button.danger{color:#d72f3b}
+.detail-actions .view-order{border:1px solid #dce4f4;background:#f7f9ff;color:#1c2a60;display:flex;align-items:center;justify-content:center;gap:8px}
+.seller-cancel-overlay{position:fixed;inset:0;z-index:1000;background:rgba(15,22,49,.52);display:grid;place-items:center;padding:20px}
+.seller-cancel-dialog{position:relative;width:min(460px,100%);background:#fff;border-radius:14px;padding:28px;box-shadow:0 24px 80px rgba(9,18,49,.25);color:#10183f}
+.seller-cancel-close{position:absolute;right:14px;top:12px;width:32px;height:32px;border:0;border-radius:7px;background:#f3f5fa;color:#536080;font-size:23px;cursor:pointer}
+.seller-cancel-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#fff0f0;color:#cf2635;font-weight:800;font-size:22px}
+.seller-cancel-dialog h2{font-size:20px;margin:15px 0 8px}
+.seller-cancel-dialog>p{font-size:13px;line-height:1.55;color:#69728e;margin:0 0 20px}
+.seller-cancel-dialog form label{display:block;font-size:12px;font-weight:700;margin-bottom:8px}
+.seller-cancel-dialog textarea{display:block;width:100%;resize:vertical;border:1px solid #dce2ef;border-radius:8px;padding:12px;font:inherit;font-size:13px;outline:none;color:#182247}
+.seller-cancel-dialog textarea:focus{border-color:#6b92f1;box-shadow:0 0 0 3px rgba(40,117,238,.1)}
+.seller-cancel-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}
+.seller-cancel-actions button{border:1px solid #dce2ef;border-radius:7px;background:#fff;padding:10px 13px;font-size:12px;font-weight:600;cursor:pointer}
+.seller-cancel-actions button[type="submit"]{background:#d92e3d;border-color:#d92e3d;color:#fff}
+.seller-cancel-actions button:disabled{opacity:.55;cursor:not-allowed}
+.seller-cancel-error{font-size:12px;color:#c72a37;margin:8px 0 0}
+@media(max-width:760px){.seller-cancel-dialog{padding:23px 18px}.seller-cancel-actions{flex-direction:column-reverse}.seller-cancel-actions button{width:100%}}
