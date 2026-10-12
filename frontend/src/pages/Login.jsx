@@ -233,7 +233,7 @@ const Login = () => {
           <div className="hidden h-full basis-1/2 flex-none items-center justify-center overflow-hidden bg-[#fbfcfb] lg:flex">
             <img
               src={loginHero}
-              alt="Matchet: Shop products and book services from trusted providers around you."
+              alt="Matchet: Shop products and book services from trusted local businesses."
               className="h-[108%] w-[108%] max-w-none object-contain"
             />
           </div>
