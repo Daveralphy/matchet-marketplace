@@ -55,13 +55,15 @@ export default function BuyerOrderDetails() {
                   { key: "placed", label: "Order placed", detail: order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-NG") : "Order received" },
                   { key: "paid", label: "Payment confirmed", detail: String(order.paymentStatus || "pending").toLowerCase() === "paid" || String(order.paymentStatus || "").toLowerCase() === "successful" ? "Payment received" : "Awaiting payment" },
                   { key: "processing", label: "Processing", detail: "Seller is preparing your order" },
-                  { key: "shipped", label: "On the way", detail: "Order handed over for delivery" },
+                  { key: "shipped", label: "Shipped", detail: "Order handed over for delivery" },
+                  { key: "out_for_delivery", label: "Out for delivery", detail: "Your order is on its way to your address" },
                   { key: "delivered", label: "Delivered", detail: "Order delivery completed" }
                 ];
                 let current = 0;
                 if (["paid", "successful", "completed", "confirmed", "processing", "shipped", "dispatched", "outfordelivery", "delivered"].includes(status)) current = 2;
-                if (["shipped", "dispatched", "outfordelivery"].includes(status)) current = 3;
-                if (["delivered", "completed"].includes(status)) current = 4;
+                if (["shipped", "dispatched"].includes(status)) current = 3;
+                if (["out_for_delivery", "outfordelivery"].includes(status)) current = 4;
+                if (["delivered", "completed"].includes(status)) current = 5;
                 if (["processing", "confirmed"].includes(status)) current = 2;
                 const paymentConfirmed = ["paid", "successful", "completed", "confirmed"].includes(String(order.paymentStatus || "").toLowerCase());
                 if (paymentConfirmed) current = Math.max(current, 1);
