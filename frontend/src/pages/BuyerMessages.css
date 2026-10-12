@@ -101,3 +101,18 @@
   .account-messages-layout.mobile-chat-open .account-messages-chat-body{flex:1 1 0;height:auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-y:contain;padding-bottom:18px}
   .account-messages-layout.mobile-chat-open .account-messages-composer{position:sticky;bottom:0;z-index:20;flex:0 0 auto;padding:10px;background:#fff;padding-bottom:max(10px, env(safe-area-inset-bottom));box-shadow:0 -4px 12px #1020440b}
 }
+
+/* Final composer placement: fixed to the mobile viewport, anchored inside the desktop chat panel. */
+.account-messages-layout{height:min(calc(100dvh - 220px),820px);min-height:560px}
+.account-messages-chat{display:flex;flex-direction:column;min-height:0;height:100%;overflow:hidden}
+.account-messages-chat-body{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto}
+.account-messages-composer{position:sticky;bottom:0;flex-shrink:0;width:100%;box-sizing:border-box;z-index:25;background:#fff}
+@media(max-width:760px){
+  .account-messages-page{padding:10px 10px 0;min-height:0}
+  .account-messages-layout.mobile-chat-open{height:calc(100dvh - 104px);min-height:0;max-height:calc(100dvh - 104px);overflow:hidden}
+  .account-messages-layout.mobile-chat-open .account-messages-chat{height:100%;min-height:0;overflow:hidden;padding-bottom:74px;box-sizing:border-box}
+  .account-messages-layout.mobile-chat-open .account-messages-chat-body{min-height:0;flex:1 1 auto;padding-bottom:22px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .account-messages-layout.mobile-chat-open .account-messages-composer{position:fixed;left:10px;right:10px;bottom:0;width:auto;z-index:9999;display:flex;gap:8px;padding:10px 10px max(12px,env(safe-area-inset-bottom));border:1px solid #e1e7f2;border-bottom:0;border-radius:12px 12px 0 0;box-shadow:0 -5px 18px #15234b12;background:#fff}
+  .account-messages-layout.mobile-chat-open .account-messages-composer input{height:44px;font-size:14px}
+  .account-messages-layout.mobile-chat-open .account-messages-composer button{min-width:68px;height:44px}
+}
