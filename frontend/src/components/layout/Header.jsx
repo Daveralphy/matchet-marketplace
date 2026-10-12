@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { label: "Explore", path: "/explore" },
   { label: "Services", path: "/services" },
   { label: "Products", path: "/products" },
-  { label: "For Providers", path: "/for-providers" },
+  { label: "Buy & Sell", path: "/for-providers" },
 ];
 
 const MOBILE_NAV_ITEMS = [
@@ -25,7 +25,7 @@ const MOBILE_NAV_ITEMS = [
   { label: "Explore", path: "/explore" },
   { label: "Products", path: "/products" },
   { label: "Services", path: "/services" },
-  { label: "For Providers", path: "/for-providers" },
+  { label: "Buy & Sell", path: "/for-providers" },
 ];
 
 const PROFILE_ITEMS = [
