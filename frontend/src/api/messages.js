@@ -20,6 +20,7 @@ export function getInbox(options = {}) {
   const params = new URLSearchParams();
   if (options.syncTransactions) params.set("syncTransactions", "true");
   if (options.archived) params.set("archived", "true");
+  if (options.category) params.set("category", options.category);
   const query = params.toString();
   return request("/api/messages" + (query ? "?" + query : ""));
 }
@@ -33,6 +34,7 @@ export function getConversation(conversationId, options = {}) {
   if (options.before) params.set("before", options.before);
   if (options.beforeId) params.set("beforeId", options.beforeId);
   if (options.limit) params.set("limit", String(options.limit));
+  if (options.category) params.set("category", options.category);
   const query = params.toString();
   return request("/api/messages/" + encodeURIComponent(conversationId) + (query ? "?" + query : ""));
 }
