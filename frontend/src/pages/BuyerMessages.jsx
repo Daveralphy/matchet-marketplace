@@ -248,7 +248,7 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
     if (!cursor || !cursorId || !id || conversationLoading) return;
     setConversationLoading(true);
     try {
-      const response = await getConversation(id, { before: cursor, beforeId: cursorId, limit: 50 });
+      const response = await getConversation(id, { before: cursor, beforeId: cursorId, limit: 50, category: messageCategory });
       const older = response.data?.messages || [];
       setActiveConversation((current) => {
         if (!current || current.conversationId !== id) return current;
