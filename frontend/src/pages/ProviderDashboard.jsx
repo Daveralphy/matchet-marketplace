@@ -54,11 +54,11 @@ export default function ProviderDashboard() {
     <ProviderShell>
       <div className="provider-page provider-dashboard">
         <div className="provider-heading">
-          <div><p>Welcome back,</p><h1>{greetingName}!</h1><span>Here is what is happening with your Buy & Sell account.</span></div>
+          <div><p>Welcome back,</p><h1>{greetingName}!</h1><span>Here is what is happening with your Sell & Offer account.</span></div>
           <div className="provider-heading-quote">{dateLabel}<br /><strong>People. Services.<br />Stronger communities.</strong><em /></div>
         </div>
 
-        {data.application?.isUnderReview && <section className="provider-review-banner"><div className="provider-check">✓</div><div><strong>Your Buy & Sell application is under review</strong><p>Thank you for applying to Buy & Sell on Matchet. Our team is reviewing your information and will notify you once your profile is approved.</p></div><Link to="/provider/application-status">View application&nbsp; →</Link></section>}
+        {data.application?.isUnderReview && <section className="provider-review-banner"><div className="provider-check">✓</div><div><strong>Your Sell & Offer application is under review</strong><p>Thank you for applying to Sell & Offer on Matchet. Our team is reviewing your information and will notify you once your profile is approved.</p></div><Link to="/provider/application-status">View application&nbsp; →</Link></section>}
 
         <div className="provider-stat-grid">
           <div className="provider-stat"><div className="provider-stat-icon calendar"><Icon name="calendar" /></div><strong>{kpis.bookings.value}</strong><b>Total bookings</b><span>This month {kpis.bookings.change !== null && <small className="provider-kpi-change">↗ {kpis.bookings.change >= 0 ? "+" : ""}{kpis.bookings.change}%</small>}</span></div>
