@@ -50,7 +50,7 @@ export default function BuyerBookings() {
                     <span>Booking reference: #{id.slice(-8).toUpperCase()}</span>
                     <div className="buyer-booking-actions">
                       {providerId && <Link className="buyer-message-link" to={"/messages?recipient=" + encodeURIComponent(providerId)}>Message provider</Link>}
-                      <Link className="buyer-booking-details-link" to={"/bookings/" + encodeURIComponent(id)}>View booking details <span aria-hidden="true">→</span></Link>
+
                     </div>
                   </footer>
                 </article>
