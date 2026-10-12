@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
+const Message = require("../models/Message");
 
 const PAYSTACK_API = "https://api.paystack.co";
 const RESERVATION_MINUTES = 30;
@@ -204,6 +205,32 @@ async function finalizeSuccessfulPayment(order, transaction, buyerId) {
 
   if (paidOrder) {
     await Cart.findOneAndUpdate({ userId: paidOrder.buyerId }, { items: [] });
+    const buyerId = String(paidOrder.buyerId);
+    const sellerIds = [...new Set((paidOrder.items || []).map((item) => String(item.sellerId)))];
+    for (const sellerId of sellerIds) {
+      if (!sellerId || sellerId === buyerId) continue;
+      const sellerItems = (paidOrder.items || []).filter((item) => String(item.sellerId) === sellerId);
+      try {
+        await Message.create({
+          conversationId: [buyerId, sellerId].sort().join(":"),
+          sourceRef: "order-status:" + String(paidOrder._id) + ":confirmed:seller:" + sellerId,
+          category: "product",
+          senderId: sellerId,
+          receiverId: paidOrder.buyerId,
+          content: "Your payment is confirmed and the seller has received your order. (Order #" + String(paidOrder._id).slice(-8).toUpperCase() + ")",
+          orderCard: {
+            orderId: paidOrder._id,
+            items: sellerItems.map((item) => ({ name: item.nameSnapshot || "Product", image: item.imageSnapshot || "", quantity: Number(item.quantity || 1), unitPrice: Number(item.priceSnapshot || 0) })),
+            total: sellerItems.reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0),
+            currency: paidOrder.currency || "NGN",
+            status: paidOrder.orderStatus,
+            placedAt: paidOrder.createdAt,
+          },
+        });
+      } catch (messageError) {
+        if (messageError?.code !== 11000) console.error("Payment confirmation inbox message failed:", messageError);
+      }
+    }
     return { valid: true, paid: true, order: paidOrder };
   }
 
