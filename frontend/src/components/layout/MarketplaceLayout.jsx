@@ -62,7 +62,7 @@ export default function MarketplaceLayout({ children }) {
       "/explore": "Explore | Matchet",
       "/products": "Products | Matchet",
       "/services": "Services | Matchet",
-      "/for-providers": "Buy & Sell | Matchet",
+      "/for-providers": "Sell & Offer | Matchet",
       "/cart": "Cart | Matchet",
       "/checkout": "Checkout | Matchet",
     };
