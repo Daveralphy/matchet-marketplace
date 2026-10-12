@@ -64,10 +64,11 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
   const shouldAutoScroll = useRef(true);
   const [openMenuId, setOpenMenuId] = useState("");
   const menuRef = useRef(null);
+  const messageCategory = dashboardMode === "seller" ? "product" : dashboardMode === "provider" ? "service" : "";
 
   const loadInbox = useCallback(async (preserveSelection = true, syncTransactions = false, archived = false) => {
     try {
-      const response = await getInbox({ syncTransactions, archived });
+      const response = await getInbox({ syncTransactions, archived, category: messageCategory });
       const items = response.data?.conversations || [];
       setConversations(items);
       setSelectedId((current) => {
@@ -81,14 +82,14 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [messageCategory]);
 
   const loadSelectedConversation = useCallback(async (id) => {
     const requestId = ++conversationRequestId.current;
     if (!id) { setActiveConversation(null); setConversationLoading(false); return; }
     setConversationLoading(true);
     try {
-      const response = await getConversation(id);
+      const response = await getConversation(id, { category: messageCategory });
       if (requestId !== conversationRequestId.current) return;
       setActiveConversation({
         ...response.data,
@@ -103,7 +104,7 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
     } finally {
       if (requestId === conversationRequestId.current) setConversationLoading(false);
     }
-  }, []);
+  }, [messageCategory]);
 
   useEffect(() => { loadInbox(false, true, filter === "archived"); }, [loadInbox, filter]);
 
@@ -140,8 +141,8 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
       if (document.visibilityState === "hidden") return;
       try {
         const [inboxResponse, conversationResponse] = await Promise.all([
-          getInbox({ archived: filter === "archived" }),
-          getConversation(selectedId),
+          getInbox({ archived: filter === "archived", category: messageCategory }),
+          getConversation(selectedId, { category: messageCategory }),
         ]);
         if (!active) return;
         const inboxItems = inboxResponse.data?.conversations || [];
@@ -180,7 +181,7 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [selectedId, filter]);
+  }, [selectedId, filter, messageCategory]);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -276,6 +277,7 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
         conversationId: activeConversation.conversationId,
         receiverId: participantId,
         content,
+        category: messageCategory || "general",
       });
       setDraft("");
       await loadSelectedConversation(activeConversation.conversationId);
@@ -303,7 +305,7 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
 
         <section className={"account-messages-layout" + (mobileChatOpen ? " mobile-chat-open" : " mobile-list-open")}>
           <aside className="account-messages-list-panel">
-            <div className="account-messages-search"><span aria-hidden="true">⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search conversations" aria-label="Search conversations" /></div>
+            <div className="account-messages-search"><span aria-hidden="true">⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={dashboardMode === "seller" ? "Search product conversations" : dashboardMode === "provider" ? "Search service conversations" : "Search conversations"} aria-label="Search conversations" /></div>
             <div className="account-messages-filters">
               <button type="button" className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")}>All</button>
               <button type="button" className={filter === "unread" ? "active" : ""} onClick={() => setFilter("unread")}>Unread{unreadCount > 0 ? ` (${unreadCount})` : ""}</button>
@@ -339,7 +341,7 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
               <div className="account-messages-empty account-messages-chat-empty">Loading conversation…</div>
             ) : (
               <>
-                <header className="account-messages-chat-header"><button type="button" className="account-messages-mobile-back" onClick={() => { setMobileChatOpen(false); setSelectedId(""); setActiveConversation(null); setOpenMenuId(""); }} aria-label="Back to conversations"><span aria-hidden="true">←</span><span>Back</span></button><Avatar user={activeConversation.participant} large /><div><strong>{activeConversation.participant?.name || "Matchet user"}</strong><span>Matchet conversation</span></div></header>
+                <header className="account-messages-chat-header"><button type="button" className="account-messages-mobile-back" onClick={() => { setMobileChatOpen(false); setSelectedId(""); setActiveConversation(null); setOpenMenuId(""); }} aria-label="Back to conversations"><span aria-hidden="true">←</span><span>Back</span></button><Avatar user={activeConversation.participant} large /><div><strong>{activeConversation.participant?.name || "Matchet user"}</strong><span>{dashboardMode === "seller" ? "Product orders" : dashboardMode === "provider" ? "Service bookings" : "Matchet conversation"}</span></div></header>
                 <div className="account-messages-chat-body" ref={chatBodyRef}>
                   {activeConversation.pagination?.hasMore && <button type="button" className="account-messages-load-older" onClick={loadOlderMessages} disabled={conversationLoading}>{conversationLoading ? "Loading…" : "Load older messages"}</button>}
                   {(activeConversation.messages || []).length === 0 ? <div className="account-messages-empty">No messages in this conversation yet.</div> : activeConversation.messages.map((item, index, list) => {
