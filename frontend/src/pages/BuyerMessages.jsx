@@ -293,7 +293,7 @@ export default function BuyerMessages() {
           <Link to="/">Home</Link><span aria-hidden="true">›</span><span aria-current="page">Messages</span>
         </nav>
         <header className="account-messages-heading">
-          <div><p>Stay connected</p><h1>Messages</h1><span>Conversations with buyers, sellers, and service providers.</span></div>
+          <h1>Messages</h1>
           {unreadCount > 0 && <span className="account-messages-unread">{unreadCount} unread</span>}
         </header>
 
