@@ -34,7 +34,14 @@ export default function MarketplaceLayout({ children }) {
     location.pathname === "/provider/messages" ||
     location.pathname === "/cart" ||
     location.pathname === "/checkout" ||
-    location.pathname.startsWith("/checkout/");
+    location.pathname.startsWith("/checkout/") ||
+    location.pathname === "/profile" ||
+    location.pathname === "/orders" ||
+    location.pathname.startsWith("/orders/") ||
+    location.pathname === "/bookings" ||
+    location.pathname === "/saved-items" ||
+    location.pathname === "/account/saved-items" ||
+    location.pathname.startsWith("/account/");
 
   useEffect(() => {
     let active = true;
