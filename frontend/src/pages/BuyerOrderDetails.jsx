@@ -46,12 +46,45 @@ export default function BuyerOrderDetails() {
               ))}
               <div className="buyer-order-detail-totals"><div><span>Subtotal</span><strong>{money(order.subtotal, order.currency)}</strong></div><div><span>Delivery</span><strong>{money(order.deliveryFee, order.currency)}</strong></div><div className="grand-total"><span>Total</span><strong>{money(order.total, order.currency)}</strong></div></div>
             </section>
-            <section className="buyer-order-detail-card buyer-order-detail-status">
-              <h2>Payment and delivery</h2>
-              <div><span>Payment status</span><strong>{order.paymentStatus || "pending"}</strong></div>
-              <div><span>Delivery method</span><strong>{order.deliveryMethod || "delivery"}</strong></div>
-              <div><span>Order status</span><strong>{order.orderStatus || "pending"}</strong></div>
-              {order.shippingAddress && <div><span>Delivery address</span><strong>{[order.shippingAddress.addressLine1, order.shippingAddress.addressLine2, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.country].filter(Boolean).join(", ") || "No address provided"}</strong></div>}
+            <section className="buyer-order-detail-card buyer-order-progress">
+              <div className="buyer-order-progress-heading"><div><h2>Order progress</h2><p>Follow your order from placement to delivery.</p></div><span className={"status-pill " + String(order.orderStatus || "pending").toLowerCase()}>{String(order.orderStatus || "Pending").replace(/[_-]/g, " ")}</span></div>
+              {(() => {
+                const status = String(order.orderStatus || "pending").toLowerCase().replace(/[_\s-]+/g, "");
+                const cancelled = ["cancelled", "canceled", "declined", "refunded"].includes(status);
+                const stages = [
+                  { key: "placed", label: "Order placed", detail: order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-NG") : "Order received" },
+                  { key: "paid", label: "Payment confirmed", detail: String(order.paymentStatus || "pending").toLowerCase() === "paid" || String(order.paymentStatus || "").toLowerCase() === "successful" ? "Payment received" : "Awaiting payment" },
+                  { key: "processing", label: "Processing", detail: "Seller is preparing your order" },
+                  { key: "shipped", label: "On the way", detail: "Order handed over for delivery" },
+                  { key: "delivered", label: "Delivered", detail: "Order delivery completed" }
+                ];
+                let current = 0;
+                if (["paid", "successful", "completed", "confirmed", "processing", "shipped", "dispatched", "outfordelivery", "delivered"].includes(status)) current = 2;
+                if (["shipped", "dispatched", "outfordelivery"].includes(status)) current = 3;
+                if (["delivered", "completed"].includes(status)) current = 4;
+                if (["processing", "confirmed"].includes(status)) current = 2;
+                const paymentConfirmed = ["paid", "successful", "completed", "confirmed"].includes(String(order.paymentStatus || "").toLowerCase());
+                if (paymentConfirmed) current = Math.max(current, 1);
+                return <>
+                  {cancelled && <div className="buyer-order-cancelled-note">This order is marked {String(order.orderStatus).replace(/[_-]/g, " ")}. The timeline below shows the normal order journey.</div>}
+                  <div className="buyer-order-timeline" aria-label="Order progress">
+                    {stages.map((stage, index) => {
+                      const complete = !cancelled && index <= current;
+                      const active = !cancelled && index === current;
+                      return <div className={"buyer-order-timeline-step" + (complete ? " is-complete" : "") + (active ? " is-current" : "")} key={stage.key}>
+                        <div className="buyer-order-timeline-marker">{complete ? "✓" : index + 1}</div>
+                        <div className="buyer-order-timeline-copy"><strong>{stage.label}</strong><span>{index === 0 && order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-NG") : stage.detail}</span></div>
+                        {index < stages.length - 1 && <span className="buyer-order-timeline-connector" aria-hidden="true" />}
+                      </div>;
+                    })}
+                  </div>
+                </>;
+              })()}
+              <div className="buyer-order-progress-meta">
+                <div><span>Payment</span><strong>{String(order.paymentStatus || "pending").replace(/[_-]/g, " ")}</strong></div>
+                <div><span>Delivery method</span><strong>{String(order.deliveryMethod || "delivery").replace(/[_-]/g, " ")}</strong></div>
+                {order.shippingAddress && <div><span>Delivery address</span><strong>{[order.shippingAddress.addressLine1, order.shippingAddress.addressLine2, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.country].filter(Boolean).join(", ") || "No address provided"}</strong></div>}
+              </div>
             </section>
             <div className="buyer-order-detail-actions"><Link to="/orders">Back to orders</Link><Link to="/messages">Go to messages</Link></div>
           </>
