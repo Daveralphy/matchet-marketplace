@@ -1839,7 +1839,8 @@ async function updateSellerOrderStatus(req, res) {
       try {
         await Message.create({
           conversationId,
-          sourceRef: "order-status:" + String(updated._id) + ":" + status,
+          sourceRef: "order-status:" + String(updated._id) + ":" + status + ":seller:" + String(sellerId),
+          category: "product",
           senderId: sellerId,
           receiverId: updated.buyerId,
           content: statusMessage + " (Order #" + String(updated._id).slice(-8).toUpperCase() + ")",
