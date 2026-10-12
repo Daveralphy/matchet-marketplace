@@ -1740,6 +1740,50 @@ async function getSellerOrders(req, res) {
 }
 
 
+
+async function ensureSellerOrderStatusMessage(order, sellerId, status) {
+  const buyerId = String(order.buyerId);
+  const seller = String(sellerId);
+  const statusMessages = {
+    confirmed: "Your payment has been confirmed. The seller has received your order.",
+    processing: "Your order is now being processed by the seller.",
+    shipped: "Your order has been shipped and is on its way.",
+    out_for_delivery: "Your order is out for delivery.",
+    delivered: "Your order has been marked as delivered. You can now leave a review.",
+    cancelled: "The seller has cancelled this order. Please check your order details for next steps.",
+  };
+  const content = statusMessages[status];
+  if (!content || !buyerId || !seller || buyerId === seller) return;
+  const sellerItems = (order.items || []).filter((item) => String(item.sellerId) === seller);
+  const sourceRef = "order-status:" + String(order._id) + ":" + status + ":seller:" + seller;
+  try {
+    await Message.updateOne(
+      { sourceRef },
+      {
+        $setOnInsert: {
+          conversationId: [buyerId, seller].sort().join(":"),
+          sourceRef,
+          category: "product",
+          senderId: sellerId,
+          receiverId: order.buyerId,
+          content: content + " (Order #" + String(order._id).slice(-8).toUpperCase() + ")",
+          orderCard: {
+            orderId: order._id,
+            items: sellerItems.map((item) => ({ name: item.nameSnapshot || "Product", image: item.imageSnapshot || "", quantity: Number(item.quantity || 1), unitPrice: Number(item.priceSnapshot || 0) })),
+            total: sellerItems.reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0),
+            currency: order.currency || "NGN",
+            status: order.orderStatus,
+            placedAt: order.createdAt,
+          },
+        },
+      },
+      { upsert: true },
+    );
+  } catch (messageError) {
+    if (messageError?.code !== 11000) console.error("Order status inbox message failed:", messageError);
+  }
+}
+
 async function updateSellerOrderStatus(req, res) {
   try {
     const sellerId = req.user._id;
@@ -1769,6 +1813,7 @@ async function updateSellerOrderStatus(req, res) {
     };
     const previous = order.orderStatus;
     if (previous === status) {
+      await ensureSellerOrderStatusMessage(order, sellerId, status);
       return res.json({ success: true, data: { id: order._id, status: order.orderStatus, statusHistory: order.statusHistory } });
     }
     if (!transitions[previous]?.includes(status)) {
@@ -1822,48 +1867,7 @@ async function updateSellerOrderStatus(req, res) {
     );
     if (!updated) return res.status(409).json({ success: false, message: "This order has changed. Refresh and try again." });
 
-    // Persist one buyer-facing inbox update for each successful order status transition.
-    // sourceRef makes retries/concurrent requests idempotent.
-    const buyerId = String(updated.buyerId);
-    const sellerIds = [...new Set((updated.items || []).map((item) => String(item.sellerId)))];
-    const conversationId = [buyerId, String(sellerId)].sort().join(":");
-    const statusMessages = {
-      confirmed: "Your payment has been confirmed. The seller has received your order.",
-      processing: "Your order is now being processed by the seller.",
-      shipped: "Your order has been shipped and is on its way.",
-      out_for_delivery: "Your order is out for delivery.",
-      delivered: "Your order has been marked as delivered. You can now leave a review.",
-    };
-    const statusMessage = statusMessages[status];
-    if (statusMessage && buyerId !== String(sellerId)) {
-      try {
-        await Message.create({
-          conversationId,
-          sourceRef: "order-status:" + String(updated._id) + ":" + status + ":seller:" + String(sellerId),
-          category: "product",
-          senderId: sellerId,
-          receiverId: updated.buyerId,
-          content: statusMessage + " (Order #" + String(updated._id).slice(-8).toUpperCase() + ")",
-          orderCard: {
-            orderId: updated._id,
-            items: (updated.items || []).filter((item) => String(item.sellerId) === String(sellerId)).map((item) => ({
-              name: item.nameSnapshot || "Product",
-              image: item.imageSnapshot || "",
-              quantity: Number(item.quantity || 1),
-              unitPrice: Number(item.priceSnapshot || 0),
-            })),
-            total: (updated.items || []).filter((item) => String(item.sellerId) === String(sellerId)).reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0),
-            currency: updated.currency || "NGN",
-            status: updated.orderStatus,
-            placedAt: updated.createdAt,
-          },
-        });
-      } catch (messageError) {
-        // Do not roll back a valid order transition because inbox delivery failed.
-        // The order history remains authoritative; log for follow-up.
-        if (messageError?.code !== 11000) console.error("Order status inbox message failed:", messageError);
-      }
-    }
+    await ensureSellerOrderStatusMessage(updated, sellerId, status);
     return res.json({ success: true, data: { id: updated._id, status: updated.orderStatus, statusHistory: updated.statusHistory } });
   } catch (error) {
     console.error("Seller order status error:", error);
