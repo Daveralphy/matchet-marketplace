@@ -95,7 +95,7 @@ export default function ForProviders() {
             </h1>
 
             <p className="mt-5 max-w-[560px] text-[15px] leading-[22px] text-[#747ca1] sm:text-[17px] sm:leading-7">
-              List your products, reach more customers,
+              Sell your products or offer services, reach more customers,
               <br className="hidden sm:block" />
               and manage your orders all in one place.
             </p>
