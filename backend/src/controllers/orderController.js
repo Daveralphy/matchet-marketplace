@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
+const Review = require("../models/Review");
 
 
 async function createBuyerOrder(req,res){
@@ -83,6 +84,49 @@ async function listBuyerOrders(req,res){
     return res.json({success:true,orders});
   } catch(error){ console.error("List buyer orders failed:",error); return res.status(500).json({success:false,message:"Unable to load your orders."}); }
 }
+
+async function listBuyerOrderReviews(req, res) {
+  try {
+    const order = await Order.findOne({ _id: req.params.id, buyerId: req.user._id }).select("items orderStatus paymentStatus").lean();
+    if (!order) return res.status(404).json({ success: false, message: "Order not found." });
+    const productIds = [...new Set((order.items || []).map((item) => String(item.productId)))];
+    const reviews = await Review.find({ reviewerId: req.user._id, productId: { $in: productIds } }).select("productId rating comment createdAt").lean();
+    return res.json({ success: true, reviews });
+  } catch (error) {
+    return res.status(400).json({ success: false, message: "Unable to load reviews for this order." });
+  }
+}
+
+async function createBuyerOrderReview(req, res) {
+  try {
+    const order = await Order.findOne({ _id: req.params.id, buyerId: req.user._id }).lean();
+    if (!order) return res.status(404).json({ success: false, message: "Order not found." });
+    if (order.paymentStatus !== "paid" || order.orderStatus !== "delivered") {
+      return res.status(409).json({ success: false, message: "You can review products after the paid order has been delivered." });
+    }
+    const productId = String(req.body?.productId || "");
+    if (!require("mongoose").Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ success: false, message: "Choose a valid product from this order." });
+    }
+    const item = (order.items || []).find((entry) => String(entry.productId) === productId);
+    if (!item) return res.status(403).json({ success: false, message: "You can only review products included in this order." });
+    const rating = Number(req.body?.rating);
+    const comment = String(req.body?.comment || "").trim();
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ success: false, message: "Choose a star rating from 1 to 5." });
+    }
+    if (comment.length > 2000) return res.status(400).json({ success: false, message: "Your review must be 2,000 characters or fewer." });
+    const existing = await Review.findOne({ reviewerId: req.user._id, productId }).select("_id").lean();
+    if (existing) return res.status(409).json({ success: false, message: "You have already reviewed this product." });
+    const review = await Review.create({ reviewerId: req.user._id, productId, rating, comment, status: "published" });
+    return res.status(201).json({ success: true, review: { id: review._id, productId: String(review.productId), rating: review.rating, comment: review.comment, createdAt: review.createdAt } });
+  } catch (error) {
+    if (error?.code === 11000) return res.status(409).json({ success: false, message: "You have already reviewed this product." });
+    console.error("Buyer order review failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to save your review right now." });
+  }
+}
+
 async function getBuyerOrder(req,res){
   try {
     const order=await Order.findOne({_id:req.params.id,buyerId:req.user._id}).lean();
@@ -90,4 +134,4 @@ async function getBuyerOrder(req,res){
     return res.json({success:true,order});
   } catch(error){return res.status(400).json({success:false,message:"Invalid order."});}
 }
-module.exports={listBuyerOrders,getBuyerOrder,createBuyerOrder};
+module.exports={listBuyerOrders,getBuyerOrder,createBuyerOrder,listBuyerOrderReviews,createBuyerOrderReview};
