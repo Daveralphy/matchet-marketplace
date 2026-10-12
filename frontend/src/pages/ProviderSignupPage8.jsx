@@ -20,7 +20,7 @@ export default function ProviderSignupPageEight() {
     <div className="provider-signup-page-container provider-signup-page8">
       <section className="provider-signup-left-section">
         <div className="provider-signup-side-banner provider-signup-side-banner-page8">
-          <img src={sideImage} alt="Thanks for joining Buy & Sell on Matchet" />
+          <img src={sideImage} alt="Thanks for joining Sell & Offer on Matchet" />
         </div>
       </section>
 
@@ -31,14 +31,14 @@ export default function ProviderSignupPageEight() {
           <div className="provider-success-hero">
             <div className="provider-success-check">✓</div>
             <h1>Application submitted!</h1>
-            <p>Thank you for applying to Buy & Sell on Matchet.<br />Your application has been received and is now under review.</p>
+            <p>Thank you for applying to Sell & Offer on Matchet.<br />Your application has been received and is now under review.</p>
           </div>
 
           <div className="provider-success-next-card">
             <div className="provider-success-next-item">
               <div className="provider-success-round-icon provider-success-round-icon-clock"><Icon name="clock" /></div>
               <h3>What happens next?</h3>
-              <p>Our team will review your information, documents, and services to ensure they meet our Buy & Sell standards.</p>
+              <p>Our team will review your information, documents, and services to ensure they meet our Sell & Offer standards.</p>
             </div>
 
             <div className="provider-success-next-item">
