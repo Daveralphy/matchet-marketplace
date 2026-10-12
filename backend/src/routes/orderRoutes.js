@@ -1,8 +1,10 @@
 const express=require("express");
 const requireAuth=require("../middleware/auth");
-const {listBuyerOrders,getBuyerOrder}=require("../controllers/orderController");
+const {listBuyerOrders,getBuyerOrder,listBuyerOrderReviews,createBuyerOrderReview}=require("../controllers/orderController");
 const router=express.Router();
 router.use(requireAuth);
 router.get("/",listBuyerOrders);
+router.get("/:id/reviews",listBuyerOrderReviews);
+router.post("/:id/reviews",createBuyerOrderReview);
 router.get("/:id",getBuyerOrder);
 module.exports=router;
