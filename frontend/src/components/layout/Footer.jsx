@@ -54,11 +54,11 @@ const loggedOutColumns = [
     ],
   },
   {
-    title: "For Providers",
+    title: "Buy & Sell",
     links: [
       ["List a Product", "/for-providers"],
       ["Offer a Service", "/for-providers"],
-      ["Provider Resources", "/provider-resources"],
+      ["Buy & Sell Resources", "/provider-resources"],
     ],
   },
 ];
@@ -93,12 +93,12 @@ const loggedInColumns = [
     ],
   },
   {
-    title: "For Providers",
+    title: "Buy & Sell",
     links: [
       ["My Products", "/seller/products"],
       ["My Services", "/provider/services"],
-      ["Provider Dashboard", "/provider/dashboard"],
-      ["Provider Resources", "/provider-resources"],
+      ["Buy & Sell Dashboard", "/provider/dashboard"],
+      ["Buy & Sell Resources", "/provider-resources"],
     ],
   },
 ];
