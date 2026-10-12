@@ -193,6 +193,7 @@ async function getProviderDashboard(req, res) {
         .populate("serviceId", "title images")
         .lean(),
       Message.find({
+        category: "service",
         $or: [{ senderId: providerId }, { receiverId: providerId }],
       })
         .sort({ createdAt: -1 })
@@ -291,6 +292,7 @@ async function getProviderDashboard(req, res) {
 
     const unreadMessages = await Message.countDocuments({
       receiverId: providerId,
+      category: "service",
       readAt: null,
     });
 
