@@ -158,7 +158,7 @@ const Login = () => {
   const breadcrumbLabel = breadcrumbPath === "/"
     ? "Home"
     : breadcrumbPath.startsWith("/for-providers")
-      ? "Buy & Sell"
+      ? "Sell & Offer"
       : breadcrumbPath.startsWith("/products")
         ? "Products"
         : breadcrumbPath.startsWith("/services")
