@@ -83,7 +83,7 @@ export default function ForProviders() {
         <div className="relative min-h-0 lg:min-h-[535px]">
           <div className="relative z-20 flex w-full flex-col justify-center px-6 pb-10 pt-10 sm:px-10 sm:pt-12 lg:min-h-[535px] lg:w-[51%] lg:px-12 lg:pb-12 lg:pt-12 xl:px-[50px]">
             <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
-              BUY & SELL
+              SELL & OFFER
             </p>
 
             <h1 className="mt-4 max-w-[560px] text-[42px] font-bold leading-[0.99] tracking-[-0.045em] text-[#10183f] sm:text-[52px] lg:text-[48px] xl:text-[56px]">
