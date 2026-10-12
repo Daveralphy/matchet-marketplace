@@ -83,7 +83,7 @@ export default function ForProviders() {
         <div className="relative min-h-0 lg:min-h-[535px]">
           <div className="relative z-20 flex w-full flex-col justify-center px-6 pb-10 pt-10 sm:px-10 sm:pt-12 lg:min-h-[535px] lg:w-[51%] lg:px-12 lg:pb-12 lg:pt-12 xl:px-[50px]">
             <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
-              FOR PROVIDERS
+              BUY & SELL
             </p>
 
             <h1 className="mt-4 max-w-[560px] text-[42px] font-bold leading-[0.99] tracking-[-0.045em] text-[#10183f] sm:text-[52px] lg:text-[48px] xl:text-[56px]">
@@ -118,7 +118,7 @@ export default function ForProviders() {
 
             <img
               src={heroImage}
-              alt="Matchet provider managing products and orders"
+              alt="Matchet seller managing products and orders"
               className="absolute left-[55%] top-[48%] h-[99%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain xl:h-[90%]"
             />
 
