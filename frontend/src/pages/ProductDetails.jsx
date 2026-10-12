@@ -53,12 +53,12 @@ function ProductVisual({ product, large = false, image = null, index = 0 }) {
   const icon = product?.icon === "bag" ? "bag" : product?.icon === "home" ? "sofa" : "monitor";
 
   return (
-    <div className={`product-detail-fly-source relative flex items-center justify-center overflow-hidden rounded-[10px] ${large ? "h-[410px] sm:h-[480px]" : "h-[86px]"} ${product?.imageTone || "bg-[#f1f1ef]"}`}>
+    <div className={`product-detail-fly-source relative flex w-full max-w-full items-center justify-center overflow-hidden rounded-[10px] ${large ? "h-[min(410px,105vw)] sm:h-[480px]" : "h-[86px]"} ${product?.imageTone || "bg-[#f1f1ef]"}`}>
       {image ? (
         <img
           src={image}
           alt={`${product.title} view ${index + 1}`}
-          className="h-full w-full object-cover"
+          className="block h-full w-full max-w-full object-contain sm:object-cover"
         />
       ) : (
         <div className={`relative flex items-center justify-center rounded-[28px] bg-white/65 shadow-[0_12px_30px_rgba(16,24,63,0.1)] ${large ? "h-[190px] w-[190px]" : "h-[52px] w-[52px]"}`}>
@@ -126,7 +126,7 @@ function ProductGallery({ product }) {
         )}
       </div>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+      <div className="mt-4 flex w-full max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1">
         {hasImages ? (
           images.map((image, index) => (
             <button
@@ -208,7 +208,7 @@ function ProductDetail({ product, related }) {
 
   return (
     <main className="w-full bg-[#fbfcfd] px-4 pb-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1470px] pt-5">
+      <div className="mx-auto w-full min-w-0 max-w-[1470px] pt-5">
         <nav className="mb-5 flex flex-wrap items-center gap-2 text-[11px] text-[#69739a]">
           <Link to="/" className="hover:text-[#07863a]">Home</Link>
           <span>›</span>
@@ -219,8 +219,8 @@ function ProductDetail({ product, related }) {
           <span className="truncate">{product.title}</span>
         </nav>
 
-        <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
-          <section>
+        <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+          <section className="min-w-0 max-w-full overflow-hidden">
             <ProductGallery product={product} />
 
             <div className="mt-16 flex flex-wrap gap-6 text-[12px] text-[#10183f]">
@@ -230,7 +230,7 @@ function ProductDetail({ product, related }) {
             </div>
           </section>
 
-          <section className="space-y-5">
+          <section className="min-w-0 space-y-5">
             <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
