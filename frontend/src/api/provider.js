@@ -289,10 +289,10 @@ export function getSellerOrders(params = {}) {
   const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== ""));
   return request("/api/provider/seller-orders?" + query.toString());
 }
-export function updateSellerOrderStatus(orderId, status) {
+export function updateSellerOrderStatus(orderId, status, reason = "") {
   return request("/api/provider/seller-orders/" + encodeURIComponent(orderId) + "/status", {
     method: "PATCH",
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, ...(reason ? { reason } : {}) }),
   });
 }
 
