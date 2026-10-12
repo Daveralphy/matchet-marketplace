@@ -191,3 +191,14 @@ export async function initializePaystackPayment(payload) {
 export async function verifyPaystackPayment(reference) {
   return request("/api/payments/paystack/verify/" + encodeURIComponent(reference));
 }
+
+export async function getBuyerOrderReviews(orderId) {
+  const payload = await request("/api/orders/" + encodeURIComponent(orderId) + "/reviews");
+  return Array.isArray(payload.reviews) ? payload.reviews : [];
+}
+export async function submitBuyerOrderReview(orderId, payload) {
+  return request("/api/orders/" + encodeURIComponent(orderId) + "/reviews", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
