@@ -74,3 +74,15 @@
   .account-messages-layout.mobile-chat-open .account-messages-chat-body{flex:1;min-height:0;max-height:none;height:calc(100dvh - 365px);padding:14px;overscroll-behavior:contain}
   .account-messages-layout.mobile-chat-open .account-messages-composer{position:sticky;bottom:0;padding:10px;background:#fff; padding-bottom:max(10px, env(safe-area-inset-bottom))}
 }
+
+/* Mobile chat is a bounded flex column; the message history owns vertical scrolling. */
+@media(max-width:760px){
+  .account-messages-page{padding:16px 10px 20px;min-height:0}
+  .account-messages-shell{min-width:0}
+  .account-messages-heading{margin-bottom:12px}
+  .account-messages-layout.mobile-chat-open{display:flex;flex-direction:column;height:calc(100dvh - 150px);min-height:420px;max-height:calc(100dvh - 150px);overflow:hidden}
+  .account-messages-layout.mobile-chat-open .account-messages-chat{display:flex;flex:1;min-height:0;height:100%;overflow:hidden}
+  .account-messages-layout.mobile-chat-open .account-messages-chat-header{flex:0 0 auto}
+  .account-messages-layout.mobile-chat-open .account-messages-chat-body{display:block;flex:1 1 0;height:auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-y:contain}
+  .account-messages-layout.mobile-chat-open .account-messages-composer{flex:0 0 auto;position:relative;bottom:auto}
+}
