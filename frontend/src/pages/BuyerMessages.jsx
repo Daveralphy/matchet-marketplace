@@ -216,7 +216,7 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
   async function handleConversationAction(conversation, action) {
     setOpenMenuId("");
     try {
-      await updateConversationState(conversation.conversationId, action);
+      await updateConversationState(conversation.conversationId, action, messageCategory);
       if (action === "delete" || action === "archive" || action === "unarchive") {
         setConversations((current) => current.filter((item) => item.conversationId !== conversation.conversationId));
         if (selectedId === conversation.conversationId) {
