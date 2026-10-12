@@ -86,3 +86,18 @@
   .account-messages-layout.mobile-chat-open .account-messages-chat-body{display:block;flex:1 1 0;height:auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-y:contain}
   .account-messages-layout.mobile-chat-open .account-messages-composer{flex:0 0 auto;position:relative;bottom:auto}
 }
+
+/* Keep the composer anchored to the bottom edge of the chat panel on every screen size. */
+.account-messages-layout{height:min( calc(100dvh - 250px), 820px);min-height:590px}
+.account-messages-chat{height:100%;min-height:0;overflow:hidden}
+.account-messages-chat-body{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain}
+.account-messages-composer{flex:0 0 auto;position:sticky;bottom:0;z-index:5;padding-bottom:max(14px, env(safe-area-inset-bottom))}
+@media(max-width:760px){
+  .account-messages-shell:has(.account-messages-layout.mobile-chat-open)>.account-messages-heading{display:none}
+  .account-messages-shell:has(.account-messages-layout.mobile-chat-open)>.account-messages-breadcrumb{display:none}
+  .account-messages-layout{height:auto;min-height:600px}
+  .account-messages-layout.mobile-chat-open{height:calc(100dvh - 96px);min-height:0;max-height:calc(100dvh - 96px);overflow:hidden}
+  .account-messages-layout.mobile-chat-open .account-messages-chat{height:100%;min-height:0;overflow:hidden}
+  .account-messages-layout.mobile-chat-open .account-messages-chat-body{flex:1 1 0;height:auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior-y:contain;padding-bottom:18px}
+  .account-messages-layout.mobile-chat-open .account-messages-composer{position:sticky;bottom:0;z-index:20;flex:0 0 auto;padding:10px;background:#fff;padding-bottom:max(10px, env(safe-area-inset-bottom));box-shadow:0 -4px 12px #1020440b}
+}
