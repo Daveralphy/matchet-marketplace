@@ -36,7 +36,7 @@ const orderSchema = new mongoose.Schema({
   pickupStation: { name: { type: String, trim: true }, address: { type: String, trim: true }, status: { type: String, enum: ["pending", "ready", "collected"], default: "pending" } },
   total: { type: Number, required: true, min: 0 },
   paymentStatus: { type: String, enum: ["pending", "paid", "failed", "refunded"], default: "pending", index: true },
-  orderStatus: { type: String, enum: ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"], default: "pending", index: true },
+  orderStatus: { type: String, enum: ["pending", "confirmed", "processing", "shipped", "out_for_delivery", "delivered", "cancelled"], default: "pending", index: true },
   shippingAddress: { type: addressSchema, required: true },
   paymentReference: { type: String, trim: true, index: true, sparse: true },
   refundReference: { type: String, trim: true },
