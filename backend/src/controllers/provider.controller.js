@@ -1743,7 +1743,7 @@ async function getSellerOrders(req, res) {
 
 
 
-async function ensureSellerOrderStatusMessage(order, sellerId, status) {
+async function ensureSellerOrderStatusMessage(order, sellerId, status, cancellationReason = "") {
   const buyerId = String(order.buyerId);
   const seller = String(sellerId);
   const statusMessages = {
@@ -1752,7 +1752,7 @@ async function ensureSellerOrderStatusMessage(order, sellerId, status) {
     shipped: "Your order has been shipped and is on its way.",
     out_for_delivery: "Your order is out for delivery.",
     delivered: "Your order has been marked as delivered. You can now leave a review.",
-    cancelled: "The seller has cancelled this order. Please check your order details for next steps.",
+    cancelled: "The seller has cancelled this order." + (String(cancellationReason || "").trim() ? " Reason: " + String(cancellationReason).trim() : " Please check your order details for next steps."),
   };
   const content = statusMessages[status];
   if (!content || !buyerId || !seller || buyerId === seller) return;
@@ -1790,10 +1790,13 @@ async function updateSellerOrderStatus(req, res) {
   try {
     const sellerId = req.user._id;
     const { status } = req.body || {};
+    const cancellationReason = String(req.body?.reason || "").trim();
     const allowed = ["confirmed", "processing", "shipped", "out_for_delivery", "delivered", "cancelled"];
     if (!allowed.includes(status)) {
       return res.status(400).json({ success: false, message: "Invalid order status." });
     }
+    if (status === "cancelled" && !cancellationReason) return res.status(400).json({ success: false, message: "Please provide a reason for cancelling this order." });
+    if (cancellationReason.length > 1000) return res.status(400).json({ success: false, message: "The cancellation reason must be 1,000 characters or fewer." });
 
     const order = await Order.findOne({ _id: req.params.orderId, "items.sellerId": sellerId });
     if (!order) return res.status(404).json({ success: false, message: "Order not found." });
@@ -1833,7 +1836,7 @@ async function updateSellerOrderStatus(req, res) {
         { _id: order._id, "items.sellerId": sellerId, orderStatus: previous, paymentStatus: "paid", inventoryRestockStatus: "none" },
         {
           $set: { orderStatus: "cancelled", inventoryRestockStatus: "restocking", requiresManualReview: true },
-          $push: { statusHistory: { status: "cancelled", note: "Cancelled by seller. Refund must be reviewed and processed manually; stock restoration is being recorded." } },
+          $push: { statusHistory: { status: "cancelled", note: "Cancelled by seller. Reason: " + cancellationReason + " Refund must be reviewed and processed manually; stock restoration is being recorded." } },
         },
         { new: true },
       );
@@ -1856,7 +1859,8 @@ async function updateSellerOrderStatus(req, res) {
         return res.status(500).json({ success: false, message: "The order was cancelled, but stock restoration needs administrator review. Do not retry the cancellation." });
       }
 
-      return res.json({ success: true, requiresManualReview: true, message: "Order cancelled. A support administrator must review the refund.", data: { id: claimed._id, status: claimed.orderStatus, paymentStatus: claimed.paymentStatus, inventoryRestockStatus: claimed.inventoryRestockStatus, statusHistory: claimed.statusHistory } });
+      await ensureSellerOrderStatusMessage(claimed, sellerId, "cancelled", cancellationReason);
+      return res.json({ success: true, requiresManualReview: true, message: "Order cancelled. The customer has been notified, and a support administrator must review the refund.", data: { id: claimed._id, status: claimed.orderStatus, paymentStatus: claimed.paymentStatus, inventoryRestockStatus: claimed.inventoryRestockStatus, statusHistory: claimed.statusHistory } });
     }
 
     const updated = await Order.findOneAndUpdate(
