@@ -189,11 +189,12 @@ async function getProviderDashboard(req, res) {
         .populate("serviceId", "title images")
         .lean(),
       Message.find({
-        receiverId: providerId,
+        $or: [{ senderId: providerId }, { receiverId: providerId }],
       })
         .sort({ createdAt: -1 })
-        .limit(50)
+        .limit(100)
         .populate("senderId", "firstName lastName avatar")
+        .populate("receiverId", "firstName lastName avatar")
         .lean(),
     ]);
 
@@ -259,25 +260,28 @@ async function getProviderDashboard(req, res) {
         ? null
         : Number((averageRating - previousAverageRating).toFixed(1));
 
-    const recentByConversation = new Map();
+    // Show one latest message per person, including the provider's own latest reply.
+    const recentByPerson = new Map();
     for (const message of incomingMessages) {
-      if (!recentByConversation.has(message.conversationId)) {
-        recentByConversation.set(message.conversationId, message);
-      }
-      if (recentByConversation.size === 4) break;
+      const isProviderSender = String(message.senderId?._id || message.senderId) === String(providerId);
+      const otherPerson = isProviderSender ? message.receiverId : message.senderId;
+      const otherPersonId = String(otherPerson?._id || otherPerson || "");
+      if (!otherPersonId || recentByPerson.has(otherPersonId)) continue;
+      recentByPerson.set(otherPersonId, { message, otherPerson });
+      if (recentByPerson.size === 4) break;
     }
 
-    const recentMessages = [...recentByConversation.values()].map((message) => ({
+    const recentMessages = [...recentByPerson.values()].map(({ message, otherPerson }) => ({
       id: message._id,
       conversationId: message.conversationId,
-      content: message.content || "",
+      content: message.content || (message.attachments?.length ? "Attachment" : ""),
       createdAt: message.createdAt,
-      unread: !message.readAt,
+      unread: String(message.receiverId?._id || message.receiverId) === String(providerId) && !message.readAt,
       customer: {
-        id: message.senderId?._id,
-        name: [message.senderId?.firstName, message.senderId?.lastName].filter(Boolean).join(" "),
-        initials: initials(message.senderId),
-        avatar: message.senderId?.avatar?.url || null,
+        id: otherPerson?._id || otherPerson,
+        name: [otherPerson?.firstName, otherPerson?.lastName].filter(Boolean).join(" "),
+        initials: initials(otherPerson),
+        avatar: otherPerson?.avatar?.url || null,
       },
     }));
 
@@ -1570,10 +1574,29 @@ async function getSellerDashboard(req, res) {
       };
     });
 
-    const recent = recentMessages.slice(0, 5).map((message) => {
-      const other = String(message.senderId?._id) === String(sellerId) ? message.receiverId : message.senderId;
-      return { id: message._id, customer: { name: [other?.firstName, other?.lastName].filter(Boolean).join(" ") || "Customer", initials: [other?.firstName, other?.lastName].filter(Boolean).map((v) => v[0]).join("").slice(0,2).toUpperCase(), avatar: other?.avatar?.url || null }, content: message.content || "Attachment", createdAt: message.createdAt, unread: String(message.receiverId?._id) === String(sellerId) && !message.readAt };
-    });
+    // Dashboard preview is a conversation list: only the latest message per person.
+    const recentByPerson = new Map();
+    for (const message of recentMessages) {
+      const isSellerSender = String(message.senderId?._id || message.senderId) === String(sellerId);
+      const other = isSellerSender ? message.receiverId : message.senderId;
+      const otherId = String(other?._id || other || "");
+      if (!otherId || recentByPerson.has(otherId)) continue;
+      recentByPerson.set(otherId, { message, other });
+      if (recentByPerson.size === 5) break;
+    }
+    const recent = [...recentByPerson.values()].map(({ message, other }) => ({
+      id: message._id,
+      conversationId: message.conversationId,
+      customer: {
+        id: other?._id || other,
+        name: [other?.firstName, other?.lastName].filter(Boolean).join(" ") || "Customer",
+        initials: [other?.firstName, other?.lastName].filter(Boolean).map((v) => v[0]).join("").slice(0, 2).toUpperCase(),
+        avatar: other?.avatar?.url || null,
+      },
+      content: message.content || (message.attachments?.length ? "Attachment" : ""),
+      createdAt: message.createdAt,
+      unread: String(message.receiverId?._id || message.receiverId) === String(sellerId) && !message.readAt,
+    }));
 
     return res.json({
       success: true,
