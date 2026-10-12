@@ -165,12 +165,53 @@ async function markPaymentFailed(order, note) {
   );
 }
 
+
+async function ensurePaidOrderMessages(order) {
+  const buyerId = String(order.buyerId);
+  const sellerIds = [...new Set((order.items || []).map((item) => String(item.sellerId)))];
+  for (const sellerId of sellerIds) {
+    if (!sellerId || sellerId === buyerId) continue;
+    const sellerItems = (order.items || []).filter((item) => String(item.sellerId) === sellerId);
+    try {
+      await Message.updateOne(
+        {
+          sourceRef: "order-status:" + String(order._id) + ":confirmed:seller:" + sellerId,
+        },
+        {
+          $setOnInsert: {
+            conversationId: [buyerId, sellerId].sort().join(":"),
+            sourceRef: "order-status:" + String(order._id) + ":confirmed:seller:" + sellerId,
+            category: "product",
+            senderId: sellerId,
+            receiverId: order.buyerId,
+            content: "Your payment is confirmed and the seller has received your order. (Order #" + String(order._id).slice(-8).toUpperCase() + ")",
+            orderCard: {
+              orderId: order._id,
+              items: sellerItems.map((item) => ({ name: item.nameSnapshot || "Product", image: item.imageSnapshot || "", quantity: Number(item.quantity || 1), unitPrice: Number(item.priceSnapshot || 0) })),
+              total: sellerItems.reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0),
+              currency: order.currency || "NGN",
+              status: order.orderStatus,
+              placedAt: order.createdAt,
+            },
+          },
+        },
+        { upsert: true },
+      );
+    } catch (messageError) {
+      if (messageError?.code !== 11000) console.error("Payment confirmation inbox message failed:", messageError);
+    }
+  }
+}
+
 async function finalizeSuccessfulPayment(order, transaction, buyerId) {
   if (!isValidPaystackTransaction(order, transaction, buyerId)) return { valid: false, paid: false };
 
   let current = await Order.findById(order._id);
   if (!current) return { valid: false, paid: false };
-  if (current.paymentStatus === "paid") return { valid: true, paid: true, order: current };
+  if (current.paymentStatus === "paid") {
+    if (current.orderStatus === "confirmed" && !current.requiresManualReview) await ensurePaidOrderMessages(current);
+    return { valid: true, paid: true, order: current };
+  }
 
   let hasReservation = current.inventoryReservationStatus === "reserved";
   if (!hasReservation) {
@@ -205,32 +246,7 @@ async function finalizeSuccessfulPayment(order, transaction, buyerId) {
 
   if (paidOrder) {
     await Cart.findOneAndUpdate({ userId: paidOrder.buyerId }, { items: [] });
-    const buyerId = String(paidOrder.buyerId);
-    const sellerIds = [...new Set((paidOrder.items || []).map((item) => String(item.sellerId)))];
-    for (const sellerId of sellerIds) {
-      if (!sellerId || sellerId === buyerId) continue;
-      const sellerItems = (paidOrder.items || []).filter((item) => String(item.sellerId) === sellerId);
-      try {
-        await Message.create({
-          conversationId: [buyerId, sellerId].sort().join(":"),
-          sourceRef: "order-status:" + String(paidOrder._id) + ":confirmed:seller:" + sellerId,
-          category: "product",
-          senderId: sellerId,
-          receiverId: paidOrder.buyerId,
-          content: "Your payment is confirmed and the seller has received your order. (Order #" + String(paidOrder._id).slice(-8).toUpperCase() + ")",
-          orderCard: {
-            orderId: paidOrder._id,
-            items: sellerItems.map((item) => ({ name: item.nameSnapshot || "Product", image: item.imageSnapshot || "", quantity: Number(item.quantity || 1), unitPrice: Number(item.priceSnapshot || 0) })),
-            total: sellerItems.reduce((sum, item) => sum + Number(item.priceSnapshot || 0) * Number(item.quantity || 1), 0),
-            currency: paidOrder.currency || "NGN",
-            status: paidOrder.orderStatus,
-            placedAt: paidOrder.createdAt,
-          },
-        });
-      } catch (messageError) {
-        if (messageError?.code !== 11000) console.error("Payment confirmation inbox message failed:", messageError);
-      }
-    }
+    await ensurePaidOrderMessages(paidOrder);
     return { valid: true, paid: true, order: paidOrder };
   }
 
