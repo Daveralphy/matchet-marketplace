@@ -13,7 +13,7 @@ function SaveIcon() {
 }
 
 function ProviderSignupFormHeader({ step }) {
-  useEffect(() => { const labels = ["Your Details","About Your Work","Verification","Payment","Review"]; document.title = `${labels[step - 1] || "Provider Application"} | Matchet`; }, [step]);
+  useEffect(() => { const labels = ["Your Details","About Your Work","Verification","Payment","Review"]; document.title = `${labels[step - 1] || "Buy & Sell Application"} | Matchet`; }, [step]);
   useEffect(() => {
     const scroller = document.querySelector(".provider-signup-right-section");
     if (!scroller) return undefined;
@@ -44,7 +44,7 @@ function ProviderSignupFormHeader({ step }) {
   return (
     <header className="provider-signup-form-header">
       <div className="provider-signup-form-heading-row">
-        <Link to="/for-providers" className="provider-signup-breadcrumb"><span aria-hidden="true">←</span><span>For Providers</span></Link>
+        <Link to="/for-providers" className="provider-signup-breadcrumb"><span aria-hidden="true">←</span><span>Buy & Sell</span></Link>
         <button type="button" className="provider-signup-save-and-exit" onClick={async () => {
           try {
             await saveProviderOnboardingDraft(formData);
@@ -59,13 +59,13 @@ function ProviderSignupFormHeader({ step }) {
       </div>
 
       <div className="provider-signup-form-heading-copy">
-        <h1>Become a provider</h1>
+        <h1>Offer services with Buy & Sell</h1>
         <p className="provider-signup-form-header-caption">
-          Set up your provider profile and start offering your services on Matchet.
+          Set up your service profile and start offering services on Matchet.
         </p>
       </div>
 
-      <div className="provider-signup-stepper" aria-label="Provider onboarding progress">
+      <div className="provider-signup-stepper" aria-label="Buy & Sell onboarding progress">
         <div className="provider-signup-stepper-track" />
         {stepsData.map((item) => {
           const complete = item.num < step;
