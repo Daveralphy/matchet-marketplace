@@ -154,14 +154,13 @@ async function ensureTransactionOpeningMessages(userId) {
     const providerId = String(booking.providerId);
     if (!buyerId || !providerId || buyerId === providerId) continue;
     const sourceRef = "booking:" + String(booking._id) + ":provider:" + providerId;
-    const exists = await Message.exists({
-      $or: [
-        { sourceRef },
-        { senderId: buyerId, receiverId: providerId },
-        { senderId: providerId, receiverId: buyerId },
-      ],
-    });
-    if (exists) continue;
+    const existingSeed = await Message.findOne({ sourceRef }).select("_id category").lean();
+    if (existingSeed) {
+      if (existingSeed.category !== "service") {
+        await Message.updateOne({ _id: existingSeed._id }, { $set: { category: "service" } });
+      }
+      continue;
+    }
     const serviceName = booking.serviceId?.title || "Service booking";
     const date = booking.scheduledDate ? new Date(booking.scheduledDate).toLocaleDateString("en-NG") : "Not specified";
     const currency = String(booking.priceSnapshot?.currency || "NGN").toUpperCase();
