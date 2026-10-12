@@ -1765,7 +1765,7 @@ async function updateSellerOrderStatus(req, res) {
       out_for_delivery: ["delivered"],
       delivered: [],
       cancelled: [],
-      pending: ["confirmed", "shipped", "cancelled"],
+      pending: ["confirmed", "cancelled"],
     };
     const previous = order.orderStatus;
     if (previous === status) {
