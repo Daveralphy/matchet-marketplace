@@ -28,6 +28,13 @@ export default function MarketplaceLayout({ children }) {
   const location = useLocation();
   const [pageLoading, setPageLoading] = useState(true);
   const userName = user?.firstName || user?.username || "Daveralphy";
+  const hideFooter =
+    location.pathname === "/messages" ||
+    location.pathname === "/seller/messages" ||
+    location.pathname === "/provider/messages" ||
+    location.pathname === "/cart" ||
+    location.pathname === "/checkout" ||
+    location.pathname.startsWith("/checkout/");
 
   useEffect(() => {
     let active = true;
@@ -102,7 +109,7 @@ export default function MarketplaceLayout({ children }) {
           )}
         </main>
 
-        <Footer isAuthenticated={isAuthenticated} />
+        {!hideFooter && <Footer isAuthenticated={isAuthenticated} />}
       </div>
     </SavedItemsProvider>
   );
