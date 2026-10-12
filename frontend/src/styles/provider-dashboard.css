@@ -700,3 +700,170 @@
     margin: 0 12px;
   }
 }
+
+
+/* Unified responsive pass for seller and provider workspaces.
+   Keep page scrolling on mobile and make shared dashboard components fit narrow screens. */
+.provider-app,
+.provider-app *{box-sizing:border-box}
+.provider-app{min-width:0}
+.provider-main{min-width:0}
+.provider-main>.provider-page,
+.provider-main>.seller-page,
+.provider-main>.seller-edit-page,
+.provider-main>.sod-page{width:100%;max-width:100%;min-width:0}
+.provider-app img{max-width:100%}
+.provider-app input,.provider-app select,.provider-app textarea,.provider-app button{max-width:100%}
+.provider-app .provider-card,
+.provider-app .provider-table-card,
+.provider-app .provider-services-table-card,
+.provider-app .provider-bookings-card,
+.provider-app .provider-reviews-list,
+.provider-app .provider-settings-card{min-width:0}
+.provider-app .provider-heading h1,
+.provider-app .orders-head h1,
+.provider-app .seller-page h1{overflow-wrap:anywhere}
+.provider-app .provider-heading{gap:14px}
+.provider-app .provider-heading>div{min-width:0}
+.provider-app .provider-table-card,
+.provider-app .provider-services-table-card,
+.provider-app .provider-table,
+.provider-app .order-table-wrap{max-width:100%}
+.provider-app .provider-table-card,
+.provider-app .provider-services-table-card{overflow-x:auto}
+.provider-app .provider-table-row,
+.provider-app .provider-service-row,
+.provider-app .provider-services-header,
+.provider-app .provider-service-row-new{width:max-content;min-width:850px}
+.provider-app .provider-main .provider-message-layout{min-width:0;max-width:100%}
+.provider-app .provider-topbar{min-width:0}
+.provider-app .provider-topbar-actions{min-width:0}
+.provider-app .provider-search{min-width:0}
+.provider-app .provider-search input{min-width:0;width:100%}
+.provider-app .provider-notification-panel,
+.provider-app .provider-profile-menu{max-width:calc(100vw - 24px)}
+.provider-app .provider-profile-menu{right:0}
+.provider-app .provider-notification-panel{right:-54px}
+.provider-app .provider-account>div{min-width:0}
+.provider-app .provider-account strong{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.provider-app .provider-logout-modal{width:min(440px,100%);box-sizing:border-box}
+.provider-app .provider-service-modal{width:min(620px,100%);max-width:100%;box-sizing:border-box}
+.provider-app .provider-service-modal input,
+.provider-app .provider-service-modal select,
+.provider-app .provider-service-modal textarea{width:100%;min-width:0}
+@media (min-width:761px) and (max-width:1050px){
+  .provider-app{--provider-sidebar-width:220px}
+  .provider-app .provider-sidebar{width:220px}
+  .provider-app .provider-topbar{left:220px;padding-left:18px;padding-right:18px;gap:14px}
+  .provider-app .provider-main{margin-left:220px;padding-left:18px;padding-right:18px}
+  .provider-app .provider-heading h1{font-size:clamp(25px,3vw,34px)}
+  .provider-app .provider-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .provider-app .provider-dashboard-main-grid,
+  .provider-app .provider-dashboard-bottom-grid,
+  .provider-app .provider-content-grid,
+  .provider-app .provider-profile-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .provider-app{height:auto!important;min-height:100dvh;overflow:visible!important}
+  .provider-app .provider-sidebar{height:100dvh;max-height:100dvh;overflow-y:auto}
+  .provider-app .provider-mobile-overlay{position:fixed;inset:0;pointer-events:none;opacity:0;visibility:hidden}
+  .provider-app.mobile-nav-open .provider-mobile-overlay{pointer-events:auto}
+  .provider-app .provider-topbar{position:sticky;left:auto;right:auto;top:0;width:100%;height:auto;min-height:64px;padding:10px 12px;gap:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:nowrap;background:#fff}
+  .provider-app .provider-mobile-menu{display:flex;flex:0 0 40px;width:40px;height:40px;padding:0 10px}
+  .provider-app .provider-search{flex:1 1 auto;width:auto;height:40px;padding:0 10px;gap:7px;font-size:18px}
+  .provider-app .provider-search input{font-size:12px}
+  .provider-app .provider-topbar-actions{display:flex;flex:0 0 auto;align-items:center;gap:8px}
+  .provider-app .provider-bell{width:36px;height:40px;padding:0;display:grid;place-items:center}
+  .provider-app .provider-account{display:flex;height:40px;padding:0;border:0;gap:0}
+  .provider-app .provider-account img,.provider-app .provider-account-fallback{width:34px;height:34px}
+  .provider-app .provider-account>div:not(.provider-account-fallback),.provider-app .provider-account>span{display:none}
+  .provider-app .provider-main{height:auto!important;min-height:calc(100dvh - 64px);overflow:visible!important;margin:0;padding:12px 14px 28px;width:100%;max-width:100%}
+  .provider-app .provider-main>.provider-page,
+  .provider-app .provider-main>.seller-page,
+  .provider-app .provider-main>.seller-edit-page,
+  .provider-app .provider-main>.sod-page{padding:12px 0 24px;margin:0;width:100%;max-width:100%}
+  .provider-app .provider-heading{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin-bottom:18px}
+  .provider-app .provider-heading h1{font-size:clamp(24px,6vw,30px);line-height:1.15;letter-spacing:-.035em}
+  .provider-app .provider-heading p,.provider-app .provider-heading>div:first-child span{font-size:13px;line-height:1.45}
+  .provider-app .provider-heading-quote{display:none}
+  .provider-app .provider-heading>div:last-child{width:100%}
+  .provider-app .provider-heading button,.provider-app .provider-heading a{max-width:100%}
+  .provider-app .provider-stat-grid,
+  .provider-app .provider-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .provider-app .provider-stat{min-width:0;min-height:112px;padding:12px}
+  .provider-app .provider-stat-icon{width:38px;height:38px;margin-bottom:9px}
+  .provider-app .provider-stat>strong{font-size:clamp(19px,5vw,24px);overflow-wrap:anywhere}
+  .provider-app .provider-stat>b{font-size:11px;line-height:1.35}
+  .provider-app .provider-stat>span{font-size:10px;line-height:1.35}
+  .provider-app .provider-content-grid,
+  .provider-app .provider-dashboard-main-grid,
+  .provider-app .provider-dashboard-bottom-grid,
+  .provider-app .provider-profile-grid,
+  .provider-app .provider-reviews-layout,
+  .provider-app .provider-settings-layout,
+  .provider-app .provider-settings-side{grid-template-columns:minmax(0,1fr);gap:12px}
+  .provider-app .provider-card{padding:14px}
+  .provider-app .provider-card h2{font-size:15px}
+  .provider-app .provider-review-banner{padding:14px;gap:10px}
+  .provider-app .provider-check{width:38px;height:38px;flex:0 0 38px;font-size:22px}
+  .provider-app .provider-review-banner>div:nth-child(2){min-width:0}
+  .provider-app .provider-review-banner a{margin:0 0 0 48px}
+  .provider-app .provider-ready-grid,
+  .provider-app .provider-quick-actions .provider-ready-grid{grid-template-columns:minmax(0,1fr)}
+  .provider-app .provider-dashboard .provider-dashboard-bottom-grid{grid-template-columns:minmax(0,1fr)}
+  .provider-app .provider-dashboard .provider-dashboard-bottom-grid>.provider-help{width:auto;min-width:0;margin:0}
+  .provider-app .provider-dashboard .provider-dashboard-bottom-grid>.provider-help p{padding:0 12px}
+  .provider-app .provider-dashboard .provider-dashboard-bottom-grid>.provider-help button{width:calc(100% - 24px);margin:0 12px}
+  .provider-app .provider-table-tools{height:auto;min-height:54px;flex-wrap:wrap;padding:10px;gap:8px}
+  .provider-app .provider-table-tools button{margin-left:0}
+  .provider-app .provider-services-toolbar{grid-template-columns:minmax(0,1fr);min-width:0;width:100%;padding:12px;gap:9px}
+  .provider-app .provider-services-toolbar input,
+  .provider-app .provider-services-toolbar select{width:100%;min-width:0}
+  .provider-app .provider-services-footer{min-width:0;flex-wrap:wrap}
+  .provider-app .provider-message-layout{display:grid;grid-template-columns:minmax(0,1fr);height:auto;gap:12px}
+  .provider-app .provider-conversations{border:1px solid #e1e6ef;border-radius:9px}
+  .provider-app .provider-conversation-list{height:auto;max-height:48dvh;overflow-y:auto}
+  .provider-app .provider-chat{display:block;height:auto;min-height:420px;border:1px solid #e1e6ef;border-radius:9px}
+  .provider-app .provider-chat-head{height:auto;min-height:70px;padding:12px;flex-wrap:wrap}
+  .provider-app .provider-chat-body{height:auto;min-height:280px;max-height:45dvh;overflow-y:auto;padding:16px 12px;gap:16px}
+  .provider-app .provider-chat-body div{max-width:88%;overflow-wrap:anywhere}
+  .provider-app .provider-chat-input{height:auto;min-height:64px;padding:10px;flex-wrap:wrap}
+  .provider-app .provider-chat-input input{min-width:0;flex:1}
+  .provider-app .provider-chat-input button{margin-left:0;padding:0 16px}
+  .provider-app .provider-reviews-sidebar{display:flex;flex-direction:column}
+  .provider-app .provider-review-item{grid-template-columns:40px minmax(0,1fr) auto 20px;gap:8px;padding:13px 10px}
+  .provider-app .provider-review-content{grid-column:2/-1;min-width:0}
+  .provider-app .provider-review-service{grid-column:2/-1}
+  .provider-app .provider-review-customer{min-width:0}
+  .provider-app .provider-review-customer strong,.provider-app .provider-review-customer small{overflow-wrap:anywhere}
+  .provider-app .provider-profile-hero{grid-template-columns:minmax(0,1fr);gap:14px}
+  .provider-app .provider-profile-details{grid-template-columns:minmax(0,1fr)}
+  .provider-app .provider-settings-tabs{grid-template-columns:repeat(2,minmax(0,1fr));min-height:0}
+  .provider-app .provider-settings-tabs button{min-width:0;min-height:54px;padding:8px;font-size:11px;gap:7px}
+  .provider-app .provider-settings-row{gap:10px;padding:14px 0}
+  .provider-app .provider-settings-value{width:100%;max-width:100%;margin-left:0;text-align:left;overflow-wrap:anywhere}
+  .provider-app .provider-settings-row>.provider-outline-button,.provider-app .provider-settings-row>.provider-danger-button{margin-left:auto}
+  .provider-app .provider-booking-row{min-width:0;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:13px}
+  .provider-app .provider-booking-row>button{grid-column:2;grid-row:1/5;align-self:center}
+  .provider-app .provider-application-hero{flex-direction:column}
+  .provider-app .provider-application-details,.provider-app .provider-application-steps{grid-template-columns:minmax(0,1fr)}
+  .provider-app .provider-service-modal-backdrop{padding:10px;align-items:flex-end}
+  .provider-app .provider-service-modal{max-height:calc(100dvh - 20px);overflow-y:auto;padding:18px}
+  .provider-app .provider-service-modal-grid{grid-template-columns:minmax(0,1fr)}
+  .provider-app .provider-service-image-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .provider-app .provider-notification-panel{position:fixed;top:62px;left:12px;right:12px;width:auto;max-width:none;max-height:70dvh;overflow-y:auto}
+  .provider-app .provider-profile-menu{position:fixed;top:62px;right:12px;width:min(300px,calc(100vw - 24px));max-width:none}
+  .provider-app .provider-logout-modal{width:100%;padding:20px}
+}
+@media (max-width:420px){
+  .provider-app .provider-topbar{padding:8px;gap:7px}
+  .provider-app .provider-mobile-menu{flex-basis:36px;width:36px;height:38px;padding:0 9px}
+  .provider-app .provider-search{height:38px;padding:0 7px}
+  .provider-app .provider-search input{font-size:11px}
+  .provider-app .provider-topbar-actions{gap:4px}
+  .provider-app .provider-bell{width:30px}
+  .provider-app .provider-account img,.provider-app .provider-account-fallback{width:30px;height:30px}
+  .provider-app .provider-main{padding-left:10px;padding-right:10px}
+  .provider-app .provider-stat{padding:10px}
+  .provider-app .provider-card{padding:12px}
+}
