@@ -297,7 +297,7 @@ export default function BuyerMessages() {
 
         {error && <div className="account-messages-error" role="alert"><span>{error}</span><button type="button" onClick={() => setError("")} aria-label="Dismiss error">×</button></div>}
 
-        <section className="account-messages-layout">
+        <section className={"account-messages-layout" + (selectedId ? " mobile-chat-open" : " mobile-list-open")}>
           <aside className="account-messages-list-panel">
             <div className="account-messages-search"><span aria-hidden="true">⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search conversations" aria-label="Search conversations" /></div>
             <div className="account-messages-filters">
@@ -335,7 +335,7 @@ export default function BuyerMessages() {
               <div className="account-messages-empty account-messages-chat-empty">Loading conversation…</div>
             ) : (
               <>
-                <header className="account-messages-chat-header"><Avatar user={activeConversation.participant} large /><div><strong>{activeConversation.participant?.name || "Matchet user"}</strong><span>Matchet conversation</span></div></header>
+                <header className="account-messages-chat-header"><button type="button" className="account-messages-mobile-back" onClick={() => { setSelectedId(""); setActiveConversation(null); setOpenMenuId(""); }} aria-label="Back to conversations"><span aria-hidden="true">←</span><span>Back</span></button><Avatar user={activeConversation.participant} large /><div><strong>{activeConversation.participant?.name || "Matchet user"}</strong><span>Matchet conversation</span></div></header>
                 <div className="account-messages-chat-body" ref={chatBodyRef}>
                   {activeConversation.pagination?.hasMore && <button type="button" className="account-messages-load-older" onClick={loadOlderMessages} disabled={conversationLoading}>{conversationLoading ? "Loading…" : "Load older messages"}</button>}
                   {(activeConversation.messages || []).length === 0 ? <div className="account-messages-empty">No messages in this conversation yet.</div> : activeConversation.messages.map((item, index, list) => {
