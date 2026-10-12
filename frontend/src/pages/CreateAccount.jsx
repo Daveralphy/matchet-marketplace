@@ -257,7 +257,7 @@ const CreateAccount = () => {
   const breadcrumbLabel = breadcrumbPath === "/"
     ? "Home"
     : breadcrumbPath.startsWith("/for-providers")
-      ? "For Providers"
+      ? "Buy & Sell"
       : breadcrumbPath.startsWith("/products")
         ? "Products"
         : breadcrumbPath.startsWith("/services")
