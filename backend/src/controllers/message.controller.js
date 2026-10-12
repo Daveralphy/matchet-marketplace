@@ -472,18 +472,38 @@ async function sendMessage(req, res) {
     const recipient = await User.findById(receiverId).select("_id isActive").lean();
     if (!recipient || !recipient.isActive) return res.status(404).json({ success: false, message: "Recipient not found." });
 
-    const existingThread = await Message.exists({
-      $or: [
-        { senderId, receiverId },
-        { senderId: receiverId, receiverId: senderId },
-      ],
-    });
-    if (!existingThread && !(await hasRelationship(senderId, receiverId))) {
+    const [existingThread, productRelationship, serviceRelationship] = await Promise.all([
+      Message.exists({
+        $or: [
+          { senderId, receiverId },
+          { senderId: receiverId, receiverId: senderId },
+        ],
+      }),
+      Order.exists({
+        $or: [
+          { buyerId: senderId, "items.sellerId": receiverId },
+          { buyerId: receiverId, "items.sellerId": senderId },
+        ],
+      }),
+      Booking.exists({
+        $or: [
+          { buyerId: senderId, providerId: receiverId },
+          { buyerId: receiverId, providerId: senderId },
+        ],
+      }),
+    ]);
+    if (!existingThread && !productRelationship && !serviceRelationship) {
       return res.status(403).json({
         success: false,
         message: "You can start a conversation after an order or service booking connects your accounts.",
         code: "MESSAGE_RELATIONSHIP_REQUIRED",
       });
+    }
+    if (category === "product" && !productRelationship) {
+      return res.status(403).json({ success: false, message: "Product messages require a product order between these accounts." });
+    }
+    if (category === "service" && !serviceRelationship) {
+      return res.status(403).json({ success: false, message: "Service messages require a service booking between these accounts." });
     }
 
     const created = await Message.create({
