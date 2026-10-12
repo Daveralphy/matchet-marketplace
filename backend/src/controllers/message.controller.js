@@ -196,11 +196,7 @@ async function getInbox(req, res) {
     const inboxFilter = {
       $and: [
         { $or: [{ senderId: userId }, { receiverId: userId }] },
-        ...(requestedCategory ? [{ $or: [
-          { category: requestedCategory },
-          { category: "general" },
-          { category: { $exists: false } },
-        ] }] : []),
+        ...(requestedCategory ? [{ category: requestedCategory }] : []),
       ],
       hiddenFor: { $ne: userId },
       archivedFor: req.query.archived === "true" ? userId : { $ne: userId },
@@ -252,6 +248,7 @@ async function updateConversationState(req, res) {
         { senderId: userId, receiverId: otherId },
         { senderId: otherId, receiverId: userId },
       ],
+      ...(["product", "service"].includes(req.body?.category) ? { category: req.body.category } : {}),
     };
     let update;
     if (action === "read") {
@@ -359,11 +356,7 @@ async function getConversation(req, res) {
     if (["product", "service"].includes(req.query.category)) {
       pairFilter.$and = [
         ...(Array.isArray(pairFilter.$and) ? pairFilter.$and : pairFilter.$and ? [pairFilter.$and] : []),
-        { $or: [
-          { category: req.query.category },
-          { category: "general" },
-          { category: { $exists: false } },
-        ] },
+        { category: req.query.category },
       ];
     }
 
@@ -398,7 +391,12 @@ async function getConversation(req, res) {
 
     if (!before) {
       await Message.updateMany(
-        { senderId: otherId, receiverId: userId, readAt: null },
+        {
+          senderId: otherId,
+          receiverId: userId,
+          readAt: null,
+          ...(["product", "service"].includes(req.query.category) ? { category: req.query.category } : {}),
+        },
         { $set: { readAt: new Date() } },
       );
     }
