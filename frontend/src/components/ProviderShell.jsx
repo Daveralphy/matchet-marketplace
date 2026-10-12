@@ -161,9 +161,9 @@ export function ProviderShell({ children, mode = "provider" }) {
     <div className={"provider-app" + (collapsed ? " sidebar-collapsed" : "") + (mobileOpen ? " mobile-nav-open" : "")}>
       <div className="provider-mobile-overlay" onClick={() => setMobileOpen(false)} aria-hidden="true" />
 
-      <aside className="provider-sidebar" aria-label={sellerMode ? "Seller navigation" : "Buy & Sell navigation"}>
+      <aside className="provider-sidebar" aria-label={sellerMode ? "Seller navigation" : "Sell & Offer navigation"}>
         <div className="provider-brand-row">
-          <Link to="/for-providers" className="provider-brand" aria-label="Matchet Buy & Sell"><img src={logo} alt="Matchet" /></Link>
+          <Link to="/for-providers" className="provider-brand" aria-label="Matchet Sell & Offer"><img src={logo} alt="Matchet" /></Link>
           <button type="button" className="provider-sidebar-toggle" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
             <Icon name={collapsed ? "chevronRight" : "chevronLeft"} size={18} />
           </button>
@@ -193,7 +193,7 @@ export function ProviderShell({ children, mode = "provider" }) {
 
         <div className="provider-search">
           <Icon name="search" size={20} />
-          <input value={search} onChange={(event) => setSearch(event.target.value)} onKeyDown={goToSearchResult} placeholder={sellerMode ? "Search orders, messages, or help..." : "Search bookings, messages, or help..."} aria-label="Search Buy & Sell workspace" />
+          <input value={search} onChange={(event) => setSearch(event.target.value)} onKeyDown={goToSearchResult} placeholder={sellerMode ? "Search orders, messages, or help..." : "Search bookings, messages, or help..."} aria-label="Search Sell & Offer workspace" />
           {search && <button type="button" onClick={() => setSearch("")} aria-label="Clear search">×</button>}
         </div>
 
@@ -222,7 +222,7 @@ export function ProviderShell({ children, mode = "provider" }) {
           <div className="provider-account-wrap" ref={profileRef}>
             <button type="button" className="provider-account" onClick={() => { setProfileOpen((value) => !value); setNotificationsOpen(false); }} aria-expanded={profileOpen}>
               {avatar ? <img src={avatar} alt="" /> : <div className="provider-account-fallback">{initials}</div>}
-              <div><strong>{displayName}</strong><small>{sellerMode ? "Seller" : user?.role === "provider" ? "Buy & Sell" : "Account"}</small></div>
+              <div><strong>{displayName}</strong><small>{sellerMode ? "Seller" : user?.role === "provider" ? "Sell & Offer" : "Account"}</small></div>
               <Icon name="chevron" size={17} />
             </button>
 
@@ -230,7 +230,7 @@ export function ProviderShell({ children, mode = "provider" }) {
               <div className="provider-profile-menu">
                 <div className="provider-profile-menu-head">
                   {avatar ? <img src={avatar} alt="" /> : <div className="provider-account-fallback">{initials}</div>}
-                  <div><strong>{displayName}</strong><small>{user?.email || "Buy & Sell account"}</small></div>
+                  <div><strong>{displayName}</strong><small>{user?.email || "Sell & Offer account"}</small></div>
                 </div>
                 <button type="button" onClick={() => navigate(sellerMode ? "/seller/profile" : "/provider/profile")}><Icon name="user" size={18} /> Profile</button>
                 <button type="button" onClick={() => navigate(sellerMode ? "/seller/settings" : "/provider/settings")}><Icon name="settings" size={18} /> Settings</button>
