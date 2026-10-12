@@ -127,9 +127,7 @@ async function ensureTransactionOpeningMessages(userId) {
       };
       if (existingSeed) {
         // Upgrade automatic opening messages created by the earlier text-only implementation.
-        if (!existingSeed.orderCard) {
-          await Message.updateOne({ _id: existingSeed._id }, { $set: { content, orderCard } });
-        }
+        await Message.updateOne({ _id: existingSeed._id }, { $set: { category: "product", ...(!existingSeed.orderCard ? { content, orderCard } : {}) } });
         continue;
       }
       // Each order gets its own order-card message inside the canonical buyer/seller thread.
