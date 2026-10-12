@@ -287,8 +287,9 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
     }
   }
 
+  const InboxContainer = dashboardMode ? "div" : "main";
   const inboxContent = (
-    <main className={"account-messages-page" + (dashboardMode ? " account-messages-dashboard-mode" : "")}>
+    <InboxContainer className={"account-messages-page" + (dashboardMode ? " account-messages-dashboard-mode" : "")}>
       <div className="account-messages-shell">
         <nav className={"account-messages-breadcrumb" + (dashboardMode ? " dashboard-hidden-breadcrumb" : "")} aria-label="Breadcrumb">
           <Link to="/">Home</Link><span aria-hidden="true">›</span><span aria-current="page">Messages</span>
@@ -352,7 +353,7 @@ export default function BuyerMessages({ dashboardMode = "" } = {}) {
           </section>
         </section>
       </div>
-    </main>
+    </InboxContainer>
   );
   return dashboardMode ? <ProviderShell mode={dashboardMode}>{inboxContent}</ProviderShell> : inboxContent;
 }
