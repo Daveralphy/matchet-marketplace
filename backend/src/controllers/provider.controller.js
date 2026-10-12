@@ -1744,7 +1744,7 @@ async function updateSellerOrderStatus(req, res) {
   try {
     const sellerId = req.user._id;
     const { status } = req.body || {};
-    const allowed = ["confirmed", "processing", "shipped", "delivered", "cancelled"];
+    const allowed = ["confirmed", "processing", "shipped", "out_for_delivery", "delivered", "cancelled"];
     if (!allowed.includes(status)) {
       return res.status(400).json({ success: false, message: "Invalid order status." });
     }
