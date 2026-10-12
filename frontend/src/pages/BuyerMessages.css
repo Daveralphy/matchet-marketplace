@@ -45,3 +45,19 @@
 .account-order-details-link{display:inline-flex;align-items:center;gap:7px;padding:9px 11px;border-radius:7px;background:#087d35;color:#fff!important;text-decoration:none;font-size:11px;font-weight:700;white-space:nowrap}
 .account-order-details-link:hover{background:#06672b}
 @media(max-width:760px){.account-message-menu{right:0;width:180px}.account-order-message-item img,.account-order-message-placeholder{width:42px;height:42px;flex-basis:42px}.account-message-bubble.has-order-card{max-width:96%}}
+
+/* Keep conversation menus above the message panel and mobile chat area. */
+.account-messages-layout{overflow:visible;position:relative}
+.account-messages-list-panel{position:relative;z-index:40;overflow:visible}
+.account-messages-conversations{overflow:visible;position:relative}
+.account-message-thread-wrap{z-index:1}
+.account-message-thread-wrap:has(.account-message-menu){z-index:100}
+.account-message-thread-actions{z-index:101}
+.account-message-menu{z-index:1000}
+@media(max-width:760px){
+  .account-messages-layout{overflow:visible}
+  .account-messages-list-panel{overflow:visible;max-height:none}
+  .account-messages-conversations{overflow:visible}
+  .account-messages-list-panel:has(.account-message-menu){z-index:100}
+  .account-message-menu{z-index:10000}
+}
