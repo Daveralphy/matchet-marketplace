@@ -47,9 +47,9 @@ export function getUnreadCount() {
   return request("/api/messages/unread-count");
 }
 
-export function updateConversationState(conversationId, action) {
+export function updateConversationState(conversationId, action, category = "") {
   return request("/api/messages/" + encodeURIComponent(conversationId) + "/state", {
     method: "PATCH",
-    body: JSON.stringify({ action }),
+    body: JSON.stringify({ action, ...(category ? { category } : {}) }),
   });
 }
