@@ -54,11 +54,11 @@ export default function ProviderDashboard() {
     <ProviderShell>
       <div className="provider-page provider-dashboard">
         <div className="provider-heading">
-          <div><p>Welcome back,</p><h1>{greetingName}!</h1><span>Here is what is happening with your provider account.</span></div>
+          <div><p>Welcome back,</p><h1>{greetingName}!</h1><span>Here is what is happening with your Buy & Sell account.</span></div>
           <div className="provider-heading-quote">{dateLabel}<br /><strong>People. Services.<br />Stronger communities.</strong><em /></div>
         </div>
 
-        {data.application?.isUnderReview && <section className="provider-review-banner"><div className="provider-check">✓</div><div><strong>Your provider application is under review</strong><p>Thank you for applying to become a provider on Matchet. Our team is reviewing your information and will notify you once your profile is approved.</p></div><Link to="/provider/application-status">View application&nbsp; →</Link></section>}
+        {data.application?.isUnderReview && <section className="provider-review-banner"><div className="provider-check">✓</div><div><strong>Your Buy & Sell application is under review</strong><p>Thank you for applying to Buy & Sell on Matchet. Our team is reviewing your information and will notify you once your profile is approved.</p></div><Link to="/provider/application-status">View application&nbsp; →</Link></section>}
 
         <div className="provider-stat-grid">
           <div className="provider-stat"><div className="provider-stat-icon calendar"><Icon name="calendar" /></div><strong>{kpis.bookings.value}</strong><b>Total bookings</b><span>This month {kpis.bookings.change !== null && <small className="provider-kpi-change">↗ {kpis.bookings.change >= 0 ? "+" : ""}{kpis.bookings.change}%</small>}</span></div>
@@ -96,7 +96,7 @@ export default function ProviderDashboard() {
             <Link to="/provider/services"><i><Icon name="plus" size={20} /></i><strong>Add a new service</strong><p>Reach more customers by offering more services.</p><span>Add service&nbsp; →</span></Link>
             <Link to="/provider/settings"><i><Icon name="calendar" size={20} /></i><strong>Manage availability</strong><p>Update the days and times you are available.</p><span>Update schedule&nbsp; →</span></Link>
             <Link to="/provider/earnings"><i><Icon name="wallet" size={20} /></i><strong>View earnings</strong><p>Check your income and transaction history.</p><span>View earnings&nbsp; →</span></Link>
-            <Link to="/provider/profile"><i><Icon name="user" size={20} /></i><strong>Edit profile</strong><p>Keep your provider information up to date.</p><span>Edit profile&nbsp; →</span></Link>
+            <Link to="/provider/profile"><i><Icon name="user" size={20} /></i><strong>Edit profile</strong><p>Keep your business information up to date.</p><span>Edit profile&nbsp; →</span></Link>
           </div></section>
           <section className="provider-card provider-help"><h2>Need help?</h2><p>Our support team is here to help. If you have any questions, feel free to reach out.</p><button>♧&nbsp;&nbsp; Contact support</button></section>
         </div>
