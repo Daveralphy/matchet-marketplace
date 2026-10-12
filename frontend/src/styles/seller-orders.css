@@ -29,3 +29,36 @@
 .seller-cancel-actions button:disabled{opacity:.55;cursor:not-allowed}
 .seller-cancel-error{font-size:12px;color:#c72a37;margin:8px 0 0}
 @media(max-width:760px){.seller-cancel-dialog{padding:23px 18px}.seller-cancel-actions{flex-direction:column-reverse}.seller-cancel-actions button{width:100%}}
+
+/* Seller orders: preserve the details card below the list on mobile. */
+@media(max-width:1100px){
+ .orders-content{grid-template-columns:minmax(0,1fr)}
+ .order-detail{display:block;min-width:0}
+ .order-filters{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .order-filters label{grid-column:1/-1}
+ .order-table-wrap{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .order-table-wrap table{min-width:720px}
+ .order-detail .detail-body{padding:14px}
+ .order-detail .detail-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+ .order-detail .detail-actions button{margin-top:0}
+}
+@media(max-width:600px){
+ .seller-orders-page{padding:14px 0 24px;width:100%;min-width:0}
+ .orders-head{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+ .orders-head h1{font-size:clamp(24px,6vw,30px)}
+ .orders-head-actions{align-items:stretch;width:100%}
+ .date-filter{min-width:0;width:100%}
+ .order-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .order-stat{min-width:0;padding:12px;gap:9px}
+ .order-stat strong{font-size:20px}
+ .order-stat b{font-size:10px}
+ .order-stat span{font-size:9px;line-height:1.35}
+ .order-stat-icon{width:32px;height:32px;flex:0 0 32px}
+ .order-tabs{overflow-x:auto;padding:0 8px}
+ .order-tabs button{white-space:nowrap;padding:0 10px}
+ .order-filters{grid-template-columns:minmax(0,1fr);padding:12px;gap:8px}
+ .order-filters label{grid-column:auto}
+ .order-footer{height:auto;min-height:54px;gap:10px;flex-wrap:wrap;padding:12px}
+ .detail-product>img,.detail-product>div{flex:0 0 64px;width:64px;height:64px}
+ .seller-cancel-dialog{padding:22px 16px}
+}
