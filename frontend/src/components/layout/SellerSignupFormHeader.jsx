@@ -51,7 +51,7 @@ export default function SellerSignupFormHeader({ step }) {
   return (
     <header className="seller-signup-form-header">
       <div className="seller-signup-form-heading-row">
-        <Link to="/" className="seller-signup-breadcrumb"><span aria-hidden="true">←</span><span>Buy & Sell</span></Link>
+        <Link to="/" className="seller-signup-breadcrumb"><span aria-hidden="true">←</span><span>Sell & Offer</span></Link>
         <Link to="/for-providers" className="seller-signup-save-and-exit">
           <SaveIcon />
           <span>Save and exit</span>
@@ -59,7 +59,7 @@ export default function SellerSignupFormHeader({ step }) {
       </div>
 
       <div className="seller-signup-form-heading-copy">
-        <h1>Sell products with Buy & Sell</h1>
+        <h1>Sell products with Sell & Offer</h1>
         <p>Set up your profile to sell products on Matchet.</p>
       </div>
 
