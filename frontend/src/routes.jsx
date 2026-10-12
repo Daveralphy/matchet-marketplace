@@ -658,7 +658,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/provider/messages",
-    element: <RequireProvider><ProviderMessages /></RequireProvider>,
+    element: <RequireProvider><BuyerMessages dashboardMode="provider" /></RequireProvider>,
   },
   {
     path: "/saved-items",
@@ -734,7 +734,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/seller/messages",
-    element: <RequireSeller><SellerMessages /></RequireSeller>,
+    element: <RequireSeller><BuyerMessages dashboardMode="seller" /></RequireSeller>,
   },
   {
     path: "/seller/products",
