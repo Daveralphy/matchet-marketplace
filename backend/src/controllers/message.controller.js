@@ -195,8 +195,16 @@ async function getInbox(req, res) {
   try {
     const userId = req.user._id;
     if (req.query.syncTransactions === "true") await ensureTransactionOpeningMessages(userId);
+    const requestedCategory = ["product", "service"].includes(req.query.category) ? req.query.category : "";
     const inboxFilter = {
-      $or: [{ senderId: userId }, { receiverId: userId }],
+      $and: [
+        { $or: [{ senderId: userId }, { receiverId: userId }] },
+        ...(requestedCategory ? [{ $or: [
+          { category: requestedCategory },
+          { category: "general" },
+          { category: { $exists: false } },
+        ] }] : []),
+      ],
       hiddenFor: { $ne: userId },
       archivedFor: req.query.archived === "true" ? userId : { $ne: userId },
     };
