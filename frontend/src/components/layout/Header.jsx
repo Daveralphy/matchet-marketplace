@@ -43,7 +43,7 @@ const PROFILE_ITEMS = [
   },
   {
     label: "Messages",
-    description: "Chat with buyers, sellers, and service providers",
+    description: "Chat with buyers and Buy & Sell accounts",
     path: "/messages",
     icon: "message",
   },
