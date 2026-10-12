@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { label: "Explore", path: "/explore" },
   { label: "Services", path: "/services" },
   { label: "Products", path: "/products" },
-  { label: "Buy & Sell", path: "/for-providers" },
+  { label: "Sell & Offer", path: "/for-providers" },
 ];
 
 const MOBILE_NAV_ITEMS = [
@@ -25,7 +25,7 @@ const MOBILE_NAV_ITEMS = [
   { label: "Explore", path: "/explore" },
   { label: "Products", path: "/products" },
   { label: "Services", path: "/services" },
-  { label: "Buy & Sell", path: "/for-providers" },
+  { label: "Sell & Offer", path: "/for-providers" },
 ];
 
 const PROFILE_ITEMS = [
@@ -43,7 +43,7 @@ const PROFILE_ITEMS = [
   },
   {
     label: "Messages",
-    description: "Chat with buyers and Buy & Sell accounts",
+    description: "Chat with buyers and Sell & Offer accounts",
     path: "/messages",
     icon: "message",
   },
