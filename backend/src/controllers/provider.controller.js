@@ -1542,7 +1542,7 @@ async function getSellerDashboard(req, res) {
       StoreProfile.findOne({ userId: sellerId }).lean(),
       Product.find({ sellerId }).sort({ createdAt: -1 }).lean(),
       Order.find({ "items.sellerId": sellerId }).sort({ createdAt: -1 }).limit(100).populate("buyerId", "firstName lastName avatar createdAt").lean(),
-      Message.find({ $or: [{ senderId: sellerId }, { receiverId: sellerId }] }).sort({ createdAt: -1 }).limit(20).populate("senderId", "firstName lastName avatar").populate("receiverId", "firstName lastName avatar").lean(),
+      Message.find({ category: "product", $or: [{ senderId: sellerId }, { receiverId: sellerId }] }).sort({ createdAt: -1 }).limit(20).populate("senderId", "firstName lastName avatar").populate("receiverId", "firstName lastName avatar").lean(),
     ]);
 
     const sellerItems = (order) => order.items.filter((item) => String(item.sellerId) === String(sellerId));
