@@ -116,3 +116,18 @@
   .account-messages-layout.mobile-chat-open .account-messages-composer input{height:44px;font-size:14px}
   .account-messages-layout.mobile-chat-open .account-messages-composer button{min-width:68px;height:44px}
 }
+
+/* Shared messaging inbox embedded in the seller/provider dashboard shell. */
+.account-messages-dashboard-mode{min-height:0;background:transparent;padding:8px 0 16px;color:inherit}
+.account-messages-dashboard-mode .account-messages-shell{max-width:none;margin:0}
+.account-messages-dashboard-mode .dashboard-hidden-breadcrumb{display:none}
+.account-messages-dashboard-mode .account-messages-heading{margin-bottom:18px}
+.account-messages-dashboard-mode .account-messages-heading h1{font-size:30px}
+.account-messages-dashboard-mode .account-messages-layout{min-height:560px;height:calc(100dvh - 250px);max-height:850px}
+@media(max-width:760px){
+ .account-messages-dashboard-mode{padding:0 0 12px}
+ .account-messages-dashboard-mode .account-messages-heading{margin:0 0 14px}
+ .account-messages-dashboard-mode .account-messages-layout{height:auto;max-height:none;min-height:0}
+ .account-messages-dashboard-mode .account-messages-layout.mobile-chat-open{height:calc(100dvh - 170px);min-height:0;max-height:calc(100dvh - 170px)}
+ .account-messages-dashboard-mode .account-messages-layout.mobile-list-open .account-messages-list-panel{max-height:none;min-height:calc(100dvh - 270px)}
+}
