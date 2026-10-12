@@ -132,7 +132,8 @@ async function ensureTransactionOpeningMessages(userId) {
         }
         continue;
       }
-      if (existingThread) continue;
+      // Each order gets its own order-card message inside the canonical buyer/seller thread.
+      // Existing conversations are reused because the conversation ID is derived from the participant pair.
       try {
         await Message.create({
           conversationId: canonicalConversationId(buyerId, sellerId),
