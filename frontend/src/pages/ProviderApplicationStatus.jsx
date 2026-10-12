@@ -48,9 +48,9 @@ export default function ProviderApplicationStatus() {
         <div className="provider-application-status-card">
           <div className="provider-status-mark provider-status-mark-success">✓</div>
           <h1>Application approved</h1>
-          <p>Your provider application has been approved. Your provider dashboard is now available.</p>
+          <p>Your Buy & Sell application has been approved. Your workspace is now available.</p>
           <div className="provider-application-status-actions">
-            <Link to="/provider/dashboard" className="provider-status-primary">Go to provider dashboard</Link>
+            <Link to="/provider/dashboard" className="provider-status-primary">Go to Buy & Sell workspace</Link>
             <Link to="/" className="provider-status-secondary">Return to Matchet</Link>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function ProviderApplicationStatus() {
         <p className="provider-status-lead">
           {rejected
             ? (application?.reviewNote || "Your application was not approved. Please review the feedback and update your application.")
-            : "Thanks for applying to become a provider on Matchet. We have received your application and our team is reviewing the information you submitted."}
+            : "Thanks for applying to Buy & Sell on Matchet. We have received your application and our team is reviewing the information you submitted."}
         </p>
 
         <div className="provider-status-notice">
@@ -78,7 +78,7 @@ export default function ProviderApplicationStatus() {
           <p>
             {rejected
               ? "Update the required information and submit your application again when you are ready."
-              : "You will receive an email and in-app notification when a decision has been made. Until your application is approved, provider dashboard features are not available."}
+              : "You will receive an email and in-app notification when a decision has been made. Until your application is approved, Buy & Sell workspace features are not available."}
           </p>
         </div>
 
