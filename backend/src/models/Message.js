@@ -29,6 +29,7 @@ const orderCardSchema = new mongoose.Schema({
 const messageSchema = new mongoose.Schema({
   conversationId: { type: String, required: true, index: true, trim: true },
   sourceRef: { type: String, trim: true },
+  category: { type: String, enum: ["general", "product", "service"], default: "general", index: true },
   orderCard: { type: orderCardSchema, default: undefined },
   archivedFor: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   hiddenFor: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
