@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { ProviderShell } from "../components/ProviderShell";
 import { getInbox, startConversation, getConversation, sendMessage, updateConversationState } from "../api/messages";
 import "./BuyerMessages.css";
 
@@ -45,7 +46,7 @@ function OrderMessageCard({ orderCard, isBuyerView }) {
   );
 }
 
-export default function BuyerMessages() {
+export default function BuyerMessages({ dashboardMode = "" } = {}) {
   const [conversations, setConversations] = useState([]);
   const [selectedId, setSelectedId] = useState("");
   const [mobileChatOpen, setMobileChatOpen] = useState(false);
@@ -286,8 +287,8 @@ export default function BuyerMessages() {
     }
   }
 
-  return (
-    <main className="account-messages-page">
+  const inboxContent = (
+    <main className={"account-messages-page" + (dashboardMode ? " account-messages-dashboard-mode" : "")}>
       <div className="account-messages-shell">
         <nav className="account-messages-breadcrumb" aria-label="Breadcrumb">
           <Link to="/">Home</Link><span aria-hidden="true">›</span><span aria-current="page">Messages</span>
@@ -353,4 +354,5 @@ export default function BuyerMessages() {
       </div>
     </main>
   );
+  return dashboardMode ? <ProviderShell mode={dashboardMode}>{inboxContent}</ProviderShell> : inboxContent;
 }
