@@ -359,6 +359,17 @@ async function getConversation(req, res) {
         }],
       } : {}),
     };
+    if (["product", "service"].includes(req.query.category)) {
+      pairFilter.$and = [
+        ...(Array.isArray(pairFilter.$and) ? pairFilter.$and : pairFilter.$and ? [pairFilter.$and] : []),
+        { $or: [
+          { category: req.query.category },
+          { category: "general" },
+          { category: { $exists: false } },
+        ] },
+      ];
+    }
+
     const messages = await Message.find(pairFilter)
       .sort({ createdAt: -1, _id: -1 })
       .limit(pageSize + 1)
