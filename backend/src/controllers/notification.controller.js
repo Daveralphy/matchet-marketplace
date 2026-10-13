@@ -32,4 +32,19 @@ async function markNotificationsRead(req, res) {
   }
 }
 
-module.exports = { listNotifications, markNotificationsRead };
+async function markNotificationRead(req, res) {
+  try {
+    const updated = await Notification.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user._id },
+      { $set: { isRead: true } },
+      { new: true },
+    ).select("_id");
+    if (!updated) return res.status(404).json({ success: false, message: "Notification not found." });
+    return res.json({ success: true });
+  } catch (error) {
+    console.error("Mark notification read error:", error);
+    return res.status(500).json({ success: false, message: "Unable to update this notification." });
+  }
+}
+
+module.exports = { listNotifications, markNotificationsRead, markNotificationRead };
