@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBuyerBookings } from "../api/marketplace";
+import BookingReviewPanel from "../components/BookingReviewPanel";
 import "./BuyerAccount.css";
 
 export default function BuyerBookings() {
@@ -46,6 +47,7 @@ export default function BuyerBookings() {
                     </div>
                     <div className="buyer-booking-price"><span>Booking price</span><strong>{currency} {amount.toLocaleString("en-NG")}</strong></div>
                   </div>
+                  <BookingReviewPanel booking={booking} />
                   <footer className="buyer-booking-footer">
                     <span>Booking reference: #{id.slice(-8).toUpperCase()}</span>
                     <div className="buyer-booking-actions">
