@@ -11,6 +11,7 @@ import { searchMarketplace } from "../../data/marketplaceApi";
 import LocationSearch from "../LocationSearch";
 import { initializeMarketplaceLocation } from "../../hooks/useMarketplaceLocation";
 import { getUnreadCount } from "../../api/messages";
+import NotificationDetailModal from "../NotificationDetailModal";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
@@ -228,6 +229,7 @@ export default function Header({
     logout: authLogout,
     notifications: authNotifications,
     markNotificationsRead,
+    markNotificationRead,
   } = useAuth();
 
   const [selectedLocation, setSelectedLocation] = useState(
@@ -243,6 +245,7 @@ export default function Header({
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [logoutSubmitting, setLogoutSubmitting] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const [searchSuggestions, setSearchSuggestions] = useState([]);
 
   const locationRef = useRef(null);
@@ -622,8 +625,8 @@ export default function Header({
                         <button
                           key={item.id}
                           type="button"
-                          onClick={markNotificationsRead}
-                          className="flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50"
+                          onClick={() => { markNotificationRead(item.id); setSelectedNotification(item); setNotificationsOpen(false); }}
+                          className={"flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50 " + (!item.read ? "bg-[#f2fbf5] " : "")}
                         >
                           <Icon
                             name={
@@ -1154,6 +1157,7 @@ export default function Header({
           </div>
         </div>
       )}
+      <NotificationDetailModal notification={selectedNotification} mode="customer" onClose={() => setSelectedNotification(null)} onOpenTarget={(path) => { setSelectedNotification(null); navigate(path); }} />
     </header>
   );
 }
