@@ -13,6 +13,7 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const marketplaceRoutes = require("./routes/marketplace.routes");
 const notificationRoutes = require("./routes/notification.routes");
 const messageRoutes = require("./routes/message.routes");
+const reviewRoutes = require("./routes/review.routes");
 const cartRoutes = require("./routes/cart.routes");
 
 const app = express();
@@ -118,6 +119,8 @@ app.use(
   },
   authRoutes,
 );
+
+app.use("/api/reviews", reviewRoutes);
 
 app.use(
   "/api/messages",
