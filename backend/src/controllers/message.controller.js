@@ -3,6 +3,7 @@ const Message = require("../models/Message");
 const User = require("../models/User");
 const Order = require("../models/Order");
 const Booking = require("../models/Booking");
+const { createNotification } = require("../utils/createNotification");
 
 const MAX_MESSAGE_LENGTH = 5000;
 const MAX_ATTACHMENTS = 5;
@@ -514,6 +515,16 @@ async function sendMessage(req, res) {
     const message = await Message.findById(created._id)
       .populate("senderId", "firstName lastName avatar")
       .lean();
+
+    const senderName = [req.user.firstName, req.user.lastName].filter(Boolean).join(" ") || "Someone";
+    await createNotification({
+      userId: receiverId,
+      type: "NEW_MESSAGE",
+      title: "You have a new message",
+      message: `${senderName} sent you a message. Open your inbox to respond.`,
+      relatedId: created._id,
+      relatedType: "message",
+    });
 
     return res.status(201).json({ success: true, data: serializeMessage(message, senderId) });
   } catch (error) {
