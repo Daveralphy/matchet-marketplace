@@ -9,6 +9,7 @@ const StoreProfile = require("../models/StoreProfile");
 const Payout = require("../models/Payout");
 const Order = require("../models/Order");
 const User = require("../models/User");
+const { createNotification } = require("../utils/createNotification");
 
 function orderConversationId(firstId, secondId) {
   return [String(firstId), String(secondId)].sort().join(":");
@@ -1860,6 +1861,7 @@ async function updateSellerOrderStatus(req, res) {
       }
 
       await ensureSellerOrderStatusMessage(claimed, sellerId, "cancelled", cancellationReason);
+      await createNotification({ userId: claimed.buyerId, type: "ORDER_CANCELLED", title: "Your order was cancelled", message: "Order #" + String(claimed._id).slice(-8).toUpperCase() + " was cancelled. Please check the order details for next steps.", relatedId: claimed._id, relatedType: "order" });
       return res.json({ success: true, requiresManualReview: true, message: "Order cancelled. The customer has been notified, and a support administrator must review the refund.", data: { id: claimed._id, status: claimed.orderStatus, paymentStatus: claimed.paymentStatus, inventoryRestockStatus: claimed.inventoryRestockStatus, statusHistory: claimed.statusHistory } });
     }
 
@@ -1874,6 +1876,15 @@ async function updateSellerOrderStatus(req, res) {
     if (!updated) return res.status(409).json({ success: false, message: "This order has changed. Refresh and try again." });
 
     await ensureSellerOrderStatusMessage(updated, sellerId, status);
+    const statusNotifications = {
+      confirmed: { type: "ORDER_CONFIRMED", title: "Your order is confirmed", message: "Order #" + String(updated._id).slice(-8).toUpperCase() + " is confirmed and being prepared." },
+      processing: { type: "ORDER_PROCESSING", title: "Your order is being prepared", message: "The seller has started processing order #" + String(updated._id).slice(-8).toUpperCase() + "." },
+      shipped: { type: "ORDER_SHIPPED", title: "Your order has shipped", message: "Order #" + String(updated._id).slice(-8).toUpperCase() + " is on its way." },
+      out_for_delivery: { type: "ORDER_OUT_FOR_DELIVERY", title: "Your order is out for delivery", message: "Order #" + String(updated._id).slice(-8).toUpperCase() + " is on its final delivery route." },
+      delivered: { type: "ORDER_DELIVERED", title: "Your order has been delivered", message: "Order #" + String(updated._id).slice(-8).toUpperCase() + " is marked delivered. Please leave a review for the product when you can." },
+    };
+    const notification = statusNotifications[status];
+    if (notification) await createNotification({ userId: updated.buyerId, ...notification, relatedId: updated._id, relatedType: "order" });
     return res.json({ success: true, data: { id: updated._id, status: updated.orderStatus, statusHistory: updated.statusHistory } });
   } catch (error) {
     console.error("Seller order status error:", error);
