@@ -110,6 +110,12 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    if (!user) return undefined;
+    const interval = window.setInterval(() => { loadNotifications(user); }, 30000);
+    return () => window.clearInterval(interval);
+  }, [user]);
+
+  useEffect(() => {
     // The HttpOnly auth cookie is the source of truth. Always check it on app
     // startup instead of treating a sessionStorage hint as proof of a session.
     // This also restores valid logins in a new tab or after client storage clears.
