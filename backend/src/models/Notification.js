@@ -10,9 +10,13 @@ const notificationSchema = new mongoose.Schema({
     required: true,
     enum: [
       "ORDER_CONFIRMED",
+      "ORDER_PROCESSING",
       "ORDER_SHIPPED",
+      "ORDER_OUT_FOR_DELIVERY",
+      "ORDER_CANCELLED",
       "ORDER_DELIVERED",
       "BOOKING_CONFIRMED",
+      "BOOKING_COMPLETED",
       "BOOKING_CANCELLED",
       "NEW_MESSAGE",
       "NEW_REVIEW",
