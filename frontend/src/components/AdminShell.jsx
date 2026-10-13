@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo/matchet_logoname.png";
 import { Icon } from "./ProviderShell";
+import NotificationDetailModal from "./NotificationDetailModal";
 import "../styles/admin-dashboard.css";
 
 const items = [
@@ -16,13 +17,14 @@ const items = [
 ];
 
 export default function AdminShell({ children }) {
-  const { user, notifications, markNotificationsRead, logout } = useAuth();
+  const { user, notifications, markNotificationsRead, markNotificationRead, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem("matchet_admin_sidebar_collapsed") === "true");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const profileRef = useRef(null);
   const notificationRef = useRef(null);
 
@@ -71,7 +73,7 @@ export default function AdminShell({ children }) {
         <div className="admin-topbar-actions">
           <div className="admin-popover-wrap" ref={notificationRef}>
             <button type="button" className="admin-bell" onClick={() => { setNotificationsOpen((value) => !value); setProfileOpen(false); }}><Icon name="bell" size={22} />{unread > 0 && <b>{unread > 9 ? "9+" : unread}</b>}</button>
-            {notificationsOpen && <div className="admin-popover"><div className="admin-popover-head"><strong>Notifications</strong>{unread > 0 && <button onClick={markNotificationsRead}>Mark all as read</button>}</div>{notifications.length ? notifications.map((item) => <div className="admin-notification" key={item.id}><Icon name="bell" size={17} /><div><strong>{item.title || "Notification"}</strong><p>{item.message || ""}</p></div></div>) : <div className="admin-empty-mini">No notifications</div>}</div>}
+            {notificationsOpen && <div className="admin-popover"><div className="admin-popover-head"><strong>Notifications</strong>{unread > 0 && <button onClick={markNotificationsRead}>Mark all as read</button>}</div>{notifications.length ? notifications.map((item) => <button type="button" className={"admin-notification" + (!item.read ? " unread" : "")} key={item.id} onClick={() => { markNotificationRead(item.id); setSelectedNotification(item); setNotificationsOpen(false); }}><Icon name="bell" size={17} /><div><strong>{item.title || "Notification"}</strong><p>{item.message || ""}</p></div></button>) : <div className="admin-empty-mini">No notifications</div>}</div>}
           </div>
           <div className="admin-popover-wrap" ref={profileRef}>
             <button type="button" className="admin-account" onClick={() => { setProfileOpen((value) => !value); setNotificationsOpen(false); }}>
@@ -82,6 +84,7 @@ export default function AdminShell({ children }) {
         </div>
       </header>
       <main className="admin-main">{children}</main>
+      <NotificationDetailModal notification={selectedNotification} mode="admin" onClose={() => setSelectedNotification(null)} onOpenTarget={(path) => { setSelectedNotification(null); navigate(path); }} />
     </div>
   );
 }
