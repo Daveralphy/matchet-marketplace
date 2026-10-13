@@ -202,3 +202,13 @@ export async function submitBuyerOrderReview(orderId, payload) {
     body: JSON.stringify(payload),
   });
 }
+
+export async function getListingReviews(kind, id) {
+  return request("/api/reviews/" + encodeURIComponent(kind) + "/" + encodeURIComponent(id) + "/reviews");
+}
+export async function getBuyerBookingReview(id) {
+  return request("/api/bookings/" + encodeURIComponent(id) + "/reviews");
+}
+export async function submitBuyerBookingReview(id, payload) {
+  return request("/api/bookings/" + encodeURIComponent(id) + "/reviews", { method: "POST", body: JSON.stringify(payload) });
+}
