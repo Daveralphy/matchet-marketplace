@@ -249,6 +249,8 @@ async function finalizeSuccessfulPayment(order, transaction, buyerId) {
     await Cart.findOneAndUpdate({ userId: paidOrder.buyerId }, { items: [] });
     await ensurePaidOrderMessages(paidOrder);
     await createNotification({ userId: paidOrder.buyerId, type: "ORDER_CONFIRMED", title: "Payment confirmed", message: "Payment received for order #" + String(paidOrder._id).slice(-8).toUpperCase() + ". The seller can now prepare your order.", relatedId: paidOrder._id, relatedType: "order" });
+    const sellerIds = [...new Set((paidOrder.items || []).map((item) => String(item.sellerId || "")).filter((id) => id && id !== String(paidOrder.buyerId)))];
+    await Promise.all(sellerIds.map((sellerId) => createNotification({ userId: sellerId, type: "ORDER_CONFIRMED", title: "You have a new paid order", message: "Order #" + String(paidOrder._id).slice(-8).toUpperCase() + " has been paid. Open your seller orders to start processing it.", relatedId: paidOrder._id, relatedType: "order" })));
     return { valid: true, paid: true, order: paidOrder };
   }
 
