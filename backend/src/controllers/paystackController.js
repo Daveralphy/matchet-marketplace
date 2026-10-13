@@ -3,6 +3,7 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 const Message = require("../models/Message");
+const { createNotification } = require("../utils/createNotification");
 
 const PAYSTACK_API = "https://api.paystack.co";
 const RESERVATION_MINUTES = 30;
@@ -247,6 +248,7 @@ async function finalizeSuccessfulPayment(order, transaction, buyerId) {
   if (paidOrder) {
     await Cart.findOneAndUpdate({ userId: paidOrder.buyerId }, { items: [] });
     await ensurePaidOrderMessages(paidOrder);
+    await createNotification({ userId: paidOrder.buyerId, type: "ORDER_CONFIRMED", title: "Payment confirmed", message: "Payment received for order #" + String(paidOrder._id).slice(-8).toUpperCase() + ". The seller can now prepare your order.", relatedId: paidOrder._id, relatedType: "order" });
     return { valid: true, paid: true, order: paidOrder };
   }
 
