@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBuyerOrders } from "../api/marketplace";
+import OrderReviewPanel from "../components/OrderReviewPanel";
 import "./BuyerAccount.css";
 
 export default function BuyerOrders() {
@@ -56,6 +57,7 @@ export default function BuyerOrders() {
                     </div>;
                   })}
                 </div>
+                <OrderReviewPanel order={order} />
                 <footer className="buyer-order-card-footer">
                   <div className="buyer-order-seller-actions">
                     {Array.from(new Map((order.items || []).map((item) => {
