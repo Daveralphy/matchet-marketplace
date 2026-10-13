@@ -39,6 +39,15 @@ async function markServerNotificationsRead() {
   });
 }
 
+async function markServerNotificationRead(id) {
+  const response = await fetch(API_BASE_URL + "/api/notifications/" + encodeURIComponent(id) + "/read", {
+    method: "PATCH",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!response.ok) throw new Error("Unable to update notification.");
+}
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -65,6 +74,11 @@ export function AuthProvider({ children }) {
     const next = [{ id: `${Date.now()}-${Math.random()}`, createdAt: new Date().toISOString(), read: false, ...notification }, ...(() => { try { return JSON.parse(localStorage.getItem(notificationKey(account)) || "[]"); } catch { return []; } })()].slice(0, 30);
     localStorage.setItem(notificationKey(account), JSON.stringify(next));
     setNotifications(next);
+  };
+  const markNotificationRead = async (notificationId) => {
+    if (!user || !notificationId) return;
+    setNotifications((current) => current.map((item) => String(item.id) === String(notificationId) ? { ...item, read: true } : item));
+    try { await markServerNotificationRead(notificationId); } catch { /* Keep the local read state responsive during a network issue. */ }
   };
   const markNotificationsRead = () => {
     if (!user) return;
@@ -131,8 +145,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, isAuthenticated: Boolean(user), notifications, login, register, logout, refreshUser, markNotificationsRead }),
-    [user, loading, notifications, login, register, logout, refreshUser, markNotificationsRead],
+    () => ({ user, loading, isAuthenticated: Boolean(user), notifications, login, register, logout, refreshUser, markNotificationsRead, markNotificationRead }),
+    [user, loading, notifications, login, register, logout, refreshUser, markNotificationsRead, markNotificationRead],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
