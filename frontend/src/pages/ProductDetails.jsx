@@ -4,6 +4,7 @@ import MarketplaceLayout from "../components/layout/MarketplaceLayout";
 import { getProductById, getRelatedProducts, recordMarketplaceView } from "../data/marketplaceApi";
 import { useCart } from "../context/CartContext";
 import { useSavedItems } from "../context/SavedItemsContext";
+import ListingReviews from "../components/ListingReviews";
 
 function Icon({ name, size = 20, strokeWidth = 1.8 }) {
   const paths = {
@@ -314,6 +315,8 @@ function ProductDetail({ product, related }) {
             </div>
           </section>
         </div>
+
+        <ListingReviews kind="products" listingId={product.id} />
 
         <section className="mt-7 border-t border-[#e1e6ec] pt-7">
           <div className="flex items-end justify-between gap-4">
