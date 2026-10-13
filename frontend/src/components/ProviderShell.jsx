@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import NotificationDetailModal, { notificationDestination } from "./NotificationDetailModal";
 import logo from "../assets/logo/matchet_logoname.png";
 import "../styles/provider-dashboard.css";
 
@@ -51,7 +52,7 @@ function formatNotificationDate(value) {
 export function ProviderShell({ children, mode = "provider" }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, notifications, markNotificationsRead, logout } = useAuth();
+  const { user, notifications, markNotificationsRead, markNotificationRead, logout } = useAuth();
   const sellerMode = mode === "seller";
   const navigationItems = sellerMode ? [
     { label: "Dashboard", path: "/seller/dashboard", icon: "home" },
@@ -66,6 +67,7 @@ export function ProviderShell({ children, mode = "provider" }) {
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(sellerMode ? "matchet_seller_sidebar_collapsed" : "matchet_provider_sidebar_collapsed") === "true");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
@@ -209,7 +211,7 @@ export function ProviderShell({ children, mode = "provider" }) {
                 <div className="provider-popover-header"><div><strong>Notifications</strong><small>{unreadCount ? `${unreadCount} unread` : "All caught up"}</small></div>{unreadCount > 0 && <button type="button" onClick={markNotificationsRead}>Mark all as read</button>}</div>
                 <div className="provider-notification-list">
                   {notifications.length ? notifications.map((notification) => (
-                    <button key={notification.id} type="button" className={"provider-notification-item" + (!notification.read ? " unread" : "")} onClick={() => { markNotificationsRead(); setNotificationsOpen(false); }}>
+                    <button key={notification.id} type="button" className={"provider-notification-item" + (!notification.read ? " unread" : "")} onClick={() => { markNotificationRead(notification.id); setSelectedNotification(notification); setNotificationsOpen(false); }}>
                       <span className="provider-notification-icon"><Icon name={notification.type === "login" ? "shield" : "bell"} size={18} /></span>
                       <span><strong>{notification.title || "Notification"}</strong><small>{notification.message || ""}</small><time>{formatNotificationDate(notification.createdAt)}</time></span>
                     </button>
@@ -256,6 +258,7 @@ export function ProviderShell({ children, mode = "provider" }) {
           </div>
         </div>
       )}
+      <NotificationDetailModal notification={selectedNotification} mode={sellerMode ? "seller" : "provider"} onClose={() => setSelectedNotification(null)} onOpenTarget={(path) => { setSelectedNotification(null); navigate(path); }} />
 
     </div>
   );
