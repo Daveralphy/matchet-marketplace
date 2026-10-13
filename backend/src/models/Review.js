@@ -12,15 +12,15 @@ const reviewSchema = new mongoose.Schema({
   status: { type: String, enum: ["published", "hidden"], default: "published", index: true },
 }, { timestamps: true });
 
-reviewSchema.pre("validate", function validateReview(next) {
+// Use a synchronous pre-validation hook. Mongoose continues automatically
+// after it returns, so no next callback is expected here.
+reviewSchema.pre("validate", function validateReview() {
   const hasProduct = Boolean(this.productId);
   const hasService = Boolean(this.serviceId);
 
   if (hasProduct === hasService) {
     this.invalidate("productId", "A review must reference exactly one product or service.");
   }
-
-  next();
 });
 
 reviewSchema.index({ reviewerId: 1, productId: 1 }, { unique: true, partialFilterExpression: { productId: { $exists: true } } });
