@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getServiceById, getRelatedServices, recordMarketplaceView } from "../data/marketplaceApi";
 import { useSavedItems } from "../context/SavedItemsContext";
+import ListingReviews from "../components/ListingReviews";
 
 function Icon({ name, size = 20, strokeWidth = 1.8 }) {
   const paths = {
@@ -92,6 +93,7 @@ function ServiceDetails({service,related}) {
     </div>
    </section>
   </div>
+  <ListingReviews kind="services" listingId={service.id} />
   <section className="mt-7 border-t border-[#e1e6ec] pt-7">
     <div className="flex items-end justify-between gap-4">
       <div>
