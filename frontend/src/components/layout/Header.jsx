@@ -293,6 +293,7 @@ export default function Header({
     setProfileOpen(false);
     setMobileMenuOpen(false);
     setNotificationsOpen(false);
+    setNotificationMenuId(null);
   };
 
   const persistLocation = (value) => {
@@ -380,6 +381,13 @@ export default function Header({
         setProfileOpen(false);
       }
 
+      if (notificationMenuId !== null) {
+        if (!(target instanceof Element) || !target.closest('[data-notification-action-menu="true"]')) {
+          setNotificationMenuId(null);
+        }
+        return;
+      }
+
       if (
         notificationsOpen &&
         notificationsRef.current &&
@@ -412,6 +420,7 @@ export default function Header({
     locationOpen,
     profileOpen,
     notificationsOpen,
+    notificationMenuId,
     mobileMenuOpen,
   ]);
 
