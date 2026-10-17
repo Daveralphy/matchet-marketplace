@@ -951,6 +951,16 @@ async function submitProviderOnboarding(req, res) {
     if (Object.keys(userUpdates).length) {
       await User.findByIdAndUpdate(providerId, { $set: userUpdates });
     }
+    if (!isDraft) {
+      await createNotification({
+        userId: providerId, type: "PROVIDER_APPLICATION_SUBMITTED", category: "application",
+        title: "Provider application submitted",
+        message: "Your provider application has been submitted for review. We will notify you when the review team makes a decision.",
+        relatedId: provider._id, relatedType: "ProviderProfile", actionUrl: "/provider/onboarding",
+        dedupeKey: "provider-application-submitted:" + String(provider._id),
+        details: { businessName, status: "Under review", submittedAt: provider.applicationSubmittedAt },
+      });
+    }
 
     return res.status(201).json({
       success: true,
@@ -1499,6 +1509,16 @@ async function submitSellerOnboarding(req, res) {
         $unset: { "location.coordinates": 1 },
       },
     );
+    if (!isDraft) {
+      await createNotification({
+        userId, type: "SELLER_APPLICATION_SUBMITTED", category: "application",
+        title: "Seller application submitted",
+        message: "Your seller application has been submitted for review. We will notify you when the review team makes a decision.",
+        relatedId: store._id, relatedType: "StoreProfile", actionUrl: "/seller/onboarding",
+        dedupeKey: "seller-application-submitted:" + String(store._id),
+        details: { storeName, status: "Under review", submittedAt: store.applicationSubmittedAt },
+      });
+    }
     return res.status(201).json({
       success: true,
       message: isDraft ? "Your seller onboarding progress has been saved." : "Your seller application has been submitted for review.",
