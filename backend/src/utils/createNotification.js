@@ -1,21 +1,38 @@
-const Notification = require("../models/Notification");
+const { createNotification: deliverNotification } = require("./notificationService");
 
-async function createNotification({ userId, type, title, message, relatedId = null, relatedType = null }) {
+function categoryFor(type) {
+  const value = String(type || "").toUpperCase();
+  if (value.includes("SECURITY") || value.includes("LOGIN") || value.includes("PASSWORD")) return "security";
+  if (value.includes("MESSAGE")) return "message";
+  if (value.includes("RECOMMEND")) return "recommendation";
+  if (value.includes("APPLICATION")) return "application";
+  if (value.includes("BOOKING")) return "booking";
+  if (value.includes("PAYMENT")) return "payment";
+  if (value.startsWith("ORDER_")) return "order";
+  return "transactional";
+}
+async function createNotification({ userId, type, title, message, relatedId = null, relatedType = null, details = {}, actionUrl, dedupeKey, category, channels }) {
   if (!userId || !type || !title || !message) return null;
   try {
-    return await Notification.create({
-      userId,
-      type,
-      title: String(title).slice(0, 200),
-      message: String(message).slice(0, 1000),
-      relatedId: relatedId || undefined,
-      relatedType: relatedType || undefined,
+    return await deliverNotification({
+      userId, type, title, message, details, actionUrl: actionUrl || defaultAction(type, relatedId),
+      relatedId, relatedType, dedupeKey, category: category || categoryFor(type),
+      channels: channels || ["inApp", "email", "push"],
     });
   } catch (error) {
-    // Notification delivery must never roll back an order, payment, or message.
+    // A notification must never roll back the business operation that triggered it.
     console.error("Create notification failed:", error.message);
     return null;
   }
 }
-
+function defaultAction(type, relatedId) {
+  const value = String(type || "").toUpperCase();
+  const id = relatedId ? encodeURIComponent(String(relatedId)) : "";
+  if (value.includes("MESSAGE")) return "/messages";
+  if (value.includes("ORDER") || value.includes("PAYMENT")) return id ? "/orders/" + id : "/orders";
+  if (value.includes("BOOKING")) return "/bookings";
+  if (value.includes("SELLER_APPLICATION")) return "/seller/dashboard";
+  if (value.includes("PROVIDER_APPLICATION")) return "/provider/dashboard";
+  return "/account/settings";
+}
 module.exports = { createNotification };
