@@ -73,7 +73,8 @@ export default function AccountSettings() {
       setPushPermission(permission);
       if (permission !== "granted") throw new Error("Allow notifications in your browser settings to enable push alerts.");
       const registration = await navigator.serviceWorker.register("/sw.js");
-      const subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64ToBytes(keyPayload.publicKey) });
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: base64ToBytes(keyPayload.publicKey) });
       const response = await fetch(API_BASE_URL + "/api/notifications/push-subscriptions", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ subscription: subscription.toJSON() }) });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.message || "Unable to save this browser subscription.");
