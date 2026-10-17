@@ -138,4 +138,4 @@ async function unsubscribeEmail(req, res) {
   await User.updateOne({ _id: userId }, { $set: { [`preferences.notifications.email.${category}`]: false } });
   return res.status(200).send("You have been unsubscribed from this email category. You can close this page.");
 }
-module.exports = { listNotifications, markNotificationsRead, markNotificationRead, savePushSubscription, removePushSubscription, getNotificationPreferences, updateNotificationPreferences, getPushKey, unsubscribeEmail, sendRecommendationsCron };
+module.exports = { listNotifications, markNotificationsRead, markNotificationRead, deleteNotification, savePushSubscription, removePushSubscription, getNotificationPreferences, updateNotificationPreferences, getPushKey, unsubscribeEmail, sendRecommendationsCron };
