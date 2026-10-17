@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { resendVerificationEmail, verifyEmail } from "../api/auth";
 
@@ -12,10 +12,12 @@ export default function VerifyEmail() {
   const [status, setStatus] = useState(token ? "verifying" : "waiting");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const verificationStarted = useRef("");
 
   useEffect(() => { document.title = "Verify your email | Matchet"; }, []);
   useEffect(() => {
-    if (!token) return;
+    if (!token || verificationStarted.current === token) return;
+    verificationStarted.current = token;
     let active = true;
     verifyEmail(token).then((response) => {
       if (!active) return;
@@ -28,7 +30,7 @@ export default function VerifyEmail() {
       setStatus("error");
     });
     return () => { active = false; };
-  }, [token]);
+  }, [token, initialEmail]);
 
   const resend = async (event) => {
     event.preventDefault();
