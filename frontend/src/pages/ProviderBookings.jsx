@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ProviderShell, Icon } from "../components/ProviderShell";
-import { getProviderBookings } from "../api/provider";
+import { getProviderBookings, updateProviderBookingStatus } from "../api/provider";
 import "../styles/provider-dashboard.css";
 
 function money(value, currency = "NGN") {
@@ -28,6 +28,8 @@ export default function ProviderBookings() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [actionsBookingId, setActionsBookingId] = useState("");
+  const [updatingBookingId, setUpdatingBookingId] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -37,6 +39,21 @@ export default function ProviderBookings() {
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, []);
+
+  const changeBookingStatus = async (booking, status) => {
+    setUpdatingBookingId(booking.id);
+    setError("");
+    try {
+      await updateProviderBookingStatus(booking.id, status);
+      const response = await getProviderBookings();
+      setData(response.data);
+      setActionsBookingId("");
+    } catch (requestError) {
+      setError(requestError.message || "Unable to update this booking.");
+    } finally {
+      setUpdatingBookingId("");
+    }
+  };
 
   const summary = data?.summary || { total: 0, upcoming: 0, completed: 0, cancelled: 0 };
   const bookings = useMemo(() => {
@@ -111,7 +128,18 @@ export default function ProviderBookings() {
                     <div><strong>{dateLabel(booking.scheduledDate)}</strong><small>{timeLabel(booking.scheduledTime)}</small></div>
                     <span className={"status " + booking.status}>{booking.status === "inProgress" ? "In progress" : booking.status}</span>
                     <strong>{money(booking.amount, booking.currency)}</strong>
-                    <button type="button" aria-label={"View booking for " + name}>›</button>
+                    <div className="provider-booking-actions">
+                      <button type="button" aria-label={"Booking actions for " + name} aria-expanded={actionsBookingId === booking.id} onClick={() => setActionsBookingId((current) => current === booking.id ? "" : booking.id)} disabled={updatingBookingId === booking.id}>{updatingBookingId === booking.id ? "…" : "›"}</button>
+                      {actionsBookingId === booking.id && <div className="provider-booking-actions-menu">
+                        {({
+                          pending: [["confirmed", "Confirm booking"], ["declined", "Decline request"], ["cancelled", "Cancel booking"]],
+                          confirmed: [["inProgress", "Start service"], ["cancelled", "Cancel booking"]],
+                          inProgress: [["completed", "Mark completed"], ["cancelled", "Cancel booking"]],
+                          completed: [], cancelled: [], declined: [],
+                        }[booking.status] || []).map(([nextStatus, label]) => <button type="button" key={nextStatus} disabled={updatingBookingId === booking.id} onClick={() => changeBookingStatus(booking, nextStatus)}>{label}</button>)}
+                        {(["completed", "cancelled", "declined"].includes(booking.status)) && <p>This booking is closed.</p>}
+                      </div>}
+                    </div>
                   </div>
                 );
               })}
