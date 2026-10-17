@@ -1,6 +1,6 @@
 const ProviderProfile = require("../models/ProviderProfile");
 const User = require("../models/User");
-const Notification = require("../models/Notification");
+const { createNotification } = require("../utils/createNotification");
 const StoreProfile = require("../models/StoreProfile");
 const Product = require("../models/Product");
 const Service = require("../models/Service");
@@ -152,15 +152,17 @@ async function reviewProviderApplication(req, res) {
       $set: { "capabilities.provider": approved },
     });
 
-    await Notification.create({
+    await createNotification({
       userId: application.userId,
       type: approved ? "PROVIDER_APPLICATION_APPROVED" : "PROVIDER_APPLICATION_REJECTED",
       title: approved ? "Provider application approved" : "Provider application needs attention",
       message: approved
         ? "Your provider application has been approved. You can now access your provider dashboard and add your services."
         : (String(note).trim() || "Your provider application was not approved. Review the application status for the next steps."),
-      relatedId: application._id,
-      relatedType: "ProviderProfile",
+      relatedId: application._id, relatedType: "ProviderProfile",
+      actionUrl: "/provider/dashboard", category: "application",
+      dedupeKey: "provider-application-review:" + String(application._id) + ":" + (approved ? "approved" : "rejected"),
+      details: { applicationId: String(application._id), decision: approved ? "approved" : "rejected", reviewNote: String(note).trim() },
     });
 
     return res.json({
@@ -237,15 +239,17 @@ async function reviewSellerApplication(req, res) {
       $set: { "capabilities.seller": approved },
     });
 
-    await Notification.create({
+    await createNotification({
       userId: application.userId,
       type: approved ? "SELLER_APPLICATION_APPROVED" : "SELLER_APPLICATION_REJECTED",
       title: approved ? "Seller application approved" : "Seller application needs attention",
       message: approved
         ? "Your seller application has been approved. You can now access your seller dashboard and add products."
         : (String(note).trim() || "Your seller application was not approved. Review your application for the next steps."),
-      relatedId: application._id,
-      relatedType: "StoreProfile",
+      relatedId: application._id, relatedType: "StoreProfile",
+      actionUrl: "/seller/dashboard", category: "application",
+      dedupeKey: "seller-application-review:" + String(application._id) + ":" + (approved ? "approved" : "rejected"),
+      details: { applicationId: String(application._id), decision: approved ? "approved" : "rejected", reviewNote: String(note).trim() },
     });
 
     return res.json({
