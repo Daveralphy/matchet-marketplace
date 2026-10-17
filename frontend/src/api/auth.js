@@ -28,6 +28,8 @@ async function request(path, options = {}, { retryTransient = false } = {}) {
 
       const error = new Error(payload.message || "Something went wrong.");
       error.status = response.status;
+      error.code = payload.code || "";
+      error.email = payload.email || "";
       error.errors = payload.errors || {};
 
       if (shouldRetry && TRANSIENT_STATUSES.has(response.status) && attempt < maxAttempts) {
