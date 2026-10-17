@@ -4,6 +4,8 @@ const optionalAuth = require("../middleware/optionalAuth");
 const {
   register,
   login,
+  verifyEmail,
+  resendVerificationEmail,
   me,
   updateMe,
   logout,
@@ -26,6 +28,9 @@ router.get("/apple", appleSignIn);
 router.post("/forgot-password", requestPasswordReset);
 router.post("/reset-password", resetPassword);
 router.post("/register", register);
+router.post("/verify-email", verifyEmail);
+router.get("/verify-email", verifyEmail);
+router.post("/resend-verification", resendVerificationEmail);
 router.post("/login", login);
 router.get("/me", optionalAuth, me);
 router.patch("/me", requireAuth, updateMe);
