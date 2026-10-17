@@ -7,6 +7,7 @@ const Booking = require("../models/Booking");
 const Payout = require("../models/Payout");
 const Product = require("../models/Product");
 const Service = require("../models/Service");
+const { createNotification } = require("../utils/createNotification");
 
 const CLIENT_URL = () => (process.env.CLIENT_URL || "http://localhost:5173").replace(/\/$/, "");
 const GOOGLE_SCOPES = "openid email profile";
@@ -542,7 +543,7 @@ async function login(req, res) {
 
     if (!identifier || !password) return res.status(400).json({ success: false, message: "Email or username and password are required." });
 
-    const user = await User.findOne({ $or: [{ email: identifier }, { username: identifier }] }).select("+passwordHash");
+    const user = await User.findOne({ $or: [{ email: identifier }, { username: identifier }] }).select("+passwordHash +loginDevices");
     if (!user || !user.isActive) return res.status(401).json({ success: false, message: "Invalid email, username, or password." });
 
     if (!(await bcrypt.compare(password, user.passwordHash))) {
@@ -558,9 +559,26 @@ async function login(req, res) {
       });
     }
 
+    const userAgent = String(req.headers["user-agent"] || "Unknown browser").slice(0, 300);
+    const deviceFingerprint = crypto.createHash("sha256").update(userAgent).digest("hex");
+    const knownDevices = Array.isArray(user.loginDevices) ? user.loginDevices : [];
+    const isKnownDevice = knownDevices.some((device) => device?.fingerprint === deviceFingerprint);
+    const shouldAlertNewDevice = knownDevices.length > 0 && !isKnownDevice;
+    if (!isKnownDevice) {
+      user.loginDevices = [...knownDevices, { fingerprint: deviceFingerprint, userAgent, firstSeenAt: new Date() }].slice(-10);
+    }
     user.lastLoginAt = new Date();
     await user.save();
 
+    if (shouldAlertNewDevice) {
+      await createNotification({
+        userId: user._id, type: "NEW_DEVICE_LOGIN", category: "security",
+        title: "New device signed in to your account",
+        message: "Your Matchet account was accessed from a browser or device we have not seen before. If this was you, no action is needed. If not, change your password and contact support.",
+        actionUrl: "/account/settings", dedupeKey: "new-device:" + deviceFingerprint,
+        details: { browser: userAgent, detectedAt: new Date().toISOString() },
+      });
+    }
     setAuthCookie(res, signAuthToken(user._id));
     return res.status(200).json({ success: true, message: "Logged in successfully.", user: serializeUser(user) });
   } catch (error) {
