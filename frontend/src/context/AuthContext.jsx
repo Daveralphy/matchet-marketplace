@@ -127,7 +127,6 @@ export function AuthProvider({ children }) {
     setUser(response.user);
     cacheUser(response.user);
     await loadNotifications(response.user);
-    addNotification(response.user, { type: "login", title: "New login", message: "Your Matchet account was just signed in." });
     return response.user;
   }, []);
 
