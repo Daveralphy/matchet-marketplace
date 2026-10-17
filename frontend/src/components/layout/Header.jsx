@@ -381,6 +381,8 @@ export default function Header({
         setProfileOpen(false);
       }
 
+      if (selectedNotification) return;
+
       if (notificationMenuId !== null) {
         if (!(target instanceof Element) || !target.closest('[data-notification-action-menu="true"]')) {
           setNotificationMenuId(null);
@@ -420,6 +422,7 @@ export default function Header({
     profileOpen,
     notificationsOpen,
     notificationMenuId,
+    selectedNotification,
     mobileMenuOpen,
   ]);
 
