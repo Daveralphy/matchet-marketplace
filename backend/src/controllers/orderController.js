@@ -81,14 +81,6 @@ async function createBuyerOrder(req,res){
       category: "order", dedupeKey: `order-created-buyer:${orderRef}`,
       details: { orderNumber: orderRef.slice(-8).toUpperCase(), total: order.total, currency: order.currency, status: order.orderStatus || "pending" },
     });
-    const sellerIds = [...new Set(orderItems.map((item) => String(item.sellerId || "")).filter((id) => id && id !== String(req.user._id)))];
-    await Promise.all(sellerIds.map((sellerId) => createNotification({
-      userId: sellerId, type: "ORDER_CREATED", title: "New order received",
-      message: `A buyer placed order #${orderRef.slice(-8).toUpperCase()}. Review the order and prepare the items for fulfilment.`,
-      relatedId: order._id, relatedType: "order", actionUrl: `/seller/orders/${orderRef}`,
-      category: "order", dedupeKey: `order-created-seller:${orderRef}:${sellerId}`,
-      details: { orderNumber: orderRef.slice(-8).toUpperCase(), status: order.orderStatus || "pending" },
-    })));
     return res.status(201).json({success:true,order});
   } catch(error){
     console.error("Create buyer order failed:",error);
