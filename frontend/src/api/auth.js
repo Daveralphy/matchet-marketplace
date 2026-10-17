@@ -117,3 +117,10 @@ export function verifyEmail(token) {
 export function resendVerificationEmail(email) {
   return request("/api/auth/resend-verification", { method: "POST", body: JSON.stringify({ email }) });
 }
+
+export function changeVerificationEmail(data) {
+  return request("/api/auth/change-verification-email", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
