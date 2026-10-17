@@ -22,7 +22,7 @@ async function sendEmail({ to, subject, title, message, actionUrl, category, not
     const port = Number(process.env.SMTP_PORT);
     const transporter = nodemailer.createTransport({ host: process.env.SMTP_HOST, port, secure: port === 465, auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } });
     const unsubscribe = category === "recommendation" || category === "message"
-      ? `<p style="font-size:12px;color:#77809c">Prefer fewer emails? <a href="${escapeHtml(CLIENT_URL())}/email-preferences?token=${encodeURIComponent(makeUnsubscribeToken(notificationId, category))}">Unsubscribe from ${escapeHtml(category)} emails</a>.</p>`
+      ? `<p style="font-size:12px;color:#77809c">Prefer fewer emails? <a href="${escapeHtml(CLIENT_URL())}/email-preferences?token=${encodeURIComponent(makeUnsubscribeToken(notificationId, category, userId))}">Unsubscribe from ${escapeHtml(category)} emails</a>.</p>`
       : "";
     const logo = process.env.EMAIL_LOGO_URL || "https://raw.githubusercontent.com/Daveralphy/matchet-marketplace/staging/frontend/src/assets/logo/matchet_logoname.png";
     const href = actionUrl ? CLIENT_URL() + safeActionUrl(actionUrl) : CLIENT_URL() + "/account/settings";
@@ -39,9 +39,9 @@ async function sendEmail({ to, subject, title, message, actionUrl, category, not
   }
   throw new Error("Unsupported EMAIL_PROVIDER");
 }
-function makeUnsubscribeToken(notificationId, category) {
+function makeUnsubscribeToken(notificationId, category, userId) {
   if (!process.env.NOTIFICATION_TOKEN_SECRET) return "";
-  return crypto.createHmac("sha256", process.env.NOTIFICATION_TOKEN_SECRET).update(`${notificationId}:${category}`).digest("hex");
+  return crypto.createHmac("sha256", process.env.NOTIFICATION_TOKEN_SECRET).update(`${userId}:${notificationId}:${category}`).digest("hex");
 }
 async function createNotification({ userId, type, title, message, details = {}, emailItems = [], actionUrl = "/account/settings", relatedId = null, relatedType = null, dedupeKey, category = "transactional", channels = ["inApp", "email", "push"], emailSubject }) {
   if (!userId || !type || !title || !message) return null;
