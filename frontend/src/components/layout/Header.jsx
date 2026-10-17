@@ -927,7 +927,7 @@ export default function Header({
                           <button
                             key={item.id}
                             type="button"
-                            onClick={() => { markNotificationRead(item.id); setSelectedNotification(item); setNotificationsOpen(false); }}
+                            onClick={() => { markNotificationRead(item.id); setSelectedNotification({ ...item, read: true }); setNotificationsOpen(false); }}
                             className={"flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50 " + (!item.read ? "bg-[#f2fbf5] " : "")}
                           >
                             <span
