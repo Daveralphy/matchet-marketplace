@@ -10,7 +10,7 @@ import BuyerOrderDetails from "./pages/BuyerOrderDetails";
 import BuyerMessages from "./pages/BuyerMessages";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import BuyerBookings from "./pages/BuyerBookings";
-import AccountSettings from "./pages/AccountSettings";
+import AccountSettings from "./pages/AccountSettings";\nimport AccountNotificationPreferences from "./pages/AccountNotificationPreferences";\nimport AccountLanguage from "./pages/AccountLanguage";\nimport AccountAppearance from "./pages/AccountAppearance";
 import AccountSecurity from "./pages/AccountSecurity";
 import DeleteAccount from "./pages/DeleteAccount";
 import HelpSupport from "./pages/HelpSupport";
