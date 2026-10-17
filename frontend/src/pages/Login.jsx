@@ -208,7 +208,12 @@ const Login = () => {
         navigate("/", { replace: true });
       }
     } catch (error) {
-      showToast(error.status === 401 ? "The email/username or password you entered is incorrect. Please check your details and try again." : error.message || "We could not log you in right now. Please try again.", "error");
+      if (error.code === "EMAIL_NOT_VERIFIED") {
+        navigate("/verify-email", { state: { email: error.email || (identifier.includes("@") ? identifier : "") } });
+        showToast("Please verify your email before logging in.", "warning");
+      } else {
+        showToast(error.status === 401 ? "The email/username or password you entered is incorrect. Please check your details and try again." : error.message || "We could not log you in right now. Please try again.", "error");
+      }
     } finally {
       setIsSubmitting(false);
     }
