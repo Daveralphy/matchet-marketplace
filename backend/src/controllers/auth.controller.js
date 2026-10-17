@@ -37,7 +37,8 @@ async function sendTransactionalEmail({ to, subject, heading, intro, buttons = [
   }
   const escapeHtml = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const safeButtons = buttons.map(({ label, url }) => `<a href="${escapeHtml(url)}" style="display:inline-block;margin:6px 8px 6px 0;padding:12px 18px;background:#07863a;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">${escapeHtml(label)}</a>`).join("");
-  const html = `<!doctype html><html><body style="margin:0;background:#f5f7f6;font-family:Arial,Helvetica,sans-serif;color:#10183f"><div style="max-width:600px;margin:24px auto;padding:0 14px"><div style="background:#fff;border:1px solid #e5eae7;border-radius:16px;overflow:hidden"><div style="padding:26px 30px;background:#10183f;color:#fff"><div style="font-size:25px;font-weight:800;letter-spacing:-.5px">Matchet<span style="color:#45d483">.</span></div><div style="font-size:12px;opacity:.8;margin-top:4px">Marketplace</div></div><div style="padding:30px"><h1 style="font-size:25px;line-height:1.3;margin:0 0 16px">${escapeHtml(heading)}</h1><p style="font-size:15px;line-height:1.75;color:#4b5577;margin:0 0 20px">${escapeHtml(intro)}</p>${safeButtons}<p style="font-size:12px;line-height:1.6;color:#77809c;margin:28px 0 0">${escapeHtml(footer)}</p></div></div><p style="text-align:center;font-size:12px;color:#8a91a8;margin:16px 0">© ${new Date().getFullYear()} Matchet Marketplace</p></div></body></html>`;
+  const logoUrl = process.env.EMAIL_LOGO_URL || "https://raw.githubusercontent.com/Daveralphy/matchet-marketplace/staging/frontend/src/assets/logo/matchet_logoname.png";
+  const html = `<!doctype html><html><body style="margin:0;background:#f5f7f6;font-family:Arial,Helvetica,sans-serif;color:#10183f"><div style="max-width:600px;margin:24px auto;padding:0 14px"><div style="background:#fff;border:1px solid #e5eae7;border-radius:16px;overflow:hidden"><div style="padding:24px 30px;background:#fff;border-bottom:1px solid #edf0ee"><a href="${escapeHtml(CLIENT_URL())}" style="display:inline-block;text-decoration:none"><img src="${escapeHtml(logoUrl)}" alt="Matchet" width="180" style="display:block;width:180px;max-width:100%;height:auto;border:0"></a></div><div style="padding:30px"><h1 style="font-size:25px;line-height:1.3;margin:0 0 16px">${escapeHtml(heading)}</h1><p style="font-size:15px;line-height:1.75;color:#4b5577;margin:0 0 20px">${escapeHtml(intro)}</p>${safeButtons}<p style="font-size:12px;line-height:1.6;color:#77809c;margin:28px 0 0">${escapeHtml(footer)}</p></div></div><p style="text-align:center;font-size:12px;color:#8a91a8;margin:16px 0">© ${new Date().getFullYear()} Matchet Marketplace</p></div></body></html>`;
   const provider = getEmailProvider();
   if (provider === "smtp") {
     const nodemailer = require("nodemailer");
@@ -253,7 +254,8 @@ async function resendVerificationEmail(req, res) {
       return res.status(200).json({ success: true, message: "If this account needs verification, a new email will be sent shortly." });
     }
     if (user.emailVerificationLastSentAt && Date.now() - user.emailVerificationLastSentAt.getTime() < 60 * 1000) {
-      return res.status(429).json({ success: false, message: "Please wait a minute before requesting another verification email." });
+      const retryAfterSeconds = Math.ceil((60 * 1000 - (Date.now() - user.emailVerificationLastSentAt.getTime())) / 1000);
+      return res.status(429).json({ success: false, retryAfterSeconds, message: `Please wait ${retryAfterSeconds} seconds before requesting another verification email.` });
     }
     const rawToken = crypto.randomBytes(32).toString("hex");
     user.emailVerificationTokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
@@ -273,6 +275,55 @@ async function resendVerificationEmail(req, res) {
   }
 }
 
+async function changeVerificationEmail(req, res) {
+  const currentEmail = normalize(req.body?.currentEmail).toLowerCase();
+  const newEmail = normalize(req.body?.newEmail).toLowerCase();
+  const password = String(req.body?.password || "");
+
+  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(currentEmail)) {
+    return res.status(400).json({ success: false, message: "The current email address is invalid." });
+  }
+  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(newEmail)) {
+    return res.status(400).json({ success: false, message: "Enter a valid new email address." });
+  }
+  if (currentEmail === newEmail) {
+    return res.status(400).json({ success: false, message: "Enter an email address different from your current one." });
+  }
+  if (!password) return res.status(400).json({ success: false, message: "Enter your account password to confirm this email change." });
+
+  try {
+    const user = await User.findOne({ email: currentEmail, emailVerified: false, isActive: true }).select("+passwordHash +emailVerificationLastSentAt");
+    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+      return res.status(401).json({ success: false, message: "We could not confirm this account and password. Check your details and try again." });
+    }
+    if (user.emailVerificationLastSentAt && Date.now() - user.emailVerificationLastSentAt.getTime() < 60 * 1000) {
+      const retryAfterSeconds = Math.ceil((60 * 1000 - (Date.now() - user.emailVerificationLastSentAt.getTime())) / 1000);
+      return res.status(429).json({ success: false, retryAfterSeconds, message: `Please wait ${retryAfterSeconds} seconds before requesting another verification email.` });
+    }
+    if (await User.exists({ email: newEmail, _id: { $ne: user._id } })) {
+      return res.status(409).json({ success: false, message: "That email address is already associated with another account. Try a different address." });
+    }
+
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    user.email = newEmail;
+    user.emailVerificationTokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+    user.emailVerificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    user.emailVerificationLastSentAt = new Date();
+    await user.save();
+
+    try {
+      await sendVerificationEmail(user, rawToken);
+    } catch (emailError) {
+      console.error("Changed-email verification delivery failed:", emailError.message);
+      return res.status(503).json({ success: false, email: newEmail, message: "Your account email was changed, but we could not send the verification email just now. Please wait a minute and request a new link." });
+    }
+    return res.status(200).json({ success: true, email: newEmail, resendCooldownSeconds: 60, message: "Your email address has been updated. We sent a new verification link to the new address." });
+  } catch (error) {
+    console.error("Changing unverified account email failed:", error.message);
+    if (error?.code === 11000) return res.status(409).json({ success: false, message: "That email address is already in use. Try another one." });
+    return res.status(500).json({ success: false, message: "Unable to change your email address right now." });
+  }
+}
 async function requestPasswordReset(req, res) {
   const email = normalize(req.body?.email).toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -474,6 +525,7 @@ async function register(req, res) {
       success: true,
       requiresEmailVerification: true,
       email: user.email,
+      resendCooldownSeconds: 60,
       message: "Account created. Check your email and click the verification link to activate your account.",
     });
   } catch (error) {
@@ -782,6 +834,7 @@ module.exports = {
   login,
   verifyEmail,
   resendVerificationEmail,
+  changeVerificationEmail,
   me,
   updateMe,
   logout,
