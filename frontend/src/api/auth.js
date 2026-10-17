@@ -107,3 +107,11 @@ export function exchangeGoogleSignIn(code) {
     body: JSON.stringify({ code }),
   });
 }
+
+export function verifyEmail(token) {
+  return request("/api/auth/verify-email", { method: "POST", body: JSON.stringify({ token }) });
+}
+
+export function resendVerificationEmail(email) {
+  return request("/api/auth/resend-verification", { method: "POST", body: JSON.stringify({ email }) });
+}
