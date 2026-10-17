@@ -65,6 +65,7 @@ async function sendRecommendationsCron(req, res) {
   if (!process.env.CRON_SECRET || req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
     return res.status(401).json({ success: false, message: "Unauthorized scheduled task." });
   }
+  if (!process.env.NOTIFICATION_TOKEN_SECRET) return res.status(503).json({ success: false, message: "Optional email unsubscribe signing is not configured." });
   try {
     const users = await User.find({
       isActive: true, emailVerified: true,
