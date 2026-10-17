@@ -318,7 +318,7 @@ const CreateAccount = () => {
         phone: countryCode + phone,
         password,
       });
-      navigate("/verify-email", { replace: true, state: { email: response.email || email } });
+      navigate("/verify-email", { replace: true, state: { email: response.email || email, resendCooldownSeconds: response.resendCooldownSeconds || 60 } });
     } catch (error) {
       showToast(error.message || "We could not create your account right now. Please try again.", "error");
       if (error.errors) {
