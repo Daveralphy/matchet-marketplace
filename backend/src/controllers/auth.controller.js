@@ -386,6 +386,7 @@ async function finishGoogleSignIn(req, res) {
 
     const email = normalize(profile.email).toLowerCase();
     let user = await User.findOne({ email }).select("+passwordHash");
+    let sendWelcomeEmails = false;
     if (user && !user.isActive) return fail("account_inactive");
 
     if (!user) {
@@ -406,6 +407,7 @@ async function finishGoogleSignIn(req, res) {
         role: "customer",
         emailVerified: true,
       });
+      sendWelcomeEmails = true;
     } else if (!user.emailVerified) {
       // Google has confirmed ownership of this email address.
       user.emailVerified = true;
@@ -413,7 +415,10 @@ async function finishGoogleSignIn(req, res) {
       user.emailVerificationExpiresAt = undefined;
       user.emailVerificationLastSentAt = undefined;
       await user.save();
+      sendWelcomeEmails = true;
     }
+
+    if (sendWelcomeEmails) await sendAccountWelcomeEmails(user);
 
     const rawLoginCode = crypto.randomBytes(32).toString("hex");
     user.googleLoginCodeHash = crypto.createHash("sha256").update(rawLoginCode).digest("hex");
