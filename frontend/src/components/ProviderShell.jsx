@@ -211,7 +211,7 @@ export function ProviderShell({ children, mode = "provider" }) {
                 <div className="provider-popover-header"><div><strong>Notifications</strong><small>{unreadCount ? `${unreadCount} unread` : "All caught up"}</small></div>{unreadCount > 0 && <button type="button" onClick={markNotificationsRead}>Mark all as read</button>}</div>
                 <div className="provider-notification-list">
                   {notifications.length ? notifications.map((notification) => (
-                    <button key={notification.id} type="button" className={"provider-notification-item" + (!notification.read ? " unread" : "")} onClick={() => { markNotificationRead(notification.id); setSelectedNotification(notification); setNotificationsOpen(false); }}>
+                    <button key={notification.id} type="button" className={"provider-notification-item" + (!notification.read ? " unread" : "")} onClick={() => { markNotificationRead(notification.id); setSelectedNotification({ ...notification, read: true }); setNotificationsOpen(false); }}>
                       <span className="provider-notification-icon"><Icon name={notification.type === "login" ? "shield" : "bell"} size={18} /></span>
                       <span><strong>{notification.title || "Notification"}</strong><small>{notification.message || ""}</small><time>{formatNotificationDate(notification.createdAt)}</time></span>
                     </button>
