@@ -213,6 +213,13 @@ export function getProviderBookings() {
   return request("/api/provider/bookings");
 }
 
+export function updateProviderBookingStatus(bookingId, status) {
+  return request("/api/provider/bookings/" + encodeURIComponent(bookingId) + "/status", {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}
+
 export function getOnboardingProgress(flow) {
   return request("/api/provider/onboarding/progress?flow=" + encodeURIComponent(flow === "service" ? "service" : "seller"), { cache: false });
 }
