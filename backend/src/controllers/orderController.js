@@ -3,6 +3,7 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
 const Review = require("../models/Review");
+const { createNotification } = require("../utils/createNotification");
 
 
 async function createBuyerOrder(req,res){
@@ -72,6 +73,22 @@ async function createBuyerOrder(req,res){
     });
 
     await Cart.findOneAndUpdate({userId:req.user._id},{items:[]});
+    const orderRef = String(order._id);
+    await createNotification({
+      userId: req.user._id, type: "ORDER_CONFIRMED", title: "Order received",
+      message: `Your order #${orderRef.slice(-8).toUpperCase()} has been created. We will keep you updated as it progresses.`,
+      relatedId: order._id, relatedType: "order", actionUrl: `/orders/${orderRef}`,
+      category: "order", dedupeKey: `order-created-buyer:${orderRef}`,
+      details: { orderNumber: orderRef.slice(-8).toUpperCase(), total: order.total, currency: order.currency, status: order.orderStatus || "pending" },
+    });
+    const sellerIds = [...new Set(orderItems.map((item) => String(item.sellerId || "")).filter((id) => id && id !== String(req.user._id)))];
+    await Promise.all(sellerIds.map((sellerId) => createNotification({
+      userId: sellerId, type: "ORDER_CONFIRMED", title: "New order received",
+      message: `A buyer placed order #${orderRef.slice(-8).toUpperCase()}. Review the order and prepare the items for fulfilment.`,
+      relatedId: order._id, relatedType: "order", actionUrl: `/seller/orders/${orderRef}`,
+      category: "order", dedupeKey: `order-created-seller:${orderRef}:${sellerId}`,
+      details: { orderNumber: orderRef.slice(-8).toUpperCase(), status: order.orderStatus || "pending" },
+    })));
     return res.status(201).json({success:true,order});
   } catch(error){
     console.error("Create buyer order failed:",error);
