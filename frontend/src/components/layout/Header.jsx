@@ -11,7 +11,7 @@ import { searchMarketplace } from "../../data/marketplaceApi";
 import LocationSearch from "../LocationSearch";
 import { initializeMarketplaceLocation } from "../../hooks/useMarketplaceLocation";
 import { getUnreadCount } from "../../api/messages";
-import NotificationDetailModal from "../NotificationDetailModal";
+import NotificationDetailModal from "../NotificationDetailModal";\nimport { translate } from "../../utils/uiPreferences";
 
 const NAV_ITEMS = [
   { label: "Home", path: "/" },
@@ -630,14 +630,14 @@ export default function Header({
                           <button type="button" aria-label={"Options for " + item.title} aria-expanded={notificationMenuId === String(item.id)} onClick={() => setNotificationMenuId((current) => current === String(item.id) ? null : String(item.id))} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-lg text-slate-500 hover:bg-slate-100">⋮</button>
                           {notificationMenuId === String(item.id) && <div data-notification-action-menu="true" className="absolute right-2 top-10 z-[120] w-36 rounded-lg border border-slate-200 bg-white py-1 shadow-xl">
                             <button type="button" onClick={() => { markNotificationRead(item.id); setSelectedNotification({ ...item, read: true }); setNotificationMenuId(null); }} className="block w-full px-3 py-2 text-left text-xs hover:bg-slate-50">View</button>
-                            <button type="button" onClick={() => { markNotificationRead(item.id); setNotificationMenuId(null); }} disabled={item.read} className="block w-full px-3 py-2 text-left text-xs hover:bg-slate-50 disabled:opacity-40">Mark as Read</button>
-                            <button type="button" onClick={async () => { try { await deleteNotification(item.id); } finally { setNotificationMenuId(null); } }} className="block w-full px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50">Delete</button>
+                            <button type="button" onClick={() => { markNotificationRead(item.id); setNotificationMenuId(null); }} disabled={item.read} className="block w-full px-3 py-2 text-left text-xs hover:bg-slate-50 disabled:opacity-40">{translate("Mark as Read", user?.preferences?.language)}</button>
+                            <button type="button" onClick={async () => { try { await deleteNotification(item.id); } finally { setNotificationMenuId(null); } }} className="block w-full px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50">{translate("Delete", user?.preferences?.language)}</button>
                           </div>}
                         </div>
                       ))
                     ) : (
                       <div className="px-4 py-8 text-center text-[11px] text-slate-400">
-                        No notifications yet.
+                        {translate("No notifications yet.", user?.preferences?.language)}
                       </div>
                     )}
                   </div>
@@ -905,7 +905,7 @@ export default function Header({
                           onClick={markNotificationsRead}
                           className="text-[11px] font-semibold text-[#07983f] hover:underline"
                         >
-                          Mark all read
+                          {translate("Mark all read", user?.preferences?.language)}
                         </button>
                       )}
                     </div>
