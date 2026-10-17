@@ -160,7 +160,7 @@ async function reviewProviderApplication(req, res) {
         ? "Your provider application has been approved. You can now access your provider dashboard and add your services."
         : (String(note).trim() || "Your provider application was not approved. Review the application status for the next steps."),
       relatedId: application._id, relatedType: "ProviderProfile",
-      actionUrl: "/provider/dashboard", category: "application",
+      actionUrl: approved ? "/provider/dashboard" : "/for-providers", category: "application",
       dedupeKey: "provider-application-review:" + String(application._id) + ":" + (approved ? "approved" : "rejected"),
       details: { applicationId: String(application._id), decision: approved ? "approved" : "rejected", reviewNote: String(note).trim() },
     });
@@ -247,7 +247,7 @@ async function reviewSellerApplication(req, res) {
         ? "Your seller application has been approved. You can now access your seller dashboard and add products."
         : (String(note).trim() || "Your seller application was not approved. Review your application for the next steps."),
       relatedId: application._id, relatedType: "StoreProfile",
-      actionUrl: "/seller/dashboard", category: "application",
+      actionUrl: approved ? "/seller/dashboard" : "/for-providers", category: "application",
       dedupeKey: "seller-application-review:" + String(application._id) + ":" + (approved ? "approved" : "rejected"),
       details: { applicationId: String(application._id), decision: approved ? "approved" : "rejected", reviewNote: String(note).trim() },
     });
