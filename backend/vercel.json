@@ -8,5 +8,11 @@
       "source": "/(.*)",
       "destination": "/api/index"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/notifications/recommendations",
+      "schedule": "0 10 * * 2,5"
+    }
   ]
 }
