@@ -899,6 +899,9 @@ async function submitProviderOnboarding(req, res) {
       ? Math.min(progressAfterSave.step, providerStepRequirements.length)
       : providerStepRequirements.length + 1;
 
+    const previousApplication = await ProviderProfile.findOne({ userId: providerId }).select("verificationStatus applicationSubmittedAt").lean();
+    const shouldNotifySubmission = !isDraft && (!previousApplication?.applicationSubmittedAt || previousApplication.verificationStatus !== "pending");
+
     const provider = await ProviderProfile.findOneAndUpdate(
       { userId: providerId },
       {
@@ -951,13 +954,13 @@ async function submitProviderOnboarding(req, res) {
     if (Object.keys(userUpdates).length) {
       await User.findByIdAndUpdate(providerId, { $set: userUpdates });
     }
-    if (!isDraft) {
+    if (shouldNotifySubmission) {
       await createNotification({
         userId: providerId, type: "PROVIDER_APPLICATION_SUBMITTED", category: "application",
         title: "Provider application submitted",
         message: "Your provider application has been submitted for review. We will notify you when the review team makes a decision.",
         relatedId: provider._id, relatedType: "ProviderProfile", actionUrl: "/provider/onboarding",
-        dedupeKey: "provider-application-submitted:" + String(provider._id),
+        dedupeKey: "provider-application-submitted:" + String(provider._id) + ":" + new Date(provider.applicationSubmittedAt || Date.now()).getTime(),
         details: { businessName, status: "Under review", submittedAt: provider.applicationSubmittedAt },
       });
     }
@@ -1530,6 +1533,9 @@ async function submitSellerOnboarding(req, res) {
       storeUpdate.$unset = { "location.coordinates": 1 };
     }
 
+    const previousSellerApplication = await StoreProfile.findOne({ userId }).select("verificationStatus applicationSubmittedAt").lean();
+    const shouldNotifySellerSubmission = !isDraft && (!previousSellerApplication?.applicationSubmittedAt || previousSellerApplication.verificationStatus !== "pending");
+
     const store = await StoreProfile.findOneAndUpdate(
       { userId },
       storeUpdate,
@@ -1556,13 +1562,13 @@ async function submitSellerOnboarding(req, res) {
         $unset: { "location.coordinates": 1 },
       },
     );
-    if (!isDraft) {
+    if (shouldNotifySellerSubmission) {
       await createNotification({
         userId, type: "SELLER_APPLICATION_SUBMITTED", category: "application",
         title: "Seller application submitted",
         message: "Your seller application has been submitted for review. We will notify you when the review team makes a decision.",
         relatedId: store._id, relatedType: "StoreProfile", actionUrl: "/seller/onboarding",
-        dedupeKey: "seller-application-submitted:" + String(store._id),
+        dedupeKey: "seller-application-submitted:" + String(store._id) + ":" + new Date(store.applicationSubmittedAt || Date.now()).getTime(),
         details: { storeName, status: "Under review", submittedAt: store.applicationSubmittedAt },
       });
     }
