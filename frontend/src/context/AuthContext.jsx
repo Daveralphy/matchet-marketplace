@@ -121,6 +121,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    let storedAppearance = {};
+    try { storedAppearance = JSON.parse(localStorage.getItem("matchet_appearance") || "{}"); } catch { storedAppearance = {}; }
+    applyAppearance(user?.preferences?.appearance || storedAppearance);
+    applyLanguage(user?.preferences?.language || "English");
+  }, [user]);
+
+  useEffect(() => {
     if (!user) return undefined;
     const interval = window.setInterval(() => { loadNotifications(user); }, 30000);
     return () => window.clearInterval(interval);
