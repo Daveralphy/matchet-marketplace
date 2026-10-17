@@ -58,7 +58,7 @@ async function updateNotificationPreferences(req, res) {
   return res.json({ success: true, data: user?.preferences?.notifications || {} });
 }
 async function getPushKey(_req, res) {
-  if (!process.env.VAPID_PUBLIC_KEY) return res.status(503).json({ success: false, configured: false, message: "Browser push is not configured yet." });
+  if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) return res.status(503).json({ success: false, configured: false, message: "Browser push is not configured yet." });
   return res.json({ success: true, configured: true, publicKey: process.env.VAPID_PUBLIC_KEY });
 }
 async function sendRecommendationsCron(req, res) {
