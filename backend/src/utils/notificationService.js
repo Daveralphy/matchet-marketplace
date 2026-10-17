@@ -56,7 +56,7 @@ async function createNotification({ userId, type, title, message, details = {}, 
     notification = await Notification.create({
       userId, type, title: String(title).slice(0, 200), message: String(message).slice(0, 3000),
       details, actionUrl: normalizedUrl, relatedId: relatedId && mongoose.Types.ObjectId.isValid(String(relatedId)) ? relatedId : undefined,
-      relatedType, dedupeKey, delivery: { email: emailEnabled ? "pending" : "skipped", push: pushEnabled ? "pending" : "skipped" },
+      relatedType, dedupeKey: dedupeKey || (relatedId ? `${type}:${relatedType || "related"}:${String(relatedId)}` : undefined), delivery: { email: emailEnabled ? "pending" : "skipped", push: pushEnabled ? "pending" : "skipped" },
     });
   } catch (error) {
     if (error?.code === 11000) return null;
