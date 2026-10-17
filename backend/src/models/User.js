@@ -67,6 +67,7 @@ const userSchema = new mongoose.Schema({
   emailVerificationExpiresAt: { type: Date, select: false },
   emailVerificationLastSentAt: { type: Date, select: false },
   lastLoginAt: { type: Date },
+  loginDevices: { type: [mongoose.Schema.Types.Mixed], default: [], select: false },
   passwordResetTokenHash: { type: String, select: false },
   passwordResetExpiresAt: { type: Date, select: false },
   googleLoginCodeHash: { type: String, select: false },
