@@ -311,14 +311,14 @@ const CreateAccount = () => {
     setIsSubmitting(true);
 
     try {
-      await register({
+      const response = await register({
         firstName,
         lastName,
         email,
         phone: countryCode + phone,
         password,
       });
-      navigate("/", { replace: true });
+      navigate("/verify-email", { replace: true, state: { email: response.email || email } });
     } catch (error) {
       showToast(error.message || "We could not create your account right now. Please try again.", "error");
       if (error.errors) {
