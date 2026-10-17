@@ -18,10 +18,9 @@ const CATEGORIES = [
 function defaultPreferences(user) {
   const saved = user?.preferences?.notifications || {};
   const defaults = { order: true, booking: true, payment: true, application: true, message: true, recommendation: true, security: true };
-  return {
-    email: { ...defaults, ...(saved.email || {}) },
-    push: { ...defaults, ...(saved.push || {}) },
-  };
+  const email = { ...defaults, ...(saved.email || {}) };
+  ["order", "booking", "payment", "application", "security"].forEach((key) => { email[key] = true; });
+  return { email, push: { ...defaults, ...(saved.push || {}) } };
 }
 function base64ToBytes(value) {
   const padded = value.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
