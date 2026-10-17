@@ -1,7 +1,7 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
 const { requireActiveProvider, requireActiveSeller, requireActiveSellerOrProvider } = require("../middleware/providerAccess");
-const { searchProviderLocations, getOnboardingProgress, getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, deleteSellerProduct, createProviderService, updateProviderService, deleteProviderService, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
+const { searchProviderLocations, getOnboardingProgress, getProviderDashboard, getProviderServices, getProviderEarnings, getProviderReviews, getProviderProfile, getProviderSettings, updateProviderSettingsPreferences, submitProviderOnboarding, getProviderBookings, updateProviderBookingStatus, getProviderCapabilities, getProviderOnboardingDraft, getSellerOnboardingDraft, submitSellerOnboarding, getSellerDashboard, getSellerOrders, getSellerOrderDetail, addSellerOrderNote, updateSellerOrderStatus, getSellerProducts, createSellerProduct, updateSellerProduct, deleteSellerProduct, createProviderService, updateProviderService, deleteProviderService, getSellerEarnings, getSellerReviews, getSellerProfile, updateSellerProfile, getSellerSettings, updateSellerSettingsPreferences, updateSellerSettingsStore, getPublicSellerStore } = require("../controllers/provider.controller");
 const {
   getProviderMessages,
   getProviderConversation,
@@ -34,6 +34,7 @@ router.post("/services", requireAuth, requireActiveProvider, createProviderServi
 router.patch("/services/:serviceId", requireAuth, requireActiveProvider, updateProviderService);
 router.delete("/services/:serviceId", requireAuth, requireActiveProvider, deleteProviderService);
 router.get("/bookings", requireAuth, requireActiveProvider, getProviderBookings);
+router.patch("/bookings/:bookingId/status", requireAuth, requireActiveProvider, updateProviderBookingStatus);
 router.get("/earnings", requireAuth, requireActiveProvider, getProviderEarnings);
 router.get("/reviews", requireAuth, requireActiveProvider, getProviderReviews);
 router.get("/messages", requireAuth, requireActiveSellerOrProvider, getProviderMessages);
