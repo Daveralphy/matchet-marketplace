@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema({
   location: { type: locationSchema },
   preferences: { type: mongoose.Schema.Types.Mixed, default: {} },
   isActive: { type: Boolean, default: true, index: true },
-  emailVerified: { type: Boolean, default: false, index: true },
+  emailVerified: { type: Boolean, default: true, index: true },
   emailVerificationTokenHash: { type: String, select: false },
   emailVerificationExpiresAt: { type: Date, select: false },
   emailVerificationLastSentAt: { type: Date, select: false },
