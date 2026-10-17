@@ -439,6 +439,14 @@ async function recordOrderRefund(req, res) {
       return res.status(409).json({ success: false, message: "This order changed while the refund was being recorded. Refresh and review its current status." });
     }
 
+    await createNotification({
+      userId: updated.buyerId, type: "PAYMENT_REFUNDED", category: "payment",
+      title: "Your order refund has been recorded",
+      message: "A full refund for order #" + String(updated._id).slice(-8).toUpperCase() + " has been recorded. Your payment provider may take additional time to reflect the funds.",
+      relatedId: updated._id, relatedType: "order", actionUrl: "/orders/" + String(updated._id),
+      dedupeKey: "payment-refunded:" + String(updated._id),
+      details: { orderNumber: String(updated._id).slice(-8).toUpperCase(), refundReference: updated.refundReference, refundedAmount: updated.refundedAmount, currency: updated.currency || "NGN", refundedAt: updated.refundedAt },
+    });
     return res.json({ success: true, data: { id: updated._id, paymentStatus: updated.paymentStatus, refundReference: updated.refundReference, refundedAmount: updated.refundedAmount, refundedAt: updated.refundedAt, statusHistory: updated.statusHistory } });
   } catch (error) {
     if (error?.code === 11000) {
