@@ -280,10 +280,10 @@ async function changeVerificationEmail(req, res) {
   const newEmail = normalize(req.body?.newEmail).toLowerCase();
   const password = String(req.body?.password || "");
 
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(currentEmail)) {
+  if (!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(currentEmail)) {
     return res.status(400).json({ success: false, message: "The current email address is invalid." });
   }
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(newEmail)) {
+  if (!/^[^\s@]+@[^\s@]+\\.[^\s@]+$/.test(newEmail)) {
     return res.status(400).json({ success: false, message: "Enter a valid new email address." });
   }
   if (currentEmail === newEmail) {
