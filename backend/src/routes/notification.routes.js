@@ -10,6 +10,7 @@ router.use(requireAuth);
 router.get("/", controller.listNotifications);
 router.patch("/read", controller.markNotificationsRead);
 router.patch("/:id/read", controller.markNotificationRead);
+router.delete("/:id", controller.deleteNotification);
 router.get("/preferences", controller.getNotificationPreferences);
 router.put("/preferences", controller.updateNotificationPreferences);
 router.post("/push-subscriptions", controller.savePushSubscription);
