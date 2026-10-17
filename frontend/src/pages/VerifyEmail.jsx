@@ -128,13 +128,6 @@ export default function VerifyEmail() {
                 : <>We have created your account, but it is not active until you verify your email{email ? <> <span className="font-semibold text-[#10183f]">{email}</span></> : ""}. Open the verification link we sent you. If you can’t find it, check your spam or junk folder.</>}
           </p>
 
-          {!verified && !isVerifying && email && (
-            <div className="mt-5 rounded-xl border border-[#e5e9ef] bg-[#fafbfc] px-4 py-3">
-              <p className="text-xs font-medium text-[#747c99]">Verification email sent to</p>
-              <p className="mt-1 break-all text-sm font-semibold text-[#10183f]">{email}</p>
-            </div>
-          )}
-
           {message && (
             <p role="status" className={`mt-5 rounded-lg px-4 py-3 text-sm leading-6 ${verified ? "bg-green-50 text-green-800" : status === "error" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-800"}`}>
               {message}
