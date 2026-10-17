@@ -390,8 +390,7 @@ export default function Header({
 
       if (
         notificationsOpen &&
-        notificationsRef.current &&
-        !notificationsRef.current.contains(target)
+        !(target instanceof Element && target.closest('[data-notifications-panel="true"]'))
       ) {
         setNotificationsOpen(false);
       }
@@ -625,7 +624,7 @@ export default function Header({
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-[90] w-[300px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
+                <div data-notifications-panel="true" className="absolute right-0 top-[calc(100%+8px)] z-[90] w-[300px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
                   <div className="border-b border-slate-100 px-4 py-3">
                     <p className="text-[13px] font-semibold text-[#071449]">
                       Notifications
@@ -898,7 +897,7 @@ export default function Header({
                 </button>
 
                 {notificationsOpen && (
-                  <div className="absolute right-0 top-[calc(100%+14px)] z-[80] w-[330px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
+                  <div data-notifications-panel="true" className="absolute right-0 top-[calc(100%+14px)] z-[80] w-[330px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
                     <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
                       <div>
                         <p className="text-[14px] font-semibold text-[#071449]">
