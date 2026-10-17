@@ -3,6 +3,7 @@ const requireAuth = require("../middleware/auth");
 const controller = require("../controllers/notification.controller");
 const router = express.Router();
 router.get("/email-unsubscribe", controller.unsubscribeEmail);
+router.post("/email-unsubscribe", controller.unsubscribeEmail);
 router.get("/push-key", controller.getPushKey);
 router.get("/recommendations", controller.sendRecommendationsCron);
 router.use(requireAuth);
