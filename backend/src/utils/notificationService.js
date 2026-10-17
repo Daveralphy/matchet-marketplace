@@ -48,7 +48,8 @@ async function createNotification({ userId, type, title, message, details = {}, 
   const user = await User.findById(userId).select("firstName email emailVerified preferences isActive").lean();
   if (!user || user.isActive === false) return null;
   const prefs = user.preferences?.notifications || {};
-  const emailEnabled = channels.includes("email") && (["transactional", "security"].includes(category) || prefs.email?.[category] !== false);
+  const essentialEmail = ["transactional", "security", "application", "booking", "order", "payment"].includes(category);
+  const emailEnabled = channels.includes("email") && (essentialEmail || prefs.email?.[category] !== false);
   const pushEnabled = channels.includes("push") && prefs.push?.[category] !== false;
   const normalizedUrl = safeActionUrl(actionUrl);
   let notification;
