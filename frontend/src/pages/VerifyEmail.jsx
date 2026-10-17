@@ -153,7 +153,7 @@ export default function VerifyEmail() {
                 disabled={busy || cooldownSeconds > 0 || !email}
                 className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white transition hover:bg-[#067632] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {busy && !showChangeEmail ? "Sending…" : cooldownSeconds > 0 ? `Resend email in ${formatCooldown(cooldownSeconds)}` : "Resend verification email"}
+                {busy ? (showChangeEmail ? "Updating email…" : "Sending…") : cooldownSeconds > 0 ? `Resend email in ${formatCooldown(cooldownSeconds)}` : "Resend verification email"}
               </button>
 
               <button
