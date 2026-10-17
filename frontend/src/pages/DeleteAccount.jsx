@@ -19,7 +19,7 @@ export default function DeleteAccount() {
     event.preventDefault();
 
     if (user?.passwordSet === false) {
-      showToast("Set a password through the password reset flow before closing your account.", "error");
+      showToast("Set a password through the password reset flow before deactivating your account.", "error");
       return;
     }
 
@@ -38,12 +38,12 @@ export default function DeleteAccount() {
     try {
       await deleteAccount({ currentPassword });
 
-      // Clear the frontend authentication state after account closure.
+      // Clear the frontend authentication state after account deactivation.
       await logout().catch(() => {});
 
       navigate("/", { replace: true });
     } catch (requestError) {
-      showToast(requestError.message || "Unable to close your account right now.", "error");
+      showToast(requestError.message || "Unable to deactivate your account right now.", "error");
     } finally {
       setLoading(false);
     }
@@ -57,11 +57,11 @@ export default function DeleteAccount() {
           <span>›</span>
           <Link to="/profile">My Profile</Link>
           <span>›</span>
-          <span>Close Account</span>
+          <span>Deactivate Account</span>
         </div>
 
         <header>
-          <h1>Close Account</h1>
+          <h1>Deactivate Account</h1>
           <p>
             Review the information below before closing your Matchet account.
           </p>
@@ -94,7 +94,7 @@ export default function DeleteAccount() {
                 <span>Password setup required</span>
                 <p>
                   This account was created with Google and does not have a password you set.
-                  For security, set a password first, then return here to close your account.
+                  For security, set a password first, then return here to deactivate your account.
                 </p>
                 <Link className="text-emerald-700 underline" to="/forgot-password">
                   Set a password using email recovery
@@ -103,7 +103,7 @@ export default function DeleteAccount() {
             ) : (
               <label className="account-form-field">
                 <span>Current password</span>
-                <small>Confirm your identity before closing your account.</small>
+                <small>Confirm your identity before deactivating your account.</small>
                 <input
                   type="password"
                   value={currentPassword}
@@ -120,7 +120,7 @@ export default function DeleteAccount() {
                 <Link className="text-emerald-700 underline" to="/forgot-password">
                   Reset your password
                 </Link>{" "}
-                before closing your account.
+                before deactivating your account.
               </p>
             )}
 
@@ -134,7 +134,7 @@ export default function DeleteAccount() {
               />
 
               <span>
-                <strong>Confirm account closure</strong>
+                <strong>Confirm account deactivation</strong>
                 <small>
                   I understand that my account will be deactivated and I will
                   be signed out.
@@ -142,7 +142,7 @@ export default function DeleteAccount() {
               </span>
             </label>\n<div className="account-form-actions">
               <button type="submit" disabled={loading || !confirmed || user?.passwordSet === false}>
-                {loading ? "Closing account..." : "Close my account"}
+                {loading ? "Closing account..." : "Deactivate my account"}
               </button>
 
               <Link to="/profile">Cancel</Link>
