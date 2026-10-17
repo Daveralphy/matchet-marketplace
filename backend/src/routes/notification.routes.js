@@ -1,9 +1,15 @@
 const express = require("express");
 const requireAuth = require("../middleware/auth");
-const { listNotifications, markNotificationsRead, markNotificationRead } = require("../controllers/notification.controller");
-
+const controller = require("../controllers/notification.controller");
 const router = express.Router();
-router.get("/", requireAuth, listNotifications);
-router.patch("/read", requireAuth, markNotificationsRead);
-router.patch("/:id/read", requireAuth, markNotificationRead);
+router.get("/email-unsubscribe", controller.unsubscribeEmail);
+router.get("/push-key", controller.getPushKey);
+router.use(requireAuth);
+router.get("/", controller.listNotifications);
+router.patch("/read", controller.markNotificationsRead);
+router.patch("/:id/read", controller.markNotificationRead);
+router.get("/preferences", controller.getNotificationPreferences);
+router.put("/preferences", controller.updateNotificationPreferences);
+router.post("/push-subscriptions", controller.savePushSubscription);
+router.delete("/push-subscriptions", controller.removePushSubscription);
 module.exports = router;
