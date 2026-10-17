@@ -106,21 +106,12 @@ export default function VerifyEmail() {
           </Link>
         </header>
 
-        <div className="px-6 py-8 sm:px-10 sm:py-10">
-          <div className={`mb-5 flex h-12 w-12 items-center justify-center rounded-full ${verified ? "bg-green-100 text-green-700" : "bg-[#eaf8ef] text-[#07863a]"}`} aria-hidden="true">
-            {verified ? (
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="m5 12 4 4L19 6" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            ) : (
-              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></svg>
-            )}
-          </div>
-
-          <p className="text-xs font-bold uppercase tracking-[.16em] text-[#07863a]">Account security</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#10183f]">
+        <div className="px-6 py-8 text-center sm:px-10 sm:py-10">
+                    <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#10183f]">
             {isVerifying ? "Verifying your email…" : verified ? "Email verified!" : "Verify your email"}
           </h1>
 
-          <p className="mt-3 text-[15px] leading-7 text-[#626c8b]">
+          <p className="mt-3 text-[15px] leading-7 text-[#626c8b] text-center">
             {isVerifying
               ? "Please wait while we securely confirm your email address."
               : verified
@@ -129,7 +120,7 @@ export default function VerifyEmail() {
           </p>
 
           {message && (
-            <p role="status" className={`mt-5 rounded-lg px-4 py-3 text-sm leading-6 ${verified ? "bg-green-50 text-green-800" : status === "error" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-800"}`}>
+            <p role="status" className={`mt-5 rounded-lg px-4 py-3 text-center text-sm leading-6 ${verified ? "bg-green-50 text-green-800" : status === "error" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-800"}`}>
               {message}
             </p>
           )}
