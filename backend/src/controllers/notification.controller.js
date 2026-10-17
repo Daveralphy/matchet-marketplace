@@ -77,7 +77,7 @@ async function sendRecommendationsCron(req, res) {
       .select("_id title description category pricing images location").sort({ viewCount: -1, createdAt: -1 }).limit(500).lean();
     let sent = 0;
     for (const user of users) {
-      const recent = await Notification.findOne({ userId: user._id, type: "RECOMMENDATIONS_DIGEST", createdAt: { $gte: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000) } }).select("_id details").lean();
+      const recent = await Notification.findOne({ userId: user._id, type: "RECOMMENDATIONS_DIGEST", "delivery.email": "sent", createdAt: { $gte: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000) } }).select("_id details").lean();
       if (recent) continue;
       const loc = user.location || {};
       const score = (item) => {
@@ -92,7 +92,7 @@ async function sendRecommendationsCron(req, res) {
         ...products.map((item) => ({ id: String(item._id), kind: "product", title: item.name, description: [item.category, item.price != null ? `${item.currency || "NGN"} ${Number(item.price).toLocaleString("en-NG")}` : ""].filter(Boolean).join(" · "), image: item.images?.find((img) => img.isPrimary)?.url || item.images?.[0]?.url || "", url: `/products/${item._id}`, score: score(item) })),
         ...services.map((item) => ({ id: String(item._id), kind: "service", title: item.title, description: [item.category, item.pricing?.amount != null ? `${item.pricing.currency || "NGN"} ${Number(item.pricing.amount).toLocaleString("en-NG")}` : "Contact for pricing"].filter(Boolean).join(" · "), image: item.images?.find((img) => img.isPrimary)?.url || item.images?.[0]?.url || "", url: `/services/${item._id}`, score: score(item) })),
       ].sort((a, b) => b.score - a.score);
-      const history = await Notification.find({ userId: user._id, type: "RECOMMENDATIONS_DIGEST", createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }).select("details.recommendationIds").lean();
+      const history = await Notification.find({ userId: user._id, type: "RECOMMENDATIONS_DIGEST", "delivery.email": "sent", createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }).select("details.recommendationIds").lean();
       const recentlyRecommended = new Set(history.flatMap((item) => item.details?.recommendationIds || []));
       const items = pool.filter((item) => !recentlyRecommended.has(item.id)).slice(0, 4);
       if (!items.length) continue;
