@@ -14,7 +14,7 @@ function safeActionUrl(value) {
 function escapeHtml(value) {
   return String(value || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-async function sendEmail({ to, subject, title, message, actionUrl, category, notificationId, userId }) {
+async function sendEmail({ to, subject, title, message, actionUrl, category, notificationId, userId, emailItems = [] }) {
   const provider = String(process.env.EMAIL_PROVIDER || "smtp").toLowerCase();
   if (provider === "smtp") {
     if (!process.env.SMTP_HOST || !process.env.SMTP_PORT || !process.env.SMTP_USER || !process.env.SMTP_PASS || !process.env.EMAIL_FROM) throw new Error("SMTP is not configured");
@@ -26,7 +26,8 @@ async function sendEmail({ to, subject, title, message, actionUrl, category, not
       : "";
     const logo = process.env.EMAIL_LOGO_URL || "https://raw.githubusercontent.com/Daveralphy/matchet-marketplace/staging/frontend/src/assets/logo/matchet_logoname.png";
     const href = actionUrl ? CLIENT_URL() + safeActionUrl(actionUrl) : CLIENT_URL() + "/account/settings";
-    const html = `<!doctype html><html><body style="margin:0;background:#f5f7f6;font-family:Arial,sans-serif;color:#10183f"><div style="max-width:600px;margin:24px auto;padding:20px;background:white;border:1px solid #e5eae7;border-radius:16px"><img src="${escapeHtml(logo)}" alt="Matchet" width="180" style="display:block;max-width:100%;height:auto;margin-bottom:28px"><h1 style="font-size:24px">${escapeHtml(title)}</h1><p style="font-size:15px;line-height:1.7;color:#4b5577;white-space:pre-line">${escapeHtml(message)}</p><p><a href="${escapeHtml(href)}" style="display:inline-block;background:#07863a;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:600">View details</a></p>${unsubscribe}<p style="font-size:12px;color:#77809c">© ${new Date().getFullYear()} Matchet Marketplace</p></div></body></html>`;
+    const itemHtml = emailItems.slice(0, 4).map((item) => { const image = /^https:\/\//i.test(String(item.image || "")) ? `<img src="${escapeHtml(item.image)}" alt="" width="88" style="width:88px;height:76px;object-fit:cover;border-radius:8px">` : ""; const url = CLIENT_URL() + safeActionUrl(item.url); return `<div style="display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #edf0ee">${image}<div><a href="${escapeHtml(url)}" style="font-weight:600;color:#10183f;text-decoration:none">${escapeHtml(item.title)}</a><p style="margin:5px 0 0;font-size:12px;color:#77809c">${escapeHtml(item.description || "")}</p></div></div>`; }).join("");
+    const html = `<!doctype html><html><body style="margin:0;background:#f5f7f6;font-family:Arial,sans-serif;color:#10183f"><div style="max-width:600px;margin:24px auto;padding:20px;background:white;border:1px solid #e5eae7;border-radius:16px"><img src="${escapeHtml(logo)}" alt="Matchet" width="180" style="display:block;max-width:100%;height:auto;margin-bottom:28px"><h1 style="font-size:24px">${escapeHtml(title)}</h1><p style="font-size:15px;line-height:1.7;color:#4b5577;white-space:pre-line">${escapeHtml(message)}</p>${itemHtml}<p><a href="${escapeHtml(href)}" style="display:inline-block;background:#07863a;color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:600">View details</a></p>${unsubscribe}<p style="font-size:12px;color:#77809c">© ${new Date().getFullYear()} Matchet Marketplace</p></div></body></html>`;
     await transporter.sendMail({ from: process.env.EMAIL_FROM, to, subject, html, ...(unsubscribe ? { headers: { "List-Unsubscribe": `<${CLIENT_URL()}/api/notifications/email-unsubscribe?user=${encodeURIComponent(String(userId || ""))}&notification=${encodeURIComponent(String(notificationId || ""))}&category=${encodeURIComponent(category)}&token=${encodeURIComponent(makeUnsubscribeToken(notificationId, category))}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" } } : {}) });
     return;
   }
@@ -42,7 +43,7 @@ function makeUnsubscribeToken(notificationId, category) {
   if (!process.env.NOTIFICATION_TOKEN_SECRET) return "";
   return crypto.createHmac("sha256", process.env.NOTIFICATION_TOKEN_SECRET).update(`${notificationId}:${category}`).digest("hex");
 }
-async function createNotification({ userId, type, title, message, details = {}, actionUrl = "/account/settings", relatedId = null, relatedType = null, dedupeKey, category = "transactional", channels = ["inApp", "email", "push"], emailSubject }) {
+async function createNotification({ userId, type, title, message, details = {}, emailItems = [], actionUrl = "/account/settings", relatedId = null, relatedType = null, dedupeKey, category = "transactional", channels = ["inApp", "email", "push"], emailSubject }) {
   if (!userId || !type || !title || !message) return null;
   const user = await User.findById(userId).select("firstName email emailVerified preferences isActive").lean();
   if (!user || user.isActive === false) return null;
@@ -64,7 +65,7 @@ async function createNotification({ userId, type, title, message, details = {}, 
   }
   if (emailEnabled && user.email && (user.emailVerified || ["transactional", "security"].includes(category))) {
     try {
-      await sendEmail({ to: user.email, subject: emailSubject || title, title, message, actionUrl: normalizedUrl, category, notificationId: notification._id, userId });
+      await sendEmail({ to: user.email, subject: emailSubject || title, title, message, actionUrl: normalizedUrl, category, notificationId: notification._id, userId, emailItems });
       await Notification.updateOne({ _id: notification._id }, { $set: { "delivery.email": "sent" } });
     } catch (error) {
       console.error("Notification email failed:", error.message);
