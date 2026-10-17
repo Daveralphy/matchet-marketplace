@@ -679,6 +679,18 @@ const router = createBrowserRouter([
     element: <RequireAuth><MarketplaceLayout><AccountSettings /></MarketplaceLayout></RequireAuth>,
   },
   {
+    path: "/account/settings/notifications",
+    element: <RequireAuth><MarketplaceLayout><AccountNotificationPreferences /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/settings/language",
+    element: <RequireAuth><MarketplaceLayout><AccountLanguage /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/settings/appearance",
+    element: <RequireAuth><MarketplaceLayout><AccountAppearance /></MarketplaceLayout></RequireAuth>,
+  },
+  {
     path: "/account/security",
     element: <RequireAuth><MarketplaceLayout><AccountSecurity /></MarketplaceLayout></RequireAuth>,
   },
