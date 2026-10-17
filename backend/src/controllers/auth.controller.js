@@ -32,14 +32,15 @@ function emailProviderIsConfigured() {
   return provider === "resend" && Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
 }
 
-async function sendTransactionalEmail({ to, subject, heading, intro, buttons = [], footer = "You received this email because you have a Matchet Marketplace account." }) {
+async function sendTransactionalEmail({ to, subject, heading, intro, buttons = [], recommendations = [], footer = "You received this email because you have a Matchet Marketplace account." }) {
   if (!emailProviderIsConfigured()) {
     throw new Error("Email delivery is not configured. Set EMAIL_PROVIDER and the required email provider credentials.");
   }
   const escapeHtml = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const safeButtons = buttons.map(({ label, url }) => `<a href="${escapeHtml(url)}" style="display:inline-block;margin:6px 8px 6px 0;padding:12px 18px;background:#07863a;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">${escapeHtml(label)}</a>`).join("");
+  const recommendationHtml = recommendations.slice(0, 3).map((item) => `<a href="${escapeHtml(item.url)}" style="display:block;padding:12px 0;border-bottom:1px solid #edf0ee;color:#10183f;text-decoration:none">${item.image && /^https:\/\//i.test(item.image) ? `<img src="${escapeHtml(item.image)}" alt="" width="100" style="width:100px;height:78px;object-fit:cover;border-radius:8px;vertical-align:middle;margin-right:12px">` : ""}<span style="display:inline-block;vertical-align:middle;max-width:350px"><strong>${escapeHtml(item.title)}</strong><br><span style="font-size:12px;color:#77809c">${escapeHtml(item.description || "")}</span></span></a>`).join("");
   const logoUrl = process.env.EMAIL_LOGO_URL || "https://raw.githubusercontent.com/Daveralphy/matchet-marketplace/staging/frontend/src/assets/logo/matchet_logoname.png";
-  const html = `<!doctype html><html><body style="margin:0;background:#f5f7f6;font-family:Arial,Helvetica,sans-serif;color:#10183f"><div style="max-width:600px;margin:24px auto;padding:0 14px"><div style="background:#fff;border:1px solid #e5eae7;border-radius:16px;overflow:hidden"><div style="padding:24px 30px;background:#fff;border-bottom:1px solid #edf0ee"><a href="${escapeHtml(CLIENT_URL())}" style="display:inline-block;text-decoration:none"><img src="${escapeHtml(logoUrl)}" alt="Matchet" width="180" style="display:block;width:180px;max-width:100%;height:auto;border:0"></a></div><div style="padding:30px"><h1 style="font-size:25px;line-height:1.3;margin:0 0 16px">${escapeHtml(heading)}</h1><p style="font-size:15px;line-height:1.75;color:#4b5577;margin:0 0 20px">${escapeHtml(intro)}</p>${safeButtons}<p style="font-size:12px;line-height:1.6;color:#77809c;margin:28px 0 0">${escapeHtml(footer)}</p></div></div><p style="text-align:center;font-size:12px;color:#8a91a8;margin:16px 0">© ${new Date().getFullYear()} Matchet Marketplace</p></div></body></html>`;
+  const html = `<!doctype html><html><body style="margin:0;background:#f5f7f6;font-family:Arial,Helvetica,sans-serif;color:#10183f"><div style="max-width:600px;margin:24px auto;padding:0 14px"><div style="background:#fff;border:1px solid #e5eae7;border-radius:16px;overflow:hidden"><div style="padding:24px 30px;background:#fff;border-bottom:1px solid #edf0ee"><a href="${escapeHtml(CLIENT_URL())}" style="display:inline-block;text-decoration:none"><img src="${escapeHtml(logoUrl)}" alt="Matchet" width="180" style="display:block;width:180px;max-width:100%;height:auto;border:0"></a></div><div style="padding:30px"><h1 style="font-size:25px;line-height:1.3;margin:0 0 16px">${escapeHtml(heading)}</h1><p style="font-size:15px;line-height:1.75;color:#4b5577;margin:0 0 20px">${escapeHtml(intro)}</p>${safeButtons}${recommendationHtml ? `<h2 style="font-size:18px;margin:28px 0 8px">A few picks near you</h2><p style="font-size:13px;line-height:1.6;color:#77809c">Suggestions based on your marketplace location: ${escapeHtml(recommendations.locationLabel || "your area")}.</p>${recommendationHtml}` : ""}<p style="font-size:12px;line-height:1.6;color:#77809c;margin:28px 0 0">${escapeHtml(footer)}</p></div></div><p style="text-align:center;font-size:12px;color:#8a91a8;margin:16px 0">© ${new Date().getFullYear()} Matchet Marketplace</p></div></body></html>`;
   const provider = getEmailProvider();
   if (provider === "smtp") {
     const nodemailer = require("nodemailer");
@@ -78,6 +79,28 @@ async function sendVerificationEmail(user, rawToken) {
 }
 
 async function sendAccountWelcomeEmails(user) {
+  const location = user.location || {};
+  const locationLabel = [location.city, location.state, location.country].filter(Boolean).join(", ");
+  let recommendations = [];
+  try {
+    const [products, services] = await Promise.all([
+      Product.find({ status: "active", inventory: { $gt: 0 } }).select("_id name category price currency images location viewCount").sort({ viewCount: -1, createdAt: -1 }).limit(100).lean(),
+      Service.find({ status: "active" }).select("_id title category pricing images location viewCount").sort({ viewCount: -1, createdAt: -1 }).limit(100).lean(),
+    ]);
+    const rank = (item) => {
+      const area = item.location || {};
+      return (location.city && area.city && location.city.toLowerCase() === area.city.toLowerCase() ? 4 : 0)
+        + (location.state && area.state && location.state.toLowerCase() === area.state.toLowerCase() ? 2 : 0)
+        + (location.country && area.country && location.country.toLowerCase() === area.country.toLowerCase() ? 1 : 0);
+    };
+    recommendations = [
+      ...products.map((item) => ({ title: item.name, description: [item.category, item.price != null ? `${item.currency || "NGN"} ${Number(item.price).toLocaleString("en-NG")}` : ""].filter(Boolean).join(" · "), image: item.images?.find((img) => img.isPrimary)?.url || item.images?.[0]?.url || "", url: `${CLIENT_URL()}/products/${item._id}`, rank: rank(item) })),
+      ...services.map((item) => ({ title: item.title, description: [item.category, item.pricing?.amount != null ? `${item.pricing.currency || "NGN"} ${Number(item.pricing.amount).toLocaleString("en-NG")}` : "Service"].filter(Boolean).join(" · "), image: item.images?.find((img) => img.isPrimary)?.url || item.images?.[0]?.url || "", url: `${CLIENT_URL()}/services/${item._id}`, rank: rank(item) })),
+    ].sort((a, b) => b.rank - a.rank).slice(0, 3);
+    recommendations.locationLabel = locationLabel;
+  } catch (error) {
+    console.warn("Welcome recommendation lookup failed:", error.message);
+  }
   const confirmation = sendTransactionalEmail({
     to: user.email,
     subject: "Your Matchet account is verified",
@@ -92,11 +115,9 @@ async function sendAccountWelcomeEmails(user) {
     intro: "Your marketplace journey starts here. Discover products, find services, save items you like, manage your orders, or apply to sell products and offer services.",
     buttons: [
       { label: "Explore marketplace", url: `${CLIENT_URL()}/explore` },
-      { label: "Browse products", url: `${CLIENT_URL()}/products` },
-      { label: "Find services", url: `${CLIENT_URL()}/services` },
-      { label: "Become a seller or provider", url: `${CLIENT_URL()}/for-providers` },
-      { label: "Get help", url: `${CLIENT_URL()}/help` },
+      { label: "Manage your account", url: `${CLIENT_URL()}/account/settings` },
     ],
+    recommendations,
     footer: "Keep your account details secure. Matchet will never ask you to share your password by email.",
   });
   const results = await Promise.allSettled([confirmation, welcome]);
