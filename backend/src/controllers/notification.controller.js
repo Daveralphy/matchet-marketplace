@@ -50,7 +50,6 @@ async function updateNotificationPreferences(req, res) {
   const updates = {};
   for (const channel of channels) {
     if (!input[channel] || typeof input[channel] !== "object") continue;
-    updates[`preferences.notifications.${channel}`] = {};
     for (const category of categories) if (typeof input[channel][category] === "boolean") updates[`preferences.notifications.${channel}.${category}`] = input[channel][category];
   }
   if (!Object.keys(updates).length) return res.status(400).json({ success: false, message: "No valid notification preferences were supplied." });
