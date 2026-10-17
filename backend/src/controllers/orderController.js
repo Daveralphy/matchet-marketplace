@@ -75,7 +75,7 @@ async function createBuyerOrder(req,res){
     await Cart.findOneAndUpdate({userId:req.user._id},{items:[]});
     const orderRef = String(order._id);
     await createNotification({
-      userId: req.user._id, type: "ORDER_CONFIRMED", title: "Order received",
+      userId: req.user._id, type: "ORDER_CREATED", title: "Order received",
       message: `Your order #${orderRef.slice(-8).toUpperCase()} has been created. We will keep you updated as it progresses.`,
       relatedId: order._id, relatedType: "order", actionUrl: `/orders/${orderRef}`,
       category: "order", dedupeKey: `order-created-buyer:${orderRef}`,
@@ -83,7 +83,7 @@ async function createBuyerOrder(req,res){
     });
     const sellerIds = [...new Set(orderItems.map((item) => String(item.sellerId || "")).filter((id) => id && id !== String(req.user._id)))];
     await Promise.all(sellerIds.map((sellerId) => createNotification({
-      userId: sellerId, type: "ORDER_CONFIRMED", title: "New order received",
+      userId: sellerId, type: "ORDER_CREATED", title: "New order received",
       message: `A buyer placed order #${orderRef.slice(-8).toUpperCase()}. Review the order and prepare the items for fulfilment.`,
       relatedId: order._id, relatedType: "order", actionUrl: `/seller/orders/${orderRef}`,
       category: "order", dedupeKey: `order-created-seller:${orderRef}:${sellerId}`,
