@@ -19,14 +19,39 @@ function googleIsConfigured() {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 }
 
+function getEmailProvider() {
+  return String(process.env.EMAIL_PROVIDER || "resend").trim().toLowerCase();
+}
+
+function emailProviderIsConfigured() {
+  const provider = getEmailProvider();
+  if (provider === "smtp") {
+    return Boolean(process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.EMAIL_FROM);
+  }
+  return provider === "resend" && Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+}
+
 async function sendTransactionalEmail({ to, subject, heading, intro, buttons = [], footer = "You received this email because you have a Matchet Marketplace account." }) {
-  if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) {
-    throw new Error("Email delivery is not configured. Set RESEND_API_KEY and EMAIL_FROM.");
+  if (!emailProviderIsConfigured()) {
+    throw new Error("Email delivery is not configured. Set EMAIL_PROVIDER and the required email provider credentials.");
   }
   const escapeHtml = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const safeButtons = buttons.map(({ label, url }) => `<a href="${escapeHtml(url)}" style="display:inline-block;margin:6px 8px 6px 0;padding:12px 18px;background:#07863a;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">${escapeHtml(label)}</a>`).join("");
-  const clientUrl = CLIENT_URL();
   const html = `<!doctype html><html><body style="margin:0;background:#f5f7f6;font-family:Arial,Helvetica,sans-serif;color:#10183f"><div style="max-width:600px;margin:24px auto;padding:0 14px"><div style="background:#fff;border:1px solid #e5eae7;border-radius:16px;overflow:hidden"><div style="padding:26px 30px;background:#10183f;color:#fff"><div style="font-size:25px;font-weight:800;letter-spacing:-.5px">Matchet<span style="color:#45d483">.</span></div><div style="font-size:12px;opacity:.8;margin-top:4px">Marketplace</div></div><div style="padding:30px"><h1 style="font-size:25px;line-height:1.3;margin:0 0 16px">${escapeHtml(heading)}</h1><p style="font-size:15px;line-height:1.75;color:#4b5577;margin:0 0 20px">${escapeHtml(intro)}</p>${safeButtons}<p style="font-size:12px;line-height:1.6;color:#77809c;margin:28px 0 0">${escapeHtml(footer)}</p></div></div><p style="text-align:center;font-size:12px;color:#8a91a8;margin:16px 0">© ${new Date().getFullYear()} Matchet Marketplace</p></div></body></html>`;
+  const provider = getEmailProvider();
+  if (provider === "smtp") {
+    const nodemailer = require("nodemailer");
+    const port = Number(process.env.SMTP_PORT);
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port,
+      secure: port === 465,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    });
+    await transporter.sendMail({ from: process.env.EMAIL_FROM, to, subject, html });
+    return;
+  }
+  if (provider !== "resend") throw new Error(`Unsupported EMAIL_PROVIDER: ${provider}`);
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
@@ -77,28 +102,14 @@ async function sendAccountWelcomeEmails(user) {
 }
 
 async function sendPasswordResetEmail(email, resetUrl) {
-  if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) {
-    throw new Error("Password reset email is not configured. Set RESEND_API_KEY and EMAIL_FROM.");
-  }
-
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: process.env.EMAIL_FROM,
-      to: [email],
-      subject: "Reset your Matchet password",
-      html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#10183f;max-width:560px;margin:auto"><h1>Reset your Matchet password</h1><p>We received a request to reset your password. Use the button below to choose a new one. This link expires in 30 minutes.</p><p><a href="${resetUrl}" style="display:inline-block;padding:12px 20px;background:#07983f;color:#fff;text-decoration:none;border-radius:8px">Reset password</a></p><p>If you did not request this, you can ignore this email.</p></div>`,
-    }),
+  await sendTransactionalEmail({
+    to: email,
+    subject: "Reset your Matchet password",
+    heading: "Reset your Matchet password",
+    intro: "We received a request to reset your password. Use the button below to choose a new one. This link expires in 30 minutes. If you did not request this, you can ignore this email.",
+    buttons: [{ label: "Reset password", url: resetUrl }],
+    footer: "If you did not request this password reset, you can safely ignore this message.",
   });
-
-  if (!response.ok) {
-    const details = await response.text().catch(() => "");
-    throw new Error(`Password reset email delivery failed (${response.status}): ${details.slice(0, 300)}`);
-  }
 }
 
 async function exchangeGoogleSignIn(req, res) {
@@ -268,7 +279,7 @@ async function requestPasswordReset(req, res) {
     return res.status(400).json({ success: false, message: "Enter a valid email address.", errors: { email: "Enter a valid email address." } });
   }
 
-  if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) {
+  if (!emailProviderIsConfigured()) {
     return res.status(503).json({ success: false, message: "Password reset email is not configured yet. Please contact support or try again later." });
   }
 
