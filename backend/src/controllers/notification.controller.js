@@ -124,7 +124,7 @@ async function unsubscribeEmail(req, res) {
   if (!/^[a-f\d]{24}$/i.test(userId) || !["message", "recommendation"].includes(category) || !process.env.NOTIFICATION_TOKEN_SECRET) return res.status(400).send("This unsubscribe link is invalid or expired.");
   // The signed token is tied to both notification id and category.
   const notificationId = String(req.query.notification || "");
-  const actual = crypto.createHmac("sha256", process.env.NOTIFICATION_TOKEN_SECRET).update(`${notificationId}:${category}`).digest("hex");
+  const actual = crypto.createHmac("sha256", process.env.NOTIFICATION_TOKEN_SECRET).update(`${userId}:${notificationId}:${category}`).digest("hex");
   if (!notificationId || !/^[a-f\\d]{64}$/i.test(token) || !crypto.timingSafeEqual(Buffer.from(actual), Buffer.from(token))) return res.status(400).send("This unsubscribe link is invalid or expired.");
   await User.updateOne({ _id: userId }, { $set: { [`preferences.notifications.email.${category}`]: false } });
   return res.status(200).send("You have been unsubscribed from this email category. You can close this page.");
