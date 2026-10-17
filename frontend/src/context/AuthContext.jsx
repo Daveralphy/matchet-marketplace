@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";\nimport { applyAppearance, applyLanguage } from "../utils/uiPreferences";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { applyAppearance, applyLanguage } from "../utils/uiPreferences";
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from "../api/auth";
 
 const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
@@ -39,7 +40,12 @@ async function markServerNotificationsRead() {
   });
 }
 
-async function deleteServerNotification(id) {\n  const response = await fetch(API_BASE_URL + "/api/notifications/" + encodeURIComponent(id), { method: "DELETE", credentials: "include" });\n  if (!response.ok) throw new Error("Unable to delete notification.");\n}\n\nasync function markServerNotificationRead(id) {
+async function deleteServerNotification(id) {
+  const response = await fetch(API_BASE_URL + "/api/notifications/" + encodeURIComponent(id), { method: "DELETE", credentials: "include" });
+  if (!response.ok) throw new Error("Unable to delete notification.");
+}
+
+async function markServerNotificationRead(id) {
   const response = await fetch(API_BASE_URL + "/api/notifications/" + encodeURIComponent(id) + "/read", {
     method: "PATCH",
     credentials: "include",
@@ -80,7 +86,12 @@ export function AuthProvider({ children }) {
     setNotifications((current) => current.map((item) => String(item.id) === String(notificationId) ? { ...item, read: true } : item));
     try { await markServerNotificationRead(notificationId); } catch { /* Keep the local read state responsive during a network issue. */ }
   };
-  const deleteNotification = async (notificationId) => {\n    if (!user || !notificationId) return;\n    await deleteServerNotification(notificationId);\n    setNotifications((current) => current.filter((item) => String(item.id) !== String(notificationId)));\n  };\n  const markNotificationsRead = () => {
+  const deleteNotification = async (notificationId) => {
+    if (!user || !notificationId) return;
+    await deleteServerNotification(notificationId);
+    setNotifications((current) => current.filter((item) => String(item.id) !== String(notificationId)));
+  };
+  const markNotificationsRead = () => {
     if (!user) return;
     const next = notifications.map((item) => ({ ...item, read: true }));
     setNotifications(next);
