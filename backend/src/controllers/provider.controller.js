@@ -1934,7 +1934,7 @@ async function updateSellerOrderStatus(req, res) {
       }
 
       await ensureSellerOrderStatusMessage(claimed, sellerId, "cancelled", cancellationReason);
-      await createNotification({ userId: claimed.buyerId, type: "ORDER_CANCELLED", title: "Your order was cancelled", message: "Order #" + String(claimed._id).slice(-8).toUpperCase() + " was cancelled. Please check the order details for next steps.", relatedId: claimed._id, relatedType: "order" });
+      await createNotification({ userId: claimed.buyerId, type: "ORDER_CANCELLED", title: "Your order was cancelled", message: "Order #" + String(claimed._id).slice(-8).toUpperCase() + " was cancelled. Please check the order details for next steps.", relatedId: claimed._id, relatedType: "order", actionUrl: "/orders/" + String(claimed._id), category: "order", details: { orderNumber: String(claimed._id).slice(-8).toUpperCase(), status: claimed.orderStatus, paymentStatus: claimed.paymentStatus, cancellationReason } });
       return res.json({ success: true, requiresManualReview: true, message: "Order cancelled. The customer has been notified, and a support administrator must review the refund.", data: { id: claimed._id, status: claimed.orderStatus, paymentStatus: claimed.paymentStatus, inventoryRestockStatus: claimed.inventoryRestockStatus, statusHistory: claimed.statusHistory } });
     }
 
@@ -1957,7 +1957,7 @@ async function updateSellerOrderStatus(req, res) {
       delivered: { type: "ORDER_DELIVERED", title: "Your order has been delivered", message: "Order #" + String(updated._id).slice(-8).toUpperCase() + " is marked delivered. Please leave a review for the product when you can." },
     };
     const notification = statusNotifications[status];
-    if (notification) await createNotification({ userId: updated.buyerId, ...notification, relatedId: updated._id, relatedType: "order" });
+    if (notification) await createNotification({ userId: updated.buyerId, ...notification, relatedId: updated._id, relatedType: "order", actionUrl: "/orders/" + String(updated._id), category: "order", dedupeKey: "order-status:" + String(updated._id) + ":" + status, details: { orderNumber: String(updated._id).slice(-8).toUpperCase(), status: updated.orderStatus, paymentStatus: updated.paymentStatus, updatedAt: new Date().toISOString() } });
     return res.json({ success: true, data: { id: updated._id, status: updated.orderStatus, statusHistory: updated.statusHistory } });
   } catch (error) {
     console.error("Seller order status error:", error);
