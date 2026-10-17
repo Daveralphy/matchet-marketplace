@@ -49,7 +49,8 @@ async function createNotification({ userId, type, title, message, details = {}, 
   if (!user || user.isActive === false) return null;
   const prefs = user.preferences?.notifications || {};
   const essentialEmail = ["transactional", "security", "application", "booking", "order", "payment"].includes(category);
-  const emailEnabled = channels.includes("email") && (essentialEmail || prefs.email?.[category] !== false);
+  const optionalEmailCanUnsubscribe = !["message", "recommendation"].includes(category) || Boolean(process.env.NOTIFICATION_TOKEN_SECRET);
+  const emailEnabled = channels.includes("email") && (essentialEmail || (optionalEmailCanUnsubscribe && prefs.email?.[category] !== false));
   const pushEnabled = channels.includes("push") && prefs.push?.[category] !== false;
   const normalizedUrl = safeActionUrl(actionUrl);
   let notification;
