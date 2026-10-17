@@ -157,13 +157,24 @@ async function releaseInventory(order, note) {
 
 async function markPaymentFailed(order, note) {
   await releaseInventory(order, note);
-  await Order.updateOne(
+  const updated = await Order.findOneAndUpdate(
     { _id: order._id, paymentStatus: { $in: ["pending", "failed"] }, inventoryReservationStatus: { $in: ["none", "released"] } },
     {
       $set: { paymentStatus: "failed" },
       $push: { statusHistory: { status: "payment_failed", note } },
     },
+    { new: true },
   );
+  if (updated) {
+    await createNotification({
+      userId: updated.buyerId, type: "PAYMENT_FAILED", category: "payment",
+      title: "Payment was not completed",
+      message: "We could not confirm payment for order #" + String(updated._id).slice(-8).toUpperCase() + ". You can review the order and try checkout again if it is still available.",
+      relatedId: updated._id, relatedType: "order", actionUrl: "/orders/" + String(updated._id),
+      dedupeKey: "payment-failed:" + String(updated._id),
+      details: { orderNumber: String(updated._id).slice(-8).toUpperCase(), paymentStatus: "failed", total: updated.total, currency: updated.currency || "NGN" },
+    });
+  }
 }
 
 
