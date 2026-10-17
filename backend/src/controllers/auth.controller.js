@@ -101,12 +101,12 @@ async function sendAccountWelcomeEmails(user) {
   } catch (error) {
     console.warn("Welcome recommendation lookup failed:", error.message);
   }
-  const confirmation = sendTransactionalEmail({
-    to: user.email,
-    subject: "Your Matchet account is verified",
-    heading: "Your email is verified",
-    intro: `Hi ${user.firstName}, your Matchet Marketplace email address has been successfully verified. Your account is ready to use.`,
-    buttons: [{ label: "Log in to Matchet", url: `${CLIENT_URL()}/login` }],
+  const confirmation = createNotification({
+    userId: user._id, type: "ACCOUNT_VERIFIED", category: "transactional",
+    title: "Your Matchet account is verified",
+    message: `Hi ${user.firstName}, your email address has been verified and your account is ready to use.`,
+    actionUrl: "/login", dedupeKey: "account-verified:" + String(user._id),
+    channels: ["inApp", "email", "push"],
   });
   const welcome = sendTransactionalEmail({
     to: user.email,
@@ -120,7 +120,14 @@ async function sendAccountWelcomeEmails(user) {
     recommendations,
     footer: "Keep your account details secure. Matchet will never ask you to share your password by email.",
   });
-  const results = await Promise.allSettled([confirmation, welcome]);
+  const welcomeNotice = createNotification({
+    userId: user._id, type: "WELCOME", category: "transactional",
+    title: `Welcome to Matchet, ${user.firstName}!`,
+    message: "Explore products and services, save listings you like, and manage your marketplace activity from one place.",
+    actionUrl: "/explore", dedupeKey: "welcome:" + String(user._id),
+    channels: ["inApp", "push"],
+  });
+  const results = await Promise.allSettled([confirmation, welcome, welcomeNotice]);
   results.filter((result) => result.status === "rejected").forEach((result) => console.error("Welcome email delivery failed:", result.reason?.message || "Unknown email error"));
 }
 
