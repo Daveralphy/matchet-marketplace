@@ -77,7 +77,7 @@ async function createNotification({ userId, type, title, message, details = {}, 
   if (pushEnabled) {
     try {
       const push = require("./webPush");
-      const subscriptions = await push.sendPushToUser(String(userId), { title, body: message, url: CLIENT_URL() + normalizedUrl, notificationId: String(notification._id) });
+      const subscriptions = await push.sendPushToUser(String(userId), { title, body: message, url: normalizedUrl, notificationId: String(notification._id) });
       await Notification.updateOne({ _id: notification._id }, { $set: { "delivery.push": subscriptions > 0 ? "sent" : "skipped" } });
     } catch (error) {
       await Notification.updateOne({ _id: notification._id }, { $set: { "delivery.push": "failed" } });
