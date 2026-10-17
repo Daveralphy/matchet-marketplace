@@ -1110,6 +1110,52 @@ module.exports.createProviderService = createProviderService;
 module.exports.updateProviderService = updateProviderService;
 module.exports.deleteProviderService = deleteProviderService;
 
+async function updateProviderBookingStatus(req, res) {
+  try {
+    const { status } = req.body || {};
+    const allowed = ["confirmed", "inProgress", "completed", "cancelled", "declined"];
+    if (!allowed.includes(status)) return res.status(400).json({ success: false, message: "Choose a valid booking status." });
+    const booking = await Booking.findOne({ _id: req.params.bookingId, providerId: req.user._id }).populate("serviceId", "title").lean();
+    if (!booking) return res.status(404).json({ success: false, message: "Booking not found." });
+    const transitions = {
+      pending: ["confirmed", "declined", "cancelled"],
+      confirmed: ["inProgress", "cancelled"],
+      inProgress: ["completed", "cancelled"],
+      completed: [], cancelled: [], declined: [],
+    };
+    if (booking.status === status) return res.json({ success: true, data: { id: booking._id, status: booking.status } });
+    if (!transitions[booking.status]?.includes(status)) return res.status(409).json({ success: false, message: `Booking cannot move from ${booking.status} to ${status}.` });
+    const updated = await Booking.findOneAndUpdate(
+      { _id: booking._id, providerId: req.user._id, status: booking.status },
+      { $set: { status } }, { new: true, runValidators: true },
+    );
+    if (!updated) return res.status(409).json({ success: false, message: "This booking changed. Refresh and try again." });
+    const statusCopy = {
+      confirmed: ["BOOKING_CONFIRMED", "Your service booking is confirmed", "The provider confirmed your booking."],
+      inProgress: ["BOOKING_IN_PROGRESS", "Your service is in progress", "Your provider has marked the service as in progress."],
+      completed: ["BOOKING_COMPLETED", "Your service booking is complete", "Your provider marked the service as completed. You can now leave a review."],
+      cancelled: ["BOOKING_CANCELLED", "Your service booking was cancelled", "The provider cancelled this booking. Open the booking details for more information."],
+      declined: ["BOOKING_DECLINED", "Your booking request was declined", "The provider could not accept this booking request."],
+    }[status];
+    await createNotification({
+      userId: booking.buyerId, type: statusCopy[0], title: statusCopy[1],
+      message: statusCopy[2], category: "booking", relatedId: booking._id, relatedType: "booking",
+      actionUrl: "/bookings", details: {
+        service: booking.serviceId?.title || "Service booking",
+        scheduledDate: booking.scheduledDate,
+        scheduledTime: booking.scheduledTime,
+        status,
+        amount: booking.priceSnapshot?.amount,
+        currency: booking.priceSnapshot?.currency || "NGN",
+      },
+    });
+    return res.json({ success: true, data: { id: updated._id, status: updated.status } });
+  } catch (error) {
+    console.error("Provider booking status update failed:", error.message);
+    return res.status(500).json({ success: false, message: "Unable to update this booking right now." });
+  }
+}
+
 async function getProviderBookings(req, res) {
   try {
     const providerId = req.user._id;
@@ -1173,6 +1219,7 @@ async function getProviderBookings(req, res) {
   }
 }
 module.exports.getProviderBookings = getProviderBookings;
+module.exports.updateProviderBookingStatus = updateProviderBookingStatus;
 
 
 
