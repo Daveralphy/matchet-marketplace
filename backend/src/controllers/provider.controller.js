@@ -959,7 +959,7 @@ async function submitProviderOnboarding(req, res) {
         userId: providerId, type: "PROVIDER_APPLICATION_SUBMITTED", category: "application",
         title: "Provider application submitted",
         message: "Your provider application has been submitted for review. We will notify you when the review team makes a decision.",
-        relatedId: provider._id, relatedType: "ProviderProfile", actionUrl: "/provider/onboarding",
+        relatedId: provider._id, relatedType: "ProviderProfile", actionUrl: "/for-providers",
         dedupeKey: "provider-application-submitted:" + String(provider._id) + ":" + new Date(provider.applicationSubmittedAt || Date.now()).getTime(),
         details: { businessName, status: "Under review", submittedAt: provider.applicationSubmittedAt },
       });
@@ -1567,7 +1567,7 @@ async function submitSellerOnboarding(req, res) {
         userId, type: "SELLER_APPLICATION_SUBMITTED", category: "application",
         title: "Seller application submitted",
         message: "Your seller application has been submitted for review. We will notify you when the review team makes a decision.",
-        relatedId: store._id, relatedType: "StoreProfile", actionUrl: "/seller/onboarding",
+        relatedId: store._id, relatedType: "StoreProfile", actionUrl: "/for-providers",
         dedupeKey: "seller-application-submitted:" + String(store._id) + ":" + new Date(store.applicationSubmittedAt || Date.now()).getTime(),
         details: { storeName, status: "Under review", submittedAt: store.applicationSubmittedAt },
       });
