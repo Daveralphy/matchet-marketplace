@@ -58,7 +58,7 @@ function encryptPayload(subscription, payload) {
   return Buffer.concat([header, serverPublic, encrypted]);
 }
 async function sendPushToUser(userId, payload) {
-  if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) return;
+  if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) return 0;
   const subscriptions = await PushSubscription.find({ userId }).lean();
   await Promise.all(subscriptions.map(async (record) => {
     try {
@@ -83,5 +83,6 @@ async function sendPushToUser(userId, payload) {
       else throw error;
     }
   }));
+  return subscriptions.length;
 }
 module.exports = { sendPushToUser };
