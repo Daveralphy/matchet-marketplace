@@ -132,12 +132,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = useCallback(async (details) => {
-    const response = await registerRequest(details);
-    setUser(response.user);
-    cacheUser(response.user);
-    await loadNotifications(response.user);
-    addNotification(response.user, { type: "welcome", title: "Welcome to Matchet", message: "Your account is ready. Start exploring products and services." });
-    return response.user;
+    // Registration does not create a session. The user must verify their email first.
+    return registerRequest(details);
   }, []);
 
   const logout = useCallback(async () => {
