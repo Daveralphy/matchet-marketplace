@@ -51,14 +51,14 @@ async function sendVerificationEmail(user, rawToken) {
 }
 
 async function sendAccountWelcomeEmails(user) {
-  await sendTransactionalEmail({
+  const confirmation = sendTransactionalEmail({
     to: user.email,
     subject: "Your Matchet account is verified",
     heading: "Your email is verified",
     intro: `Hi ${user.firstName}, your Matchet Marketplace email address has been successfully verified. Your account is ready to use.`,
     buttons: [{ label: "Log in to Matchet", url: `${CLIENT_URL()}/login` }],
   });
-  await sendTransactionalEmail({
+  const welcome = sendTransactionalEmail({
     to: user.email,
     subject: "Welcome to Matchet Marketplace",
     heading: `Welcome to Matchet, ${user.firstName}!`,
@@ -72,6 +72,8 @@ async function sendAccountWelcomeEmails(user) {
     ],
     footer: "Keep your account details secure. Matchet will never ask you to share your password by email.",
   });
+  const results = await Promise.allSettled([confirmation, welcome]);
+  results.filter((result) => result.status === "rejected").forEach((result) => console.error("Welcome email delivery failed:", result.reason?.message || "Unknown email error"));
 }
 
 async function sendPasswordResetEmail(email, resetUrl) {
@@ -402,7 +404,15 @@ async function finishGoogleSignIn(req, res) {
         passwordSet: false,
         avatar: profile.picture ? { url: profile.picture } : undefined,
         role: "customer",
+        emailVerified: true,
       });
+    } else if (!user.emailVerified) {
+      // Google has confirmed ownership of this email address.
+      user.emailVerified = true;
+      user.emailVerificationTokenHash = undefined;
+      user.emailVerificationExpiresAt = undefined;
+      user.emailVerificationLastSentAt = undefined;
+      await user.save();
     }
 
     const rawLoginCode = crypto.randomBytes(32).toString("hex");
