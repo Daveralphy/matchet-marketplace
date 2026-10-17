@@ -19,6 +19,61 @@ function googleIsConfigured() {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 }
 
+async function sendTransactionalEmail({ to, subject, heading, intro, buttons = [], footer = "You received this email because you have a Matchet Marketplace account." }) {
+  if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) {
+    throw new Error("Email delivery is not configured. Set RESEND_API_KEY and EMAIL_FROM.");
+  }
+  const escapeHtml = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+  const safeButtons = buttons.map(({ label, url }) => `<a href="${escapeHtml(url)}" style="display:inline-block;margin:6px 8px 6px 0;padding:12px 18px;background:#07863a;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">${escapeHtml(label)}</a>`).join("");
+  const clientUrl = CLIENT_URL();
+  const html = `<!doctype html><html><body style="margin:0;background:#f5f7f6;font-family:Arial,Helvetica,sans-serif;color:#10183f"><div style="max-width:600px;margin:24px auto;padding:0 14px"><div style="background:#fff;border:1px solid #e5eae7;border-radius:16px;overflow:hidden"><div style="padding:26px 30px;background:#10183f;color:#fff"><div style="font-size:25px;font-weight:800;letter-spacing:-.5px">Matchet<span style="color:#45d483">.</span></div><div style="font-size:12px;opacity:.8;margin-top:4px">Marketplace</div></div><div style="padding:30px"><h1 style="font-size:25px;line-height:1.3;margin:0 0 16px">${escapeHtml(heading)}</h1><p style="font-size:15px;line-height:1.75;color:#4b5577;margin:0 0 20px">${escapeHtml(intro)}</p>${safeButtons}<p style="font-size:12px;line-height:1.6;color:#77809c;margin:28px 0 0">${escapeHtml(footer)}</p></div></div><p style="text-align:center;font-size:12px;color:#8a91a8;margin:16px 0">© ${new Date().getFullYear()} Matchet Marketplace</p></div></body></html>`;
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ from: process.env.EMAIL_FROM, to: [to], subject, html }),
+  });
+  if (!response.ok) {
+    const details = await response.text().catch(() => "");
+    throw new Error(`Email delivery failed (${response.status}): ${details.slice(0, 250)}`);
+  }
+}
+
+async function sendVerificationEmail(user, rawToken) {
+  const verifyUrl = `${CLIENT_URL()}/verify-email?token=${encodeURIComponent(rawToken)}`;
+  await sendTransactionalEmail({
+    to: user.email,
+    subject: "Verify your Matchet Marketplace email",
+    heading: "One quick step to activate your account",
+    intro: `Hi ${user.firstName}, thanks for joining Matchet Marketplace. Verify your email address to activate your account. This link expires in 24 hours and can only be used once.`,
+    buttons: [{ label: "Verify my email", url: verifyUrl }],
+    footer: "If you did not create this account, you can ignore this email.",
+  });
+}
+
+async function sendAccountWelcomeEmails(user) {
+  await sendTransactionalEmail({
+    to: user.email,
+    subject: "Your Matchet account is verified",
+    heading: "Your email is verified",
+    intro: `Hi ${user.firstName}, your Matchet Marketplace email address has been successfully verified. Your account is ready to use.`,
+    buttons: [{ label: "Log in to Matchet", url: `${CLIENT_URL()}/login` }],
+  });
+  await sendTransactionalEmail({
+    to: user.email,
+    subject: "Welcome to Matchet Marketplace",
+    heading: `Welcome to Matchet, ${user.firstName}!`,
+    intro: "Your marketplace journey starts here. Discover products, find services, save items you like, manage your orders, or apply to sell products and offer services.",
+    buttons: [
+      { label: "Explore marketplace", url: `${CLIENT_URL()}/explore` },
+      { label: "Browse products", url: `${CLIENT_URL()}/products` },
+      { label: "Find services", url: `${CLIENT_URL()}/services` },
+      { label: "Become a seller or provider", url: `${CLIENT_URL()}/for-providers` },
+      { label: "Get help", url: `${CLIENT_URL()}/help` },
+    ],
+    footer: "Keep your account details secure. Matchet will never ask you to share your password by email.",
+  });
+}
+
 async function sendPasswordResetEmail(email, resetUrl) {
   if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) {
     throw new Error("Password reset email is not configured. Set RESEND_API_KEY and EMAIL_FROM.");
@@ -110,6 +165,7 @@ function serializeUser(user) {
       provider: Boolean(user.capabilities?.provider || user.role === "provider"),
     },
     isActive: user.isActive,
+    emailVerified: Boolean(user.emailVerified),
     passwordSet: user.passwordSet !== false,
     createdAt: user.createdAt,
   };
@@ -144,6 +200,64 @@ function validateRegistration(body) {
   if (password.length < 8) errors.password = "Password must be at least 8 characters.";
 
   return { errors, values: { firstName, lastName, email, phone, password } };
+}
+
+async function verifyEmail(req, res) {
+  const token = String(req.body?.token || req.query?.token || "");
+  if (!token) return res.status(400).json({ success: false, message: "The verification link is missing. Request a new email to continue." });
+  try {
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const user = await User.findOne({
+      emailVerificationTokenHash: tokenHash,
+      emailVerificationExpiresAt: { $gt: new Date() },
+      emailVerified: false,
+    }).select("+emailVerificationTokenHash +emailVerificationExpiresAt");
+    if (!user) return res.status(400).json({ success: false, message: "This verification link is invalid, expired, or already used. Request a new verification email." });
+    user.emailVerified = true;
+    user.emailVerificationTokenHash = undefined;
+    user.emailVerificationExpiresAt = undefined;
+    user.emailVerificationLastSentAt = undefined;
+    await user.save();
+    try {
+      await sendAccountWelcomeEmails(user);
+    } catch (emailError) {
+      // Verification remains successful even if a welcome email provider is temporarily unavailable.
+      console.error("Verified-account email delivery failed:", emailError.message);
+    }
+    return res.status(200).json({ success: true, message: "Your email has been verified. Your Matchet account is ready.", email: user.email });
+  } catch (error) {
+    console.error("Email verification failed:", error.message);
+    return res.status(500).json({ success: false, message: "Unable to verify your email right now. Please try again." });
+  }
+}
+
+async function resendVerificationEmail(req, res) {
+  const email = normalize(req.body?.email).toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ success: false, message: "Enter the email address you used to create your account." });
+  try {
+    const user = await User.findOne({ email, isActive: true }).select("+emailVerificationLastSentAt");
+    if (!user || user.emailVerified) {
+      return res.status(200).json({ success: true, message: "If this account needs verification, a new email will be sent shortly." });
+    }
+    if (user.emailVerificationLastSentAt && Date.now() - user.emailVerificationLastSentAt.getTime() < 60 * 1000) {
+      return res.status(429).json({ success: false, message: "Please wait a minute before requesting another verification email." });
+    }
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    user.emailVerificationTokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+    user.emailVerificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    user.emailVerificationLastSentAt = new Date();
+    await user.save();
+    try {
+      await sendVerificationEmail(user, rawToken);
+    } catch (emailError) {
+      console.error("Resent verification email failed:", emailError.message);
+      return res.status(503).json({ success: false, message: "We could not send the verification email right now. Please try again later." });
+    }
+    return res.status(200).json({ success: true, message: "A new verification link has been sent. Check your inbox and spam folder." });
+  } catch (error) {
+    console.error("Resend verification failed:", error.message);
+    return res.status(500).json({ success: false, message: "Unable to resend the verification email right now." });
+  }
 }
 
 async function requestPasswordReset(req, res) {
@@ -313,10 +427,29 @@ async function register(req, res) {
 
     const username = await uniqueUsername(values.firstName, values.lastName);
     const passwordHash = await bcrypt.hash(values.password, 12);
-    const user = await User.create({ ...values, username, passwordHash, role: "customer" });
-
-    setAuthCookie(res, signAuthToken(user._id));
-    return res.status(201).json({ success: true, message: "Account created successfully.", user: serializeUser(user) });
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const user = await User.create({
+      ...values, username, passwordHash, role: "customer",
+      isActive: true,
+      emailVerified: false,
+      emailVerificationTokenHash: crypto.createHash("sha256").update(rawToken).digest("hex"),
+      emailVerificationExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      emailVerificationLastSentAt: new Date(),
+    });
+    try {
+      await sendVerificationEmail(user, rawToken);
+    } catch (emailError) {
+      await User.deleteOne({ _id: user._id, emailVerified: false });
+      console.error("Verification email delivery failed:", emailError.message);
+      return res.status(503).json({ success: false, message: "We created no active account because we could not send the verification email. Please try again shortly." });
+    }
+    clearAuthCookie(res);
+    return res.status(201).json({
+      success: true,
+      requiresEmailVerification: true,
+      email: user.email,
+      message: "Account created. Check your email and click the verification link to activate your account.",
+    });
   } catch (error) {
     if (error?.code === 11000) return res.status(409).json({ success: false, message: "An account with one of those details already exists." });
     console.error("Registration failed:", error);
@@ -336,6 +469,15 @@ async function login(req, res) {
 
     if (!(await bcrypt.compare(password, user.passwordHash))) {
       return res.status(401).json({ success: false, message: "Invalid email, username, or password." });
+    }
+
+    if (!user.emailVerified) {
+      return res.status(403).json({
+        success: false,
+        code: "EMAIL_NOT_VERIFIED",
+        email: user.email,
+        message: "Your email address has not been verified yet. Check your inbox and click the verification link, or request a new one.",
+      });
     }
 
     user.lastLoginAt = new Date();
@@ -612,6 +754,8 @@ function logout(_req, res) {
 module.exports = {
   register,
   login,
+  verifyEmail,
+  resendVerificationEmail,
   me,
   updateMe,
   logout,
