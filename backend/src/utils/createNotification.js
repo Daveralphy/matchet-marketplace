@@ -11,11 +11,11 @@ function categoryFor(type) {
   if (value.startsWith("ORDER_")) return "order";
   return "transactional";
 }
-async function createNotification({ userId, type, title, message, relatedId = null, relatedType = null, details = {}, actionUrl, dedupeKey, category, channels }) {
+async function createNotification({ userId, type, title, message, relatedId = null, relatedType = null, details = {}, emailItems = [], actionUrl, dedupeKey, category, channels }) {
   if (!userId || !type || !title || !message) return null;
   try {
     return await deliverNotification({
-      userId, type, title, message, details, actionUrl: actionUrl || defaultAction(type, relatedId),
+      userId, type, title, message, details, emailItems, actionUrl: actionUrl || defaultAction(type, relatedId),
       relatedId, relatedType, dedupeKey, category: category || categoryFor(type),
       channels: channels || ["inApp", "email", "push"],
     });
