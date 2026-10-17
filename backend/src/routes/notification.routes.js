@@ -4,6 +4,7 @@ const controller = require("../controllers/notification.controller");
 const router = express.Router();
 router.get("/email-unsubscribe", controller.unsubscribeEmail);
 router.get("/push-key", controller.getPushKey);
+router.get("/recommendations", controller.sendRecommendationsCron);
 router.use(requireAuth);
 router.get("/", controller.listNotifications);
 router.patch("/read", controller.markNotificationsRead);
