@@ -51,7 +51,7 @@ async function createNotification({ userId, type, title, message, details = {}, 
   const essentialEmail = ["transactional", "security", "application", "booking", "order", "payment"].includes(category);
   const optionalEmailCanUnsubscribe = !["message", "recommendation"].includes(category) || Boolean(process.env.NOTIFICATION_TOKEN_SECRET);
   const emailEnabled = channels.includes("email") && (essentialEmail || (optionalEmailCanUnsubscribe && prefs.email?.[category] !== false));
-  const pushEnabled = channels.includes("push") && prefs.push?.[category] !== false;
+  const pushEnabled = channels.includes("push") && prefs.push?.[category] !== false && Boolean(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY);
   const normalizedUrl = safeActionUrl(actionUrl);
   let notification;
   try {
@@ -77,8 +77,8 @@ async function createNotification({ userId, type, title, message, details = {}, 
   if (pushEnabled) {
     try {
       const push = require("./webPush");
-      await push.sendPushToUser(String(userId), { title, body: message, url: CLIENT_URL() + normalizedUrl, notificationId: String(notification._id) });
-      await Notification.updateOne({ _id: notification._id }, { $set: { "delivery.push": "sent" } });
+      const subscriptions = await push.sendPushToUser(String(userId), { title, body: message, url: CLIENT_URL() + normalizedUrl, notificationId: String(notification._id) });
+      await Notification.updateOne({ _id: notification._id }, { $set: { "delivery.push": subscriptions > 0 ? "sent" : "skipped" } });
     } catch (error) {
       await Notification.updateOne({ _id: notification._id }, { $set: { "delivery.push": "failed" } });
       if (error.code !== "MODULE_NOT_FOUND") console.error("Push notification failed:", error.message);
