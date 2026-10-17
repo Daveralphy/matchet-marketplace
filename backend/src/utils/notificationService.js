@@ -22,7 +22,7 @@ async function sendEmail({ to, subject, title, message, actionUrl, category, not
     const port = Number(process.env.SMTP_PORT);
     const transporter = nodemailer.createTransport({ host: process.env.SMTP_HOST, port, secure: port === 465, auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } });
     const unsubscribe = category === "recommendation" || category === "message"
-      ? `<p style="font-size:12px;color:#77809c">Prefer fewer emails? <a href="${escapeHtml(CLIENT_URL())}/email-preferences?token=${encodeURIComponent(makeUnsubscribeToken(notificationId, category, userId))}">Unsubscribe from ${escapeHtml(category)} emails</a>.</p>`
+      ? `<p style="font-size:12px;color:#77809c">Prefer fewer emails? <a href="${escapeHtml(CLIENT_URL())}/api/notifications/email-unsubscribe?user=${encodeURIComponent(String(userId || ""))}&notification=${encodeURIComponent(String(notificationId || ""))}&category=${encodeURIComponent(category)}&token=${encodeURIComponent(makeUnsubscribeToken(notificationId, category, userId))}">Unsubscribe from ${escapeHtml(category)} emails</a>.</p>`
       : "";
     const logo = process.env.EMAIL_LOGO_URL || "https://raw.githubusercontent.com/Daveralphy/matchet-marketplace/staging/frontend/src/assets/logo/matchet_logoname.png";
     const href = actionUrl ? CLIENT_URL() + safeActionUrl(actionUrl) : CLIENT_URL() + "/account/settings";
@@ -33,7 +33,7 @@ async function sendEmail({ to, subject, title, message, actionUrl, category, not
   }
   if (provider === "resend") {
     if (!process.env.RESEND_API_KEY || !process.env.EMAIL_FROM) throw new Error("Resend is not configured");
-    const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: process.env.EMAIL_FROM, to: [to], subject, html: `<h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><p><a href="${escapeHtml(CLIENT_URL() + safeActionUrl(actionUrl))}">View details</a></p>${category === "recommendation" || category === "message" ? `<p><a href="${escapeHtml(CLIENT_URL() + "/api/notifications/email-unsubscribe?user=" + encodeURIComponent(String(userId || "")) + "&notification=" + encodeURIComponent(String(notificationId || "")) + "&category=" + encodeURIComponent(category) + "&token=" + encodeURIComponent(makeUnsubscribeToken(notificationId, category)))}">Unsubscribe</a></p>` : ""}` }) });
+    const response = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: process.env.EMAIL_FROM, to: [to], subject, html: `<h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><p><a href="${escapeHtml(CLIENT_URL() + safeActionUrl(actionUrl))}">View details</a></p>${category === "recommendation" || category === "message" ? `<p><a href="${escapeHtml(CLIENT_URL() + "/api/notifications/email-unsubscribe?user=" + encodeURIComponent(String(userId || "")) + "&notification=" + encodeURIComponent(String(notificationId || "")) + "&category=" + encodeURIComponent(category) + "&token=" + encodeURIComponent(makeUnsubscribeToken(notificationId, category, userId)))}">Unsubscribe</a></p>` : ""}` }) });
     if (!response.ok) throw new Error("Email provider rejected notification");
     return;
   }
