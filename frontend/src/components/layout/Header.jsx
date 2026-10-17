@@ -227,10 +227,12 @@ export default function Header({
   const { cartCount: liveCartCount } = useCart();
 
   const {
+    user,
     logout: authLogout,
     notifications: authNotifications,
     markNotificationsRead,
     markNotificationRead,
+    deleteNotification,
   } = useAuth();
 
   const [selectedLocation, setSelectedLocation] = useState(
