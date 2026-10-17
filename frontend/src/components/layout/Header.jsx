@@ -245,7 +245,7 @@ export default function Header({
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
   const [logoutSubmitting, setLogoutSubmitting] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState(null);\n  const [notificationMenuId, setNotificationMenuId] = useState(null);\n  const notificationMenuRef = useRef(null);
   const [searchSuggestions, setSearchSuggestions] = useState([]);
 
   const locationRef = useRef(null);
@@ -622,29 +622,18 @@ export default function Header({
                   <div className="max-h-[320px] overflow-y-auto">
                     {authNotifications.length ? (
                       authNotifications.map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => { markNotificationRead(item.id); setSelectedNotification({ ...item, read: true }); setNotificationsOpen(false); }}
-                          className={"flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50 " + (!item.read ? "bg-[#f2fbf5] " : "")}
-                        >
-                          <Icon
-                            name={
-                              item.type === "login" ? "user" : "bell"
-                            }
-                            size={17}
-                          />
-
-                          <span className="min-w-0">
-                            <span className="block text-[12px] font-semibold text-[#071449]">
-                              {item.title}
-                            </span>
-
-                            <span className="block text-[10px] leading-5 text-slate-400">
-                              {item.message}
-                            </span>
-                          </span>
-                        </button>
+                        <div key={item.id} className={"relative flex items-start gap-2 border-b border-slate-50 px-3 py-3 " + (!item.read ? "bg-[#f2fbf5] " : "")}>
+                          <button type="button" onClick={() => { markNotificationRead(item.id); setSelectedNotification({ ...item, read: true }); }} className="min-w-0 flex-1 text-left hover:opacity-80">
+                            <span className="block text-[12px] font-semibold text-[#071449]">{item.title}</span>
+                            <span className="block text-[10px] leading-5 text-slate-400">{item.message}</span>
+                          </button>
+                          <button type="button" aria-label={"Options for " + item.title} aria-expanded={notificationMenuId === String(item.id)} onClick={() => setNotificationMenuId((current) => current === String(item.id) ? null : String(item.id))} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-lg text-slate-500 hover:bg-slate-100">⋮</button>
+                          {notificationMenuId === String(item.id) && <div ref={notificationMenuRef} className="absolute right-2 top-10 z-[120] w-36 rounded-lg border border-slate-200 bg-white py-1 shadow-xl">
+                            <button type="button" onClick={() => { markNotificationRead(item.id); setSelectedNotification({ ...item, read: true }); setNotificationMenuId(null); }} className="block w-full px-3 py-2 text-left text-xs hover:bg-slate-50">View</button>
+                            <button type="button" onClick={() => { markNotificationRead(item.id); setNotificationMenuId(null); }} disabled={item.read} className="block w-full px-3 py-2 text-left text-xs hover:bg-slate-50 disabled:opacity-40">Mark as Read</button>
+                            <button type="button" onClick={async () => { try { await deleteNotification(item.id); } finally { setNotificationMenuId(null); } }} className="block w-full px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50">Delete</button>
+                          </div>}
+                        </div>
                       ))
                     ) : (
                       <div className="px-4 py-8 text-center text-[11px] text-slate-400">
@@ -924,39 +913,18 @@ export default function Header({
                     <div className="max-h-[360px] overflow-y-auto">
                       {authNotifications.length ? (
                         authNotifications.map((item) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => { markNotificationRead(item.id); setSelectedNotification({ ...item, read: true }); setNotificationsOpen(false); }}
-                            className={"flex w-full gap-3 border-b border-slate-50 px-4 py-3 text-left hover:bg-slate-50 " + (!item.read ? "bg-[#f2fbf5] " : "")}
-                          >
-                            <span
-                              className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                                item.type === "login"
-                                  ? "bg-[#eaf2ff] text-[#2866d6]"
-                                  : "bg-[#e4f9e9] text-[#07983f]"
-                              }`}
-                            >
-                              <Icon
-                                name={
-                                  item.type === "login"
-                                    ? "user"
-                                    : "bell"
-                                }
-                                size={16}
-                              />
-                            </span>
-
-                            <span className="min-w-0">
-                              <span className="block text-[12px] font-semibold text-[#071449]">
-                                {item.title}
-                              </span>
-
-                              <span className="mt-0.5 block text-[11px] leading-5 text-slate-400">
-                                {item.message}
-                              </span>
-                            </span>
-                          </button>
+                          <div key={item.id} className={"relative flex items-start gap-2 border-b border-slate-50 px-3 py-3 " + (!item.read ? "bg-[#f2fbf5] " : "")}>
+                            <button type="button" onClick={() => { markNotificationRead(item.id); setSelectedNotification({ ...item, read: true }); }} className="min-w-0 flex-1 text-left hover:opacity-80">
+                              <span className="block text-[12px] font-semibold text-[#071449]">{item.title}</span>
+                              <span className="mt-0.5 block text-[11px] leading-5 text-slate-400">{item.message}</span>
+                            </button>
+                            <button type="button" aria-label={"Options for " + item.title} aria-expanded={notificationMenuId === String(item.id)} onClick={() => setNotificationMenuId((current) => current === String(item.id) ? null : String(item.id))} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-lg text-slate-500 hover:bg-slate-100">⋮</button>
+                            {notificationMenuId === String(item.id) && <div ref={notificationMenuRef} className="absolute right-2 top-10 z-[120] w-36 rounded-lg border border-slate-200 bg-white py-1 shadow-xl">
+                              <button type="button" onClick={() => { markNotificationRead(item.id); setSelectedNotification({ ...item, read: true }); setNotificationMenuId(null); }} className="block w-full px-3 py-2 text-left text-xs hover:bg-slate-50">View</button>
+                              <button type="button" onClick={() => { markNotificationRead(item.id); setNotificationMenuId(null); }} disabled={item.read} className="block w-full px-3 py-2 text-left text-xs hover:bg-slate-50 disabled:opacity-40">Mark as Read</button>
+                              <button type="button" onClick={async () => { try { await deleteNotification(item.id); } finally { setNotificationMenuId(null); } }} className="block w-full px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50">Delete</button>
+                            </div>}
+                          </div>
                         ))
                       ) : (
                         <div className="px-4 py-10 text-center text-[12px] text-slate-400">
