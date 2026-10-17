@@ -524,6 +524,8 @@ async function sendMessage(req, res) {
       message: `${senderName} sent you a message. Open your inbox to respond.`,
       relatedId: created._id,
       relatedType: "message",
+      actionUrl: "/messages", category: "message",
+      details: { sender: senderName, messageCategory: category, sentAt: created.createdAt },
     });
 
     return res.status(201).json({ success: true, data: serializeMessage(message, senderId) });
