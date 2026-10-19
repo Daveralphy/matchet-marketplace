@@ -477,8 +477,7 @@ function ExploreProductCard({ item, listView = false }) {
   };
   if (item.type === "provider") {
     return <article className={`flex min-w-0 flex-col rounded-[10px] border border-[#484848] bg-[#242424] p-2.5 text-[#f5f5f5] ${listView ? "sm:flex-row sm:items-center sm:gap-4" : ""}`}>
-      <div className={`relative shrink-0 overflow-hidden rounded-[8px] bg-[#303030] ${listView ? "h-[156px] w-full sm:w-[224px]" : "h-[244px] w-full"}`}>{item.image ? <img src={item.image} alt={item.name || ""} className="h-full w-full object-cover"/> : <div className="flex h-full items-center justify-center text-4xl text-slate-400">♙</div>}</div>
-      <div className="min-w-0 flex-1 px-0.5 pt-2">
+      <div className="min-w-0 flex-1 px-0.5 pt-0.5">
         <div className="flex items-start gap-2">
           <div className="h-[58px] w-[58px] shrink-0 overflow-hidden rounded-[8px] bg-[#303030]">{item.image ? <img src={item.image} alt={item.name || ""} className="h-full w-full object-cover"/> : <span className="flex h-full items-center justify-center">♙</span>}</div>
           <div className="min-w-0 flex-1"><h3 className="truncate text-[13px] font-bold text-[#f5f5f5]">{item.name}</h3><p className="mt-0.5 truncate text-[10px] text-[#bcbcbc]">{item.category || "Service provider"}</p><p className="mt-1 text-[11px] text-[#f5f5f5]">☆ {Number(item.rating) > 0 ? Number(item.rating).toFixed(1) : "New"}</p></div>
