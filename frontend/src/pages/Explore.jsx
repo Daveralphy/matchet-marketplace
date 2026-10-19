@@ -476,9 +476,19 @@ function ExploreProductCard({ item, listView = false }) {
     await toggleSaved(item.type === "service" ? "service" : "product", item.id);
   };
   if (item.type === "provider") {
-    return <article className={`flex min-w-0 flex-col overflow-hidden rounded-[20px] bg-white p-3.5 shadow-[0_8px_28px_rgba(16,24,63,0.09)] ${listView ? "sm:flex-row sm:items-center sm:gap-4" : ""}`}>
-      <div className={`relative shrink-0 overflow-hidden rounded-[15px] bg-[#edf1ed] ${listView ? "h-[156px] w-full sm:w-[224px]" : "h-[244px] w-full"}`}>{item.image ? <img src={item.image} alt={item.name || ""} className="h-full w-full object-cover"/> : <div className="flex h-full items-center justify-center text-4xl text-slate-400">♙</div>}</div>
-      <div className="min-w-0 flex-1 p-3"><h3 className="font-bold text-[#090f35]">{item.name}</h3><p className="mt-1 text-sm text-[#71809f]">{item.category} · {item.location}</p><p className="mt-2 line-clamp-2 text-sm text-[#71809f]">{item.bio || item.experience || "Service provider on Matchet."}</p><Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-3 inline-flex text-sm font-semibold text-brand">View their services →</Link></div>
+    return <article className={`flex min-w-0 flex-col rounded-[10px] border border-[#484848] bg-[#242424] p-2.5 text-[#f5f5f5] ${listView ? "sm:flex-row sm:items-center sm:gap-4" : ""}`}>
+      <div className={`relative shrink-0 overflow-hidden rounded-[8px] bg-[#303030] ${listView ? "h-[156px] w-full sm:w-[224px]" : "h-[244px] w-full"}`}>{item.image ? <img src={item.image} alt={item.name || ""} className="h-full w-full object-cover"/> : <div className="flex h-full items-center justify-center text-4xl text-slate-400">♙</div>}</div>
+      <div className="min-w-0 flex-1 px-0.5 pt-2">
+        <div className="flex items-start gap-2">
+          <div className="h-[58px] w-[58px] shrink-0 overflow-hidden rounded-[8px] bg-[#303030]">{item.image ? <img src={item.image} alt={item.name || ""} className="h-full w-full object-cover"/> : <span className="flex h-full items-center justify-center">♙</span>}</div>
+          <div className="min-w-0 flex-1"><h3 className="truncate text-[13px] font-bold text-[#f5f5f5]">{item.name}</h3><p className="mt-0.5 truncate text-[10px] text-[#bcbcbc]">{item.category || "Service provider"}</p><p className="mt-1 text-[11px] text-[#f5f5f5]">☆ {Number(item.rating) > 0 ? Number(item.rating).toFixed(1) : "New"}</p></div>
+          <span className="shrink-0 pt-1 text-white" aria-hidden="true"><HeartIcon /></span>
+        </div>
+        <p className="mt-2 text-[11px] text-[#bcbcbc]">{item.location}</p>
+        <p className="mt-2 line-clamp-1 text-[13px] text-[#e2e2e2]">{item.bio || item.experience || "Service provider on Matchet."}</p>
+        <div className="mt-4 border-t border-[#484848] pt-3"><p className="text-[11px] text-[#bcbcbc]">Starting from</p><p className="mt-1 font-bold text-[#f5f5f5]">{item.startingPrice || item.price || "Contact for pricing"}</p></div>
+        <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-3 flex h-9 items-center justify-center rounded-[5px] bg-[#176b50] text-[11px] font-semibold text-white">View profile</Link>
+      </div>
     </article>;
   }
   const handleAction = (event) => { event.preventDefault(); event.stopPropagation(); window.location.href = (item.type === "service" ? "/services/" : "/products/") + item.id; };
