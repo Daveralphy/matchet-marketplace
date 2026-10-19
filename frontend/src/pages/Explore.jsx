@@ -476,16 +476,16 @@ function ExploreProductCard({ item, listView = false }) {
     await toggleSaved(item.type === "service" ? "service" : "product", item.id);
   };
   if (item.type === "provider") {
-    return <article className={`flex min-w-0 flex-col rounded-[10px] border border-[#484848] bg-[#242424] p-2.5 text-[#f5f5f5] ${listView ? "sm:flex-row sm:items-center sm:gap-4" : ""}`}>
+    return <article className={`flex min-w-0 flex-col rounded-[10px] border border-[#e1e5e9] bg-white p-2.5 text-[#17213e] ${listView ? "sm:flex-row sm:items-center sm:gap-4" : ""}`}>
       <div className="min-w-0 flex-1 px-0.5 pt-0.5">
         <div className="flex items-start gap-2">
-          <div className="h-[58px] w-[58px] shrink-0 overflow-hidden rounded-[8px] bg-[#303030]">{item.image ? <img src={item.image} alt={item.name || ""} className="h-full w-full object-cover"/> : <span className="flex h-full items-center justify-center">♙</span>}</div>
-          <div className="min-w-0 flex-1"><h3 className="truncate text-[13px] font-bold text-[#f5f5f5]">{item.name}</h3><p className="mt-0.5 truncate text-[10px] text-[#bcbcbc]">{item.category || "Service provider"}</p><p className="mt-1 text-[11px] text-[#f5f5f5]">☆ {Number(item.rating) > 0 ? Number(item.rating).toFixed(1) : "New"}</p></div>
-          <span className="shrink-0 pt-1 text-white" aria-hidden="true"><HeartIcon /></span>
+          <div className="h-[58px] w-[58px] shrink-0 overflow-hidden rounded-[8px] bg-[#f1f3f4]">{item.image ? <img src={item.image} alt={item.name || ""} className="h-full w-full object-cover"/> : <span className="flex h-full items-center justify-center">♙</span>}</div>
+          <div className="min-w-0 flex-1"><h3 className="truncate text-[13px] font-bold text-[#17213e]">{item.name}</h3><p className="mt-0.5 truncate text-[10px] text-[#71809f]">{item.category || "Service provider"}</p><p className="mt-1 text-[11px] text-[#f5f5f5]">☆ {Number(item.rating) > 0 ? Number(item.rating).toFixed(1) : "New"}</p></div>
+          <span className="shrink-0 pt-1 text-[#17213e]" aria-hidden="true"><HeartIcon /></span>
         </div>
         <p className="mt-2 text-[11px] text-[#bcbcbc]">{item.location}</p>
-        <p className="mt-2 line-clamp-1 text-[13px] text-[#e2e2e2]">{item.bio || item.experience || "Service provider on Matchet."}</p>
-        <div className="mt-4 border-t border-[#484848] pt-3"><p className="text-[11px] text-[#bcbcbc]">Starting from</p><p className="mt-1 font-bold text-[#f5f5f5]">{item.startingPrice || item.price || "Contact for pricing"}</p></div>
+        <p className="mt-2 line-clamp-1 text-[13px] text-[#71809f]">{item.bio || item.experience || "Service provider on Matchet."}</p>
+        <div className="mt-4 border-t border-[#e1e5e9] pt-3"><p className="text-[11px] text-[#bcbcbc]">Starting from</p><p className="mt-1 font-bold text-[#f5f5f5]">{item.startingPrice || item.price || "Contact for pricing"}</p></div>
         <Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-3 flex h-9 items-center justify-center rounded-[5px] bg-[#176b50] text-[11px] font-semibold text-white">View profile</Link>
       </div>
     </article>;
