@@ -337,72 +337,43 @@ function HeartButton({ item }) {
 
 function ProviderCard({ provider }) {
   return (
-    <article className="flex h-[280px] flex-col rounded-[12px] border border-[#e4e9f0] bg-white p-3 shadow-[0_5px_18px_rgba(16,24,63,0.05)]">
-      <div className="flex items-start gap-3">
-        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[#eef1ef]">
+    <article className="flex min-w-0 flex-col rounded-[10px] border border-[#e1e5e9] bg-white p-2.5 text-[#17213e]">
+      <div className="flex items-start gap-2">
+        <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-[8px] bg-[#f1f3f4]">
           {provider.image ? (
-            <img
-              src={provider.image}
-              alt={provider.name || ""}
-              className="h-full w-full object-cover"
-            />
+            <img src={provider.image} alt={provider.name || ""} className="h-full w-full object-cover" />
           ) : (
-            <span className="flex h-full w-full items-center justify-center text-[14px] font-semibold text-muted">
-              {provider.initials}
-            </span>
+            <span className="flex h-full w-full items-center justify-center text-[14px] font-semibold text-muted">{provider.initials}</span>
           )}
           {provider.verified && (
-            <span className="absolute bottom-0 right-0 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-brand-bright text-[8px] font-bold text-white">
-              ✓
-            </span>
+            <span className="absolute bottom-0 right-0 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-brand-bright text-[8px] font-bold text-white">✓</span>
           )}
         </div>
-
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <h3 className="truncate text-[13px] font-semibold leading-5 text-ink">
-                {provider.name}
-              </h3>
-              <p className="mt-0.5 truncate text-[10px] text-muted">
-                {provider.businessName || provider.category}
-              </p>
-            </div>
-
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#fff8e6] px-2 py-1 text-[9px] font-semibold text-ink">
-              <span className="text-[#f4b400]">★</span>
-              {provider.rating > 0 ? provider.rating.toFixed(1) : "New"}
-            </span>
-          </div>
+          <h3 className="truncate text-[13px] font-semibold leading-5 text-ink">{provider.businessName || provider.name}</h3>
+          <p className="mt-0.5 truncate text-[10px] text-muted">{provider.category || "Service provider"}</p>
+          <p className="mt-1 flex items-center gap-1 text-[11px] text-ink">
+            <span className="text-[#f4b400]">☆</span>
+            {provider.rating > 0 ? provider.rating.toFixed(1) : "New"}
+          </p>
         </div>
+        <SaveProviderButton provider={provider} />
       </div>
-
-      <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#edf0f3] pt-3 text-[9px] text-muted">
-        <div>
-          <span className="block font-semibold text-ink">{provider.category}</span>
-          <span>Specialty</span>
-        </div>
-        <div>
-          <span className="block font-semibold text-ink">{provider.listings || 0}</span>
-          <span>Active services</span>
-        </div>
-        <div className="col-span-2 flex items-center gap-1 truncate">
-          <span className="text-brand">⌖</span>
-          <span className="truncate">{provider.location}</span>
-          {provider.reviews > 0 && <span className="shrink-0">· {provider.reviews} reviews</span>}
-        </div>
+      <p className="mt-2 text-[11px] text-muted">{provider.location}</p>
+      <p className="mt-2 line-clamp-1 text-[13px] text-[#536174]">{provider.bio || provider.description || provider.experience || provider.category || "Service provider on Matchet."}</p>
+      <div className="mt-3 border-t border-[#e1e5e9] pt-2.5">
+        <p className="text-[11px] text-muted">Starting from</p>
+        <p className="mt-1 text-[15px] font-bold text-ink">{provider.startingPrice || provider.price || "Contact for pricing"}</p>
       </div>
-
       <Link
         to={`/providers/${provider.id}`}
-        className="mt-3 flex h-9 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[10px] font-semibold text-brand transition-colors hover:bg-[#dff7e7]"
+        className="mt-2.5 flex h-9 w-full items-center justify-center rounded-[5px] bg-[#176b50] text-[11px] font-semibold text-white transition-colors hover:bg-[#125a43]"
       >
-        View services <span className="ml-1 text-[14px]">→</span>
+        View profile
       </Link>
     </article>
   );
 }
-
 function ProvidersSection({ isAuthenticated }) {
   const [providers, setProviders] = useState([]);
   const location = useMarketplaceLocation();
