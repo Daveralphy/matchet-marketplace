@@ -357,7 +357,7 @@ function ProviderCard({ provider }) {
             {provider.rating > 0 ? provider.rating.toFixed(1) : "New"}
           </p>
         </div>
-        <SaveProviderButton provider={provider} />
+        <button type="button" aria-label="Save service provider" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-ink shadow-[0_2px_8px_rgba(16,24,63,0.12)]" onClick={() => { window.location.href = "/login"; }}><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" /></svg></button>
       </div>
       <p className="mt-2 text-[11px] text-muted">{provider.location}</p>
       <p className="mt-2 line-clamp-1 text-[13px] text-[#536174]">{provider.bio || provider.description || provider.experience || provider.category || "Service provider on Matchet."}</p>
