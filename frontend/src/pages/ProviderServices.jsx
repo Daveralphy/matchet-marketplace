@@ -4,7 +4,6 @@ import { ProviderShell, Icon } from "../components/ProviderShell";
 import LocationSearch from "../components/LocationSearch";
 import { currencyForLocation } from "../utils/currency";
 import { createProviderService, getProviderServices, updateProviderService, deleteProviderService } from "../api/provider";
-import "../styles/provider-dashboard.css";
 
 function formatPrice(amount, currency) {
   if (amount === null || amount === undefined) return "Custom quote";

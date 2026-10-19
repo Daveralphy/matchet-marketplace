@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getProviderProfile } from "../api/provider";
-import "../styles/provider-dashboard.css";
 
 function formatMemberSince(value) {
   if (!value) return "—";

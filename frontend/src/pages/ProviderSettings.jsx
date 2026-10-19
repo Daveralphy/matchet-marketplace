@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getProviderSettings, updateProviderSettingsPreferences } from "../api/provider";
-import "../styles/provider-dashboard.css";
 
 const tabs = [
   { id: "account", label: "Account", icon: "user" },

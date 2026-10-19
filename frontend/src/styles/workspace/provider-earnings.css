@@ -1,0 +1,61 @@
+/* Sell & Offer earnings: legacy chart used by ProviderDataPage. */
+
+.provider-chart {
+  margin-top: 14px;
+  height: 380px;
+}
+.provider-chart > p {
+  margin: 3px 0;
+  color: #6972aa;
+  font-size: 11px;
+}
+.provider-bars {
+  height: 280px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 20px 20px 0;
+  border-bottom: 1px solid #e2e6ef;
+}
+.provider-bars > div {
+  position: relative;
+  height: 100%;
+  width: 11%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.provider-bars i {
+  width: 65%;
+  display: block;
+  border-radius: 5px 5px 0 0;
+  background: #aeb4ef;
+}
+.provider-bars span {
+  position: absolute;
+  bottom: calc(var(--h, 0px) + 5px);
+  font-size: 10px;
+}
+.provider-bars small {
+  position: absolute;
+  bottom: -22px;
+  color: #6972aa;
+  font-size: 9px;
+}
+
+/* ------------------------------------------------------------------
+   Responsive fixes (UI refactor)
+   The Sell & Offer earnings chart has no layout styles yet; on phones keep
+   its axis labels from running past the screen edge.
+   ------------------------------------------------------------------ */
+@media (max-width: 760px) {
+  .provider-earnings-page .provider-chart-y-axis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  .provider-earnings-page {
+    overflow-wrap: anywhere;
+  }
+}

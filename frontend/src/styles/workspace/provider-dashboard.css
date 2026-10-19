@@ -1,0 +1,401 @@
+/* Sell & Offer dashboard (/provider/dashboard): upcoming bookings, recent messages,
+   quick actions, help card. */
+
+.provider-activity-row {
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf0f5;
+}
+.provider-activity-row:last-child {
+  border-bottom: 0;
+}
+.provider-activity-row > i {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #edf2ff;
+  color: #2e63ed;
+  font-style: normal;
+}
+.provider-activity-row strong {
+  font-size: 13px;
+}
+.provider-activity-row p {
+  margin: 2px 0 0;
+  color: #6872a9;
+  font-size: 11px;
+}
+.provider-activity-row time {
+  color: #6972aa;
+  font-size: 11px;
+}
+.provider-ready {
+  margin-top: 14px;
+}
+.provider-ready > p {
+  margin: 3px 0 12px;
+  color: #6872a9;
+  font-size: 11px;
+}
+.provider-ready-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.provider-ready-grid > div {
+  padding: 14px;
+  border: 1px solid #dfe5f0;
+  border-radius: 7px;
+}
+.provider-ready-grid i {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #edf2ff;
+  color: #2e63ed;
+  font-style: normal;
+}
+.provider-ready-grid strong {
+  display: block;
+  margin-top: 9px;
+  font-size: 12px;
+}
+.provider-ready-grid p {
+  min-height: 32px;
+  margin: 4px 0 9px;
+  color: #6872a9;
+  font-size: 10px;
+  line-height: 1.35;
+}
+.provider-ready-grid a {
+  color: #0755ee;
+  font-size: 11px;
+}
+.provider-help {
+  float: right;
+  width: calc(25% - 10px);
+  margin-top: 14px;
+  min-height: 145px;
+}
+.provider-help h2 {
+  font-size: 16px;
+}
+.provider-help p {
+  color: #6872a9;
+  font-size: 11px;
+  line-height: 1.45;
+}
+.provider-help button {
+  width: 100%;
+  height: 39px;
+  border: 0;
+  border-radius: 6px;
+  background: #eef2ff;
+  color: #0755ee;
+  font: 500 11px Poppins;
+}
+@media (max-width: 1050px) {
+  .provider-help {
+    float: none;
+    width: auto;
+  }
+  .provider-ready-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .provider-ready-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.provider-dashboard-main-grid {
+  display: grid;
+  grid-template-columns: 1.65fr 0.9fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.provider-dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.65fr 0.9fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.provider-upcoming h2,
+.provider-recent-messages h2,
+.provider-quick-actions h2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.provider-upcoming h2 a,
+.provider-recent-messages h2 a {
+  color: #0755ee;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+}
+.provider-upcoming-row {
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: 78px 1.15fr 1.35fr auto 18px;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid #edf0f5;
+  text-decoration: none;
+  color: inherit;
+}
+.provider-upcoming-row:last-child {
+  border-bottom: 0;
+}
+.provider-upcoming-service strong,
+.provider-upcoming-service span {
+  display: block;
+}
+.provider-upcoming-service strong {
+  font-size: 12px;
+}
+.provider-upcoming-service span {
+  margin-top: 3px;
+  color: #6972aa;
+  font-size: 10px;
+}
+.provider-upcoming-meta {
+  display: flex;
+  gap: 18px;
+  color: #6972aa;
+  font-size: 10px;
+}
+.provider-upcoming-meta span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.provider-upcoming-meta svg {
+  color: #5d6aa0;
+}
+.provider-row-arrow {
+  font-size: 23px;
+  color: #10183f;
+}
+.provider-message-row {
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid #edf0f5;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+.provider-message-row:last-child {
+  border-bottom: 0;
+}
+.provider-message-row > img,
+.provider-message-row > .provider-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.provider-message-row strong {
+  font-size: 11px;
+}
+.provider-message-row p {
+  margin: 3px 0 0;
+  color: #6972aa;
+  font-size: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.provider-message-row time {
+  color: #6972aa;
+  font-size: 9px;
+  align-self: start;
+  margin-top: 7px;
+}
+.provider-message-row > b {
+  position: absolute;
+  right: 0;
+  bottom: 9px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #f23645;
+  color: #fff;
+  font-size: 9px;
+}
+.provider-quick-actions .provider-ready-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+.provider-quick-actions .provider-ready-grid > a {
+  padding: 13px;
+  text-decoration: none;
+  border: 1px solid #dfe5f0;
+  border-radius: 7px;
+  color: inherit;
+}
+.provider-quick-actions .provider-ready-grid > a span {
+  color: #0755ee;
+  font-size: 10px;
+}
+.provider-quick-actions .provider-ready-grid p {
+  min-height: 34px;
+}
+.provider-dashboard-empty {
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6972aa;
+  text-align: center;
+}
+.provider-dashboard-empty svg {
+  color: #2860ef;
+  margin-bottom: 9px;
+}
+.provider-dashboard-empty strong {
+  color: #10183f;
+  font-size: 13px;
+}
+.provider-dashboard-empty p {
+  margin: 4px 0;
+  font-size: 10px;
+}
+.provider-dashboard-empty.compact {
+  min-height: 230px;
+}
+@media (max-width: 1100px) {
+  .provider-dashboard-main-grid,
+  .provider-dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+  .provider-quick-actions .provider-ready-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .provider-upcoming-row {
+    grid-template-columns: 58px 1fr auto;
+    gap: 8px;
+    padding: 10px 0;
+  }
+  .provider-upcoming-meta {
+    display: none;
+  }
+  .provider-upcoming-row > .status {
+    grid-column: 2;
+  }
+  .provider-row-arrow {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+  .provider-quick-actions .provider-ready-grid {
+    grid-template-columns: 1fr;
+  }
+  .provider-message-row p {
+    max-width: 170px;
+  }
+}
+.provider-dashboard .provider-dashboard-bottom-grid > .provider-help {
+  min-height: 145px;
+}
+.provider-dashboard .provider-help p {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.provider-dashboard .provider-dashboard-bottom-grid {
+  grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.75fr);
+  gap: 10px;
+  align-items: stretch;
+}
+.provider-dashboard .provider-dashboard-bottom-grid > .provider-quick-actions {
+  min-width: 0;
+}
+.provider-dashboard .provider-dashboard-bottom-grid > .provider-help {
+  float: none;
+  width: auto;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-bottom: 16px;
+}
+.provider-dashboard .provider-dashboard-bottom-grid > .provider-help h2 {
+  border: 0;
+  padding-bottom: 7px;
+}
+.provider-dashboard .provider-dashboard-bottom-grid > .provider-help p {
+  padding: 0 20px;
+  margin: 0 0 20px;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.provider-dashboard .provider-dashboard-bottom-grid > .provider-help button {
+  display: block;
+  width: calc(100% - 40px);
+  height: 42px;
+  margin: 0 20px;
+  box-sizing: border-box;
+}
+@media (max-width: 1100px) {
+  .provider-dashboard .provider-dashboard-bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .provider-dashboard .provider-dashboard-bottom-grid > .provider-help {
+    width: auto;
+  }
+  .provider-dashboard .provider-dashboard-bottom-grid > .provider-help p {
+    padding: 0 12px;
+  }
+  .provider-dashboard .provider-dashboard-bottom-grid > .provider-help button {
+    width: calc(100% - 24px);
+    margin: 0 12px;
+  }
+}
+@media (max-width: 760px) {
+  .provider-app .provider-ready-grid,
+  .provider-app .provider-quick-actions .provider-ready-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .provider-app .provider-dashboard .provider-dashboard-bottom-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .provider-app
+    .provider-dashboard
+    .provider-dashboard-bottom-grid
+    > .provider-help {
+    width: auto;
+    min-width: 0;
+    margin: 0;
+  }
+  .provider-app
+    .provider-dashboard
+    .provider-dashboard-bottom-grid
+    > .provider-help
+    p {
+    padding: 0 12px;
+  }
+  .provider-app
+    .provider-dashboard
+    .provider-dashboard-bottom-grid
+    > .provider-help
+    button {
+    width: calc(100% - 24px);
+    margin: 0 12px;
+  }
+}

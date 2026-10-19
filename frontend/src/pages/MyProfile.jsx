@@ -7,7 +7,7 @@ import LocationSearch from "../components/LocationSearch";
 import { useAuth } from "../context/AuthContext";
 import { getCurrentUser, updateCurrentUser } from "../api/auth";
 import { uploadFile } from "../api/uploads";
-import "./MyProfile.css";
+import "../styles/account/profile.css";
 //import Button from "../components/common/Button";
 
 function HomeIcon() {

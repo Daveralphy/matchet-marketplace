@@ -5,8 +5,8 @@ import {
   getSavedItems,
   removeSavedItem,
 } from "../api/marketplace";
-import "./SavedItems.css";
-import "./BuyerAccount.css";
+import "../styles/account/account.css";
+import "../styles/account/saved-items.css";
 
 export default function SavedItems() {
   const [items, setItems] = useState([]);

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBuyerOrders } from "../api/marketplace";
 import OrderReviewPanel from "../components/OrderReviewPanel";
-import "./BuyerAccount.css";
+import "../styles/account/account.css";
+import "../styles/account/order-history.css";
 
 export default function BuyerOrders() {
   const [orders, setOrders] = useState([]);

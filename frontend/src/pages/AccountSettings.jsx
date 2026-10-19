@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { currencyForLocation, SUPPORTED_CURRENCIES } from "../utils/currency";
 import { updateCurrentUser } from "../api/auth";
-import "./BuyerAccount.css";
+import "../styles/account/account.css";
 
 const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 const CATEGORIES = [
@@ -87,14 +87,14 @@ export default function AccountSettings() {
       <div className="buyer-account-container">
         <div className="buyer-breadcrumb"><Link to="/">Home</Link><span>›</span><span>Account Settings</span></div>
         <header><h1>Account Settings</h1><p>Manage your account, marketplace updates and notification channels.</p></header>
-        <section className="settings-card">
+        <section className="settings-card acct-settings-card">
           <div className="mb-5"><h2 className="text-base font-semibold text-[#10183f]">Notification preferences</h2><p className="mt-1 text-sm text-slate-500">Choose which optional updates can reach you by email and browser push. In-app notifications remain available in Matchet.</p></div>
           <div className="mb-5 rounded-xl border border-slate-200 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3"><div><h3 className="font-semibold text-[#10183f]">Browser push</h3><p className="mt-1 text-sm text-slate-500">{pushPermission === "granted" ? "Browser permission is granted." : pushPermission === "denied" ? "Browser permission is blocked. Change it in your browser site settings." : "Get timely alerts even when Matchet is not the active tab."}</p></div><button type="button" onClick={enablePush} disabled={pushBusy || !pushConfigured || pushPermission === "denied"} className="rounded-lg bg-[#07863a] px-4 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">{pushBusy ? "Enabling…" : pushConfigured ? "Enable push" : "Push not configured"}</button></div>
             {!pushConfigured && <p className="mt-2 text-xs text-amber-700">The server needs VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY and the web-push package before browser push can be enabled.</p>}
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[650px] border-collapse text-left"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500"><th className="py-3 pr-4 font-semibold">Category</th><th className="px-3 py-3 text-center font-semibold">Email</th><th className="px-3 py-3 text-center font-semibold">Browser push</th></tr></thead><tbody>
+            <table className="w-full border-collapse text-left sm:min-w-[650px]"><thead><tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500"><th className="py-3 pr-4 font-semibold">Category</th><th className="px-3 py-3 text-center font-semibold">Email</th><th className="px-3 py-3 text-center font-semibold">Browser push</th></tr></thead><tbody>
               {CATEGORIES.map(([key, title, description]) => <tr key={key} className="border-b border-slate-100 last:border-0"><td className="py-4 pr-4"><p className="text-sm font-semibold text-[#10183f]">{title}</p><p className="mt-1 text-xs leading-5 text-slate-500">{description}</p>{["order", "booking", "payment", "application", "security"].includes(key) && <p className="mt-1 text-[11px] text-slate-400">Essential transactional email cannot be turned off.</p>}</td><td className="px-3 py-4 text-center"><input aria-label={title + " email notifications"} type="checkbox" checked={["order", "booking", "payment", "application", "security"].includes(key) || preferences.email[key] !== false} disabled={["order", "booking", "payment", "application", "security"].includes(key)} onChange={(event) => setPreference("email", key, event.target.checked)} /></td><td className="px-3 py-4 text-center"><input aria-label={title + " push notifications"} type="checkbox" checked={preferences.push[key] !== false} onChange={(event) => setPreference("push", key, event.target.checked)} /></td></tr>)}
             </tbody></table>
           </div>

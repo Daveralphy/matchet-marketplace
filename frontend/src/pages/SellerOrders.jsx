@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getSellerOrders, updateSellerOrderStatus } from "../api/provider";
-import "../styles/seller-orders.css";
 
 const money = (v) => new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(Number(v || 0));
 const fmtDate = (v) => new Intl.DateTimeFormat("en-NG", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(v));

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getSellerProfile } from "../api/provider";
-import "../styles/provider-dashboard.css";
+import "../styles/workspace/index.css";
 
 export default function SellerApplicationStatus() {
   const [data, setData] = useState(null);

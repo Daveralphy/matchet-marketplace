@@ -1,0 +1,1044 @@
+/* Messages inbox (BuyerMessages.jsx). Used at /messages inside the marketplace layout and,
+   with .account-messages-dashboard-mode, inside the seller/provider workspace shell
+   (/seller/messages, /provider/messages).
+
+   Layout: a two-pane card (conversation list + chat). On phones (<=760px) only one pane
+   shows at a time: .mobile-list-open shows the list, .mobile-chat-open shows the chat with
+   the composer pinned to the bottom of the viewport. */
+
+/* ---------- Page frame and heading ---------- */
+
+.account-messages-page {
+  min-height: 65vh;
+  background: #f7f9fd;
+  padding: 32px 22px 54px;
+  color: var(--color-ink);
+}
+
+.account-messages-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.account-messages-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.account-messages-heading p {
+  margin: 0 0 4px;
+  color: #6873a3;
+  font-size: 13px;
+}
+
+.account-messages-heading h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+}
+
+.account-messages-heading span {
+  display: block;
+  margin-top: 7px;
+  color: #6873a3;
+  font-size: 13px;
+}
+
+.account-messages-unread {
+  padding: 7px 11px;
+  border-radius: 30px;
+  background: #edf2ff;
+  color: #2459dc;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Two-pane layout and conversation list ---------- */
+
+.account-messages-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(270px, 360px) minmax(0, 1fr);
+  height: min(calc(100dvh - 220px), 820px);
+  min-height: 560px;
+  background: var(--color-surface);
+  border: 1px solid #e1e7f2;
+  border-radius: 12px;
+  /* visible so the conversation menus can extend past the card edge */
+  overflow: visible;
+  box-shadow: 0 3px 14px #1b2b5008;
+}
+
+.account-messages-list-panel {
+  position: relative;
+  z-index: 40;
+  min-width: 0;
+  border-right: 1px solid #e8ecf4;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.account-messages-search {
+  margin: 16px 14px 12px;
+  padding: 0 11px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e1e7f2;
+  border-radius: 8px;
+  background: #f9faff;
+  color: #6b77a3;
+}
+
+.account-messages-search > span {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.account-messages-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  color: var(--color-ink);
+}
+
+.account-messages-filters {
+  display: flex;
+  gap: 8px;
+  padding: 0 14px 12px;
+  border-bottom: 1px solid #edf0f6;
+}
+
+.account-messages-filters button {
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  padding: 7px 12px;
+  color: #69739c;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.account-messages-filters button.active {
+  background: #edf2ff;
+  color: #2459dc;
+  font-weight: 600;
+}
+
+.account-messages-conversations {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+}
+
+.account-message-thread {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border: 0;
+  border-bottom: 1px solid #f0f2f7;
+  background: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.account-message-thread:hover,
+.account-message-thread.selected {
+  background: #f5f8ff;
+}
+
+.account-message-thread.selected {
+  box-shadow: inset 3px 0 #2860ef;
+}
+
+.account-message-avatar {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  background: #edf2ff;
+  color: #2459dc;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.account-message-avatar.large {
+  width: 46px;
+  height: 46px;
+  flex-basis: 46px;
+}
+
+.account-message-thread-copy {
+  display: grid;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.account-message-thread-copy strong {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-message-thread-copy > span {
+  font-size: 11px;
+  color: #7a83a5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 210px;
+}
+
+.account-message-thread-meta {
+  display: grid;
+  justify-items: end;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
+.account-message-thread-meta time {
+  font-size: 10px;
+  color: #8a92ad;
+  white-space: nowrap;
+}
+
+.account-message-thread-meta b {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #2860ef;
+  color: var(--color-surface);
+  font-size: 10px;
+}
+
+/* ---------- Chat pane ---------- */
+
+.account-messages-chat {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.account-messages-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #edf0f6;
+}
+
+.account-messages-chat-header > div {
+  display: grid;
+  gap: 4px;
+}
+
+.account-messages-chat-header strong {
+  font-size: 13px;
+}
+
+.account-messages-chat-header span {
+  font-size: 11px;
+  color: #7a83a5;
+}
+
+.account-messages-chat-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 22px;
+  background: #fbfcff;
+}
+
+.account-message-date {
+  text-align: center;
+  color: #8b93ad;
+  font-size: 10px;
+  margin: 8px 0 16px;
+}
+
+.account-message-bubble-row {
+  display: flex;
+  margin: 9px 0;
+}
+
+.account-message-bubble-row.mine {
+  justify-content: flex-end;
+}
+
+.account-message-bubble-row.theirs {
+  justify-content: flex-start;
+}
+
+.account-message-bubble {
+  max-width: min(75%, 520px);
+  padding: 10px 12px 7px;
+  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid #e4e9f3;
+  box-shadow: 0 1px 2px #10204408;
+  overflow-wrap: anywhere;
+}
+
+.account-message-bubble-row.mine .account-message-bubble {
+  background: var(--color-accent-tint);
+  border-color: #dbe6ff;
+  border-bottom-right-radius: 4px;
+}
+
+.account-message-bubble-row.theirs .account-message-bubble {
+  border-bottom-left-radius: 4px;
+}
+
+.account-message-bubble p {
+  margin: 0;
+  color: #1b2550;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.account-message-bubble a {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #2459dc;
+}
+
+.account-message-bubble time {
+  display: block;
+  margin-top: 6px;
+  text-align: right;
+  font-size: 9px;
+  color: #8790ae;
+}
+
+.account-messages-composer {
+  /* Anchored to the bottom edge of the chat panel; the message history scrolls above it. */
+  position: sticky;
+  bottom: 0;
+  z-index: 25;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 14px 16px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  border-top: 1px solid #e8ecf4;
+  background: var(--color-surface);
+}
+
+.account-messages-composer input {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  padding: 0 13px;
+  border: 1px solid #dfe5f0;
+  border-radius: 8px;
+  outline: none;
+  font: inherit;
+  font-size: 12px;
+}
+
+.account-messages-composer input:focus {
+  border-color: #8aaaff;
+  box-shadow: 0 0 0 3px #edf2ff;
+}
+
+.account-messages-composer button {
+  min-width: 82px;
+  border: 0;
+  border-radius: 8px;
+  background: #2459dc;
+  color: var(--color-surface);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-messages-composer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Empty and error states ---------- */
+
+.account-messages-empty {
+  min-height: 150px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  color: #7781a3;
+  font-size: 12px;
+}
+
+.account-messages-empty strong {
+  font-size: 13px;
+  color: #17214c;
+}
+
+.account-messages-empty p {
+  max-width: 270px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.account-messages-empty-icon {
+  font-size: 26px;
+  color: #2860ef;
+}
+
+.account-messages-chat-empty {
+  flex: 1;
+  min-height: 420px;
+}
+
+.account-messages-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid #f0caca;
+  border-radius: 8px;
+  background: #fff5f5;
+  color: #a12e38;
+  font-size: 12px;
+}
+
+.account-messages-error button {
+  border: 0;
+  background: transparent;
+  font-size: 20px;
+  color: inherit;
+  cursor: pointer;
+}
+
+
+/* ---------- Load-older button and breadcrumb ---------- */
+
+.account-messages-load-older {
+  display: block;
+  margin: 0 auto 16px;
+  padding: 8px 13px;
+  border: 1px solid #dfe5f0;
+  border-radius: 7px;
+  background: var(--color-surface);
+  color: #2459dc;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-messages-load-older:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.account-messages-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 20px;
+  color: #7b85a6;
+  font-size: 12px;
+}
+
+.account-messages-breadcrumb a {
+  color: #6873a3;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.account-messages-breadcrumb a:hover {
+  color: #2459dc;
+}
+
+.account-messages-breadcrumb span[aria-current="page"] {
+  color: #18234e;
+  font-weight: 600;
+}
+
+/* ---------- Conversation row with options menu ---------- */
+
+.account-message-thread-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #f0f2f7;
+  background: var(--color-surface);
+}
+
+.account-message-thread-wrap:hover,
+.account-message-thread-wrap.selected {
+  background: #f5f8ff;
+}
+
+/* Lift the row whose menu is open above its neighbours. */
+.account-message-thread-wrap:has(.account-message-menu) {
+  z-index: 100;
+}
+
+.account-message-thread-wrap .account-message-thread {
+  flex: 1;
+  min-width: 0;
+  border-bottom: 0;
+  padding-right: 4px;
+  background: transparent;
+}
+
+.account-message-thread-wrap .account-message-thread.selected {
+  box-shadow: inset 3px 0 #2860ef;
+}
+
+.account-message-thread-actions {
+  position: relative;
+  z-index: 101;
+  flex: 0 0 34px;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 7px;
+}
+
+.account-message-menu-trigger {
+  width: 30px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #6f799b;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.account-message-menu-trigger:hover,
+.account-message-menu-trigger[aria-expanded="true"] {
+  background: #eaf0ff;
+  color: #2459dc;
+}
+
+.account-message-menu {
+  position: absolute;
+  z-index: 1000;
+  top: calc(100% - 5px);
+  right: 4px;
+  width: 190px;
+  padding: 5px;
+  background: var(--color-surface);
+  border: 1px solid #e0e6f1;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px #15234b1f;
+}
+
+.account-message-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 11px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #263153;
+  text-align: left;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.account-message-menu button:hover {
+  background: #f3f6fc;
+}
+
+.account-message-menu button.danger {
+  color: #bd3443;
+}
+
+/* ---------- Order summary card inside a message ---------- */
+
+.account-message-bubble.has-order-card {
+  width: min(100%, 480px);
+  max-width: min(92%, 520px);
+  padding: 10px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.account-order-message-card {
+  overflow: hidden;
+  width: 100%;
+  background: var(--color-surface);
+  border: 1px solid #dfe6f1;
+  border-radius: 12px;
+  box-shadow: 0 2px 7px #1b2b500a;
+  color: var(--color-ink);
+}
+
+.account-order-message-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  background: #f4f7ff;
+  border-bottom: 1px solid #e6ebf6;
+}
+
+.account-order-message-icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: #e3f7eb;
+  color: var(--color-brand-hover);
+  font-weight: 800;
+}
+
+.account-order-message-kicker div {
+  display: grid;
+  gap: 3px;
+}
+
+.account-order-message-kicker strong {
+  font-size: 13px;
+}
+
+.account-order-message-kicker span:not(.account-order-message-icon) {
+  font-size: 10px;
+  color: #7782a2;
+}
+
+.account-order-message-items {
+  padding: 2px 14px;
+}
+
+.account-order-message-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid #edf0f6;
+}
+
+.account-order-message-item img,
+.account-order-message-placeholder {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 7px;
+  object-fit: cover;
+  background: #f1f4fa;
+}
+
+.account-order-message-placeholder {
+  display: grid;
+  place-items: center;
+  color: #a1abc2;
+  font-size: 20px;
+}
+
+.account-order-message-item > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.account-order-message-item > div strong {
+  font-size: 11px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.account-order-message-item > div span {
+  font-size: 10px;
+  color: #7b85a4;
+}
+
+.account-order-message-item > b {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.account-order-message-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  font-size: 11px;
+}
+
+.account-order-message-total span {
+  color: #6f7998;
+}
+
+.account-order-message-total strong {
+  font-size: 13px;
+}
+
+.account-order-message-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-top: 1px solid #e8edf5;
+}
+
+.account-order-status {
+  padding: 5px 8px;
+  border-radius: 20px;
+  background: #f0f2f7;
+  color: #606b88;
+  font-size: 10px;
+  text-transform: capitalize;
+}
+
+.account-order-status.confirmed,
+.account-order-status.delivered,
+.account-order-status.completed {
+  background: #e7f8ee;
+  color: var(--color-brand-hover);
+}
+
+.account-order-status.cancelled,
+.account-order-status.declined {
+  background: #fff0f0;
+  color: #b62f3d;
+}
+
+.account-order-details-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 11px;
+  border-radius: 7px;
+  background: var(--color-brand-hover);
+  color: var(--color-surface) !important;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.account-order-details-link:hover {
+  background: #06672b;
+}
+
+
+/* ---------- Seller / provider workspace mode ---------- */
+
+.account-messages-dashboard-mode {
+  min-height: 0;
+  background: transparent;
+  padding: 8px 0 16px;
+  color: inherit;
+}
+
+.account-messages-dashboard-mode .account-messages-shell {
+  max-width: none;
+  margin: 0;
+}
+
+.account-messages-dashboard-mode .dashboard-hidden-breadcrumb {
+  display: none;
+}
+
+.account-messages-dashboard-mode .account-messages-heading {
+  margin-bottom: 18px;
+}
+
+.account-messages-dashboard-mode .account-messages-heading h1 {
+  font-size: 30px;
+}
+
+.account-messages-dashboard-mode .account-messages-layout {
+  min-height: 560px;
+  height: calc(100dvh - 250px);
+  max-height: 850px;
+}
+
+/* ---------- Phones and small tablets ---------- */
+
+.account-messages-mobile-back {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .account-messages-page {
+    min-height: 0;
+    padding: 10px var(--gutter-mobile) 0;
+  }
+
+  .account-messages-shell {
+    min-width: 0;
+  }
+
+  .account-messages-heading {
+    margin-bottom: 12px;
+  }
+
+  .account-messages-heading h1 {
+    font-size: 26px;
+  }
+
+  /* Single pane: the list or the chat, never both. */
+  .account-messages-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .account-messages-list-panel {
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid #e8ecf4;
+  }
+
+  .account-messages-list-panel:has(.account-message-menu) {
+    z-index: 100;
+  }
+
+  .account-messages-filters button {
+    min-height: 40px;
+  }
+
+  .account-message-menu-trigger {
+    height: 40px;
+  }
+
+  .account-message-menu {
+    z-index: 10000;
+    right: 0;
+    width: 180px;
+  }
+
+  .account-messages-search input,
+  .account-messages-composer input {
+    font-size: 16px;
+  }
+
+  .account-messages-chat-header {
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .account-messages-chat-body {
+    padding: 14px;
+  }
+
+  .account-message-bubble {
+    max-width: 88%;
+  }
+
+  .account-message-bubble.has-order-card {
+    max-width: 96%;
+  }
+
+  .account-order-message-item img,
+  .account-order-message-placeholder {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+
+  .account-messages-chat-empty {
+    min-height: 280px;
+  }
+
+  .account-messages-composer {
+    padding: 10px;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+  }
+
+  .account-messages-composer button {
+    min-width: 68px;
+  }
+
+  .account-messages-mobile-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    min-height: 40px;
+    padding: 8px 10px;
+    margin-right: 2px;
+    border: 1px solid #e1e7f2;
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: #2459dc;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .account-messages-mobile-back span:first-child {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  /* List view */
+  .account-messages-layout.mobile-list-open .account-messages-chat {
+    display: none;
+  }
+
+  /* Chat view: heading and breadcrumb hide, the card fills the viewport below the header,
+     the history scrolls and the composer is pinned to the bottom of the viewport. */
+  .account-messages-layout.mobile-chat-open .account-messages-list-panel {
+    display: none;
+  }
+
+  .account-messages-shell:has(.account-messages-layout.mobile-chat-open) > .account-messages-heading,
+  .account-messages-shell:has(.account-messages-layout.mobile-chat-open) > .account-messages-breadcrumb {
+    display: none;
+  }
+
+  .account-messages-layout.mobile-chat-open {
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 104px);
+    min-height: 0;
+    max-height: calc(100dvh - 104px);
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .account-messages-layout.mobile-chat-open .account-messages-chat {
+    display: flex;
+    flex: 1;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    padding-bottom: 74px; /* room for the fixed composer */
+    border: 0;
+    overflow: hidden;
+  }
+
+  .account-messages-layout.mobile-chat-open .account-messages-chat-header {
+    flex: 0 0 auto;
+  }
+
+  .account-messages-layout.mobile-chat-open .account-messages-chat-body {
+    display: block;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    padding: 14px 14px 22px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
+
+  .account-messages-layout.mobile-chat-open .account-messages-composer {
+    position: fixed;
+    left: var(--gutter-mobile);
+    right: var(--gutter-mobile);
+    bottom: 0;
+    z-index: 9999;
+    display: flex;
+    flex: 0 0 auto;
+    gap: 8px;
+    width: auto;
+    padding: 10px 10px max(12px, env(safe-area-inset-bottom));
+    border: 1px solid #e1e7f2;
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+    background: var(--color-surface);
+    box-shadow: 0 -5px 18px #15234b12;
+  }
+
+  .account-messages-layout.mobile-chat-open .account-messages-composer input {
+    height: 44px;
+  }
+
+  .account-messages-layout.mobile-chat-open .account-messages-composer button {
+    min-width: 68px;
+    height: 44px;
+  }
+
+  /* Workspace mode */
+  .account-messages-dashboard-mode {
+    padding: 0 0 12px;
+  }
+
+  .account-messages-dashboard-mode .account-messages-heading {
+    margin: 0 0 14px;
+  }
+
+  .account-messages-dashboard-mode .account-messages-layout {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .account-messages-dashboard-mode .account-messages-layout.mobile-chat-open {
+    height: calc(100dvh - 170px);
+    min-height: 0;
+    max-height: calc(100dvh - 170px);
+  }
+
+  /* Inside the workspace shell the chat card already ends above the viewport bottom, so the
+     composer stays in the card (at its bottom edge) instead of floating below it. */
+  .account-messages-dashboard-mode .account-messages-layout.mobile-chat-open .account-messages-chat {
+    padding-bottom: 0;
+  }
+
+  .account-messages-dashboard-mode .account-messages-layout.mobile-chat-open .account-messages-composer {
+    position: sticky;
+    left: auto;
+    right: auto;
+    z-index: 25;
+    width: 100%;
+    border: 0;
+    border-top: 1px solid #e8ecf4;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .account-messages-dashboard-mode .account-messages-layout.mobile-list-open .account-messages-list-panel {
+    max-height: none;
+    min-height: calc(100dvh - 270px);
+  }
+}

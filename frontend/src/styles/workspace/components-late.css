@@ -1,0 +1,250 @@
+/* Shared workspace components (compact density + responsive layer).
+   Loaded AFTER the provider page files on purpose: these rules intentionally win over
+   page rules of equal specificity (compact sizes, small-screen layouts). */
+
+.provider-page {
+  max-width: 1380px;
+  padding: 26px 0;
+  color: #10183f;
+}
+.provider-heading {
+  margin-bottom: 20px;
+}
+.provider-heading p {
+  font-size: 10px;
+}
+.provider-heading h1 {
+  font-size: 25px;
+  letter-spacing: -0.5px;
+}
+.provider-heading > div:first-child span {
+  font-size: 10px;
+  margin-top: 4px;
+}
+.provider-heading-quote {
+  font-size: 9px;
+}
+.provider-heading-quote strong {
+  font-size: 10px;
+  margin-top: 2px;
+}
+.provider-stat-grid {
+  gap: 13px;
+  margin-bottom: 14px;
+}
+.provider-stat {
+  min-height: 0;
+  padding: 16px 17px;
+  border: 1px solid #e6eaf2;
+  border-radius: 9px;
+  box-shadow: 3px 3px 14px rgba(23, 38, 83, 0.025);
+}
+.provider-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.provider-stat > strong {
+  font-size: 22px;
+}
+.provider-stat > b {
+  font-size: 10px;
+  margin-top: 4px;
+}
+.provider-stat > span {
+  font-size: 8px;
+  margin-top: 5px;
+}
+.provider-content-grid {
+  gap: 14px;
+}
+.provider-card {
+  border: 1px solid #e6eaf2;
+  border-radius: 9px;
+  padding: 15px 16px;
+  box-shadow: 3px 3px 14px rgba(23, 38, 83, 0.025);
+}
+.provider-card h2 {
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .provider-page {
+    padding: 20px 0;
+  }
+  .provider-heading h1 {
+    font-size: 24px;
+  }
+}
+.provider-app .provider-card,
+.provider-app .provider-table-card,
+.provider-app .provider-services-table-card,
+.provider-app .provider-bookings-card,
+.provider-app .provider-reviews-list,
+.provider-app .provider-settings-card {
+  min-width: 0;
+}
+.provider-app .provider-heading h1,
+.provider-app .orders-head h1,
+.provider-app .seller-page h1 {
+  overflow-wrap: anywhere;
+}
+.provider-app .provider-heading {
+  gap: 14px;
+}
+.provider-app .provider-heading > div {
+  min-width: 0;
+}
+.provider-app .provider-table-card,
+.provider-app .provider-services-table-card,
+.provider-app .provider-table,
+.provider-app .order-table-wrap {
+  max-width: 100%;
+}
+.provider-app .provider-table-card,
+.provider-app .provider-services-table-card {
+  overflow-x: auto;
+}
+.provider-app .provider-table-row,
+.provider-app .provider-service-row,
+.provider-app .provider-services-header,
+.provider-app .provider-service-row-new {
+  width: max-content;
+  min-width: 850px;
+}
+@media (min-width: 761px) and (max-width: 1050px) {
+  .provider-app .provider-heading h1 {
+    font-size: clamp(25px, 3vw, 34px);
+  }
+  .provider-app .provider-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .provider-app .provider-dashboard-main-grid,
+  .provider-app .provider-dashboard-bottom-grid,
+  .provider-app .provider-content-grid,
+  .provider-app .provider-profile-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .provider-app .provider-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .provider-app .provider-heading h1 {
+    font-size: clamp(24px, 6vw, 30px);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+  }
+  .provider-app .provider-heading p,
+  .provider-app .provider-heading > div:first-child span {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .provider-app .provider-heading-quote {
+    display: none;
+  }
+  .provider-app .provider-heading > div:last-child {
+    width: 100%;
+  }
+  .provider-app .provider-heading button,
+  .provider-app .provider-heading a {
+    max-width: 100%;
+  }
+  .provider-app .provider-stat-grid,
+  .provider-app .provider-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .provider-app .provider-stat {
+    min-width: 0;
+    min-height: 112px;
+    padding: 12px;
+  }
+  .provider-app .provider-stat-icon {
+    width: 38px;
+    height: 38px;
+    margin-bottom: 9px;
+  }
+  .provider-app .provider-stat > strong {
+    font-size: clamp(19px, 5vw, 24px);
+    overflow-wrap: anywhere;
+  }
+  .provider-app .provider-stat > b {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .provider-app .provider-stat > span {
+    font-size: 10px;
+    line-height: 1.35;
+  }
+  .provider-app .provider-content-grid,
+  .provider-app .provider-dashboard-main-grid,
+  .provider-app .provider-dashboard-bottom-grid,
+  .provider-app .provider-profile-grid,
+  .provider-app .provider-reviews-layout,
+  .provider-app .provider-settings-layout,
+  .provider-app .provider-settings-side {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .provider-app .provider-card {
+    padding: 14px;
+  }
+  .provider-app .provider-card h2 {
+    font-size: 15px;
+  }
+  .provider-app .provider-review-banner {
+    padding: 14px;
+    gap: 10px;
+  }
+  .provider-app .provider-check {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    font-size: 22px;
+  }
+  .provider-app .provider-review-banner > div:nth-child(2) {
+    min-width: 0;
+  }
+  .provider-app .provider-review-banner a {
+    margin: 0 0 0 48px;
+  }
+  .provider-app .provider-table-tools {
+    height: auto;
+    min-height: 54px;
+    flex-wrap: wrap;
+    padding: 10px;
+    gap: 8px;
+  }
+  .provider-app .provider-table-tools button {
+    margin-left: 0;
+  }
+}
+@media (max-width: 420px) {
+  .provider-app .provider-stat {
+    padding: 10px;
+  }
+  .provider-app .provider-card {
+    padding: 12px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Responsive fixes for shared components (UI refactor)
+   ------------------------------------------------------------------ */
+@media (max-width: 760px) {
+  /* Banner copy takes the full row; the action wraps underneath it. */
+  .provider-app .provider-review-banner > div:nth-child(2) {
+    flex: 1 1 calc(100% - 48px);
+  }
+  .provider-app .provider-tabs {
+    overflow-x: auto;
+  }
+  .provider-app .provider-tabs button {
+    white-space: nowrap;
+  }
+}

@@ -21,13 +21,13 @@ function Icon({ name, size = 20, strokeWidth = 1.8 }) {
 
 function Stars({rating}) {
   const n=Math.max(0,Math.min(5,Math.round(Number(rating)||0)));
-  return <span className="tracking-[-0.12em] text-[#f5a900]">{"★".repeat(n)}{"☆".repeat(5-n)}</span>;
+  return <span className="tracking-[-0.12em] text-star">{"★".repeat(n)}{"☆".repeat(5-n)}</span>;
 }
 
 function ServiceVisual({service,large=false,image=null}) {
   const icon=service.icon==="tools"?"tools":service.icon==="home"?"home":"users";
   return <div className={`flex items-center justify-center overflow-hidden rounded-[10px] ${large?"h-[410px] sm:h-[480px]":"h-[86px]"} ${service.imageTone||"bg-[#f1f1ef]"}`}>
-    {image?<img src={image} alt={service.title} className="h-full w-full object-cover"/>:<span className={`flex items-center justify-center rounded-full bg-white/45 text-[#10183f]/60 ${large ? "h-[190px] w-[190px]" : "h-[52px] w-[52px]"}`}><Icon name={icon} size={large?92:28} strokeWidth={1.35}/></span>}
+    {image?<img src={image} alt={service.title} className="h-full w-full object-cover"/>:<span className={`flex items-center justify-center rounded-full bg-white/45 text-ink/60 ${large ? "h-[190px] w-[190px]" : "h-[52px] w-[52px]"}`}><Icon name={icon} size={large?92:28} strokeWidth={1.35}/></span>}
   </div>;
 }
 
@@ -42,10 +42,10 @@ function Gallery({service}) {
   return <><div className="relative">
     {images.length>1&&<><button onClick={()=>setActive(v=>(v-1+images.length)%images.length)} className="absolute left-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md"><Icon name="chevronLeft"/></button><button onClick={()=>setActive(v=>(v+1)%images.length)} className="absolute right-4 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md"><Icon name="chevronRight"/></button></>}
     <ServiceVisual service={service} large image={current}/>
-    {images.length>0&&<span className="absolute bottom-3 right-3 rounded-full bg-[#10183f] px-3 py-1 text-[11px] text-white">{active+1} / {images.length}</span>}
+    {images.length>0&&<span className="absolute bottom-3 right-3 rounded-full bg-ink px-3 py-1 text-[11px] text-white">{active+1} / {images.length}</span>}
   </div>
   <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-    {images.length?images.map((img,i)=><button key={img+i} onClick={()=>setActive(i)} className={`h-[86px] w-[86px] shrink-0 overflow-hidden rounded-[9px] border-2 ${active===i?"border-[#07863a]":"border-transparent"}`}><img src={img} alt="" className="h-full w-full object-cover"/></button>):<div className="h-[86px] w-[86px] shrink-0"><ServiceVisual service={service}/></div>}
+    {images.length?images.map((img,i)=><button key={img+i} onClick={()=>setActive(i)} className={`h-[86px] w-[86px] shrink-0 overflow-hidden rounded-[9px] border-2 ${active===i?"border-brand":"border-transparent"}`}><img src={img} alt="" className="h-full w-full object-cover"/></button>):<div className="h-[86px] w-[86px] shrink-0"><ServiceVisual service={service}/></div>}
   </div></>;
 }
 
@@ -74,51 +74,51 @@ function ServiceDetails({service,related}) {
   } catch (error) { if (error?.name !== "AbortError") setShareMessage("Unable to share automatically. Copy this page URL instead."); }
  };
  return <main className="w-full bg-[#fbfcfd] px-4 pb-12 sm:px-6 lg:px-8"><div className="mx-auto max-w-[1470px] pt-5">
-  <nav className="mb-5 flex flex-wrap items-center gap-2 text-[11px] text-[#69739a]"><Link to="/">Home</Link><span>›</span><Link to="/services">Services</Link><span>›</span><span>{service.category}</span><span>›</span><span>{service.title}</span></nav>
+  <nav className="mb-5 flex flex-wrap items-center gap-2 text-[11px] text-muted"><Link to="/">Home</Link><span>›</span><Link to="/services">Services</Link><span>›</span><span>{service.category}</span><span>›</span><span>{service.title}</span></nav>
   <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr]">
-   <section><Gallery service={service}/><div className="mt-16 flex flex-wrap gap-6 text-[12px] text-[#10183f]"><button type="button" onClick={handleShare} className="flex items-center gap-2"><Icon name="share"/> Share this service</button><Link to={`/report-problem?reference=${encodeURIComponent(service.title + " (" + service.id + ")")}&kind=${encodeURIComponent("Service listing")}`} className="flex items-center gap-2"><Icon name="flag"/> Report service</Link>{shareMessage && <span role="status" className="basis-full text-[#69739a]">{shareMessage}</span>}</div></section>
-   <section className="space-y-5">
-    <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
-     <p className="text-[12px] font-medium text-[#69739a]">{service.category}</p><h1 className="mt-1 text-[31px] font-bold leading-[1.05] tracking-[-0.045em] text-[#10183f] sm:text-[38px]">{service.title}</h1>
-     <div className="mt-3 flex items-center gap-3 text-[13px]">{Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? <><Stars rating={service.rating}/><strong>{Number(service.rating).toFixed(1)}</strong><span className="text-[#69739a]">({service.reviews} reviews)</span></> : <span className="text-[#69739a]">No reviews yet</span>}</div>
-     <p className="mt-3 text-[14px] leading-6 text-[#69739a]">{service.description}</p>
-     <div className="mt-5 flex items-center justify-between gap-4"><p className="text-[30px] font-bold tracking-[-0.04em] text-[#10183f]">{service.price}</p><span className="rounded-[8px] bg-[#e7f8ec] px-3 py-2 text-[11px] font-medium text-[#07863a]">● {service.availability}</span></div>
-     <div className="mt-6 flex gap-3"><button onClick={handleSave} aria-pressed={saved} className={`flex h-[52px] flex-1 items-center justify-center gap-2 rounded-[8px] border font-medium transition-colors ${saved ? "border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : "border-[#dfe5ec] text-[#10183f]"}`}><Icon name="heart"/>{saved?"Unsave":"Save service"}</button><Link to={`/contact?subject=${encodeURIComponent("Service booking")}&service=${encodeURIComponent(service.title)}&reference=${encodeURIComponent(service.id)}`} className="flex h-[52px] flex-1 items-center justify-center rounded-[8px] bg-[#087d35] text-center font-medium text-white">Ask about booking</Link></div>
-     <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">{[{icon:"shield",title:"Verified provider",text:service.providerVerified?"Provider verified":"Provider status available"},{icon:"clock",title:"Response time",text:service.responseTime},{icon:"calendar",title:"Availability",text:service.bookingNotice}].map(x=><div key={x.title} className="text-[10px] text-[#69739a]"><Icon name={x.icon} size={23}/><p className="mt-1 font-semibold text-[#10183f]">{x.title}</p><p className="mt-0.5 leading-4">{x.text}</p></div>)}</div>
+   <section className="min-w-0"><Gallery service={service}/><div className="mt-16 flex flex-wrap gap-6 text-[12px] text-ink"><button type="button" onClick={handleShare} className="flex items-center gap-2"><Icon name="share"/> Share this service</button><Link to={`/report-problem?reference=${encodeURIComponent(service.title + " (" + service.id + ")")}&kind=${encodeURIComponent("Service listing")}`} className="flex items-center gap-2"><Icon name="flag"/> Report service</Link>{shareMessage && <span role="status" className="basis-full text-muted">{shareMessage}</span>}</div></section>
+   <section className="min-w-0 space-y-5">
+    <div className="mk-detail-card">
+     <p className="text-[12px] font-medium text-muted">{service.category}</p><h1 className="mt-1 text-[31px] font-bold leading-[1.05] tracking-[-0.045em] text-ink sm:text-[38px]">{service.title}</h1>
+     <div className="mt-3 flex items-center gap-3 text-[13px]">{Number(service.reviews) > 0 && Number.isFinite(Number(service.rating)) ? <><Stars rating={service.rating}/><strong>{Number(service.rating).toFixed(1)}</strong><span className="text-muted">({service.reviews} reviews)</span></> : <span className="text-muted">No reviews yet</span>}</div>
+     <p className="mt-3 text-[14px] leading-6 text-muted">{service.description}</p>
+     <div className="mt-5 flex items-center justify-between gap-4"><p className="text-[30px] font-bold tracking-[-0.04em] text-ink">{service.price}</p><span className="rounded-[8px] bg-[#e7f8ec] px-3 py-2 text-[11px] font-medium text-brand">● {service.availability}</span></div>
+     <div className="mt-6 flex gap-3"><button onClick={handleSave} aria-pressed={saved} className={`flex h-[52px] flex-1 items-center justify-center gap-2 rounded-[8px] border font-medium transition-colors ${saved ? "border-[#bdeccf] bg-brand-wash text-brand" : "border-[#dfe5ec] text-ink"}`}><Icon name="heart"/>{saved?"Unsave":"Save service"}</button><Link to={`/contact?subject=${encodeURIComponent("Service booking")}&service=${encodeURIComponent(service.title)}&reference=${encodeURIComponent(service.id)}`} className="flex h-[52px] flex-1 items-center justify-center rounded-[8px] bg-brand-hover text-center font-medium text-white">Ask about booking</Link></div>
+     <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">{[{icon:"shield",title:"Verified provider",text:service.providerVerified?"Provider verified":"Provider status available"},{icon:"clock",title:"Response time",text:service.responseTime},{icon:"calendar",title:"Availability",text:service.bookingNotice}].map(x=><div key={x.title} className="text-[10px] text-muted"><Icon name={x.icon} size={23}/><p className="mt-1 font-semibold text-ink">{x.title}</p><p className="mt-0.5 leading-4">{x.text}</p></div>)}</div>
     </div>
-    <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
-      <div className="flex items-center gap-3"><span className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-full ${service.avatarTone||"bg-[#eef1f3] text-[#10183f]"} font-semibold`}>{service.sellerImage ? <img src={service.sellerImage} alt={service.seller || ""} className="h-full w-full object-cover" /> : service.sellerInitial}</span><div><p className="text-[14px] font-semibold text-[#10183f]">{service.seller}{service.providerVerified&&<span className="ml-1 text-[#18a34a]">✓</span>}</p><p className="mt-1 text-[11px] text-[#69739a]">{service.experience}</p></div></div>
-      <div className="mt-5 grid grid-cols-2 gap-3 text-[11px] text-[#69739a]"><span className="rounded-[8px] bg-[#f7f9fb] p-3"><b className="block text-[#10183f]">Service duration</b>{service.serviceDuration}</span><span className="rounded-[8px] bg-[#f7f9fb] p-3"><b className="block text-[#10183f]">Cancellation</b>{service.cancellationPolicy}</span></div>
-      <p className="mt-4 flex items-center gap-2 text-[11px] text-[#69739a]"><Icon name="pin" size={16}/>{service.location}</p>
+    <div className="mk-detail-card">
+      <div className="flex items-center gap-3"><span className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-full ${service.avatarTone||"bg-[#eef1f3] text-ink"} font-semibold`}>{service.sellerImage ? <img src={service.sellerImage} alt={service.seller || ""} className="h-full w-full object-cover" /> : service.sellerInitial}</span><div><p className="text-[14px] font-semibold text-ink">{service.seller}{service.providerVerified&&<span className="ml-1 text-[#18a34a]">✓</span>}</p><p className="mt-1 text-[11px] text-muted">{service.experience}</p></div></div>
+      <div className="mt-5 grid grid-cols-2 gap-3 text-[11px] text-muted"><span className="rounded-[8px] bg-[#f7f9fb] p-3"><b className="block text-ink">Service duration</b>{service.serviceDuration}</span><span className="rounded-[8px] bg-[#f7f9fb] p-3"><b className="block text-ink">Cancellation</b>{service.cancellationPolicy}</span></div>
+      <p className="mt-4 flex items-center gap-2 text-[11px] text-muted"><Icon name="pin" size={16}/>{service.location}</p>
     </div>
    </section>
   </div>
   <ListingReviews kind="services" listingId={service.id} />
-  <section className="mt-7 border-t border-[#e1e6ec] pt-7">
+  <section className="mt-7 border-t border-line pt-7">
     <div className="flex items-end justify-between gap-4">
       <div>
-        <h2 className="text-[24px] font-bold tracking-[-0.04em] text-[#10183f] sm:text-[28px]">You might also like</h2>
-        <p className="mt-1 text-[13px] text-[#69739a]">More services similar to this one.</p>
+        <h2 className="text-[24px] font-bold tracking-[-0.04em] text-ink sm:text-[28px]">You might also like</h2>
+        <p className="mt-1 text-[13px] text-muted">More services similar to this one.</p>
       </div>
       <Link to="/services" className="hidden text-[12px] font-medium text-[#0759e8] sm:block">View more services →</Link>
     </div>
     <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
       {related.length ? related.map(item=><Link key={item.id} to={`/services/${item.id}`} className="rounded-[10px] border border-[#e4e8ee] bg-white p-2.5">
         <ServiceVisual service={item}/>
-        <h3 className="mt-2 truncate text-[12px] font-medium text-[#10183f]">{item.title}</h3>
-        <div className="mt-1 text-[10px]">{Number(item.reviews) > 0 ? <><Stars rating={item.rating}/> <span>{Number(item.rating).toFixed(1)} ({item.reviews} reviews)</span></> : <span className="text-[#69739a]">No reviews yet</span>}</div>
-        <p className="mt-2 text-[15px] font-bold text-[#10183f]">{item.price}</p>
-        <p className="mt-1 truncate text-[10px] text-[#69739a]">{item.seller} · {item.location}</p>
+        <h3 className="mt-2 truncate text-[12px] font-medium text-ink">{item.title}</h3>
+        <div className="mt-1 text-[10px]">{Number(item.reviews) > 0 ? <><Stars rating={item.rating}/> <span>{Number(item.rating).toFixed(1)} ({item.reviews} reviews)</span></> : <span className="text-muted">No reviews yet</span>}</div>
+        <p className="mt-2 text-[15px] font-bold text-ink">{item.price}</p>
+        <p className="mt-1 truncate text-[10px] text-muted">{item.seller} · {item.location}</p>
       </Link>) : (
         <div className="col-span-full rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
-          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f7] text-[#69739a]">
+          <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f7] text-muted">
             ♡
           </div>
-          <p className="mt-3 text-[13px] font-semibold text-[#10183f]">No similar services yet</p>
-          <p className="mx-auto mt-1 max-w-[430px] text-[11px] leading-5 text-[#69739a]">
+          <p className="mt-3 text-[13px] font-semibold text-ink">No similar services yet</p>
+          <p className="mx-auto mt-1 max-w-[430px] text-[11px] leading-5 text-muted">
             We do not have any more services similar to this one right now. You can browse the full services catalogue instead.
           </p>
-          <Link to="/services" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">
+          <Link to="/services" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-brand px-4 text-[11px] font-semibold text-white">
             Browse all services
           </Link>
         </div>
@@ -133,7 +133,7 @@ export default function ServiceDetailsPage(){
  const [related,setRelated]=useState([]);
  const [loadError,setLoadError]=useState("");
  useEffect(()=>{window.scrollTo({top:0,behavior:"auto"});let active=true;setService(null);setLoadError("");Promise.all([getServiceById(id),getRelatedServices(id)]).then(([s,r])=>{if(!active)return;if(!s){setLoadError("We could not find this service. It may have been removed or is no longer available.");return;}setService(s);setRelated(r)}).catch(error=>{if(active)setLoadError(error?.message||"Unable to load this service right now.")});return()=>{active=false}},[id]);
- if(loadError)return <main className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-12 text-center"><h1 className="text-2xl font-bold text-[#10183f]">Service unavailable</h1><p className="mt-3 text-sm leading-6 text-[#69739a]">{loadError}</p><div className="mt-6 flex gap-3"><button type="button" onClick={()=>window.location.reload()} className="rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white">Try again</button><Link to="/services" className="rounded-lg border border-slate-200 px-5 py-3 font-semibold text-[#10183f]">Browse services</Link></div></main>;
+ if(loadError)return <main className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-12 text-center"><h1 className="text-2xl font-bold text-ink">Service unavailable</h1><p className="mt-3 text-sm leading-6 text-muted">{loadError}</p><div className="mt-6 flex gap-3"><button type="button" onClick={()=>window.location.reload()} className="rounded-lg bg-brand px-5 py-3 font-semibold text-white">Try again</button><Link to="/services" className="rounded-lg border border-slate-200 px-5 py-3 font-semibold text-ink">Browse services</Link></div></main>;
  if(!service)return <main className="mx-auto min-h-[60vh] max-w-[1470px] animate-pulse px-4 py-8 sm:px-6 lg:px-8"><div className="grid gap-8 lg:grid-cols-2"><div className="h-[480px] rounded-xl bg-slate-100"/><div className="space-y-4"><div className="h-6 w-24 rounded bg-slate-100"/><div className="h-10 w-3/4 rounded bg-slate-100"/><div className="h-5 w-1/3 rounded bg-slate-100"/><div className="h-24 rounded bg-slate-100"/><div className="h-12 w-40 rounded bg-slate-100"/></div></div></main>;
  return <ServiceDetails service={service} related={related}/>;
 }

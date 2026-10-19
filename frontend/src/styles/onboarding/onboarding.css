@@ -1,0 +1,20 @@
+/* Onboarding stylesheet entry (seller "Sell products" + provider "Offer services" flows).
+   Imported by SellerSignupSideImage (every seller step) and every provider step.
+   @import order is the cascade order; do not reorder:
+   1. shell.css                 rules shared by both flows (split layout, header, stepper, field groups)
+   2. seller.css / provider.css per-flow rules
+   3. seller-steps.css          rules shared by the seller form steps (ex in-component <style> blocks)
+   4. seller-<step>.css         rules unique to one seller step, scoped to that step's root class
+   5. responsive.css            small-screen fixes for both flows (loaded last on purpose)
+   Field validation highlight classes live in field-errors.css (imported by FormContext). */
+
+@import "./shell.css";
+@import "./seller.css";
+@import "./provider.css";
+@import "./seller-steps.css";
+@import "./seller-details.css";
+@import "./seller-business.css";
+@import "./seller-verification.css";
+@import "./seller-payment.css";
+@import "./seller-review.css";
+@import "./responsive.css";

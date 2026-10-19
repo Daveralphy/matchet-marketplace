@@ -1,7 +1,6 @@
 import {useEffect,useMemo,useState} from "react";
 import {ProviderShell,Icon} from "../components/ProviderShell";
 import {getSellerReviews} from "../api/provider";
-import "../styles/seller-reviews.css";
 const date=v=>new Intl.DateTimeFormat("en-NG",{day:"2-digit",month:"short",year:"numeric"}).format(new Date(v));
 function Stars({rating}){return <span className="sr-stars">{[1,2,3,4,5].map(n=><b key={n} className={n<=rating?"on":""}>★</b>)}</span>}
 export default function SellerReviews(){

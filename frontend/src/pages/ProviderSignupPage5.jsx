@@ -5,7 +5,7 @@ import { highlightOnboardingFields, saveProviderOnboardingDraft } from "../api/p
 import { uploadFile } from "../api/uploads";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
-import "../styles/provider-onboarding.css";
+import "../styles/onboarding/onboarding.css";
 
 function UploadIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M8 8l4-4 4 4M5 15v4h14v-4" /></svg>;

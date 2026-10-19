@@ -4,8 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { deleteAccount } from "../api/auth";
 import { showToast } from "../utils/toast";
 import { useAuth } from "../context/AuthContext";
-import "./BuyerAccount.css";
-import "./AccountForms.css";
+import "../styles/account/account.css";
 
 export default function DeleteAccount() {
   const navigate = useNavigate();

@@ -129,8 +129,8 @@ function SearchBar() {
   };
 
   return (
-    <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
-      <div className="relative flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
+    <div className="mk-search">
+      <div className="mk-search-field">
         <Icon name="search" size={20} />
         <input
           type="search"
@@ -139,20 +139,20 @@ function SearchBar() {
           onKeyDown={(event) => { if (event.key === "Enter") submitSearch(); }}
           placeholder="Search for products, services, or providers..."
           aria-label="Search for products, services, or providers"
-          className="min-w-0 flex-1 bg-transparent text-[11px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[12px]"
+          className="mk-search-input"
         />
         {suggestions.length > 0 && (
-          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[80] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(16,24,63,0.14)]">
+          <div className="mk-search-suggest">
             {suggestions.map((item) => (
-              <Link key={item.id} to={`/${item.type === "service" ? "services" : "products"}/${item.id}`} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-slate-50">
+              <Link key={item.id} to={`/${item.type === "service" ? "services" : "products"}/${item.id}`} className="mk-suggest-item">
                 <span className="h-9 w-9 shrink-0 rounded-lg bg-slate-100" />
-                <span className="min-w-0"><span className="block truncate text-[12px] font-semibold text-[#10183f]">{item.title}</span><span className="block truncate text-[10px] text-slate-400">{item.category} · {item.location}</span></span>
+                <span className="min-w-0"><span className="mk-suggest-title">{item.title}</span><span className="mk-suggest-meta">{item.category} · {item.location}</span></span>
               </Link>
             ))}
           </div>
         )}
       </div>
-      <button type="button" onClick={submitSearch} className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]">Search</button>
+      <button type="button" onClick={submitSearch} className="mk-search-button">Search</button>
     </div>
   );
 }
@@ -167,7 +167,7 @@ function CategoryPills() {
 
   return (
     <div className="relative w-full max-w-[600px]">
-      <div className="flex w-full gap-2.5 overflow-x-auto pb-1 pr-2 scrollbar-none sm:flex-wrap sm:overflow-visible sm:pb-0">
+      <div className="mk-chip-row">
         {categories.map((category) => (
           <Link
             key={category.label}
@@ -183,8 +183,8 @@ function CategoryPills() {
             className={[
               "flex min-h-[39px] shrink-0 items-center gap-2 whitespace-nowrap rounded-[11px] px-3.5 py-2 text-[11px] font-medium transition-colors sm:text-[12px]",
               category.active
-                ? "bg-[#dff7e7] text-[#07863a]"
-                : "bg-white text-[#10183f] hover:bg-slate-50",
+                ? "bg-[#dff7e7] text-brand"
+                : "bg-white text-ink hover:bg-slate-50",
             ].join(" ")}
           >
             <Icon name={category.icon} size={16} />
@@ -201,7 +201,7 @@ function ExploreCard({
   title,
   description,
   className,
-  tone = "bg-[#e4f9e9] text-[#07983f]",
+  tone = "bg-brand-tint text-brand-bright",
 }) {
   return (
     <div
@@ -215,7 +215,7 @@ function ExploreCard({
         </span>
 
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold leading-[15px] text-[#10183f] sm:text-[12px]">
+          <p className="text-[11px] font-semibold leading-[15px] text-ink sm:text-[12px]">
             {title}
           </p>
 
@@ -236,7 +236,7 @@ function DesktopExploreCards({ isAuthenticated }) {
           icon="sparkles"
           title="Picked for you"
           description="Based on your interests"
-          tone="bg-[#e4f9e9] text-[#07983f]"
+          tone="bg-brand-tint text-brand-bright"
           className="left-[10%] top-[23%] w-[205px] xl:left-[15%] xl:w-[220px]"
         />
 
@@ -265,7 +265,7 @@ function DesktopExploreCards({ isAuthenticated }) {
         icon="bag"
         title="Products"
         description="Everyday essentials and more"
-        tone="bg-[#e4f9e9] text-[#07983f]"
+        tone="bg-brand-tint text-brand-bright"
         className="left-[10%] top-[30%] w-[205px] xl:left-[25%] xl:w-[220px]"
       />
 
@@ -290,8 +290,8 @@ function DesktopExploreCards({ isAuthenticated }) {
 
 function HeroVisual({ isAuthenticated }) {
   return (
-    <div className="relative hidden lg:absolute lg:inset-y-0 lg:right-0 lg:block lg:h-full lg:w-[58%]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_56%_48%,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.94)_42%,rgba(248,250,249,0)_76%)]" />
+    <div className="mk-hero-art">
+      <div className="mk-hero-art-glow" />
 
       <img
         src={heroImage}
@@ -299,9 +299,9 @@ function HeroVisual({ isAuthenticated }) {
         className="absolute left-[60%] top-1/2 h-[99%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain xl:h-[95%]"
       />
 
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-[#fbfcfb] via-[#fbfcfb]/75 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-canvas via-canvas/75 to-transparent" />
 
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[15%] bg-gradient-to-l from-[#fbfcfb]/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-[15%] bg-gradient-to-l from-canvas/70 to-transparent" />
 
       <DesktopExploreCards isAuthenticated={isAuthenticated} />
     </div>
@@ -325,7 +325,7 @@ function HeartButton({ item }) {
       aria-label={saved ? "Unsave item" : "Save item"}
       aria-pressed={saved}
       onClick={handleSave}
-      className={saved ? "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#10183f] text-white shadow-[0_2px_8px_rgba(16,24,63,0.12)] scale-105 transition-all" : "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_8px_rgba(16,24,63,0.12)] transition-all"}
+      className={saved ? "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-white shadow-[0_2px_8px_rgba(16,24,63,0.12)] scale-105 transition-all" : "absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-ink shadow-[0_2px_8px_rgba(16,24,63,0.12)] transition-all"}
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6.2a4.8 4.8 0 0 1 8.8 2.6Z" />
@@ -347,12 +347,12 @@ function ProviderCard({ provider }) {
               className="h-full w-full object-cover"
             />
           ) : (
-            <span className="flex h-full w-full items-center justify-center text-[14px] font-semibold text-[#69739a]">
+            <span className="flex h-full w-full items-center justify-center text-[14px] font-semibold text-muted">
               {provider.initials}
             </span>
           )}
           {provider.verified && (
-            <span className="absolute bottom-0 right-0 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-[#07983f] text-[8px] font-bold text-white">
+            <span className="absolute bottom-0 right-0 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-brand-bright text-[8px] font-bold text-white">
               ✓
             </span>
           )}
@@ -361,15 +361,15 @@ function ProviderCard({ provider }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="truncate text-[13px] font-semibold leading-5 text-[#10183f]">
+              <h3 className="truncate text-[13px] font-semibold leading-5 text-ink">
                 {provider.name}
               </h3>
-              <p className="mt-0.5 truncate text-[10px] text-[#69739a]">
+              <p className="mt-0.5 truncate text-[10px] text-muted">
                 {provider.businessName || provider.category}
               </p>
             </div>
 
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#fff8e6] px-2 py-1 text-[9px] font-semibold text-[#10183f]">
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-[#fff8e6] px-2 py-1 text-[9px] font-semibold text-ink">
               <span className="text-[#f4b400]">★</span>
               {provider.rating > 0 ? provider.rating.toFixed(1) : "New"}
             </span>
@@ -377,17 +377,17 @@ function ProviderCard({ provider }) {
         </div>
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#edf0f3] pt-3 text-[9px] text-[#69739a]">
+      <div className="mt-3 grid grid-cols-2 gap-2 border-t border-[#edf0f3] pt-3 text-[9px] text-muted">
         <div>
-          <span className="block font-semibold text-[#10183f]">{provider.category}</span>
+          <span className="block font-semibold text-ink">{provider.category}</span>
           <span>Specialty</span>
         </div>
         <div>
-          <span className="block font-semibold text-[#10183f]">{provider.listings || 0}</span>
+          <span className="block font-semibold text-ink">{provider.listings || 0}</span>
           <span>Active services</span>
         </div>
         <div className="col-span-2 flex items-center gap-1 truncate">
-          <span className="text-[#07863a]">⌖</span>
+          <span className="text-brand">⌖</span>
           <span className="truncate">{provider.location}</span>
           {provider.reviews > 0 && <span className="shrink-0">· {provider.reviews} reviews</span>}
         </div>
@@ -395,7 +395,7 @@ function ProviderCard({ provider }) {
 
       <Link
         to={`/providers/${provider.id}`}
-        className="mt-3 flex h-9 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[10px] font-semibold text-[#07863a] transition-colors hover:bg-[#dff7e7]"
+        className="mt-3 flex h-9 w-full items-center justify-center rounded-full bg-[#e9f9ed] text-[10px] font-semibold text-brand transition-colors hover:bg-[#dff7e7]"
       >
         View services <span className="ml-1 text-[14px]">→</span>
       </Link>
@@ -418,22 +418,22 @@ function ProvidersSection({ isAuthenticated }) {
   }, [location]);
 
   const title = isAuthenticated ? (
-    <>People <span className="text-[#07863a]">worth knowing.</span></>
+    <>People <span className="text-brand">worth knowing.</span></>
   ) : (
-    <>Discover <span className="text-[#07863a]">trusted providers.</span></>
+    <>Discover <span className="text-brand">trusted providers.</span></>
   );
 
   return (
-    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-9 lg:py-9 ${isAuthenticated ? "bg-[#f5fcf8]" : "bg-[#fbfcfb]"}`}>
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-9 lg:py-9 ${isAuthenticated ? "bg-[#f5fcf8]" : "bg-canvas"}`}>
       <div className="flex items-end justify-between gap-5">
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+          <p className="mk-eyebrow-sm">
             {isAuthenticated ? "PROVIDERS FOR YOU" : "MEET THE COMMUNITY"}
           </p>
-          <h2 className="mt-2 text-[31px] font-bold leading-none tracking-[-0.045em] text-[#10183f] sm:text-[42px]">
+          <h2 className="mt-2 text-[31px] font-bold leading-none tracking-[-0.045em] text-ink sm:text-[42px]">
             {title}
           </h2>
-          <p className="mt-2 text-[12px] leading-5 text-[#69739a] sm:text-[15px]">
+          <p className="mt-2 text-[12px] leading-5 text-muted sm:text-[15px]">
             {isAuthenticated
               ? "Discover providers based on your interests, location, and previous activity."
               : "Find skilled people and businesses ready to help with what you need."}
@@ -441,16 +441,16 @@ function ProvidersSection({ isAuthenticated }) {
         </div>
 
         <div className="hidden items-center gap-3 sm:flex">
-          <button type="button" aria-label="Previous providers" className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_10px_rgba(16,24,63,0.05)]">‹</button>
-          <button type="button" aria-label="Next providers" className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_2px_10px_rgba(16,24,63,0.05)]">›</button>
-          <button type="button" className="ml-3 flex h-11 items-center gap-2 rounded-full bg-[#e6f8eb] px-5 text-[11px] font-semibold text-[#07863a]">
+          <button type="button" aria-label="Previous providers" className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-ink shadow-[0_2px_10px_rgba(16,24,63,0.05)]">‹</button>
+          <button type="button" aria-label="Next providers" className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-ink shadow-[0_2px_10px_rgba(16,24,63,0.05)]">›</button>
+          <button type="button" className="ml-3 flex h-11 items-center gap-2 rounded-full bg-[#e6f8eb] px-5 text-[11px] font-semibold text-brand">
             View all providers <span className="text-[16px]">→</span>
           </button>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {providers.length ? providers.map((provider) => <ProviderCard key={provider.id} provider={provider} />) : <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-10 text-center text-[11px] text-[#69739a]">No service providers with active services are available yet.</div>}
+        {providers.length ? providers.map((provider) => <ProviderCard key={provider.id} provider={provider} />) : <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-10 text-center text-[11px] text-muted">No service providers with active services are available yet.</div>}
       </div>
     </section>
   );
@@ -478,7 +478,7 @@ function ExploreProductCard({ item, listView = false }) {
   if (item.type === "provider") {
     return <article className={`flex min-w-0 flex-col overflow-hidden rounded-[20px] bg-white p-3.5 shadow-[0_8px_28px_rgba(16,24,63,0.09)] ${listView ? "sm:flex-row sm:items-center sm:gap-4" : ""}`}>
       <div className={`relative shrink-0 overflow-hidden rounded-[15px] bg-[#edf1ed] ${listView ? "h-[156px] w-full sm:w-[224px]" : "h-[244px] w-full"}`}>{item.image ? <img src={item.image} alt={item.name || ""} className="h-full w-full object-cover"/> : <div className="flex h-full items-center justify-center text-4xl text-slate-400">♙</div>}</div>
-      <div className="min-w-0 flex-1 p-3"><h3 className="font-bold text-[#090f35]">{item.name}</h3><p className="mt-1 text-sm text-[#71809f]">{item.category} · {item.location}</p><p className="mt-2 line-clamp-2 text-sm text-[#71809f]">{item.bio || item.experience || "Service provider on Matchet."}</p><Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-3 inline-flex text-sm font-semibold text-[#07863a]">View their services →</Link></div>
+      <div className="min-w-0 flex-1 p-3"><h3 className="font-bold text-[#090f35]">{item.name}</h3><p className="mt-1 text-sm text-[#71809f]">{item.category} · {item.location}</p><p className="mt-2 line-clamp-2 text-sm text-[#71809f]">{item.bio || item.experience || "Service provider on Matchet."}</p><Link to={`/services?q=${encodeURIComponent(item.name || "")}&location=${encodeURIComponent(item.location || "")}`} className="mt-3 inline-flex text-sm font-semibold text-brand">View their services →</Link></div>
     </article>;
   }
   const handleAction = (event) => { event.preventDefault(); event.stopPropagation(); window.location.href = (item.type === "service" ? "/services/" : "/products/") + item.id; };
@@ -490,7 +490,7 @@ function ResultsControl({ icon, children, active = false, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-9 shrink-0 items-center gap-2 rounded-full border px-3 text-[10px] font-medium transition-colors sm:h-10 sm:px-4 sm:text-[11px] ${active ? "border-transparent bg-[#dff7e7] text-[#07863a]" : "border-[#e4e9f0] bg-white text-[#10183f] hover:bg-[#f7faf8]"}`}
+      className={`flex h-9 shrink-0 items-center gap-2 rounded-full border px-3 text-[10px] font-medium transition-colors sm:h-10 sm:px-4 sm:text-[11px] ${active ? "border-transparent bg-[#dff7e7] text-brand" : "border-[#e4e9f0] bg-white text-ink hover:bg-[#f7faf8]"}`}
     >
       {icon && <Icon name={icon} size={15} />}
       {children}
@@ -518,7 +518,7 @@ function CategoryIcon({ name, size = 25 }) {
 }
 
 const CATEGORY_TONES = {
-  green: "bg-[#e2f8e8] text-[#07863a]",
+  green: "bg-[#e2f8e8] text-brand",
   red: "bg-[#ffe5e5] text-[#db2e35]",
   yellow: "bg-[#fff1cb] text-[#9b6a00]",
   pink: "bg-[#fde4f5] text-[#bd2b9b]",
@@ -537,8 +537,8 @@ function CategoryTile({ category }) {
       <span className={`flex h-[74px] w-[74px] shrink-0 items-center justify-center rounded-full ${CATEGORY_TONES[category.tone]}`}>
         <CategoryIcon name={category.icon} size={29} />
       </span>
-      <span className="min-w-0 flex-1 text-[12px] font-semibold text-[#10183f] sm:text-[13px]">{category.name}</span>
-      <span className="text-[21px] text-[#10183f]">›</span>
+      <span className="min-w-0 flex-1 text-[12px] font-semibold text-ink sm:text-[13px]">{category.name}</span>
+      <span className="text-[21px] text-ink">›</span>
     </Link>
   );
 }
@@ -555,27 +555,27 @@ function CategoriesSection({ isAuthenticated }) {
   }, []);
 
   return (
-    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-[#fbfcfb] px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10">
+    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-canvas px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10">
       <div className="flex items-start justify-between gap-5">
         <div className="max-w-[700px]">
-          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+          <p className="mk-eyebrow-sm">
             {isAuthenticated ? "EXPLORE YOUR INTERESTS" : "EXPLORE BY CATEGORY"}
           </p>
-          <h2 className="mt-2 text-[34px] font-bold leading-[1.02] tracking-[-0.045em] text-[#10183f] sm:text-[48px]">
+          <h2 className="mt-2 text-[34px] font-bold leading-[1.02] tracking-[-0.045em] text-ink sm:text-[48px]">
             {isAuthenticated ? (
-              <>What would you like<br /><span className="text-[#07863a]">to explore?</span></>
+              <>What would you like<br /><span className="text-brand">to explore?</span></>
             ) : (
-              <>Find something that<br /><span className="text-[#07863a]">fits your needs.</span></>
+              <>Find something that<br /><span className="text-brand">fits your needs.</span></>
             )}
           </h2>
-          <p className="mt-2 max-w-[620px] text-[13px] leading-5 text-[#69739a] sm:text-[17px] sm:leading-6">
+          <p className="mt-2 max-w-[620px] text-[13px] leading-5 text-muted sm:text-[17px] sm:leading-6">
             {isAuthenticated
               ? "Jump into your favourite categories or discover something new."
               : "Start with a category and discover products, services, and providers around you."}
           </p>
         </div>
 
-        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e9f9ed] px-5 py-3 text-[11px] font-semibold text-[#07863a] sm:flex">
+        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e9f9ed] px-5 py-3 text-[11px] font-semibold text-brand sm:flex">
           View all categories <span className="text-[16px]">→</span>
         </button>
       </div>
@@ -583,14 +583,14 @@ function CategoriesSection({ isAuthenticated }) {
       {isAuthenticated ? (
         <>
           <div className="mt-7 flex items-center justify-between">
-            <h3 className="text-[15px] font-semibold text-[#10183f]">Your interests</h3>
-            <button type="button" className="text-[11px] font-semibold text-[#07863a]">Edit interests <span className="ml-1 text-[15px]">→</span></button>
+            <h3 className="text-[15px] font-semibold text-ink">Your interests</h3>
+            <button type="button" className="text-[11px] font-semibold text-brand">Edit interests <span className="ml-1 text-[15px]">→</span></button>
           </div>
           <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {categories.interests.map((category) => <CategoryTile key={category.id} category={category} />)}
           </div>
           <div className="my-5 border-t border-[#e8ecf1]" />
-          <h3 className="text-[15px] font-semibold text-[#10183f]">Explore more</h3>
+          <h3 className="text-[15px] font-semibold text-ink">Explore more</h3>
           <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {categories.exploreMore.map((category) => <CategoryTile key={category.id} category={category} />)}
           </div>
@@ -710,22 +710,22 @@ function ExploreResultsSection({ isAuthenticated }) {
   };
 
   return (
-    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-[#fbfcfb] px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-8 lg:py-9">
+    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-canvas px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-8 lg:py-9">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0">
-          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+          <p className="mk-eyebrow-sm">
             {isAuthenticated ? "EXPLORE FOR YOU" : "DISCOVER ON MATCHET"}
           </p>
 
-          <h2 className="mt-2 text-[32px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[43px]">
+          <h2 className="mt-2 text-[32px] font-bold leading-[0.98] tracking-[-0.045em] text-ink sm:text-[43px]">
             {isAuthenticated ? (
-              <>More of what <span className="text-[#07863a]">matches you.</span></>
+              <>More of what <span className="text-brand">matches you.</span></>
             ) : (
-              <>Explore what’s <span className="text-[#07863a]">available.</span></>
+              <>Explore what’s <span className="text-brand">available.</span></>
             )}
           </h2>
 
-          <p className="mt-2 text-[12px] leading-5 text-[#69739a] sm:text-[14px]">
+          <p className="mt-2 text-[12px] leading-5 text-muted sm:text-[14px]">
             {isAuthenticated
               ? "Browse recommendations, nearby options, and everything else available on Matchet."
               : "Browse products, services, and providers from around you."}
@@ -740,7 +740,7 @@ function ExploreResultsSection({ isAuthenticated }) {
             type="button"
             aria-label="Grid view"
             onClick={() => setListView(false)}
-            className={`flex h-9 w-9 items-center justify-center rounded-full ${!listView ? "bg-[#dff7e7] text-[#07863a]" : "bg-white text-[#69739a]"}`}
+            className={`flex h-9 w-9 items-center justify-center rounded-full ${!listView ? "bg-[#dff7e7] text-brand" : "bg-white text-muted"}`}
           >
             <Icon name="grid" size={16} />
           </button>
@@ -748,7 +748,7 @@ function ExploreResultsSection({ isAuthenticated }) {
             type="button"
             aria-label="List view"
             onClick={() => setListView(true)}
-            className={`flex h-9 w-9 items-center justify-center rounded-full ${listView ? "bg-[#dff7e7] text-[#07863a]" : "bg-white text-[#69739a]"}`}
+            className={`flex h-9 w-9 items-center justify-center rounded-full ${listView ? "bg-[#dff7e7] text-brand" : "bg-white text-muted"}`}
           >
             <span className="text-[15px] leading-none">☷</span>
           </button>
@@ -776,7 +776,7 @@ function ExploreResultsSection({ isAuthenticated }) {
               setVisibleCount(12);
             }}
             placeholder="Search within results..."
-            className="min-w-0 flex-1 bg-transparent text-[10px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[11px]"
+            className="min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-[#8790ae] md:text-[11px]"
           />
         </div>
 
@@ -794,7 +794,7 @@ function ExploreResultsSection({ isAuthenticated }) {
         <select
           value={selectedCategory}
           onChange={(event) => { setSelectedCategory(event.target.value); setVisibleCount(12); }}
-          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
+          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-base font-medium text-ink outline-none sm:h-10 sm:px-4 md:text-[11px]"
           aria-label="Filter by category"
         >
           <option value="all">All categories</option>
@@ -806,7 +806,7 @@ function ExploreResultsSection({ isAuthenticated }) {
         <select
           value={sortBy}
           onChange={(event) => setSortBy(event.target.value)}
-          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-[10px] font-medium text-[#10183f] outline-none sm:h-10 sm:px-4 sm:text-[11px]"
+          className="h-9 rounded-full border border-[#e4e9f0] bg-white px-3 text-base font-medium text-ink outline-none sm:h-10 sm:px-4 md:text-[11px]"
           aria-label="Sort results"
         >
           <option value="relevance">Sort by: Relevance</option>
@@ -831,9 +831,9 @@ function ExploreResultsSection({ isAuthenticated }) {
         </div>
       ) : activeTab === "recommended" && !hasRecommendationHistory ? (
         <div className="mt-6 rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
-          <p className="text-[13px] font-semibold text-[#10183f]">We are still learning what matches you.</p>
-          <p className="mx-auto mt-1 max-w-[480px] text-[11px] leading-5 text-[#69739a]">Keep viewing products and services you are interested in. As you explore more, Matchet will learn your interests and recommend more relevant options here.</p>
-          <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">Start exploring</Link>
+          <p className="text-[13px] font-semibold text-ink">We are still learning what matches you.</p>
+          <p className="mx-auto mt-1 max-w-[480px] text-[11px] leading-5 text-muted">Keep viewing products and services you are interested in. As you explore more, Matchet will learn your interests and recommend more relevant options here.</p>
+          <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-brand px-4 text-[11px] font-semibold text-white">Start exploring</Link>
         </div>
       ) : (
         <div className={listView ? "mt-5 grid gap-3" : "mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"}>
@@ -841,8 +841,8 @@ function ExploreResultsSection({ isAuthenticated }) {
             <ExploreProductCard key={item.id + item.type} item={item} listView={listView} />
           )) : (
             <div className="col-span-full rounded-xl border border-dashed border-[#d8dfe8] bg-white px-5 py-14 text-center">
-              <p className="text-[13px] font-semibold text-[#10183f]">Nothing matches your search</p>
-              <p className="mt-1 text-[11px] text-[#69739a]">There are no active products or services matching the current filters.</p>
+              <p className="text-[13px] font-semibold text-ink">Nothing matches your search</p>
+              <p className="mt-1 text-[11px] text-muted">There are no active products or services matching the current filters.</p>
             </div>
           )}
         </div>
@@ -854,7 +854,7 @@ function ExploreResultsSection({ isAuthenticated }) {
           <button
             type="button"
             onClick={() => setVisibleCount((count) => count + 12)}
-            className="inline-flex h-9 items-center gap-2 rounded-full bg-[#e7f8ec] px-6 text-[10px] font-semibold text-[#07863a] transition-colors hover:bg-[#d9f3e1]"
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-[#e7f8ec] px-6 text-[10px] font-semibold text-brand transition-colors hover:bg-[#d9f3e1]"
           >
             Load more results <span className="text-[16px]">→</span>
           </button>
@@ -876,31 +876,31 @@ export default function Explore({ isAuthenticated = false }) {
   }, [searchParams]);
 
   return (
-    <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
-      <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#fbfcfb] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
-        <div className="relative min-h-0 lg:min-h-[535px]">
-          <div className="relative z-20 flex w-full flex-col justify-center px-6 pb-0 pt-10 sm:px-10 sm:pt-12 lg:min-h-[535px] lg:w-[51%] lg:px-12 lg:pb-12 lg:pt-12 xl:px-[50px]">
-            <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+    <main className="mk-page">
+      <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-canvas shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
+        <div className="mk-hero-inner">
+          <div className="mk-hero-copy">
+            <p className="mk-eyebrow">
               {isAuthenticated ? "EXPLORE FOR YOU" : "EXPLORE MATCHET"}
             </p>
 
-            <h1 className="mt-4 max-w-[520px] text-[36px] font-bold leading-[0.99] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[43px] xl:text-[48px]">
+            <h1 className="mk-hero-title">
               {isAuthenticated ? (
                 <>
                   Discover your
                   <br />
-                  <span className="text-[#07863a]">next match.</span>
+                  <span className="text-brand">next match.</span>
                 </>
               ) : (
                 <>
                   Discover more.
                   <br />
-                  <span className="text-[#07863a]">Find what fits.</span>
+                  <span className="text-brand">Find what fits.</span>
                 </>
               )}
             </h1>
 
-            <p className="mt-4 max-w-[475px] text-[14px] leading-[22px] text-[#69739a] sm:text-[15px] sm:leading-6">
+            <p className="mk-hero-lead">
               {isAuthenticated
                 ? "Explore recommendations, new finds, and trusted providers based on what interests you."
                 : "Browse products, services, and trusted providers all in one place."}

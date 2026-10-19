@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getBuyerOrder, getBuyerOrderReviews, submitBuyerOrderReview } from "../api/marketplace";
-import "./BuyerAccount.css";
-import "./BuyerOrderDetails.css";
+import "../styles/account/account.css";
+import "../styles/account/order-details.css";
 
 const money = (value, currency = "NGN") => currency + " " + Number(value || 0).toLocaleString("en-NG");
 

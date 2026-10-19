@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../api/auth";
 import { showToast } from "../utils/toast";
+import "../styles/auth/auth.css";
 
 export default function ResetPassword() {
   useEffect(() => { document.title = "Reset Password | Matchet"; }, []);
@@ -30,20 +31,20 @@ export default function ResetPassword() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f8faf8] px-5 py-12">
+    <main className="auth-page flex min-h-screen items-center justify-center bg-[#f8faf8] px-5 py-12">
       <section className="w-full max-w-[460px] rounded-2xl border border-slate-200 bg-white p-7 shadow-sm sm:p-10">
-        <h1 className="text-3xl font-extrabold tracking-tight text-[#10183f]">Create a new password</h1>
-        <p className="mt-3 text-sm leading-6 text-[#747ca1]">Choose a password with at least 8 characters.</p>
+        <h1 className="text-3xl font-extrabold tracking-tight text-ink">Create a new password</h1>
+        <p className="mt-3 text-sm leading-6 text-subtle">Choose a password with at least 8 characters.</p>
         {!token && <div role="alert" className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">This reset link is missing its security token. Request a new link to continue.</div>}
         
         
         {!complete && token && <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div><label htmlFor="new-password" className="mb-2 block text-sm font-medium text-[#10183f]">New password</label><input id="new-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="h-12 w-full rounded-lg border border-slate-200 px-4 text-sm outline-none focus:border-[#07983f]" /></div>
-          <div><label htmlFor="confirm-password" className="mb-2 block text-sm font-medium text-[#10183f]">Confirm new password</label><input id="confirm-password" type="password" autoComplete="new-password" required minLength={8} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} className="h-12 w-full rounded-lg border border-slate-200 px-4 text-sm outline-none focus:border-[#07983f]" /></div>
-          <button type="submit" disabled={submitting} className="h-12 w-full rounded-lg bg-[#07983f] px-4 font-semibold text-white transition hover:bg-[#068936] disabled:cursor-not-allowed disabled:opacity-60">{submitting ? "Updating password..." : "Reset password"}</button>
+          <div><label htmlFor="new-password" className="mb-2 block text-sm font-medium text-ink">New password</label><input id="new-password" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(event) => setPassword(event.target.value)} className="h-12 w-full rounded-lg border border-slate-200 px-4 text-sm outline-none focus:border-brand-bright" /></div>
+          <div><label htmlFor="confirm-password" className="mb-2 block text-sm font-medium text-ink">Confirm new password</label><input id="confirm-password" type="password" autoComplete="new-password" required minLength={8} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} className="h-12 w-full rounded-lg border border-slate-200 px-4 text-sm outline-none focus:border-brand-bright" /></div>
+          <button type="submit" disabled={submitting} className="h-12 w-full rounded-lg bg-brand-bright px-4 font-semibold text-white transition hover:bg-brand-mid disabled:cursor-not-allowed disabled:opacity-60">{submitting ? "Updating password..." : "Reset password"}</button>
         </form>}
-        {complete && <button type="button" onClick={() => navigate("/login", { replace: true })} className="mt-6 h-12 w-full rounded-lg bg-[#07983f] px-4 font-semibold text-white hover:bg-[#068936]">Go to login</button>}
-        {!complete && <p className="mt-6 text-center text-sm text-[#747ca1]"><Link to="/forgot-password" className="font-semibold text-[#07983f] hover:text-[#068936]">Request a new reset link</Link></p>}
+        {complete && <button type="button" onClick={() => navigate("/login", { replace: true })} className="mt-6 h-12 w-full rounded-lg bg-brand-bright px-4 font-semibold text-white hover:bg-brand-mid">Go to login</button>}
+        {!complete && <p className="mt-6 text-center text-sm text-subtle"><Link to="/forgot-password" className="font-semibold text-brand-bright hover:text-brand-mid">Request a new reset link</Link></p>}
       </section>
     </main>
   );

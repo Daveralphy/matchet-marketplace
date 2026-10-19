@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ProviderShell } from "../components/ProviderShell";
 import { getInbox, startConversation, getConversation, sendMessage, updateConversationState } from "../api/messages";
-import "./BuyerMessages.css";
+import "../styles/account/messages.css";
 
 const formatTime = (value) => {
   if (!value) return "";

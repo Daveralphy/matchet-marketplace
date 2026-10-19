@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import NotificationDetailModal, { notificationDestination } from "./NotificationDetailModal";
 import logo from "../assets/logo/matchet_logoname.png";
-import "../styles/provider-dashboard.css";
+import "../styles/workspace/index.css";
 
 const items = [
   { label: "Dashboard", path: "/provider/dashboard", icon: "home" },

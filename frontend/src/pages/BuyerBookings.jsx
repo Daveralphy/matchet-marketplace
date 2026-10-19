@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getBuyerBookings } from "../api/marketplace";
 import BookingReviewPanel from "../components/BookingReviewPanel";
-import "./BuyerAccount.css";
+import "../styles/account/account.css";
+import "../styles/account/order-history.css";
 
 export default function BuyerBookings() {
   const [bookings, setBookings] = useState([]);

@@ -2,6 +2,7 @@
 // Consider modifying form field names to match names from database schema
 
 import { createContext, useState, useContext, useCallback, useEffect, useRef } from "react";
+import "../styles/onboarding/field-errors.css";
 
 // Create the context
 const FormContext = createContext();
@@ -349,11 +350,6 @@ export function FormProvider({ children }) {
 
   return (
     <>
-      <style>{`
-        .onboarding-field-error { border-color: #dc2626 !important; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important; }
-        .onboarding-inline-error { display: block; margin-top: 5px; color: #dc2626; font-size: 12px; font-weight: 500; line-height: 1.4; }
-        .onboarding-section-error { border-color: #fecaca !important; }
-      `}</style>
       <FormContext.Provider value={{ formData, updateField, mergeFormData, setOnboardingFlow, clearForm }}>
         {children}
       </FormContext.Provider>

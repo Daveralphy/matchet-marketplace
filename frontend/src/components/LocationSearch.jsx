@@ -114,7 +114,7 @@ export default function LocationSearch({
         placeholder={placeholder}
         aria-expanded={Boolean(showDropdown)}
         aria-autocomplete="list"
-        className="box-border w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#10183f] outline-none transition focus:border-[#07983f] focus:ring-2 focus:ring-[#07983f]/10"
+        className="box-border w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-ink outline-none transition focus:border-brand-bright focus:ring-2 focus:ring-brand-bright/10"
         onChange={(event) => {
           const next = event.target.value;
           setQuery(next);
@@ -142,7 +142,7 @@ export default function LocationSearch({
           {enableCurrentLocation && (
             <button
               type="button"
-              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-[#07983f] hover:bg-[#f3faf5] disabled:cursor-wait disabled:opacity-60"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-brand-bright hover:bg-[#f3faf5] disabled:cursor-wait disabled:opacity-60"
               onClick={useCurrentLocation}
               disabled={detectingLocation || disabled}
             >
@@ -166,7 +166,7 @@ export default function LocationSearch({
               key={`${location.label}-${location.coordinates?.coordinates?.join(",") || ""}`}
               type="button"
               role="option"
-              className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-[#24305f] transition-colors hover:bg-[#f3faf5] focus:bg-[#f3faf5] focus:outline-none"
+              className="block w-full rounded-lg px-3 py-2.5 text-left text-sm text-ink-soft transition-colors hover:bg-[#f3faf5] focus:bg-[#f3faf5] focus:outline-none"
               onClick={() => selectLocation(location)}
             >
               <strong className="block truncate font-semibold">{location.label}</strong>

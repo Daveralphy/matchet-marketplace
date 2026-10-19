@@ -1,0 +1,35 @@
+/* Onboarding validation highlights, added by highlightOnboardingFields()
+   (api/provider.js) and FormContext. Imported by FormContext.jsx so it is always
+   loaded. The last three rules (from FormContext's former \3c style> block) override
+   the first ones, as before. */
+
+.onboarding-field-error {
+  background-color: #fff7f7 !important;
+}
+
+.onboarding-section-error::before {
+  content: "Please complete this section";
+  display: block;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.onboarding-field-error {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.08) !important;
+}
+
+.onboarding-inline-error {
+  display: block;
+  margin-top: 5px;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.onboarding-section-error {
+  border-color: #fecaca !important;
+}

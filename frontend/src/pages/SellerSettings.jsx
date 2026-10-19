@@ -1,7 +1,6 @@
 import {useEffect,useState} from "react";
 import {ProviderShell,Icon} from "../components/ProviderShell";
 import {getSellerSettings,updateSellerSettingsPreferences,updateSellerSettingsStore} from "../api/provider";
-import "../styles/seller-settings.css";
 const labels=k=>k.replace(/([A-Z])/g," $1").replace(/^./,c=>c.toUpperCase());
 export default function SellerSettings(){const[data,setData]=useState(null),[tab,setTab]=useState("account"),[msg,setMsg]=useState(""),[editing,setEditing]=useState(false);
 useEffect(()=>{getSellerSettings().then(r=>setData(r.data)).catch(e=>setMsg(e.message))},[]);

@@ -3,7 +3,6 @@ import { ProviderShell, Icon } from "../components/ProviderShell";
 import { providerMock } from "../data/providerMock";
 import { getServiceCollection } from "../data/marketplaceApi";
 import providerImage from "../assets/inspirations/provider/provideronboarding.png";
-import "../styles/provider-dashboard.css";
 
 const initials=(s)=>s.split(" ").map(x=>x[0]).join("").slice(0,2);
 function Avatar({name}){return <div className="provider-avatar">{initials(name)}</div>}
@@ -37,7 +36,7 @@ function ProviderServicesPage(){
      {error&&<div className="provider-empty-state">{error}</div>}
      {loading?<div className="provider-empty-state">Loading services...</div>:!error&&!services.length?<div className="provider-empty-state">No services found yet.</div>:
        <div className="provider-table">{services.map(service=><div className="provider-service-row" key={service.id}>
-         <div className="provider-service-thumb" style={service.image?{backgroundImage:`url("${service.image}")`,backgroundSize:"cover",backgroundPosition:"center"}:undefined}/>
+         <div className="provider-service-thumb" style={service.image?{backgroundImage:`url("${service.image}")`}:undefined}/>
          <div><strong>{service.title}</strong><small>{service.description||"No description provided."}</small></div>
          <span>{service.category||"Uncategorized"}</span>
          <b>{service.price||"Custom quote"}</b>

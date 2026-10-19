@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import logo from "../assets/logo/matchet_logoname.png";
 import { Icon } from "./ProviderShell";
 import NotificationDetailModal from "./NotificationDetailModal";
-import "../styles/admin-dashboard.css";
+import "../styles/workspace/index.css";
 
 const items = [
   { label: "Dashboard", path: "/admin/dashboard", icon: "home" },

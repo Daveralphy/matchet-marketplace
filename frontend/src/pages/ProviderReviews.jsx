@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getProviderReviews } from "../api/provider";
-import "../styles/provider-dashboard.css";
 
 function formatDate(value) {
   if (!value) return "—";

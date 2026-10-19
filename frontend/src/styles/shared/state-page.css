@@ -1,0 +1,82 @@
+/* Full-screen status card shared by the access, approval and fallback screens
+   (AccessDeniedPage, ProviderAccessPage and SellerAccessPage in routes.jsx). */
+
+.state-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: var(--color-canvas-cool);
+}
+
+.state-page__card {
+  box-sizing: border-box;
+  width: min(520px, 100%);
+  padding: 32px;
+  background: var(--color-surface);
+  border: 1px solid #e5e8f0;
+  border-radius: var(--radius-dialog);
+  text-align: center;
+  box-shadow: var(--shadow-dialog);
+}
+
+.state-page__title {
+  margin: 0 0 10px;
+  color: var(--color-ink);
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.state-page__message {
+  margin: 0 0 24px;
+  color: #687099;
+  line-height: 1.6;
+}
+
+.state-page__actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.state-page__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap-target);
+  padding: 12px 20px;
+  border-radius: var(--radius-card);
+  border: 1px solid #dfe3ec;
+  color: var(--color-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.state-page__action:hover {
+  background: var(--color-canvas-cool);
+}
+
+@media (max-width: 479px) {
+  .state-page {
+    padding: var(--gutter-mobile);
+  }
+
+  .state-page__card {
+    padding: 24px 20px;
+  }
+
+  .state-page__title {
+    font-size: 21px;
+  }
+
+  .state-page__actions {
+    flex-direction: column;
+  }
+
+  .state-page__action {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

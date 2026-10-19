@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getProviderEarnings } from "../api/provider";
-import "../styles/provider-dashboard.css";
 
 function money(value, currency = "NGN") {
   return new Intl.NumberFormat("en-NG", { style: "currency", currency, maximumFractionDigits: 0 }).format(Number(value || 0));

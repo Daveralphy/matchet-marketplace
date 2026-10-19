@@ -4,7 +4,7 @@ import { useForm } from "../context/FormContext";
 import { highlightOnboardingFields, saveProviderOnboardingDraft } from "../api/provider";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
-import "../styles/provider-onboarding.css";
+import "../styles/onboarding/onboarding.css";
 
 function InfoIcon() {
   return <span className="provider-payment-info-icon">i</span>;

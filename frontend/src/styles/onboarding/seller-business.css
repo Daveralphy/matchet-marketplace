@@ -1,0 +1,259 @@
+/* Seller step 2 "Business info" (SellerSignupPage2, /register/page2).
+   Formerly the page's \3c style> block; scoped to .seller-signup-page2 with :where(). */
+
+.seller-signup-form-page2 {
+  margin-left: 44px;
+  margin-right: 44px;
+}
+
+.seller-signup-form-page2 label {
+  display: block;
+  min-width: 0;
+  margin-bottom: 12px;
+  color: #10183f;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+.seller-signup-form-page2 label:last-of-type {
+  margin-bottom: 0;
+}
+
+.seller-signup-form-page2 input,
+.seller-signup-form-page2 select,
+.seller-signup-form-page2 textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  border: 1px solid #d7deec;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #10183f;
+  font-family: inherit;
+  font-size: 12px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.seller-signup-form-page2 input,
+.seller-signup-form-page2 select {
+  height: 40px;
+  padding: 0 13px;
+}
+
+.seller-signup-form-page2 textarea {
+  min-height: 78px;
+  padding: 10px 13px;
+  line-height: 1.45;
+}
+
+.seller-signup-form-page2 input:focus,
+.seller-signup-form-page2 select:focus,
+.seller-signup-form-page2 textarea:focus {
+  border-color: #07983f;
+  box-shadow: 0 0 0 3px rgba(7, 152, 63, 0.08);
+}
+
+.seller-signup-form-page2 fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0 0 12px;
+  border: 0;
+}
+
+.seller-signup-form-page2 legend {
+  color: #10183f;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
+:where(.seller-signup-page2) .phone-input-container {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+:where(.seller-signup-page2) .phone-input-container select,
+:where(.seller-signup-page2) .phone-input-container input {
+  margin-top: 0;
+}
+
+/* Business logo upload */
+:where(.seller-signup-page2) .seller-signup-upload.seller-signup-business-logo {
+  min-height: 82px;
+  box-sizing: border-box;
+  margin-top: 4px;
+  margin-bottom: 15px;
+  padding: 13px 15px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 12px;
+  align-items: center;
+  border: 1px dashed #cfd7e8;
+  border-radius: 8px;
+  background: #fbfcfe;
+  cursor: pointer;
+}
+
+:where(.seller-signup-page2) .seller-signup-upload-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  grid-row: 1 / 3;
+  border-radius: 7px;
+  background: #eef7f1;
+  color: #07983f;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+:where(.seller-signup-page2)
+  .seller-signup-upload.seller-signup-business-logo
+  strong {
+  align-self: end;
+  color: #10183f;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+:where(.seller-signup-page2)
+  .seller-signup-upload.seller-signup-business-logo
+  > span:nth-of-type(2) {
+  align-self: start;
+  color: #8991b8;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+:where(.seller-signup-page2)
+  .seller-signup-upload.seller-signup-business-logo
+  input {
+  display: none;
+}
+
+/* Tips */
+:where(.seller-signup-page2) .seller-signup-tips {
+  margin-top: 5px;
+  padding: 13px 15px;
+  border-radius: 8px;
+  background: #f5f8ff;
+}
+
+:where(.seller-signup-page2) .seller-signup-tips h4 {
+  margin: 0 0 7px;
+  color: #10183f;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+:where(.seller-signup-page2) .seller-signup-tips ul {
+  margin: 0;
+  padding-left: 17px;
+  color: #6670ad;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+:where(.seller-signup-page2) .seller-signup-tips li {
+  margin-bottom: 2px;
+}
+
+:where(.seller-signup-page2) .seller-signup-tips li:last-child {
+  margin-bottom: 0;
+}
+
+/* Navigation buttons */
+.seller-signup-form-page2 > .back-button {
+  height: 47px;
+  min-width: 105px;
+  margin: 0 10px 28px 0;
+  padding: 0 22px;
+  border: 1px solid #d7deec;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #10183f;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.seller-signup-form-page2 > .back-button:hover {
+  background: #f8f9fc;
+  border-color: #cbd3e4;
+}
+
+.seller-signup-form-page2 > .save-continue-button {
+  height: 47px;
+  min-width: 225px;
+  margin: 0 0 28px auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  border: 1px solid #07983f;
+  border-radius: 8px;
+  background: #07983f;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.seller-signup-form-page2 > .save-continue-button:hover {
+  background: #068936;
+}
+
+.seller-signup-form-page2 {
+  display: flex;
+  flex-direction: column;
+}
+
+.seller-signup-form-page2 > .seller-signup-form-field-group {
+  width: 100%;
+}
+
+.seller-signup-form-page2 > .back-button {
+  align-self: flex-start;
+}
+
+.seller-signup-form-page2 > .save-continue-button {
+  align-self: flex-end;
+  margin-top: -75px;
+}
+
+@media (max-width: 1100px) {
+  .seller-signup-form-page2 {
+    margin-left: 28px;
+    margin-right: 28px;
+  }
+}
+
+@media (max-width: 820px) {
+  .seller-signup-form-page2 {
+    margin-left: 18px;
+    margin-right: 18px;
+  }
+
+  .seller-signup-form-page2 > .back-button,
+  .seller-signup-form-page2 > .save-continue-button {
+    width: 100%;
+    margin: 0 0 12px;
+  }
+
+  .seller-signup-form-page2 > .save-continue-button {
+    margin-bottom: 28px;
+  }
+}

@@ -5,7 +5,6 @@ import {
   getProviderConversation,
   sendProviderMessage,
 } from "../api/provider";
-import "../styles/provider-dashboard.css";
 
 function formatTime(value) {
   if (!value) return "";

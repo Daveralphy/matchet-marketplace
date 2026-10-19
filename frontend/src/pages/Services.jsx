@@ -160,8 +160,8 @@ function SearchBar() {
     navigate(`/explore?q=${encodeURIComponent(value)}`);
   };
   return (
-    <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
-      <div className="relative flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
+    <div className="mk-search">
+      <div className="mk-search-field">
         <Icon name="search" size={20} />
 
         <input
@@ -171,15 +171,15 @@ function SearchBar() {
           onKeyDown={(event) => { if (event.key === "Enter") submitSearch(); }}
           placeholder="Search for a service, skill, or provider..."
           aria-label="Search for a service, skill, or provider"
-          className="min-w-0 flex-1 bg-transparent text-[11px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[12px]"
+          className="mk-search-input"
         />
 
         {suggestions.length > 0 && (
-          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[80] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(16,24,63,0.14)]">
+          <div className="mk-search-suggest">
             {suggestions.map((item) => (
-              <Link key={item.id} to={`/${item.type === "service" ? "services" : "products"}/${item.id}`} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-slate-50">
+              <Link key={item.id} to={`/${item.type === "service" ? "services" : "products"}/${item.id}`} className="mk-suggest-item">
                 <span className="h-9 w-9 shrink-0 rounded-lg bg-slate-100" />
-                <span className="min-w-0"><span className="block truncate text-[12px] font-semibold text-[#10183f]">{item.title}</span><span className="block truncate text-[10px] text-slate-400">{item.category} · {item.location}</span></span>
+                <span className="min-w-0"><span className="mk-suggest-title">{item.title}</span><span className="mk-suggest-meta">{item.category} · {item.location}</span></span>
               </Link>
             ))}
           </div>
@@ -188,7 +188,7 @@ function SearchBar() {
       <button
         type="button"
         onClick={submitSearch}
-        className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]"
+        className="mk-search-button"
       >
         Search
       </button>
@@ -199,18 +199,18 @@ function SearchBar() {
 function ServiceCategories() {
   return (
     <div className="relative w-full max-w-[600px]">
-      <div className="flex w-full gap-2.5 overflow-x-auto pb-1 pr-2 scrollbar-none sm:flex-wrap sm:overflow-visible sm:pb-0">
+      <div className="mk-chip-row">
         {SERVICE_CATEGORIES.map((category, index) => (
           <button
             key={category.label}
             type="button"
-            className="flex min-h-[58px] w-[78px] shrink-0 flex-col items-center justify-center gap-1.5 rounded-[14px] text-[9px] font-medium text-[#10183f] transition-colors hover:bg-white sm:w-[82px] sm:text-[10px]"
+            className="flex min-h-[58px] w-[78px] shrink-0 flex-col items-center justify-center gap-1.5 rounded-[14px] text-[9px] font-medium text-ink transition-colors hover:bg-white sm:w-[82px] sm:text-[10px]"
           >
             <span
               className={[
                 "flex h-10 w-10 items-center justify-center rounded-full",
                 index === 0
-                  ? "bg-[#dff7e7] text-[#07863a]"
+                  ? "bg-[#dff7e7] text-brand"
                   : index === 1
                     ? "bg-[#e6f2ff] text-[#2470d8]"
                     : index === 2
@@ -219,7 +219,7 @@ function ServiceCategories() {
                         ? "bg-[#fff0d9] text-[#a96a13]"
                         : index === 4
                           ? "bg-[#eee8ff] text-[#7437d9]"
-                          : "bg-[#eef0f4] text-[#10183f]",
+                          : "bg-[#eef0f4] text-ink",
               ].join(" ")}
             >
               <Icon name={category.icon} size={20} />
@@ -240,7 +240,7 @@ function ServiceCard({
   title,
   description,
   className,
-  tone = "bg-[#e4f9e9] text-[#07983f]",
+  tone = "bg-brand-tint text-brand-bright",
 }) {
   return (
     <div
@@ -254,7 +254,7 @@ function ServiceCard({
         </span>
 
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold leading-[15px] text-[#10183f] sm:text-[12px]">
+          <p className="text-[11px] font-semibold leading-[15px] text-ink sm:text-[12px]">
             {title}
           </p>
 
@@ -273,13 +273,13 @@ function HeroVisual({ isAuthenticated }) {
     : heroImageLoggedOut;
 
   return (
-    <div className="relative hidden lg:absolute lg:inset-y-0 lg:right-0 lg:block lg:h-full lg:w-[58%]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_56%_48%,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.94)_42%,rgba(248,250,249,0)_76%)]" />
+    <div className="mk-hero-art">
+      <div className="mk-hero-art-glow" />
 
       <img
         src={heroImage}
         alt=""
-        className="absolute left-[55%] top-[48%] h-[99%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain xl:h-[90%]"
+        className="mk-hero-art-img"
       />
 
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-[#f5fbf5] via-[#f5fbf5]/75 to-transparent" />
@@ -292,7 +292,7 @@ function HeroVisual({ isAuthenticated }) {
             icon="shield"
             title="Verified providers"
             description="Work with trusted professionals."
-            tone="bg-[#e4f9e9] text-[#07983f]"
+            tone="bg-brand-tint text-brand-bright"
             className="left-[10%] top-[18%] w-[205px] xl:left-[15%] xl:w-[220px]"
           />
 
@@ -308,7 +308,7 @@ function HeroVisual({ isAuthenticated }) {
             icon="users"
             title="Trusted professionals near you."
             description=""
-            tone="bg-[#e4f9e9] text-[#07983f]"
+            tone="bg-brand-tint text-brand-bright"
             className="right-[7%] bottom-[14%] w-[210px] xl:right-[12%] xl:w-[225px]"
           />
         </>
@@ -318,7 +318,7 @@ function HeroVisual({ isAuthenticated }) {
             icon="shield"
             title="Verified providers"
             description="Work with trusted professionals."
-            tone="bg-[#e4f9e9] text-[#07983f]"
+            tone="bg-brand-tint text-brand-bright"
             className="left-[10%] top-[18%] w-[205px] xl:left-[15%] xl:w-[220px]"
           />
 
@@ -334,7 +334,7 @@ function HeroVisual({ isAuthenticated }) {
             icon="users"
             title="Book with confidence"
             description="A safer, simpler way to get things done."
-            tone="bg-[#e4f9e9] text-[#07983f]"
+            tone="bg-brand-tint text-brand-bright"
             className="right-[7%] bottom-[14%] w-[210px] xl:right-[12%] xl:w-[225px]"
           />
         </>
@@ -346,13 +346,13 @@ function HeroVisual({ isAuthenticated }) {
 
 
 const SERVICE_CATEGORY_TONES = {
-  green: "bg-[#e4f8e9] text-[#07863a]",
+  green: "bg-[#e4f8e9] text-brand",
   blue: "bg-[#e5f1ff] text-[#1467d6]",
   pink: "bg-[#fde4f4] text-[#c82d9d]",
   yellow: "bg-[#fff1d6] text-[#9a6200]",
   purple: "bg-[#eee5ff] text-[#6630d2]",
   orange: "bg-[#ffe9dd] text-[#c44710]",
-  gray: "bg-[#efeff2] text-[#10183f]",
+  gray: "bg-[#efeff2] text-ink",
 };
 
 function ServiceCategoryCard({ category }) {
@@ -362,11 +362,11 @@ function ServiceCategoryCard({ category }) {
         <span className={`flex h-[56px] w-[56px] items-center justify-center rounded-full ${SERVICE_CATEGORY_TONES[category.tone] || SERVICE_CATEGORY_TONES.gray}`}>
           <Icon name={category.icon} size={27} />
         </span>
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ebfaef] text-[20px] text-[#07863a] transition-transform group-hover:translate-x-0.5">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ebfaef] text-[20px] text-brand transition-transform group-hover:translate-x-0.5">
           →
         </span>
       </div>
-      <h3 className="mt-4 text-[14px] font-semibold tracking-[-0.02em] text-[#10183f] sm:text-[15px]">{category.label}</h3>
+      <h3 className="mt-4 text-[14px] font-semibold tracking-[-0.02em] text-ink sm:text-[15px]">{category.label}</h3>
       <p className="mt-1 max-w-[210px] text-[11px] leading-[17px] text-[#727b9d] sm:text-[12px]">{category.description}</p>
     </button>
   );
@@ -386,33 +386,33 @@ function ServiceCategoriesSection({ isAuthenticated }) {
   }, []);
 
   return (
-    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-canvas"}`}>
       <div className="flex items-start justify-between gap-5">
         <div className="max-w-[780px]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#07863a] sm:text-[11px]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand sm:text-[11px]">
             {isAuthenticated ? "SERVICES FOR YOU" : "EXPLORE SERVICES"}
           </p>
 
-          <h2 className="mt-3 text-[37px] font-bold leading-[1] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
+          <h2 className="mt-3 text-[37px] font-bold leading-[1] tracking-[-0.045em] text-ink sm:text-[48px] lg:text-[52px]">
             {isAuthenticated ? (
               <>
-                What do you <span className="text-[#07863a]">need help with?</span>
+                What do you <span className="text-brand">need help with?</span>
               </>
             ) : (
               <>
-                Find help <span className="text-[#07863a]">for every need.</span>
+                Find help <span className="text-brand">for every need.</span>
               </>
             )}
           </h2>
 
-          <p className="mt-2 text-[14px] leading-5 text-[#69739a] sm:text-[17px]">
+          <p className="mt-2 text-[14px] leading-5 text-muted sm:text-[17px]">
             {isAuthenticated
               ? "Start with your interests or explore something new."
               : "Browse popular service categories and find trusted professionals around you."}
           </p>
         </div>
 
-        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e8f9ed] px-6 py-3.5 text-[12px] font-semibold text-[#07863a] sm:flex">
+        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e8f9ed] px-6 py-3.5 text-[12px] font-semibold text-brand sm:flex">
           View all services <span className="text-[18px]">→</span>
         </button>
       </div>
@@ -420,14 +420,14 @@ function ServiceCategoriesSection({ isAuthenticated }) {
       {isAuthenticated ? (
         <>
           <div className="mt-6">
-            <h3 className="text-[15px] font-semibold text-[#10183f]">Your interests</h3>
+            <h3 className="text-[15px] font-semibold text-ink">Your interests</h3>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {categories.interests.map((category) => <ServiceCategoryCard key={category.id} category={category} />)}
             </div>
           </div>
           <div className="my-5 border-t border-[#e7ebef]" />
           <div>
-            <h3 className="text-[15px] font-semibold text-[#10183f]">Explore more</h3>
+            <h3 className="text-[15px] font-semibold text-ink">Explore more</h3>
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {categories.exploreMore.map((category) => <ServiceCategoryCard key={category.id} category={category} />)}
             </div>
@@ -448,15 +448,15 @@ function MiniSearchVisual() {
     <div className="flex h-full flex-col justify-center gap-2 bg-[#eef3f0] px-3.5">
       <div className="flex items-center gap-2 rounded-[7px] bg-white px-3 py-2.5 shadow-[0_3px_8px_rgba(16,24,63,0.06)]">
         <Icon name="search" size={16} strokeWidth={2} />
-        <span className="text-[9px] font-medium text-[#10183f]">Home cleaning</span>
+        <span className="text-[9px] font-medium text-ink">Home cleaning</span>
       </div>
       {[
-        ["home", "Home Services", "#07863a"],
-        ["tools", "Repairs & Maintenance", "#1467d6"],
-        ["beauty", "Beauty & Personal Care", "#c82d9d"],
+        ["home", "Home Services", "text-brand"],
+        ["tools", "Repairs & Maintenance", "text-[#1467d6]"],
+        ["beauty", "Beauty & Personal Care", "text-[#c82d9d]"],
       ].map(([icon, label, color]) => (
         <div key={label} className="flex items-center gap-2 rounded-[7px] bg-white/95 px-2.5 py-2">
-          <span style={{ color }}><Icon name={icon} size={15} strokeWidth={2} /></span>
+          <span className={color}><Icon name={icon} size={15} strokeWidth={2} /></span>
           <span className="text-[8px] font-medium text-[#27335f]">{label}</span>
         </div>
       ))}
@@ -467,19 +467,19 @@ function MiniSearchVisual() {
 function MiniBookingVisual() {
   return (
     <div className="flex h-full flex-col bg-white px-3 py-3">
-      <p className="text-[8px] font-semibold text-[#10183f]">Select a date</p>
+      <p className="text-[8px] font-semibold text-ink">Select a date</p>
       <div className="mt-2 grid grid-cols-4 gap-1.5">
         {["Mon", "Tue", "Wed", "Thu"].map((day, i) => (
-          <div key={day} className={`rounded-[6px] border px-1 py-2 text-center ${i === 1 ? "border-[#07863a] bg-[#eaf9ee] text-[#07863a]" : "border-[#edf0f3] bg-white text-[#27335f]"}`}>
+          <div key={day} className={`rounded-[6px] border px-1 py-2 text-center ${i === 1 ? "border-brand bg-brand-wash text-brand" : "border-[#edf0f3] bg-white text-[#27335f]"}`}>
             <span className="block text-[7px]">{day}</span>
             <span className="mt-1 block text-[8px] font-semibold">{12 + i}</span>
           </div>
         ))}
       </div>
-      <p className="mt-3 text-[8px] font-semibold text-[#10183f]">Select a time</p>
+      <p className="mt-3 text-[8px] font-semibold text-ink">Select a time</p>
       <div className="mt-2 grid grid-cols-2 gap-1.5">
         <span className="rounded-[6px] border border-[#e9edf1] px-2 py-2 text-center text-[8px] text-[#27335f]">9:00 AM</span>
-        <span className="rounded-[6px] bg-[#07863a] px-2 py-2 text-center text-[8px] font-semibold text-white">10:00 AM</span>
+        <span className="rounded-[6px] bg-brand px-2 py-2 text-center text-[8px] font-semibold text-white">10:00 AM</span>
       </div>
     </div>
   );
@@ -488,12 +488,12 @@ function MiniBookingVisual() {
 function MiniReviewVisual() {
   return (
     <div className="flex h-full flex-col justify-center bg-white px-3.5">
-      <p className="text-[8px] font-semibold text-[#10183f]">How was your experience?</p>
+      <p className="text-[8px] font-semibold text-ink">How was your experience?</p>
       <div className="mt-2 flex gap-1 text-[18px] leading-none text-[#f4a900]">★★★★★</div>
       <div className="mt-3 rounded-[7px] bg-[#f5f7f8] px-2.5 py-2.5 text-[8px] leading-3 text-[#4f5979]">
         Great service! Very professional and on time.
       </div>
-      <button type="button" className="mt-2 rounded-full bg-[#07863a] py-2 text-[8px] font-semibold text-white">
+      <button type="button" className="mt-2 rounded-full bg-brand py-2 text-[8px] font-semibold text-white">
         Submit Review
       </button>
     </div>
@@ -504,10 +504,10 @@ function MiniProviderVisual({ image, rating }) {
   return (
     <div className="relative h-full overflow-hidden bg-[#ddd]">
       <img src={image} alt="" className="h-full w-full object-cover" />
-      <div className="absolute bottom-3 left-2.5 rounded-full bg-white px-2.5 py-1.5 text-[9px] font-semibold text-[#10183f] shadow-sm">
+      <div className="absolute bottom-3 left-2.5 rounded-full bg-white px-2.5 py-1.5 text-[9px] font-semibold text-ink shadow-sm">
         <span className="mr-1 text-[#f4a900]">★</span>{rating}
       </div>
-      <div className="absolute bottom-[-2px] left-2.5 translate-y-full rounded-full bg-white px-2.5 py-1.5 text-[8px] font-semibold text-[#07863a] shadow-sm">
+      <div className="absolute bottom-[-2px] left-2.5 translate-y-full rounded-full bg-white px-2.5 py-1.5 text-[8px] font-semibold text-brand shadow-sm">
         ✓ Verified
       </div>
     </div>
@@ -528,7 +528,7 @@ function LoggedOutServiceJourney({ content, reassurance }) {
       <div className="relative mt-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5 lg:gap-6">
         {content.steps.map((step, index) => (
           <div key={step.number} className="relative">
-            <span className="absolute -left-1 -top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#effbf1] text-[17px] font-semibold text-[#07863a]">
+            <span className="absolute -left-1 -top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-[#effbf1] text-[17px] font-semibold text-brand">
               {step.number}
             </span>
             <div className="h-[180px] overflow-hidden rounded-[15px] bg-white shadow-[0_6px_18px_rgba(16,24,63,0.08)]">
@@ -537,8 +537,8 @@ function LoggedOutServiceJourney({ content, reassurance }) {
             {index < 4 && (
               <span className="absolute -right-5 top-[92px] hidden text-[24px] font-light text-[#4f5979] lg:block">→</span>
             )}
-            <h3 className="mt-5 text-[14px] font-semibold tracking-[-0.02em] text-[#10183f]">{step.title}</h3>
-            <p className="mt-1.5 text-[11px] leading-[17px] text-[#69739a]">{step.description}</p>
+            <h3 className="mt-5 text-[14px] font-semibold tracking-[-0.02em] text-ink">{step.title}</h3>
+            <p className="mt-1.5 text-[11px] leading-[17px] text-muted">{step.description}</p>
           </div>
         ))}
       </div>
@@ -547,16 +547,16 @@ function LoggedOutServiceJourney({ content, reassurance }) {
         <div className="grid grid-cols-1 items-center gap-5 lg:grid-cols-[1fr_1fr_1fr_auto]">
           {reassurance.map((item, index) => (
             <div key={item.title} className="flex min-h-[46px] items-center gap-3 lg:border-r lg:border-[#dfe6e2] lg:pr-5">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e8f9ec] text-[#07863a]">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e8f9ec] text-brand">
                 <Icon name={item.icon} size={21} />
               </span>
               <div>
-                <h3 className="text-[11px] font-semibold text-[#07863a]">{item.title}</h3>
-                <p className="mt-1 text-[9px] leading-3 text-[#69739a]">{item.description}</p>
+                <h3 className="text-[11px] font-semibold text-brand">{item.title}</h3>
+                <p className="mt-1 text-[9px] leading-3 text-muted">{item.description}</p>
               </div>
             </div>
           ))}
-          <button type="button" className="flex h-[49px] items-center justify-center gap-3 rounded-[11px] bg-[#07863a] px-7 text-[11px] font-semibold text-white">
+          <button type="button" className="flex h-[49px] items-center justify-center gap-3 rounded-[11px] bg-brand px-7 text-[11px] font-semibold text-white">
             Find a service <span className="text-[18px] leading-none">→</span>
           </button>
         </div>
@@ -567,7 +567,7 @@ function LoggedOutServiceJourney({ content, reassurance }) {
 
 function LoggedInServiceJourney({ content, reassurance, booking }) {
   const stepColors = [
-    ["bg-[#e7f8eb]", "text-[#07863a]"],
+    ["bg-[#e7f8eb]", "text-brand"],
     ["bg-[#e6f1ff]", "text-[#1467d6]"],
     ["bg-[#fde7f3]", "text-[#d42c83]"],
     ["bg-[#ffeddd]", "text-[#c56312]"],
@@ -584,31 +584,31 @@ function LoggedInServiceJourney({ content, reassurance, booking }) {
               <div className={`flex h-[58px] w-[58px] items-center justify-center rounded-full ${stepColors[index][0]} ${stepColors[index][1]}`}>
                 <Icon name={step.icon} size={28} strokeWidth={1.9} />
               </div>
-              <span className="mt-3 inline-flex rounded-full bg-[#edf9ef] px-2 py-1 text-[9px] font-semibold text-[#07863a]">{step.number}</span>
-              <h3 className="mt-2 text-[14px] font-semibold text-[#10183f]">{step.title}</h3>
-              <p className="mt-1 text-[10px] leading-[15px] text-[#69739a]">{step.description}</p>
+              <span className="mt-3 inline-flex rounded-full bg-[#edf9ef] px-2 py-1 text-[9px] font-semibold text-brand">{step.number}</span>
+              <h3 className="mt-2 text-[14px] font-semibold text-ink">{step.title}</h3>
+              <p className="mt-1 text-[10px] leading-[15px] text-muted">{step.description}</p>
             </div>
           ))}
         </div>
 
         {booking && (
           <aside className="rounded-[14px] border border-[#e5eaf0] bg-white p-3.5 shadow-[0_6px_20px_rgba(16,24,63,0.05)]">
-            <div className="flex items-center justify-between text-[9px] font-semibold text-[#10183f]">
-              <span>Upcoming booking</span><button type="button" className="text-[#07863a]">View all</button>
+            <div className="flex items-center justify-between text-[9px] font-semibold text-ink">
+              <span>Upcoming booking</span><button type="button" className="text-brand">View all</button>
             </div>
             <div className="mt-3 flex gap-3">
               <img src={person1} alt="" className="h-[58px] w-[58px] rounded-[8px] object-cover" />
               <div className="min-w-0">
-                <h3 className="text-[10px] font-semibold text-[#10183f]">{booking.serviceId === "service-recommended-1" ? "Home Cleaning" : booking.provider}</h3>
-                <p className="mt-1 text-[8px] text-[#69739a]">{booking.provider}</p>
-                <p className="mt-1 text-[8px] text-[#69739a]">{booking.scheduledLabel}</p>
-                <p className="mt-1 text-[8px] text-[#69739a]">⌖ {booking.location}</p>
+                <h3 className="text-[10px] font-semibold text-ink">{booking.serviceId === "service-recommended-1" ? "Home Cleaning" : booking.provider}</h3>
+                <p className="mt-1 text-[8px] text-muted">{booking.provider}</p>
+                <p className="mt-1 text-[8px] text-muted">{booking.scheduledLabel}</p>
+                <p className="mt-1 text-[8px] text-muted">⌖ {booking.location}</p>
               </div>
             </div>
-            <span className="mt-3 inline-flex rounded-full bg-[#e6f9e9] px-3 py-1.5 text-[8px] font-semibold text-[#07863a]">{booking.status} ✓</span>
+            <span className="mt-3 inline-flex rounded-full bg-[#e6f9e9] px-3 py-1.5 text-[8px] font-semibold text-brand">{booking.status} ✓</span>
             <div className="mt-3 flex gap-2 border-t border-[#edf0f2] pt-3">
-              <button type="button" className="flex-1 rounded-[8px] bg-[#eef7f0] py-2 text-[8px] font-semibold text-[#07863a]">View details</button>
-              <button type="button" className="flex-1 rounded-[8px] bg-[#07863a] py-2 text-[8px] font-semibold text-white">Reschedule</button>
+              <button type="button" className="flex-1 rounded-[8px] bg-[#eef7f0] py-2 text-[8px] font-semibold text-brand">View details</button>
+              <button type="button" className="flex-1 rounded-[8px] bg-brand py-2 text-[8px] font-semibold text-white">Reschedule</button>
             </div>
           </aside>
         )}
@@ -616,9 +616,9 @@ function LoggedInServiceJourney({ content, reassurance, booking }) {
 
       <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-[275px_1fr]">
         <div className="rounded-[14px] bg-[#effbf1] p-5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#dff6e4] text-[#07863a]"><Icon name="users" size={22}/></span>
-          <h3 className="mt-3 text-[15px] font-semibold leading-5 text-[#10183f]">A better way<br />to get things done.</h3>
-          <p className="mt-3 text-[10px] leading-4 text-[#69739a]">Trusted providers. Simple booking.<br />Real results.</p>
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#dff6e4] text-brand"><Icon name="users" size={22}/></span>
+          <h3 className="mt-3 text-[15px] font-semibold leading-5 text-ink">A better way<br />to get things done.</h3>
+          <p className="mt-3 text-[10px] leading-4 text-muted">Trusted providers. Simple booking.<br />Real results.</p>
         </div>
         <div className="grid grid-cols-2 divide-x divide-[#e3e9e5] rounded-[14px] border border-[#edf1ee] bg-white px-2 py-5 sm:grid-cols-4">
           {[
@@ -628,7 +628,7 @@ function LoggedInServiceJourney({ content, reassurance, booking }) {
             ["users", "Support", "when you need it"],
           ].map(([icon, title, label]) => (
             <div key={title} className="flex flex-col items-center justify-center gap-2 px-3 text-center">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e9f9ed] text-[#07863a]"><Icon name={icon} size={19}/></span>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e9f9ed] text-brand"><Icon name={icon} size={19}/></span>
               <span className="text-[9px] font-medium text-[#27335f]">{title}<br />{label}</span>
             </div>
           ))}
@@ -637,13 +637,13 @@ function LoggedInServiceJourney({ content, reassurance, booking }) {
 
       <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-[14px] border border-[#e1e8e3] bg-white px-5 py-4 sm:flex-row">
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e7f9eb] text-[#07863a]"><Icon name="sparkles" size={20}/></span>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#e7f9eb] text-brand"><Icon name="sparkles" size={20}/></span>
           <div>
-            <p className="text-[11px] font-semibold text-[#10183f]">Need help finding the right service?</p>
-            <p className="mt-1 text-[9px] text-[#69739a]">Our recommendations can help you discover trusted providers based on your activity.</p>
+            <p className="text-[11px] font-semibold text-ink">Need help finding the right service?</p>
+            <p className="mt-1 text-[9px] text-muted">Our recommendations can help you discover trusted providers based on your activity.</p>
           </div>
         </div>
-        <button type="button" className="rounded-[10px] border border-[#07863a] px-6 py-3 text-[10px] font-semibold text-[#07863a]">Explore services <span className="ml-2">→</span></button>
+        <button type="button" className="rounded-[10px] border border-brand px-6 py-3 text-[10px] font-semibold text-brand">Explore services <span className="ml-2">→</span></button>
       </div>
     </>
   );
@@ -666,12 +666,12 @@ function ServiceJourneySection({ isAuthenticated }) {
   const reassurance = data.experience.reassurance ?? [];
 
   return (
-    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-11 lg:px-10 lg:py-12 ${isAuthenticated ? "bg-[#fbfdfb]" : "bg-[#fbfcfb]"}`}>
-      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#07863a] sm:text-[11px]">{content.eyebrow}</p>
-      <h2 className="mt-3 max-w-[920px] text-[38px] font-bold leading-[1] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
-        {isAuthenticated ? <>From match to <span className="text-[#07863a]">completed service.</span></> : <>Getting help <span className="text-[#07863a]">should be simple.</span></>}
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-11 lg:px-10 lg:py-12 ${isAuthenticated ? "bg-[#fbfdfb]" : "bg-canvas"}`}>
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand sm:text-[11px]">{content.eyebrow}</p>
+      <h2 className="mt-3 max-w-[920px] text-[38px] font-bold leading-[1] tracking-[-0.045em] text-ink sm:text-[48px] lg:text-[52px]">
+        {isAuthenticated ? <>From match to <span className="text-brand">completed service.</span></> : <>Getting help <span className="text-brand">should be simple.</span></>}
       </h2>
-      <p className="mt-2 text-[14px] leading-5 text-[#69739a] sm:text-[17px]">{content.subtitle}</p>
+      <p className="mt-2 text-[14px] leading-5 text-muted sm:text-[17px]">{content.subtitle}</p>
       {isAuthenticated ? (
         <LoggedInServiceJourney content={content} reassurance={reassurance} booking={data.upcomingBooking} />
       ) : (
@@ -698,22 +698,22 @@ function ServiceReviewsSection({ isAuthenticated }) {
   const content = isAuthenticated ? data.loggedIn : data.loggedOut;
 
   const badgeTone = {
-    green: "bg-[#e3f8e8] text-[#087d35]",
+    green: "bg-[#e3f8e8] text-brand-hover",
     blue: "bg-[#e5f0ff] text-[#0965dc]",
   };
 
   return (
-    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-10 lg:px-10 lg:py-11 ${isAuthenticated ? "bg-[#f4fcf5]" : "bg-[#fbfcfb]"}`}>
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-10 lg:px-10 lg:py-11 ${isAuthenticated ? "bg-[#f4fcf5]" : "bg-canvas"}`}>
       <div className="max-w-[720px]">
-        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#07863a] sm:text-[11px]">
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand sm:text-[11px]">
           {content.eyebrow}
         </p>
-        <h2 className="mt-3 text-[39px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[50px] lg:text-[54px]">
+        <h2 className="mt-3 text-[39px] font-bold leading-[0.98] tracking-[-0.045em] text-ink sm:text-[50px] lg:text-[54px]">
           {content.title}
           <br />
-          <span className="text-[#07863a]">{content.accent}</span>
+          <span className="text-brand">{content.accent}</span>
         </h2>
-        <p className="mt-3 max-w-[650px] text-[14px] leading-5 text-[#69739a] sm:text-[17px] sm:leading-6">
+        <p className="mt-3 max-w-[650px] text-[14px] leading-5 text-muted sm:text-[17px] sm:leading-6">
           {content.subtitle}
         </p>
       </div>
@@ -730,7 +730,7 @@ function ServiceReviewsSection({ isAuthenticated }) {
               </span>
             </div>
 
-            <blockquote className="mt-5 text-[15px] leading-[1.55] tracking-[-0.02em] text-[#10183f] sm:text-[16px]">
+            <blockquote className="mt-5 text-[15px] leading-[1.55] tracking-[-0.02em] text-ink sm:text-[16px]">
               “{review.quote}”
             </blockquote>
 
@@ -738,12 +738,12 @@ function ServiceReviewsSection({ isAuthenticated }) {
               {review.avatarUrl ? (
                 <img src={review.avatarUrl} alt="" className="h-[86px] w-[86px] rounded-[13px] object-cover" />
               ) : (
-                <div className={`flex h-[86px] w-[86px] shrink-0 items-center justify-center rounded-[13px] ${review.avatarTone || "bg-[#e8edf0]"} text-[18px] font-semibold text-[#10183f]`}>
+                <div className={`flex h-[86px] w-[86px] shrink-0 items-center justify-center rounded-[13px] ${review.avatarTone || "bg-[#e8edf0]"} text-[18px] font-semibold text-ink`}>
                   {review.initials}
                 </div>
               )}
               <div className="min-w-0">
-                <h3 className="text-[14px] font-semibold text-[#10183f] sm:text-[15px]">{review.name}</h3>
+                <h3 className="text-[14px] font-semibold text-ink sm:text-[15px]">{review.name}</h3>
                 <p className="mt-1 text-[12px] text-[#7b84a3]">{review.role}</p>
                 <p className="mt-1 text-[12px] text-[#7b84a3]">{review.location}</p>
               </div>
@@ -791,37 +791,37 @@ function ServicesListingSection({ isAuthenticated }) {
   const services = sourceServices.filter((item) => !search || [item.title, item.category, item.seller, item.businessName, item.location].join(" ").toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-[#fbfcfb]"}`}>
+    <section className={`mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 px-5 py-8 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-8 sm:py-9 lg:px-9 lg:py-10 ${isAuthenticated ? "bg-[#f5fcf7]" : "bg-canvas"}`}>
       <div className="flex items-start justify-between gap-5">
         <div className="max-w-[760px]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#07863a] sm:text-[11px]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-brand sm:text-[11px]">
             {isAuthenticated ? "SERVICES FOR YOU" : "POPULAR SERVICES"}
           </p>
 
-          <h2 className="mt-3 text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[52px]">
+          <h2 className="mt-3 text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-ink sm:text-[48px] lg:text-[52px]">
             {isAuthenticated ? (
               <>
                 Services that match
                 <br />
-                <span className="text-[#07863a]">what you need.</span>
+                <span className="text-brand">what you need.</span>
               </>
             ) : (
               <>
                 Get things done by
                 <br />
-                <span className="text-[#07863a]">the right people.</span>
+                <span className="text-brand">the right people.</span>
               </>
             )}
           </h2>
 
-          <p className="mt-3 text-[14px] leading-5 text-[#69739a] sm:text-[17px] sm:leading-6">
+          <p className="mt-3 text-[14px] leading-5 text-muted sm:text-[17px] sm:leading-6">
             {isAuthenticated
               ? "Explore services selected around your interests, location, and activity."
               : "Explore popular services from trusted providers around Lagos."}
           </p>
         </div>
 
-        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e7f8eb] px-6 py-3.5 text-[12px] font-semibold text-[#07863a] sm:flex">
+        <button type="button" className="hidden shrink-0 items-center gap-2 rounded-full bg-[#e7f8eb] px-6 py-3.5 text-[12px] font-semibold text-brand sm:flex">
           View all services <span className="text-[18px]">→</span>
         </button>
       </div>
@@ -836,8 +836,8 @@ function ServicesListingSection({ isAuthenticated }) {
           <ServiceListingCard key={service.id} service={service} />
         )) : (
           <div className="col-span-full rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-14 text-center">
-            <p className="text-[13px] font-semibold text-[#10183f]">No services available yet</p>
-            <p className="mt-1 text-[11px] text-[#69739a]">Live services will appear here when a provider publishes an active service.</p>
+            <p className="text-[13px] font-semibold text-ink">No services available yet</p>
+            <p className="mt-1 text-[11px] text-muted">Live services will appear here when a provider publishes an active service.</p>
           </div>
         )}
       </div>
@@ -847,20 +847,20 @@ function ServicesListingSection({ isAuthenticated }) {
 
 export default function Services({ isAuthenticated = false }) {
   return (
-    <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
+    <main className="mk-page">
       <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#f5fbf5] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
-        <div className="relative min-h-0 lg:min-h-[535px]">
-          <div className="relative z-20 flex w-full flex-col justify-center px-6 pb-0 pt-10 sm:px-10 sm:pt-12 lg:min-h-[535px] lg:w-[51%] lg:px-12 lg:pb-12 lg:pt-12 xl:px-[50px]">
-            <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+        <div className="mk-hero-inner">
+          <div className="mk-hero-copy">
+            <p className="mk-eyebrow">
               {isAuthenticated ? "SERVICES FOR YOU" : "SERVICES ON MATCHET"}
             </p>
 
-            <h1 className="mt-4 max-w-[520px] text-[36px] font-bold leading-[0.99] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[43px] xl:text-[48px]">
+            <h1 className="mk-hero-title">
               {isAuthenticated ? (
                 <>
                   Find help that
                   <br />
-                  <span className="text-[#07863a]">
+                  <span className="text-brand">
                     fits your needs.
                   </span>
                 </>
@@ -868,12 +868,12 @@ export default function Services({ isAuthenticated = false }) {
                 <>
                   Find the right help
                   <br />
-                  <span className="text-[#07863a]">for the job.</span>
+                  <span className="text-brand">for the job.</span>
                 </>
               )}
             </h1>
 
-            <p className="mt-4 max-w-[475px] text-[14px] leading-[22px] text-[#69739a] sm:text-[15px] sm:leading-6">
+            <p className="mk-hero-lead">
               {isAuthenticated
                 ? "Discover services and trusted providers based on your location and interests."
                 : "Discover trusted professionals and businesses offering services near you."}

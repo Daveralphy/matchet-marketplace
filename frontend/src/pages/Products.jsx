@@ -248,8 +248,8 @@ function SearchBar() {
     navigate(`/explore?q=${encodeURIComponent(value)}`);
   };
   return (
-    <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
-      <div className="relative flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
+    <div className="mk-search">
+      <div className="mk-search-field">
         <Icon name="search" size={20} />
 
         <input
@@ -259,15 +259,15 @@ function SearchBar() {
           onKeyDown={(event) => { if (event.key === "Enter") submitSearch(); }}
           placeholder="Search for products..."
           aria-label="Search for products"
-          className="min-w-0 flex-1 bg-transparent text-[11px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[12px]"
+          className="mk-search-input"
         />
 
         {suggestions.length > 0 && (
-          <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[80] overflow-hidden rounded-xl border border-slate-100 bg-white p-2 shadow-[0_16px_40px_rgba(16,24,63,0.14)]">
+          <div className="mk-search-suggest">
             {suggestions.map((item) => (
-              <Link key={item.id} to={`/${item.type === "service" ? "services" : "products"}/${item.id}`} className="flex items-center gap-3 rounded-lg px-3 py-2.5 hover:bg-slate-50">
+              <Link key={item.id} to={`/${item.type === "service" ? "services" : "products"}/${item.id}`} className="mk-suggest-item">
                 <span className="h-9 w-9 shrink-0 rounded-lg bg-slate-100" />
-                <span className="min-w-0"><span className="block truncate text-[12px] font-semibold text-[#10183f]">{item.title}</span><span className="block truncate text-[10px] text-slate-400">{item.category} · {item.location}</span></span>
+                <span className="min-w-0"><span className="mk-suggest-title">{item.title}</span><span className="mk-suggest-meta">{item.category} · {item.location}</span></span>
               </Link>
             ))}
           </div>
@@ -276,7 +276,7 @@ function SearchBar() {
       <button
         type="button"
         onClick={submitSearch}
-        className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]"
+        className="mk-search-button"
       >
         Search
       </button>
@@ -286,23 +286,23 @@ function SearchBar() {
 
 function ProductCategories() {
   const colors = [
-    "bg-[#edf0f6] text-[#10183f]",
+    "bg-[#edf0f6] text-ink",
     "bg-[#fff0df] text-[#a45a13]",
-    "bg-[#dff7e7] text-[#07863a]",
+    "bg-[#dff7e7] text-brand",
     "bg-[#e5f1ff] text-[#2470d8]",
     "bg-[#eee8ff] text-[#7437d9]",
     "bg-[#ffe8f4] text-[#d93691]",
-    "bg-[#eef0f4] text-[#10183f]",
+    "bg-[#eef0f4] text-ink",
   ];
 
   return (
     <div className="relative w-full max-w-[600px]">
-      <div className="flex w-full gap-2.5 overflow-x-auto pb-1 pr-2 scrollbar-none sm:flex-wrap sm:overflow-visible sm:pb-0">
+      <div className="mk-chip-row">
         {PRODUCT_CATEGORIES.map((category, index) => (
           <button
             key={category.label}
             type="button"
-            className="flex min-h-[66px] w-[70px] shrink-0 flex-col items-center justify-start gap-1.5 rounded-[14px] text-[9px] font-medium text-[#10183f] transition-colors hover:bg-white sm:w-[76px] sm:text-[10px]"
+            className="flex min-h-[66px] w-[70px] shrink-0 flex-col items-center justify-start gap-1.5 rounded-[14px] text-[9px] font-medium text-ink transition-colors hover:bg-white sm:w-[76px] sm:text-[10px]"
           >
             <span
               className={`flex h-10 w-10 items-center justify-center rounded-full ${colors[index]}`}
@@ -325,7 +325,7 @@ function ProductCard({
   title,
   description,
   className,
-  tone = "bg-[#e4f9e9] text-[#07983f]",
+  tone = "bg-brand-tint text-brand-bright",
 }) {
   return (
     <div
@@ -339,7 +339,7 @@ function ProductCard({
         </span>
 
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold leading-[15px] text-[#10183f] sm:text-[12px]">
+          <p className="text-[11px] font-semibold leading-[15px] text-ink sm:text-[12px]">
             {title}
           </p>
 
@@ -358,13 +358,13 @@ function HeroVisual({ isAuthenticated }) {
     : heroImageLoggedOut;
 
   return (
-    <div className="relative hidden lg:absolute lg:inset-y-0 lg:right-0 lg:block lg:h-full lg:w-[58%]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_56%_48%,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.94)_42%,rgba(248,250,249,0)_76%)]" />
+    <div className="mk-hero-art">
+      <div className="mk-hero-art-glow" />
 
       <img
         src={heroImage}
         alt=""
-        className="absolute left-[55%] top-[48%] h-[99%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain xl:h-[90%]"
+        className="mk-hero-art-img"
       />
 
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-[#fbfaf7] via-[#fbfaf7]/75 to-transparent" />
@@ -377,7 +377,7 @@ function HeroVisual({ isAuthenticated }) {
             icon="sparkle"
             title="Made for you"
             description="Products selected based on your activity."
-            tone="bg-[#e4f9e9] text-[#07983f]"
+            tone="bg-brand-tint text-brand-bright"
             className="left-[8%] top-[18%] w-[205px] xl:left-[15%] xl:w-[220px]"
           />
 
@@ -395,7 +395,7 @@ function HeroVisual({ isAuthenticated }) {
             icon="truck"
             title="Wide selection"
             description="Everything you need in one place."
-            tone="bg-[#e4f9e9] text-[#07983f]"
+            tone="bg-brand-tint text-brand-bright"
             className="left-[7%] bottom-[16%] w-[205px] xl:left-[12%] xl:w-[220px]"
           />
 
@@ -403,7 +403,7 @@ function HeroVisual({ isAuthenticated }) {
             icon="shield"
             title="Secure shopping"
             description="Your information is protected."
-            tone="bg-[#e4f9e9] text-[#07983f]"
+            tone="bg-brand-tint text-brand-bright"
             className="right-[6%] bottom-[16%] w-[205px] xl:right-[12%] xl:w-[220px]"
           />
 
@@ -411,7 +411,7 @@ function HeroVisual({ isAuthenticated }) {
             icon="users"
             title="Trusted sellers"
             description="Buy from verified businesses."
-            tone="bg-[#e4f9e9] text-[#07983f]"
+            tone="bg-brand-tint text-brand-bright"
             className="right-[3%] top-[14%] w-[200px] xl:right-[10%] xl:w-[215px]"
           />
         </>
@@ -452,7 +452,7 @@ function FilterSection({ title, children }) {
   return (
     <section className="border-b border-[#edf0f3] py-4 first:pt-0">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-[13px] font-semibold text-[#10183f]">{title}</h3>
+        <h3 className="text-[13px] font-semibold text-ink">{title}</h3>
         <Icon name="chevronUp" size={14} />
       </div>
       {children}
@@ -462,14 +462,14 @@ function FilterSection({ title, children }) {
 
 function CheckRow({ label, checked, onChange, icon, count }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2.5 py-1 text-[11px] text-[#69739a]">
+    <label className="flex cursor-pointer items-center gap-2.5 py-1 text-[11px] text-muted">
       <input
         type="checkbox"
         checked={checked}
         onChange={onChange}
-        className="h-4 w-4 rounded border-[#cfd6df] accent-[#07863a]"
+        className="h-4 w-4 rounded border-[#cfd6df] accent-brand"
       />
-      {icon && <span className="text-[#10183f]">{icon}</span>}
+      {icon && <span className="text-ink">{icon}</span>}
       <span className="min-w-0 flex-1">{label}</span>
       {count != null && <span className="text-[#7b84a3]">({count})</span>}
     </label>
@@ -496,7 +496,7 @@ function ProductFilters({ products, filters, setFilters }) {
         <button
           type="button"
           onClick={() => setFilters((current) => ({ ...current, category: "" }))}
-          className={`mb-1 flex w-full items-center justify-between rounded-[8px] px-2 py-1.5 text-left text-[11px] font-medium ${!filters.category ? "bg-[#e5f8ea] text-[#07863a]" : "text-[#69739a]"}`}
+          className={`mb-1 flex w-full items-center justify-between rounded-[8px] px-2 py-1.5 text-left text-[11px] font-medium ${!filters.category ? "bg-[#e5f8ea] text-brand" : "text-muted"}`}
         >
           <span>All Categories</span>
           <span>({products.length})</span>
@@ -507,7 +507,7 @@ function ProductFilters({ products, filters, setFilters }) {
             type="button"
             key={category}
             onClick={() => setFilters((current) => ({ ...current, category: current.category === category ? "" : category }))}
-            className={`flex w-full items-center justify-between py-1.5 text-left text-[11px] ${filters.category === category ? "font-semibold text-[#07863a]" : "text-[#69739a]"}`}
+            className={`flex w-full items-center justify-between py-1.5 text-left text-[11px] ${filters.category === category ? "font-semibold text-brand" : "text-muted"}`}
           >
             <span>{category}</span>
             <span>({categoryCounts[category]})</span>
@@ -524,9 +524,9 @@ function ProductFilters({ products, filters, setFilters }) {
             step={maxPrice <= 100000 ? 1000 : maxPrice <= 1000000 ? 5000 : 10000}
             value={selectedMaxPrice}
             onChange={(event) => setFilters((current) => ({ ...current, maxPrice: Number(event.target.value) }))}
-            className="w-full accent-[#07863a]"
+            className="w-full accent-brand"
           />
-          <div className="mt-1 flex justify-between text-[10px] text-[#69739a]">
+          <div className="mt-1 flex justify-between text-[10px] text-muted">
             <span>{formatCurrency(0, products[0]?.currency || "NGN")}</span>
             <span>{formatCurrency(selectedMaxPrice, products[0]?.currency || "NGN")}</span>
           </div>
@@ -688,17 +688,17 @@ function ProductCatalogue({ isAuthenticated }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-col gap-4 border-b border-[#edf0f3] pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#07863a]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-brand">
                 {isAuthenticated ? "PRODUCTS FOR YOU" : "EXPLORE PRODUCTS"}
               </p>
-              <h2 className="mt-2 text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[48px]">
+              <h2 className="mt-2 text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-ink sm:text-[48px]">
                 {isAuthenticated ? (
-                  <>Find products <span className="text-[#07863a]">you’ll love.</span></>
+                  <>Find products <span className="text-brand">you’ll love.</span></>
                 ) : (
-                  <>Discover <span className="text-[#07863a]">great products.</span></>
+                  <>Discover <span className="text-brand">great products.</span></>
                 )}
               </h2>
-              <p className="mt-2 text-[14px] font-medium text-[#69739a]">
+              <p className="mt-2 text-[14px] font-medium text-muted">
                 {filtered.length} {filtered.length === 1 ? "product" : "products"} found{location ? ` in ${location}` : ""}
               </p>
             </div>
@@ -707,7 +707,7 @@ function ProductCatalogue({ isAuthenticated }) {
               <select
                 value={sort}
                 onChange={(event) => setSort(event.target.value)}
-                className="h-11 rounded-[9px] border border-[#dfe5ec] bg-white px-3 text-[11px] font-medium text-[#27335f] outline-none"
+                className="h-11 rounded-[9px] border border-[#dfe5ec] bg-white px-3 text-base md:text-[11px] font-medium text-[#27335f] outline-none"
                 aria-label="Sort products"
               >
                 <option value="recommended">Recommended</option>
@@ -716,10 +716,10 @@ function ProductCatalogue({ isAuthenticated }) {
                 <option value="price-high">Price: high to low</option>
               </select>
 
-              <button type="button" onClick={() => setView("grid")} className={`flex h-11 w-11 items-center justify-center rounded-[9px] border ${view === "grid" ? "border-[#dcefe2] bg-[#e8f8ed] text-[#07863a]" : "border-[#dfe5ec] bg-white text-[#69739a]"}`}>
+              <button type="button" onClick={() => setView("grid")} className={`flex h-11 w-11 items-center justify-center rounded-[9px] border ${view === "grid" ? "border-[#dcefe2] bg-[#e8f8ed] text-brand" : "border-[#dfe5ec] bg-white text-muted"}`}>
                 <Icon name="grid" size={18} />
               </button>
-              <button type="button" onClick={() => setView("list")} className={`flex h-11 w-11 items-center justify-center rounded-[9px] border ${view === "list" ? "border-[#dcefe2] bg-[#e8f8ed] text-[#07863a]" : "border-[#dfe5ec] bg-white text-[#69739a]"}`}>
+              <button type="button" onClick={() => setView("list")} className={`flex h-11 w-11 items-center justify-center rounded-[9px] border ${view === "list" ? "border-[#dcefe2] bg-[#e8f8ed] text-brand" : "border-[#dfe5ec] bg-white text-muted"}`}>
                 <Icon name="list" size={18} />
               </button>
             </div>
@@ -733,20 +733,20 @@ function ProductCatalogue({ isAuthenticated }) {
               </div>
             )) : sorted.length ? sorted.map((product) => <ProductCatalogueCard key={product.id} product={product} view={view} />) : products.length === 0 ? (
               <div className="col-span-full flex min-h-[260px] items-center justify-center rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 text-center">
-                <div><p className="text-[13px] font-semibold text-[#10183f]">No products available yet</p><p className="mt-1 text-[11px] text-[#69739a]">Live products will appear here when sellers publish active listings.</p></div>
+                <div><p className="text-[13px] font-semibold text-ink">No products available yet</p><p className="mt-1 text-[11px] text-muted">Live products will appear here when sellers publish active listings.</p></div>
               </div>
             ) : null}
           </div>
 
           {!productsLoading && products.length > 0 && !sorted.length && (
-            <div className="flex min-h-[260px] items-center justify-center rounded-[12px] border border-dashed border-[#d9dfe7] bg-white text-[13px] text-[#69739a]">
+            <div className="flex min-h-[260px] items-center justify-center rounded-[12px] border border-dashed border-[#d9dfe7] bg-white text-[13px] text-muted">
               No products match your selected filters.
             </div>
           )}
 
           <button
             type="button"
-            className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-[#dfe5ec] bg-white text-[12px] font-semibold text-[#10183f]"
+            className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-[#dfe5ec] bg-white text-[12px] font-semibold text-ink"
           >
             View more products
             <Icon name="chevronDown" size={16} />
@@ -777,11 +777,11 @@ function ShoppingJourneySection({ isAuthenticated }) {
   return (
     <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-white px-5 py-9 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-9 sm:py-10 lg:px-14 lg:py-11">
       <div className="max-w-[900px]">
-        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#07863a] sm:text-[11px]">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-brand sm:text-[11px]">
           {content.eyebrow}
         </p>
-        <h2 className="mt-4 text-[42px] font-bold leading-[0.98] tracking-[-0.05em] text-[#10183f] sm:text-[54px] lg:text-[62px]">
-          {content.title} <span className="text-[#07863a]">{content.accent}</span>
+        <h2 className="mt-4 text-[42px] font-bold leading-[0.98] tracking-[-0.05em] text-ink sm:text-[54px] lg:text-[62px]">
+          {content.title} <span className="text-brand">{content.accent}</span>
         </h2>
         <p className="mt-4 max-w-[720px] text-[16px] leading-[1.4] text-[#7a82a5] sm:text-[19px]">
           {content.subtitle}
@@ -798,14 +798,14 @@ function ShoppingJourneySection({ isAuthenticated }) {
               </div>
             )}
 
-            <div className="relative mx-auto flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#e4f8eb] text-[#07863a]">
+            <div className="relative mx-auto flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#e4f8eb] text-brand">
               <Icon name={step.icon} size={46} strokeWidth={1.8} />
-              <span className="absolute -right-2 -top-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#e5f8eb] text-[18px] font-semibold text-[#087d35]">
+              <span className="absolute -right-2 -top-2 flex h-9 w-9 items-center justify-center rounded-full bg-[#e5f8eb] text-[18px] font-semibold text-brand-hover">
                 {step.number}
               </span>
             </div>
 
-            <h3 className="mt-5 text-[19px] font-semibold tracking-[-0.03em] text-[#10183f]">
+            <h3 className="mt-5 text-[19px] font-semibold tracking-[-0.03em] text-ink">
               {step.title}
             </h3>
             <p className="mx-auto mt-2 max-w-[220px] text-[14px] leading-[1.45] text-[#7a82a5]">
@@ -818,14 +818,14 @@ function ShoppingJourneySection({ isAuthenticated }) {
       <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:hidden">
         {content.steps.map((step) => (
           <div key={step.id} className="flex items-start gap-4 rounded-[12px] border border-[#edf0f3] p-4">
-            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#e4f8eb] text-[#07863a]">
+            <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#e4f8eb] text-brand">
               <Icon name={step.icon} size={31} strokeWidth={1.8} />
-              <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#e5f8eb] text-[11px] font-semibold text-[#087d35]">
+              <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#e5f8eb] text-[11px] font-semibold text-brand-hover">
                 {step.number}
               </span>
             </div>
             <div>
-              <h3 className="text-[15px] font-semibold text-[#10183f]">{step.title}</h3>
+              <h3 className="text-[15px] font-semibold text-ink">{step.title}</h3>
               <p className="mt-1 text-[12px] leading-5 text-[#7a82a5]">{step.description}</p>
             </div>
           </div>
@@ -837,20 +837,20 @@ function ShoppingJourneySection({ isAuthenticated }) {
 
 export default function Products({ isAuthenticated = false }) {
   return (
-    <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
+    <main className="mk-page">
       <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#fbfaf7] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
-        <div className="relative min-h-0 lg:min-h-[535px]">
-          <div className="relative z-20 flex w-full flex-col justify-center px-6 pb-0 pt-10 sm:px-10 sm:pt-12 lg:min-h-[535px] lg:w-[51%] lg:px-12 lg:pb-12 lg:pt-12 xl:px-[50px]">
-            <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+        <div className="mk-hero-inner">
+          <div className="mk-hero-copy">
+            <p className="mk-eyebrow">
               {isAuthenticated ? "PRODUCTS FOR YOU" : "PRODUCTS ON MATCHET"}
             </p>
 
-            <h1 className="mt-4 max-w-[520px] text-[36px] font-bold leading-[0.99] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[43px] xl:text-[48px]">
+            <h1 className="mk-hero-title">
               {isAuthenticated ? (
                 <>
                   Find something
                   <br />
-                  <span className="text-[#07863a]">
+                  <span className="text-brand">
                     you’ll love.
                   </span>
                 </>
@@ -858,14 +858,14 @@ export default function Products({ isAuthenticated = false }) {
                 <>
                   Find products
                   <br />
-                  <span className="text-[#07863a]">
+                  <span className="text-brand">
                     worth buying.
                   </span>
                 </>
               )}
             </h1>
 
-            <p className="mt-4 max-w-[475px] text-[14px] leading-[22px] text-[#69739a] sm:text-[15px] sm:leading-6">
+            <p className="mk-hero-lead">
               {isAuthenticated
                 ? "Discover products selected around your interests, activity, and location."
                 : "Discover quality products from trusted sellers, compare your options, and shop with confidence."}

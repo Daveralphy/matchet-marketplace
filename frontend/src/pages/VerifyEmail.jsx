@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { changeVerificationEmail, resendVerificationEmail, verifyEmail } from "../api/auth";
 import logo from "../assets/logo/matchet_logoname.png";
+import "../styles/auth/auth.css";
 
 function formatCooldown(seconds) {
   const minutes = Math.floor(seconds / 60).toString().padStart(2, "0");
@@ -98,7 +99,7 @@ export default function VerifyEmail() {
   const isVerifying = status === "verifying";
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f7f9f8] px-4 py-10 sm:px-6">
+    <main className="auth-page flex min-h-screen items-center justify-center bg-[#f7f9f8] px-4 py-10 sm:px-6">
       <section className="w-full max-w-[520px] overflow-hidden rounded-2xl border border-[#e3e9e5] bg-white shadow-[0_18px_55px_rgba(16,24,63,.07)]">
         <header className="flex items-center justify-center border-b border-[#edf0ee] bg-white px-7 py-6">
           <Link to="/" aria-label="Matchet home" className="inline-flex items-center">
@@ -107,7 +108,7 @@ export default function VerifyEmail() {
         </header>
 
         <div className="px-6 py-8 text-center sm:px-10 sm:py-10">
-                    <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#10183f]">
+                    <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink">
             {isVerifying ? "Verifying your email…" : verified ? "Email verified!" : "Verify your email"}
           </h1>
 
@@ -116,7 +117,7 @@ export default function VerifyEmail() {
               ? "Please wait while we securely confirm your email address."
               : verified
                 ? "Your Matchet Marketplace account is now verified. We’ve sent a confirmation email and a separate welcome email to help you get started."
-                : <>We have created your account, but it is not active until you verify your email{email ? <> <span className="font-semibold text-[#10183f]">{email}</span></> : ""}. Open the verification link we sent you. If you can’t find it, check your spam or junk folder.</>}
+                : <>We have created your account, but it is not active until you verify your email{email ? <> <span className="font-semibold text-ink">{email}</span></> : ""}. Open the verification link we sent you. If you can’t find it, check your spam or junk folder.</>}
           </p>
 
           {message && (
@@ -126,7 +127,7 @@ export default function VerifyEmail() {
           )}
 
           {verified ? (
-            <button onClick={() => navigate("/login", { replace: true })} className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white transition hover:bg-[#067632]">
+            <button onClick={() => navigate("/login", { replace: true })} className="mt-7 inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-brand px-5 py-3 font-semibold text-white transition hover:bg-[#067632]">
               Continue to log in
             </button>
           ) : !isVerifying && (
@@ -135,7 +136,7 @@ export default function VerifyEmail() {
                 type="button"
                 onClick={resend}
                 disabled={busy || cooldownSeconds > 0 || !email}
-                className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white transition hover:bg-[#067632] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-lg bg-brand px-5 py-3 font-semibold text-white transition hover:bg-[#067632] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {busy ? (showChangeEmail ? "Updating email…" : "Sending…") : cooldownSeconds > 0 ? `Resend email in ${formatCooldown(cooldownSeconds)}` : "Resend verification email"}
               </button>
@@ -144,7 +145,7 @@ export default function VerifyEmail() {
                 type="button"
                 onClick={() => { setShowChangeEmail((visible) => !visible); setMessage(""); }}
                 disabled={busy}
-                className="inline-flex min-h-12 w-full items-center justify-center rounded-lg border border-[#dfe5e2] bg-white px-5 py-3 font-semibold text-[#10183f] transition hover:bg-[#f8faf9] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex min-h-12 w-full items-center justify-center rounded-lg border border-[#dfe5e2] bg-white px-5 py-3 font-semibold text-ink transition hover:bg-[#f8faf9] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {showChangeEmail ? "Cancel email change" : "Change email address"}
               </button>
@@ -158,23 +159,23 @@ export default function VerifyEmail() {
               {showChangeEmail && (
                 <form onSubmit={changeEmail} className="mt-4 space-y-4 rounded-xl border border-[#e5e9ef] bg-[#fafbfc] p-4 sm:p-5">
                   <div>
-                    <h2 className="text-base font-bold text-[#10183f]">Change email address</h2>
+                    <h2 className="text-base font-bold text-ink">Change email address</h2>
                     <p className="mt-1 text-sm leading-6 text-[#747c99]">We’ll send a fresh verification link to the new address. Your account will remain inactive until you verify it.</p>
                   </div>
                   <div>
-                    <label htmlFor="current-verification-email" className="mb-1.5 block text-sm font-semibold text-[#10183f]">Current email</label>
+                    <label htmlFor="current-verification-email" className="mb-1.5 block text-sm font-semibold text-ink">Current email</label>
                     <input id="current-verification-email" type="email" value={email} readOnly required className="h-11 w-full rounded-lg border border-[#dfe4eb] bg-[#f1f3f5] px-3 text-sm text-[#626c8b]" />
                   </div>
                   <div>
-                    <label htmlFor="new-verification-email" className="mb-1.5 block text-sm font-semibold text-[#10183f]">New email address</label>
-                    <input id="new-verification-email" type="email" autoComplete="email" value={newEmail} onChange={(event) => setNewEmail(event.target.value)} required placeholder="Enter your new email" className="h-11 w-full rounded-lg border border-[#dfe4eb] bg-white px-3 text-sm text-[#10183f] outline-none focus:border-[#07863a]" />
+                    <label htmlFor="new-verification-email" className="mb-1.5 block text-sm font-semibold text-ink">New email address</label>
+                    <input id="new-verification-email" type="email" autoComplete="email" value={newEmail} onChange={(event) => setNewEmail(event.target.value)} required placeholder="Enter your new email" className="h-11 w-full rounded-lg border border-[#dfe4eb] bg-white px-3 text-sm text-ink outline-none focus:border-brand" />
                   </div>
                   <div>
-                    <label htmlFor="verification-password" className="mb-1.5 block text-sm font-semibold text-[#10183f]">Account password</label>
-                    <input id="verification-password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required className="h-11 w-full rounded-lg border border-[#dfe4eb] bg-white px-3 text-sm text-[#10183f] outline-none focus:border-[#07863a]" />
+                    <label htmlFor="verification-password" className="mb-1.5 block text-sm font-semibold text-ink">Account password</label>
+                    <input id="verification-password" type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} required className="h-11 w-full rounded-lg border border-[#dfe4eb] bg-white px-3 text-sm text-ink outline-none focus:border-brand" />
                     <p className="mt-1 text-xs leading-5 text-[#747c99]">This confirms you own the unverified account before changing its email.</p>
                   </div>
-                  <button type="submit" disabled={busy || cooldownSeconds > 0} className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-[#10183f] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1b275b] disabled:cursor-not-allowed disabled:opacity-60">
+                  <button type="submit" disabled={busy || cooldownSeconds > 0} className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1b275b] disabled:cursor-not-allowed disabled:opacity-60">
                     {busy && showChangeEmail ? "Updating email…" : cooldownSeconds > 0 ? `Available in ${formatCooldown(cooldownSeconds)}` : "Update email and send link"}
                   </button>
                 </form>
@@ -182,7 +183,7 @@ export default function VerifyEmail() {
             </div>
           )}
 
-          <p className="mt-6 text-center text-sm text-[#747c99]">Already verified? <Link to="/login" className="font-semibold text-[#07863a] hover:underline">Log in</Link></p>
+          <p className="mt-6 text-center text-sm text-[#747c99]">Already verified? <Link to="/login" className="font-semibold text-brand hover:underline">Log in</Link></p>
           <p className="mt-5 text-center text-xs leading-5 text-[#8a91a8]">Matchet will never ask you to share your password by email.</p>
         </div>
       </section>

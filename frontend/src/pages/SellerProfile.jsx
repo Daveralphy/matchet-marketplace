@@ -3,7 +3,6 @@ import LocationSearch from "../components/LocationSearch";
 import {useNavigate} from "react-router-dom";
 import {ProviderShell,Icon} from "../components/ProviderShell";
 import {getSellerProfile,updateSellerProfile} from "../api/provider";
-import "../styles/seller-profile.css";
 const date=v=>v?new Intl.DateTimeFormat("en-NG",{month:"long",year:"numeric"}).format(new Date(v)):"—";
 export default function SellerProfile(){const[data,setData]=useState(null),[tab,setTab]=useState("store"),[editing,setEditing]=useState(false),[saving,setSaving]=useState(false),[msg,setMsg]=useState("");
 useEffect(()=>{getSellerProfile().then(r=>setData(r.data)).catch(e=>setMsg(e.message))},[]);

@@ -121,7 +121,7 @@ function ProductGallery({ product }) {
         <ProductVisual product={product} large image={activeImage} index={activeIndex} />
 
         {hasImages && (
-          <span className="absolute bottom-3 right-3 rounded-full bg-[#10183f] px-3 py-1 text-[11px] text-white">
+          <span className="absolute bottom-3 right-3 rounded-full bg-ink px-3 py-1 text-[11px] text-white">
             {activeIndex + 1} / {images.length}
           </span>
         )}
@@ -135,7 +135,7 @@ function ProductGallery({ product }) {
               key={image + index}
               onClick={() => setActiveIndex(index)}
               aria-label={`View product image ${index + 1}`}
-              className={`h-[86px] w-[86px] shrink-0 overflow-hidden rounded-[9px] border-2 bg-white ${activeIndex === index ? "border-[#07863a]" : "border-transparent"}`}
+              className={`h-[86px] w-[86px] shrink-0 overflow-hidden rounded-[9px] border-2 bg-white ${activeIndex === index ? "border-brand" : "border-transparent"}`}
             >
               <img src={image} alt="" className="h-full w-full object-cover" />
             </button>
@@ -152,7 +152,7 @@ function ProductGallery({ product }) {
 
 function Stars({ rating }) {
   const count = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
-  return <span className="tracking-[-0.12em] text-[#f5a900]">{"★".repeat(count)}{"☆".repeat(5 - count)}</span>;
+  return <span className="tracking-[-0.12em] text-star">{"★".repeat(count)}{"☆".repeat(5 - count)}</span>;
 }
 
 function ProductDetail({ product, related }) {
@@ -210,10 +210,10 @@ function ProductDetail({ product, related }) {
   return (
     <main className="w-full bg-[#fbfcfd] px-4 pb-12 sm:px-6 lg:px-8">
       <div className="mx-auto w-full min-w-0 max-w-[1470px] pt-5">
-        <nav className="mb-5 flex flex-wrap items-center gap-2 text-[11px] text-[#69739a]">
-          <Link to="/" className="hover:text-[#07863a]">Home</Link>
+        <nav className="mb-5 flex flex-wrap items-center gap-2 text-[11px] text-muted">
+          <Link to="/" className="hover:text-brand">Home</Link>
           <span>›</span>
-          <Link to="/products" className="hover:text-[#07863a]">Products</Link>
+          <Link to="/products" className="hover:text-brand">Products</Link>
           <span>›</span>
           <span>{product.category}</span>
           <span>›</span>
@@ -224,19 +224,19 @@ function ProductDetail({ product, related }) {
           <section className="min-w-0 max-w-full overflow-hidden">
             <ProductGallery product={product} />
 
-            <div className="mt-16 flex flex-wrap gap-6 text-[12px] text-[#10183f]">
+            <div className="mt-16 flex flex-wrap gap-6 text-[12px] text-ink">
               <button type="button" onClick={handleShare} className="flex items-center gap-2"><Icon name="share" /> Share this product</button>
               <Link to={`/report-problem?kind=${encodeURIComponent("Product listing")}&reference=${encodeURIComponent(product.title + " (" + product.id + ")")}`} className="flex items-center gap-2"><Icon name="flag" /> Report product</Link>
-              {shareMessage && <span role="status" className="basis-full text-[#69739a]">{shareMessage}</span>}
+              {shareMessage && <span role="status" className="basis-full text-muted">{shareMessage}</span>}
             </div>
           </section>
 
           <section className="min-w-0 space-y-5">
-            <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
+            <div className="mk-detail-card">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[12px] font-medium text-[#69739a]">{product.category}</p>
-                  <h1 className="mt-1 text-[31px] font-bold leading-[1.05] tracking-[-0.045em] text-[#10183f] sm:text-[38px]">{product.title}</h1>
+                  <p className="text-[12px] font-medium text-muted">{product.category}</p>
+                  <h1 className="mt-1 text-[31px] font-bold leading-[1.05] tracking-[-0.045em] text-ink sm:text-[38px]">{product.title}</h1>
                 </div>
               </div>
 
@@ -244,40 +244,40 @@ function ProductDetail({ product, related }) {
                 {Number(product.reviews) > 0 && Number.isFinite(Number(product.rating)) ? (
                   <>
                     <Stars rating={product.rating} />
-                    <strong className="text-[#10183f]">{Number(product.rating).toFixed(1)}</strong>
-                    <span className="text-[#69739a]">({product.reviews} reviews)</span>
+                    <strong className="text-ink">{Number(product.rating).toFixed(1)}</strong>
+                    <span className="text-muted">({product.reviews} reviews)</span>
                   </>
                 ) : (
-                  <span className="text-[#69739a]">No reviews yet</span>
+                  <span className="text-muted">No reviews yet</span>
                 )}
               </div>
 
-              <p className="mt-3 text-[14px] leading-6 text-[#69739a]">{product.description}</p>
+              <p className="mt-3 text-[14px] leading-6 text-muted">{product.description}</p>
 
               <div className="mt-5 flex items-center justify-between gap-4">
-                <p className="text-[30px] font-bold tracking-[-0.04em] text-[#10183f]">{product.price}</p>
-                <span className="rounded-[8px] bg-[#e7f8ec] px-3 py-2 text-[11px] font-medium text-[#07863a]">
+                <p className="text-[30px] font-bold tracking-[-0.04em] text-ink">{product.price}</p>
+                <span className="rounded-[8px] bg-[#e7f8ec] px-3 py-2 text-[11px] font-medium text-brand">
                   ● {product.stockCount > 0 ? "In stock" : "Out of stock"}
                 </span>
               </div>
 
               <div className="mt-6 flex items-center gap-3">
-                <span className="text-[13px] font-semibold text-[#10183f]">Quantity</span>
+                <span className="text-[13px] font-semibold text-ink">Quantity</span>
                 <div className="flex h-11 overflow-hidden rounded-[8px] border border-[#dfe5ec]">
                   <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="w-11 text-lg" disabled={quantity <= 1} aria-label="Decrease quantity">−</button>
                   <span className="flex w-14 items-center justify-center border-x border-[#dfe5ec] text-[13px]">{quantity}</span>
                   <button type="button" onClick={() => setQuantity((value) => Math.min(stockCount || 1, value + 1))} disabled={quantity >= stockCount || stockCount < 1} className="w-11 text-lg" aria-label="Increase quantity">+</button>
                 </div>
-                <button type="button" onClick={handleSave} aria-pressed={saved} className={`ml-auto flex h-11 items-center gap-2 rounded-[8px] border px-4 text-[12px] font-medium transition-colors ${saved ? "border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : "border-[#dfe5ec] text-[#10183f]"}`}>
+                <button type="button" onClick={handleSave} aria-pressed={saved} className={`ml-auto flex h-11 items-center gap-2 rounded-[8px] border px-4 text-[12px] font-medium transition-colors ${saved ? "border-[#bdeccf] bg-brand-wash text-brand" : "border-[#dfe5ec] text-ink"}`}>
                   <Icon name="heart" /> {saved ? "Unsave" : "Save"}
                 </button>
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <button type="button" onClick={handleAddToCart} disabled={alreadyInCart || cartBusy || stockCount < 1 || quantity > stockCount} className={`flex h-[52px] items-center justify-center gap-2 rounded-[8px] border font-medium transition-all duration-200 ${alreadyInCart ? "cursor-not-allowed border-[#bdeccf] bg-[#eaf9ee] text-[#07863a]" : added ? "scale-[1.02] border-[#087d35] bg-[#eaf9ee] text-[#087d35]" : "border-[#07863a] bg-white text-[#07863a]"}`}>
+                <button type="button" onClick={handleAddToCart} disabled={alreadyInCart || cartBusy || stockCount < 1 || quantity > stockCount} className={`flex h-[52px] items-center justify-center gap-2 rounded-[8px] border font-medium transition-all duration-200 ${alreadyInCart ? "cursor-not-allowed border-[#bdeccf] bg-brand-wash text-brand" : added ? "scale-[1.02] border-brand-hover bg-brand-wash text-brand-hover" : "border-brand bg-white text-brand"}`}>
                   <Icon name="cart" /> {stockCount < 1 ? "Out of stock" : alreadyInCart ? "In cart ✓" : added ? "Added to cart ✓" : cartBusy ? "Adding..." : "Add to cart"}
                 </button>
-                {stockCount > 0 ? <Link to={"/checkout/" + product.id} state={{ quantity }} className="flex h-[52px] items-center justify-center rounded-[8px] bg-[#087d35] font-medium text-white">Buy now</Link> : <button type="button" disabled className="h-[52px] rounded-[8px] bg-slate-300 font-medium text-slate-600">Out of stock</button>}
+                {stockCount > 0 ? <Link to={"/checkout/" + product.id} state={{ quantity }} className="flex h-[52px] items-center justify-center rounded-[8px] bg-brand-hover font-medium text-white">Buy now</Link> : <button type="button" disabled className="h-[52px] rounded-[8px] bg-slate-300 font-medium text-slate-600">Out of stock</button>}
               </div>
 
               <div className="mt-6 grid grid-cols-3 gap-3 border-t border-[#edf0f3] pt-5">
@@ -286,29 +286,29 @@ function ProductDetail({ product, related }) {
                   { icon: "package", title: "Easy returns", text: product.buyerProtection },
                   { icon: "star", title: "Buyer protection", text: "Shop with confidence" },
                 ].map((item) => (
-                  <div key={item.title} className="text-[10px] text-[#69739a]">
+                  <div key={item.title} className="text-[10px] text-muted">
                     <Icon name={item.icon} size={23} strokeWidth={1.8} />
-                    <p className="mt-1 font-semibold text-[#10183f]">{item.title}</p>
+                    <p className="mt-1 font-semibold text-ink">{item.title}</p>
                     <p className="mt-0.5 leading-4">{item.text}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-[0_8px_28px_rgba(16,24,63,0.035)] sm:p-6">
-              <div className="flex items-center gap-2 text-[14px] font-semibold text-[#10183f]"><Icon name="truck" /> Delivery & availability</div>
+            <div className="mk-detail-card">
+              <div className="flex items-center gap-2 text-[14px] font-semibold text-ink"><Icon name="truck" /> Delivery & availability</div>
               <div className="mt-4 flex items-center justify-between text-[12px]">
                 <span className="flex items-center gap-2"><Icon name="pin" /> {product.location}</span>
                 <Link to={`/explore?location=${encodeURIComponent(product.location || "")}`} className="text-[#0759e8]">Browse nearby</Link>
               </div>
-              <div className="mt-4 rounded-[9px] bg-[#eaf9ee] p-4">
+              <div className="mt-4 rounded-[9px] bg-brand-wash p-4">
                 <div className="flex gap-3"><Icon name="truck" size={24} />
-                  <div><p className="text-[13px] font-medium text-[#087d35]">Available for delivery</p><p className="mt-1 text-[11px] text-[#69739a]">Estimated delivery: {product.deliveryEstimate}</p><p className="mt-1 text-[10px] text-[#7b84a3]">Delivery fee {product.deliveryFee.toLowerCase()}</p></div>
+                  <div><p className="text-[13px] font-medium text-brand-hover">Available for delivery</p><p className="mt-1 text-[11px] text-muted">Estimated delivery: {product.deliveryEstimate}</p><p className="mt-1 text-[10px] text-[#7b84a3]">Delivery fee {product.deliveryFee.toLowerCase()}</p></div>
                 </div>
               </div>
               {product.pickupAvailable && (
                 <div className="mt-3 flex items-center justify-between rounded-[9px] border border-[#e4e8ee] p-4">
-                  <div className="flex gap-3"><Icon name="store" size={23} /><div><p className="text-[13px] font-medium text-[#10183f]">Pickup available</p><p className="mt-1 text-[11px] text-[#69739a]">Pick up from seller's location in {product.location}</p></div></div>
+                  <div className="flex gap-3"><Icon name="store" size={23} /><div><p className="text-[13px] font-medium text-ink">Pickup available</p><p className="mt-1 text-[11px] text-muted">Pick up from seller's location in {product.location}</p></div></div>
                   <Icon name="chevronRight" />
                 </div>
               )}
@@ -318,9 +318,9 @@ function ProductDetail({ product, related }) {
 
         <ListingReviews kind="products" listingId={product.id} />
 
-        <section className="mt-7 border-t border-[#e1e6ec] pt-7">
+        <section className="mt-7 border-t border-line pt-7">
           <div className="flex items-end justify-between gap-4">
-            <div><h2 className="text-[24px] font-bold tracking-[-0.04em] text-[#10183f] sm:text-[28px]">You might also like</h2><p className="mt-1 text-[13px] text-[#69739a]">More products similar to this one.</p></div>
+            <div><h2 className="text-[24px] font-bold tracking-[-0.04em] text-ink sm:text-[28px]">You might also like</h2><p className="mt-1 text-[13px] text-muted">More products similar to this one.</p></div>
             <Link to="/products" className="hidden text-[12px] font-medium text-[#0759e8] sm:block">View more products in {product.category} →</Link>
           </div>
 
@@ -328,17 +328,17 @@ function ProductDetail({ product, related }) {
             {related.length ? related.map((item) => (
               <Link key={item.id} to={`/products/${item.id}`} className="rounded-[10px] border border-[#e4e8ee] bg-white p-2.5">
                 <ProductVisual product={item} />
-                <h3 className="mt-2 truncate text-[12px] font-medium text-[#10183f]">{item.title}</h3>
+                <h3 className="mt-2 truncate text-[12px] font-medium text-ink">{item.title}</h3>
                 <div className="mt-1 flex items-center gap-2 text-[10px]">{Number(item.reviews) > 0 ? <><Stars rating={item.rating} /><span>{Number(item.rating).toFixed(1)}</span><span className="text-[#7b84a3]">({item.reviews} reviews)</span></> : <span className="text-[#7b84a3]">No reviews yet</span>}</div>
-                <p className="mt-2 text-[15px] font-bold text-[#10183f]">{item.price}</p>
-                <p className="mt-1 truncate text-[10px] text-[#69739a]">{item.seller} · {item.location}</p>
+                <p className="mt-2 text-[15px] font-bold text-ink">{item.price}</p>
+                <p className="mt-1 truncate text-[10px] text-muted">{item.seller} · {item.location}</p>
               </Link>
             )) : (
               <div className="col-span-full rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
-                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f7] text-[#69739a]">♡</div>
-                <p className="mt-3 text-[13px] font-semibold text-[#10183f]">No similar products yet</p>
-                <p className="mx-auto mt-1 max-w-[430px] text-[11px] leading-5 text-[#69739a]">We do not have any more products similar to this one right now. You can browse the full product catalogue instead.</p>
-                <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-[#07863a] px-4 text-[11px] font-semibold text-white">Browse all products</Link>
+                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[#f1f4f7] text-muted">♡</div>
+                <p className="mt-3 text-[13px] font-semibold text-ink">No similar products yet</p>
+                <p className="mx-auto mt-1 max-w-[430px] text-[11px] leading-5 text-muted">We do not have any more products similar to this one right now. You can browse the full product catalogue instead.</p>
+                <Link to="/products" className="mt-4 inline-flex min-h-10 items-center justify-center rounded-[8px] bg-brand px-4 text-[11px] font-semibold text-white">Browse all products</Link>
               </div>
             )}
           </div>
@@ -372,7 +372,7 @@ export default function ProductDetailsPage() {
   }, [id]);
 
   if (loadError) {
-    return <main className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-12 text-center"><h1 className="text-2xl font-bold text-[#10183f]">Product unavailable</h1><p className="mt-3 text-sm leading-6 text-[#69739a]">{loadError}</p><div className="mt-6 flex gap-3"><button type="button" onClick={() => window.location.reload()} className="rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white">Try again</button><Link to="/products" className="rounded-lg border border-slate-200 px-5 py-3 font-semibold text-[#10183f]">Browse products</Link></div></main>;
+    return <main className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center px-4 py-12 text-center"><h1 className="text-2xl font-bold text-ink">Product unavailable</h1><p className="mt-3 text-sm leading-6 text-muted">{loadError}</p><div className="mt-6 flex gap-3"><button type="button" onClick={() => window.location.reload()} className="rounded-lg bg-brand px-5 py-3 font-semibold text-white">Try again</button><Link to="/products" className="rounded-lg border border-slate-200 px-5 py-3 font-semibold text-ink">Browse products</Link></div></main>;
   }
 
   if (!product) {

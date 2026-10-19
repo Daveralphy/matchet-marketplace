@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getProviderConversations, getProviderConversation, sendProviderMessage, getSellerOrders } from "../api/provider";
-import "../styles/provider-dashboard.css";
 
 const formatTime = (value) => value ? new Intl.DateTimeFormat("en-NG", { hour: "numeric", minute: "2-digit" }).format(new Date(value)) : "";
 const formatDate = (value) => value ? new Intl.DateTimeFormat("en-NG", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).format(new Date(value)) : "";

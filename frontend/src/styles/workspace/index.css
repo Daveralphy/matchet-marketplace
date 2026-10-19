@@ -1,0 +1,41 @@
+/* Workspace stylesheet entry (seller, Sell & Offer and admin dashboards).
+   Imported by ProviderShell, AdminShell and the standalone application-status pages.
+   Every workspace file is pulled in from here in ONE fixed order, because later files
+   intentionally refine earlier ones (pages never import these files directly):
+
+     shell.css               sidebar, topbar, popovers, mobile drawer, tablet icon rail
+     components.css          shared pieces, base layer (heading, stat cards, cards, buttons,
+                             tabs, tables, status pills, empty/error/loading states)
+     provider-*.css          rules unique to one Sell & Offer page
+     application-status.css  standalone seller/provider application status screen
+     components-late.css     compact density + small-screen layer for shared pieces;
+                             must load after the provider page files
+     admin.css               AdminShell + admin pages (kept before the seller files to
+                             preserve the original cascade)
+     seller-*.css            rules unique to one seller page */
+
+@import "./shell.css";
+@import "./components.css";
+
+@import "./provider-dashboard.css";
+@import "./provider-bookings.css";
+@import "./provider-services.css";
+@import "./provider-earnings.css";
+@import "./provider-reviews.css";
+@import "./provider-profile.css";
+@import "./provider-settings.css";
+@import "./provider-messages.css";
+@import "./application-status.css";
+@import "./components-late.css";
+
+@import "./admin.css";
+
+@import "./seller-dashboard.css";
+@import "./seller-orders.css";
+@import "./seller-order-detail.css";
+@import "./seller-products.css";
+@import "./seller-earnings.css";
+@import "./seller-reviews.css";
+@import "./seller-profile.css";
+@import "./seller-settings.css";
+@import "./seller-product-form.css";

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
-import "../styles/provider-onboarding.css";
+import "../styles/onboarding/onboarding.css";
 
 function Icon({ name }) {
   const paths = {

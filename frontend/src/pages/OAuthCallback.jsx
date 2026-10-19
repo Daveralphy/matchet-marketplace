@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { exchangeGoogleSignIn } from "../api/auth";
+import "../styles/auth/auth.css";
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -29,10 +30,10 @@ export default function OAuthCallback() {
   }, [navigate, refreshUser, searchParams]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-white px-5">
+    <main className="auth-page flex min-h-screen items-center justify-center bg-white px-5">
       <section className="max-w-md text-center">
-        <p role="status" className="text-sm font-medium text-[#10183f]">{message}</p>
-        {message !== "Finishing your Google sign-in..." && <Link to="/login" className="mt-5 inline-block font-semibold text-[#07983f]">Return to login</Link>}
+        <p role="status" className="text-sm font-medium text-ink">{message}</p>
+        {message !== "Finishing your Google sign-in..." && <Link to="/login" className="mt-5 inline-block font-semibold text-brand-bright">Return to login</Link>}
       </section>
     </main>
   );

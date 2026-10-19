@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 import { SavedItemsProvider } from "../../context/SavedItemsContext";
 import Header from "./Header";
 import Footer from "./Footer";
+import "../../styles/marketplace/marketplace.css";
 
 function MarketplaceSkeleton() {
   return (

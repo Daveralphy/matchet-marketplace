@@ -3,8 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { changePassword } from "../api/auth";
 import { showToast } from "../utils/toast";
-import "./BuyerAccount.css";
-import "./AccountForms.css";
+import "../styles/account/account.css";
 
 export default function AccountSecurity() {
     const [currentPassword, setCurrentPassword] = useState("");

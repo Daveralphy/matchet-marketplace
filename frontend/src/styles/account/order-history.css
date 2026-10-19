@@ -1,0 +1,367 @@
+/* Order and booking history cards (BuyerOrders.jsx, BuyerBookings.jsx).
+   Page frame, status pills and the message link come from account.css. */
+
+/* ---------- Order card ---------- */
+
+.buyer-order-card,
+.buyer-booking-card {
+  background: var(--color-surface);
+  border: 1px solid #e3e7ee;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(16, 24, 63, 0.035);
+  min-width: 0;
+}
+
+.buyer-order-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px;
+  background: #fbfcfe;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.buyer-order-reference {
+  min-width: 0;
+}
+
+.buyer-order-reference h2 {
+  font-size: 17px;
+  color: var(--color-ink);
+  margin: 10px 0 5px;
+  overflow-wrap: anywhere;
+}
+
+.buyer-order-reference p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.buyer-order-total {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+  flex: 0 0 auto;
+}
+
+.buyer-order-total span,
+.buyer-order-total small {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.buyer-order-total strong {
+  font-size: 18px;
+  color: var(--color-ink);
+}
+
+.buyer-order-items {
+  padding: 0 20px;
+}
+
+.buyer-order-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 0;
+  border-bottom: 1px solid #edf0f4;
+  min-width: 0;
+}
+
+.buyer-order-item:last-child {
+  border-bottom: 0;
+}
+
+.buyer-order-item > img,
+.buyer-order-item-placeholder {
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  object-fit: cover;
+  border-radius: 9px;
+  background: #f2f5f8;
+}
+
+.buyer-order-item-placeholder {
+  display: grid;
+  place-items: center;
+  color: #a1abc0;
+  font-size: 26px;
+}
+
+.buyer-order-item-info {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.buyer-order-item-info strong {
+  font-size: 13px;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.buyer-order-item-info span,
+.buyer-order-item-info small {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.buyer-order-item-subtotal {
+  font-size: 13px;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.buyer-order-card-footer,
+.buyer-booking-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 20px;
+  background: #fcfdfd;
+  border-top: 1px solid #edf0f4;
+}
+
+.buyer-order-seller-actions,
+.buyer-booking-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.buyer-order-details-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: var(--color-brand);
+  color: var(--color-surface);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.buyer-order-details-link:hover {
+  background: #066c2e;
+}
+
+/* ---------- Booking card ---------- */
+
+.buyer-booking-list {
+  display: grid;
+  gap: 14px;
+}
+
+.buyer-booking-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  min-width: 0;
+}
+
+.buyer-booking-image {
+  width: 104px;
+  height: 104px;
+  flex: 0 0 104px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #f1f4f8;
+}
+
+.buyer-booking-placeholder {
+  display: grid;
+  place-items: center;
+  color: #9da8bd;
+  font-size: 30px;
+}
+
+.buyer-booking-info {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
+
+.buyer-booking-info h2 {
+  margin: 2px 0 0;
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.buyer-booking-provider,
+.buyer-booking-schedule {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.buyer-booking-schedule span {
+  color: var(--color-brand);
+}
+
+.buyer-booking-info > small {
+  font-size: 10px;
+  color: #8790a7;
+  overflow-wrap: anywhere;
+}
+
+.buyer-booking-price {
+  display: grid;
+  gap: 5px;
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.buyer-booking-price span {
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.buyer-booking-price strong {
+  font-size: 17px;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.buyer-booking-footer > span {
+  font-size: 11px;
+  color: #78829c;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 700px) {
+  .buyer-message-link {
+    min-height: 40px;
+  }
+
+  .buyer-order-card-header {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .buyer-order-reference h2 {
+    font-size: 15px;
+  }
+
+  .buyer-order-total strong {
+    font-size: 15px;
+  }
+
+  .buyer-order-items {
+    padding: 0 14px;
+  }
+
+  .buyer-order-item {
+    gap: 10px;
+    padding: 12px 0;
+  }
+
+  .buyer-order-item > img,
+  .buyer-order-item-placeholder {
+    width: 62px;
+    height: 62px;
+    flex-basis: 62px;
+  }
+
+  .buyer-order-item-info strong {
+    font-size: 12px;
+  }
+
+  .buyer-order-item-subtotal {
+    font-size: 11px;
+  }
+
+  .buyer-order-card-footer,
+  .buyer-booking-footer {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 13px 14px;
+  }
+
+  .buyer-order-details-link {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .buyer-order-seller-actions,
+  .buyer-booking-actions {
+    width: 100%;
+  }
+
+  .buyer-booking-main {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .buyer-booking-image {
+    width: 82px;
+    height: 82px;
+    flex-basis: 82px;
+  }
+
+  .buyer-booking-info {
+    flex: 1 1 calc(100% - 100px);
+  }
+
+  .buyer-booking-price {
+    width: 100%;
+    text-align: left;
+    padding-top: 10px;
+    border-top: 1px solid #edf0f4;
+  }
+}
+
+@media (max-width: 420px) {
+  .buyer-order-card-header {
+    flex-direction: column;
+  }
+
+  .buyer-order-total {
+    text-align: left;
+    width: 100%;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+  }
+
+  .buyer-order-total strong {
+    text-align: right;
+  }
+
+  .buyer-order-total small {
+    grid-column: 1/-1;
+  }
+
+  .buyer-order-item > img,
+  .buyer-order-item-placeholder {
+    width: 54px;
+    height: 54px;
+    flex-basis: 54px;
+  }
+
+  .buyer-order-item-subtotal {
+    max-width: 85px;
+    white-space: normal;
+    text-align: right;
+  }
+}

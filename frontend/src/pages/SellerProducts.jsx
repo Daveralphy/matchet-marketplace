@@ -5,7 +5,6 @@ import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getSellerProducts, createSellerProduct, updateSellerProduct, deleteSellerProduct } from "../api/provider";
 import LocationSearch from "../components/LocationSearch";
 import { currencyForLocation } from "../utils/currency";
-import "../styles/seller-products.css";
 
 const money=(v,currency="NGN")=>new Intl.NumberFormat(undefined,{style:"currency",currency,maximumFractionDigits:0}).format(Number(v||0));
 const statusText=s=>({active:"Active",outOfStock:"Out of stock",draft:"Draft",archived:"Archived"}[s]||s);

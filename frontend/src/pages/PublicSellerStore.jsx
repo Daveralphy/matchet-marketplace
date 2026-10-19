@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ProviderShell, Icon } from "../components/ProviderShell";
 import { getPublicSellerStore } from "../api/provider";
-import "../styles/public-store.css";
+import "../styles/marketplace/public-store.css";
 
 const money = (value) =>
   new Intl.NumberFormat("en-NG", {

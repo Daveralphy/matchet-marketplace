@@ -11,6 +11,7 @@ import { searchMarketplace } from "../../data/marketplaceApi";
 import LocationSearch from "../LocationSearch";
 import { initializeMarketplaceLocation } from "../../hooks/useMarketplaceLocation";
 import { getUnreadCount } from "../../api/messages";
+import "../../styles/marketplace/marketplace.css";
 import NotificationDetailModal from "../NotificationDetailModal";
 
 const NAV_ITEMS = [
@@ -202,8 +203,8 @@ function Logo({ src = logo, mobile = false }) {
     <span
       className={
         mobile
-          ? "text-[14px] font-semibold tracking-[-0.06em] text-[#10183f]"
-          : "text-[25px] font-semibold tracking-[-0.06em] text-[#10183f]"
+          ? "text-[14px] font-semibold tracking-[-0.06em] text-ink"
+          : "text-[25px] font-semibold tracking-[-0.06em] text-ink"
       }
     >
       {mobile ? "M" : "matchet"}
@@ -418,11 +419,11 @@ export default function Header({
 
   return (
     <header className="relative z-50 w-full px-4 py-4 sm:px-6 lg:px-8">
-      <div className="mx-auto grid min-h-[68px] w-full max-w-[1470px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] lg:px-6">
+      <div className="relative mx-auto grid min-h-[68px] w-full max-w-[1470px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-slate-100 bg-white px-5 shadow-[0_8px_24px_rgba(16,24,63,0.06)] max-[479px]:py-2.5 lg:px-6">
         <Link
           to="/"
           aria-label="Matchet home"
-          className="flex shrink-0 items-center min-[1160px]:hidden"
+          className="flex shrink-0 items-center max-[479px]:relative max-[479px]:z-10 max-[479px]:col-start-1 max-[479px]:row-start-1 max-[479px]:h-10 max-[479px]:self-start min-[1160px]:hidden"
           onClick={closeOverlays}
         >
           <Logo src={mobileLogo} mobile />
@@ -447,23 +448,23 @@ export default function Header({
               to={item.path}
               onClick={closeOverlays}
               className={[
-                "relative whitespace-nowrap py-6 text-[clamp(12px,1.05vw,14px)] font-medium text-[#24305f] transition-colors",
+                "relative whitespace-nowrap py-6 text-[clamp(12px,1.05vw,14px)] font-medium text-ink-soft transition-colors",
                 isActive(item.path)
-                  ? "text-[#07983f]"
-                  : "hover:text-[#07983f]",
+                  ? "text-brand-bright"
+                  : "hover:text-brand-bright",
               ].join(" ")}
             >
               {item.label}
 
               {isActive(item.path) && (
-                <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-[#07983f]" />
+                <span className="absolute inset-x-0 bottom-0 h-[2px] rounded-full bg-brand-bright" />
               )}
             </Link>
           ))}
         </nav>
 
-        <div className="col-span-2 flex min-w-0 items-center gap-1.5 min-[1160px]:col-auto min-[1160px]:hidden">
-          <div className="flex min-w-0 flex-1 items-center">
+        <div className="col-span-2 flex min-w-0 items-center gap-1.5 max-[479px]:col-span-3 max-[479px]:col-start-1 max-[479px]:row-start-1 max-[479px]:flex-wrap max-[479px]:justify-end max-[479px]:gap-y-2 min-[1160px]:col-auto min-[1160px]:hidden">
+          <div className="flex min-w-0 flex-1 items-center max-[479px]:order-last max-[479px]:basis-full">
             {!searchOpen ? (
               <>
                 <div ref={locationRef} className="relative min-w-0 flex-1 px-1">
@@ -485,7 +486,7 @@ export default function Header({
                     setProfileOpen(false);
                     setMobileMenuOpen(false);
                   }}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f] sm:h-11 sm:w-11"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center text-ink-deep hover:text-brand-bright sm:h-11 sm:w-11"
                   aria-label="Open search"
                 >
                   <Icon name="search" size={23} />
@@ -500,7 +501,7 @@ export default function Header({
                     setSearchValue("");
                     setLocationOpen(false);
                   }}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f] sm:h-11 sm:w-11"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center text-ink-deep hover:text-brand-bright sm:h-11 sm:w-11"
                   aria-label="Show location"
                 >
                   <Icon name="pin" size={21} />
@@ -520,7 +521,7 @@ export default function Header({
                       if (event.key === "Enter") submitSearch();
                     }}
                     placeholder="Search..."
-                    className="min-w-0 flex-1 bg-transparent text-[11px] text-[#24305f] outline-none placeholder:text-slate-400 sm:text-[12px]"
+                    className="min-w-0 flex-1 bg-transparent text-base text-ink-soft outline-none placeholder:text-slate-400 md:text-[12px]"
                     aria-label="Search Matchet"
                   />
 
@@ -530,7 +531,7 @@ export default function Header({
                       setSearchValue("");
                       setSearchOpen(false);
                     }}
-                    className="shrink-0 text-[#24305f] hover:text-[#07983f]"
+                    className="shrink-0 text-ink-soft hover:text-brand-bright"
                     aria-label="Close search"
                   >
                     <Icon name="x" size={17} />
@@ -556,11 +557,11 @@ export default function Header({
                           <span className="h-9 w-9 shrink-0 rounded-lg bg-slate-100" />
 
                           <span className="min-w-0">
-                            <span className="block truncate text-[12px] font-semibold text-[#071449]">
+                            <span className="block truncate text-[12px] font-semibold text-ink-deep">
                               {item.title}
                             </span>
 
-                            <span className="block truncate text-[10px] text-slate-400">
+                            <span className="mk-suggest-meta">
                               {item.category} · {item.location}
                             </span>
                           </span>
@@ -579,20 +580,20 @@ export default function Header({
             onClick={closeOverlays}
             aria-label="Cart"
             className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-slate-50 sm:h-11 sm:w-11 ${
-              cartActive ? "text-[#07983f]" : "text-[#071449]"
+              cartActive ? "text-brand-bright" : "text-ink-deep"
             }`}
           >
             <Icon name="cart" size={22} />
 
             {liveCartCount > 0 && (
-              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#07983f] px-0.5 text-[9px] font-semibold text-white">
+              <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-bright px-0.5 text-[9px] font-semibold text-white">
                 {liveCartCount}
               </span>
             )}
           </Link>
 
           {isAuthenticated && (
-            <div className="relative shrink-0 min-[1160px]:hidden">
+            <div className="shrink-0 sm:relative min-[1160px]:hidden">
               <button
                 type="button"
                 aria-label="Notifications"
@@ -602,19 +603,19 @@ export default function Header({
                   setLocationOpen(false);
                   setProfileOpen(false);
                 }}
-                className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] hover:bg-slate-50 sm:h-11 sm:w-11"
+                className="relative flex h-10 w-10 items-center justify-center rounded-lg text-ink-deep hover:bg-slate-50 sm:h-11 sm:w-11"
               >
                 <Icon name="bell" size={22} />
 
                 {authNotifications.some((item) => !item.read) && (
-                  <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#07983f]" />
+                  <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-brand-bright" />
                 )}
               </button>
 
               {notificationsOpen && (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-[90] w-[300px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
+                <div className="absolute right-3 top-[calc(100%+8px)] z-[90] w-[min(300px,calc(100%-24px))] sm:right-0 sm:w-[300px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
                   <div className="border-b border-slate-100 px-4 py-3">
-                    <p className="text-[13px] font-semibold text-[#071449]">
+                    <p className="text-[13px] font-semibold text-ink-deep">
                       Notifications
                     </p>
                   </div>
@@ -636,7 +637,7 @@ export default function Header({
                           />
 
                           <span className="min-w-0">
-                            <span className="block text-[12px] font-semibold text-[#071449]">
+                            <span className="block text-[12px] font-semibold text-ink-deep">
                               {item.title}
                             </span>
 
@@ -666,7 +667,7 @@ export default function Header({
                 setProfileOpen(false);
                 setNotificationsOpen(false);
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] transition-colors hover:bg-slate-50 hover:text-[#07983f] sm:h-11 sm:w-11"
+              className="flex h-10 w-10 items-center justify-center rounded-lg text-ink-deep transition-colors hover:bg-slate-50 hover:text-brand-bright sm:h-11 sm:w-11"
               aria-label={
                 mobileMenuOpen
                   ? "Close navigation menu"
@@ -700,9 +701,9 @@ export default function Header({
                       to={item.path}
                       onClick={closeOverlays}
                       className={[
-                        "flex items-center whitespace-nowrap rounded-lg px-4 py-3 text-[14px] font-medium text-[#24305f]",
+                        "flex items-center whitespace-nowrap rounded-lg px-4 py-3 text-[14px] font-medium text-ink-soft",
                         isActive(item.path)
-                          ? "bg-[#effaf3] text-[#07983f]"
+                          ? "bg-[#effaf3] text-brand-bright"
                           : "hover:bg-slate-50",
                       ].join(" ")}
                     >
@@ -747,8 +748,8 @@ export default function Header({
                     className={[
                       "flex h-11 w-full min-w-0 items-center gap-2 rounded-lg border px-2.5 text-[clamp(11px,0.9vw,13px)] font-medium transition-colors",
                       locationOpen
-                        ? "border-[#07983f] text-[#24305f]"
-                        : "border-slate-200 text-[#24305f] hover:border-slate-300",
+                        ? "border-brand-bright text-ink-soft"
+                        : "border-slate-200 text-ink-soft hover:border-slate-300",
                     ].join(" ")}
                     aria-label={selectedLocation ? `Location: ${selectedLocation}` : "Choose your location"}
                     aria-expanded={locationOpen}
@@ -789,7 +790,7 @@ export default function Header({
                     setMobileMenuOpen(false);
                     setNotificationsOpen(false);
                   }}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f]"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center text-ink-deep hover:text-brand-bright"
                   aria-label="Open search"
                 >
                   <Icon name="search" size={24} />
@@ -804,7 +805,7 @@ export default function Header({
                     setSearchValue("");
                     setLocationOpen(false);
                   }}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center text-[#071449] hover:text-[#07983f]"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center text-ink-deep hover:text-brand-bright"
                   aria-label="Show location"
                 >
                   <Icon name="pin" size={21} />
@@ -824,7 +825,7 @@ export default function Header({
                       if (event.key === "Enter") submitSearch();
                     }}
                     placeholder="Search..."
-                    className="min-w-0 flex-1 bg-transparent text-[12px] text-[#24305f] outline-none placeholder:text-slate-400"
+                    className="min-w-0 flex-1 bg-transparent text-[12px] text-ink-soft outline-none placeholder:text-slate-400"
                     aria-label="Search Matchet"
                   />
 
@@ -834,7 +835,7 @@ export default function Header({
                       setSearchValue("");
                       setSearchOpen(false);
                     }}
-                    className="shrink-0 text-[#24305f] hover:text-[#07983f]"
+                    className="shrink-0 text-ink-soft hover:text-brand-bright"
                     aria-label="Close search"
                   >
                     <Icon name="x" size={18} />
@@ -852,21 +853,21 @@ export default function Header({
             to="/cart"
             onClick={closeOverlays}
             className={[
-              "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-[#071449] transition-colors hover:text-[#07983f]",
-              cartActive ? "text-[#07983f]" : "",
+              "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-ink-deep transition-colors hover:text-brand-bright",
+              cartActive ? "text-brand-bright" : "",
             ].join(" ")}
             aria-label="Cart"
           >
             <Icon name="cart" size={25} />
 
             {liveCartCount > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#07983f] px-1 text-[10px] font-semibold text-white">
+              <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-bright px-1 text-[10px] font-semibold text-white">
                 {liveCartCount}
               </span>
             )}
 
             {cartActive && (
-              <span className="absolute -bottom-3 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#07983f]" />
+              <span className="absolute -bottom-3 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-brand-bright" />
             )}
           </Link>
 
@@ -886,12 +887,12 @@ export default function Header({
                     setLocationOpen(false);
                     setMobileMenuOpen(false);
                   }}
-                  className="relative flex h-10 w-10 items-center justify-center rounded-lg text-[#071449] transition-colors hover:text-[#07983f]"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-lg text-ink-deep transition-colors hover:text-brand-bright"
                 >
                   <Icon name="bell" size={24} />
 
                   {authNotifications.some((item) => !item.read) && (
-                    <span className="absolute right-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
+                    <span className="absolute right-0.5 top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-brand-bright" />
                   )}
                 </button>
 
@@ -899,7 +900,7 @@ export default function Header({
                   <div className="absolute right-0 top-[calc(100%+14px)] z-[80] w-[330px] overflow-hidden rounded-xl border border-slate-100 bg-white shadow-[0_16px_40px_rgba(16,24,63,0.15)]">
                     <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
                       <div>
-                        <p className="text-[14px] font-semibold text-[#071449]">
+                        <p className="text-[14px] font-semibold text-ink-deep">
                           Notifications
                         </p>
 
@@ -914,7 +915,7 @@ export default function Header({
                         <button
                           type="button"
                           onClick={markNotificationsRead}
-                          className="text-[11px] font-semibold text-[#07983f] hover:underline"
+                          className="text-[11px] font-semibold text-brand-bright hover:underline"
                         >
                           Mark all read
                         </button>
@@ -934,7 +935,7 @@ export default function Header({
                               className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
                                 item.type === "login"
                                   ? "bg-[#eaf2ff] text-[#2866d6]"
-                                  : "bg-[#e4f9e9] text-[#07983f]"
+                                  : "bg-brand-tint text-brand-bright"
                               }`}
                             >
                               <Icon
@@ -948,7 +949,7 @@ export default function Header({
                             </span>
 
                             <span className="min-w-0">
-                              <span className="block text-[12px] font-semibold text-[#071449]">
+                              <span className="block text-[12px] font-semibold text-ink-deep">
                                 {item.title}
                               </span>
 
@@ -994,17 +995,17 @@ export default function Header({
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center text-[#24305f]">
+                      <span className="flex h-full w-full items-center justify-center text-ink-soft">
                         <Icon name="user" size={21} />
                       </span>
                     )}
                   </span>
 
                   {unreadNotifications && (
-                    <span className="absolute left-[36px] top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-[#07983f]" />
+                    <span className="absolute left-[36px] top-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-brand-bright" />
                   )}
 
-                  <span className="max-w-[100px] truncate text-[13px] font-semibold text-[#24305f]">
+                  <span className="max-w-[100px] truncate text-[13px] font-semibold text-ink-soft">
                     {username}
                   </span>
 
@@ -1030,12 +1031,12 @@ export default function Header({
                             }
                             className="flex w-full items-center gap-4 rounded-lg px-2.5 py-2.5 text-left hover:bg-slate-50"
                           >
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center text-[#071449]">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center text-ink-deep">
                               <Icon name={item.icon} size={23} />
                             </span>
 
                             <span className="min-w-0">
-                              <span className="flex items-center gap-2 text-[14px] font-medium text-[#071449]">
+                              <span className="flex items-center gap-2 text-[14px] font-medium text-ink-deep">
                                 {item.label}
                                 {item.path === "/messages" && unreadMessagesCount > 0 && (
                                   <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[#2459dc] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
@@ -1087,7 +1088,7 @@ export default function Header({
                 to="/login"
                 state={{ from: location.pathname + location.search }}
                 onClick={closeOverlays}
-                className="hidden h-11 items-center rounded-lg border border-slate-200 px-5 text-[13px] font-medium text-[#071449] transition-colors hover:border-slate-300 hover:bg-slate-50 min-[1160px]:flex"
+                className="hidden h-11 items-center rounded-lg border border-slate-200 px-5 text-[13px] font-medium text-ink-deep transition-colors hover:border-slate-300 hover:bg-slate-50 min-[1160px]:flex"
               >
                 Sign in
               </Link>
@@ -1096,7 +1097,7 @@ export default function Header({
                 to="/create-account"
                 state={{ from: location.pathname + location.search }}
                 onClick={closeOverlays}
-                className="hidden h-11 items-center rounded-lg bg-[#07983f] px-5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-[#068936] min-[1160px]:flex"
+                className="hidden h-11 items-center rounded-lg bg-brand-bright px-5 text-[13px] font-semibold text-white shadow-sm transition-colors hover:bg-brand-mid min-[1160px]:flex"
               >
                 Create account
               </Link>
@@ -1106,7 +1107,7 @@ export default function Header({
       </div>
 
       {logoutConfirmOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#071449]/35 px-4 backdrop-blur-[2px]">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-ink-deep/35 px-4 backdrop-blur-[2px]">
           <div
             role="dialog"
             aria-modal="true"
@@ -1115,12 +1116,12 @@ export default function Header({
           >
             <h2
               id="logout-title"
-              className="text-[20px] font-semibold text-[#10183f]"
+              className="text-[20px] font-semibold text-ink"
             >
               Log out of Matchet?
             </h2>
 
-            <p className="mt-2 text-[14px] leading-6 text-[#69739a]">
+            <p className="mt-2 text-[14px] leading-6 text-muted">
               You will need to sign in again to access your account.
             </p>
 
@@ -1129,7 +1130,7 @@ export default function Header({
                 type="button"
                 disabled={logoutSubmitting}
                 onClick={() => setLogoutConfirmOpen(false)}
-                className="flex h-11 flex-1 items-center justify-center rounded-lg border border-slate-200 text-[13px] font-semibold text-[#24305f] hover:bg-slate-50 disabled:opacity-60"
+                className="flex h-11 flex-1 items-center justify-center rounded-lg border border-slate-200 text-[13px] font-semibold text-ink-soft hover:bg-slate-50 disabled:opacity-60"
               >
                 Cancel
               </button>

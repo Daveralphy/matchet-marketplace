@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProviderProfile } from "../api/provider";
-import "../styles/provider-dashboard.css";
+import "../styles/workspace/index.css";
 
 export default function ProviderApplicationStatus() {
   const [data, setData] = useState(null);

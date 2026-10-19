@@ -10,7 +10,7 @@ import { uploadFile } from "../api/uploads";
 import { useAuth } from "../context/AuthContext";
 import ProviderSignupFormHeader from "../components/layout/ProviderSignupFormHeader";
 import sideImage from "../assets/inspirations/provider/provideronboarding.png";
-import "../styles/provider-onboarding.css";
+import "../styles/onboarding/onboarding.css";
 
 function ProviderIcon({ type }) {
   if (type === "Individual") return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2" /><path d="M5.5 20c.6-3.6 2.8-5.4 6.5-5.4s5.9 1.8 6.5 5.4" /></svg>;
@@ -300,7 +300,7 @@ export default function ProviderSignupPageOne() {
                   </div>
                 </div>
 
-                <div style={{ position: "relative" }}>
+                <div className="provider-signup-location-field">
                   <label htmlFor="providerLocation">Location</label>
                   <LocationSearch
                     name="providerLocation"

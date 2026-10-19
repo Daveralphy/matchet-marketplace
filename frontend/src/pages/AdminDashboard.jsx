@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import AdminShell from "../components/AdminShell";
 import { Icon } from "../components/ProviderShell";
 import { getAdminDashboard } from "../api/admin";
-import "../styles/admin-dashboard.css";
 
 function formatNumber(value) {
   return new Intl.NumberFormat("en-NG").format(Number(value || 0));
@@ -63,7 +62,7 @@ export default function AdminDashboard() {
           <section className="admin-card">
             <div className="admin-card-head"><h2>Applications awaiting review</h2><Link to="/admin/providers">Review applications →</Link></div>
             {pendingApplications.length ? pendingApplications.map((application) => (
-              <Link key={String(application.id)} to={application.type === "provider" ? "/admin/providers" : "/admin/sellers"} className="admin-application-row" style={{ textDecoration: "none", color: "inherit" }}>
+              <Link key={String(application.id)} to={application.type === "provider" ? "/admin/providers" : "/admin/sellers"} className="admin-application-row">
                 {application.avatar ? <img className="admin-application-avatar" src={application.avatar} alt="" /> : <div className="admin-application-avatar">{application.name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase()}</div>}
                 <div className="admin-application-info"><strong>{application.businessName}</strong><span>{application.name} · {application.email}</span></div>
                 <div className="admin-application-meta"><strong>{formatDate(application.submittedAt)}</strong><span>{application.category}</span></div>
@@ -86,7 +85,7 @@ export default function AdminDashboard() {
           </section>
         </div>
 
-        <section className="admin-card" style={{ marginTop: 14 }}>
+        <section className="admin-card admin-quick-actions-card">
           <div className="admin-card-head"><h2>Quick actions</h2></div>
           <div className="admin-quick-grid">
             <Link to="/admin/providers"><i><Icon name="shield" size={18} /></i><strong>Review providers</strong><p>Review submitted provider applications and approve or reject them.</p></Link>

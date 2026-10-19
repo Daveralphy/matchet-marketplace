@@ -89,17 +89,17 @@ function PublicInfoPage({ title, intro, sections, actions = [] }) {
     <main className="min-h-[60vh] bg-[#fbfcfd] px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <header className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#07863a]">Matchet Marketplace</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#10183f] sm:text-4xl">{title}</h1>
-          <p className="mt-4 text-base leading-7 text-[#69739a]">{intro}</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-brand">Matchet Marketplace</p>
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h1>
+          <p className="mt-4 text-base leading-7 text-muted">{intro}</p>
         </header>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           {sections.map((section) => (
-            <section key={section.title} className="rounded-xl border border-[#e1e6ec] bg-white p-5">
-              <h2 className="text-lg font-semibold text-[#10183f]">{section.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-[#69739a]">{section.body}</p>
+            <section key={section.title} className="rounded-xl border border-line bg-white p-5">
+              <h2 className="text-lg font-semibold text-ink">{section.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-muted">{section.body}</p>
               {section.href && (
-                <Link to={section.href} className="mt-4 inline-flex font-semibold text-[#07863a] hover:underline">
+                <Link to={section.href} className="mt-4 inline-flex font-semibold text-brand hover:underline">
                   {section.linkLabel || "Learn more"} →
                 </Link>
               )}
@@ -109,7 +109,7 @@ function PublicInfoPage({ title, intro, sections, actions = [] }) {
         {actions.length > 0 && (
           <div className="mt-8 flex flex-wrap gap-3">
             {actions.map((action) => (
-              <Link key={action.href} to={action.href} className="rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white">
+              <Link key={action.href} to={action.href} className="rounded-lg bg-brand px-5 py-3 font-semibold text-white">
                 {action.label}
               </Link>
             ))}
@@ -171,12 +171,12 @@ function NotFoundPage() {
   return (
     <main className="flex min-h-[60vh] items-center justify-center bg-[#fbfcfd] px-4 py-12">
       <section className="max-w-lg text-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-[#07863a]">404 error</p>
-        <h1 className="mt-2 text-3xl font-bold text-[#10183f]">We could not find that page</h1>
-        <p className="mt-3 text-sm leading-6 text-[#69739a]">The link may be incorrect or the page may have moved. Return to the marketplace or browse products and services.</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-brand">404 error</p>
+        <h1 className="mt-2 text-3xl font-bold text-ink">We could not find that page</h1>
+        <p className="mt-3 text-sm leading-6 text-muted">The link may be incorrect or the page may have moved. Return to the marketplace or browse products and services.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Link to="/" className="rounded-lg bg-[#07863a] px-5 py-3 font-semibold text-white">Go to homepage</Link>
-          <Link to="/explore" className="rounded-lg border border-[#e1e6ec] px-5 py-3 font-semibold text-[#10183f]">Explore marketplace</Link>
+          <Link to="/" className="rounded-lg bg-brand px-5 py-3 font-semibold text-white">Go to homepage</Link>
+          <Link to="/explore" className="rounded-lg border border-line px-5 py-3 font-semibold text-ink">Explore marketplace</Link>
         </div>
       </section>
     </main>
@@ -185,12 +185,12 @@ function NotFoundPage() {
 
 function AccessDeniedPage({ title = "You do not have access to this page.", message = "Your account does not have the required access for this area." }) {
   return (
-    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
-      <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
-        <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
-        <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
-          <a href="/" style={{ padding: "12px 20px", borderRadius: "8px", border: "1px solid #dfe3ec", color: "#10183f", textDecoration: "none", fontWeight: 600 }}>Back to marketplace</a>
+    <main className="state-page">
+      <section className="state-page__card">
+        <h1 className="state-page__title">{title}</h1>
+        <p className="state-page__message">{message}</p>
+        <div className="state-page__actions">
+          <a href="/" className="state-page__action">Back to marketplace</a>
         </div>
       </section>
     </main>
@@ -334,13 +334,13 @@ function ProviderAccessPage({ state }) {
         ? "Your provider application is not currently approved. View the application status for the next steps."
         : "Your provider application has not been approved yet. You can view its current status or return to the marketplace.";
   return (
-    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
-      <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
-        <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
-        <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
-          {state === "missing" || state === "incomplete" ? <a href="/provider/onboarding">Continue application</a> : <a href="/provider/application-status">View application status</a>}
-          <a href="/">Back to marketplace</a>
+    <main className="state-page">
+      <section className="state-page__card">
+        <h1 className="state-page__title">{title}</h1>
+        <p className="state-page__message">{message}</p>
+        <div className="state-page__actions">
+          {state === "missing" || state === "incomplete" ? <a href="/provider/onboarding" className="state-page__action">Continue application</a> : <a href="/provider/application-status" className="state-page__action">View application status</a>}
+          <a href="/" className="state-page__action">Back to marketplace</a>
         </div>
       </section>
     </main>
@@ -355,13 +355,13 @@ function SellerAccessPage({ state }) {
       ? "Your seller application is not currently approved."
       : "Your seller application has not been approved yet.";
   return (
-    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "32px", background: "#f7f8fc" }}>
-      <section style={{ width: "min(520px, 100%)", padding: "32px", background: "#fff", border: "1px solid #e5e8f0", borderRadius: "16px", textAlign: "center", boxShadow: "0 16px 50px rgba(16,24,63,.08)" }}>
-        <h1 style={{ margin: "0 0 10px", color: "#10183f", fontSize: "24px" }}>{title}</h1>
-        <p style={{ margin: "0 0 24px", color: "#687099", lineHeight: 1.6 }}>{message}</p>
-        <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
-          {state === "missing" && <a href="/register">Start seller onboarding</a>}
-          <a href="/">Back to marketplace</a>
+    <main className="state-page">
+      <section className="state-page__card">
+        <h1 className="state-page__title">{title}</h1>
+        <p className="state-page__message">{message}</p>
+        <div className="state-page__actions">
+          {state === "missing" && <a href="/register" className="state-page__action">Start seller onboarding</a>}
+          <a href="/" className="state-page__action">Back to marketplace</a>
         </div>
       </section>
     </main>

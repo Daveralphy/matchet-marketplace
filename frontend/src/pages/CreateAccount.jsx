@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import loginHero from "../assets/inspirations/authentication/login1.png";
 import { showToast } from "../utils/toast";
+import "../styles/auth/auth.css";
 
 const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
 const GOOGLE_AUTH_URL = (import.meta.env.VITE_AUTH_URL || import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "https://matchet-api-staging.vercel.app" : "http://localhost:5000")).replace(/\/$/, "");
@@ -164,7 +165,7 @@ function Field({
     <div>
       <label
         htmlFor={id}
-        className="mb-2 block text-[14px] font-medium tracking-[-0.01em] text-[#10183f]"
+        className="mb-2 block text-[14px] font-medium tracking-[-0.01em] text-ink"
       >
         {label}
       </label>
@@ -174,7 +175,7 @@ function Field({
           "flex h-[54px] items-center rounded-[10px] border bg-white px-4 transition-colors",
           error
             ? "border-red-300"
-            : "border-[#dfe3ef] focus-within:border-[#07983f]",
+            : "border-[#dfe3ef] focus-within:border-brand-bright",
         ].join(" ")}
       >
         <span className="shrink-0 text-[#626c96]">{icon}</span>
@@ -188,7 +189,7 @@ function Field({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
-          className="min-w-0 flex-1 bg-transparent px-3 text-[14px] text-[#10183f] outline-none placeholder:text-[#8b93b5]"
+          className="min-w-0 flex-1 bg-transparent px-3 text-[14px] text-ink outline-none placeholder:text-[#8b93b5]"
         />
 
         {rightElement}
@@ -331,21 +332,10 @@ const CreateAccount = () => {
 
   return (
     <>
-      <style>{`
-        .login-scrollbar-hidden {
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-
-        .login-scrollbar-hidden::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-
-      <div className="min-h-screen bg-white px-0 py-0 sm:px-4 sm:py-4 lg:px-8">
-        <div className="mx-auto flex min-h-screen w-full max-w-[1470px] overflow-hidden rounded-none border border-slate-100 bg-[#fbfcfb] shadow-none sm:min-h-[calc(100vh-2rem)] sm:rounded-[14px] sm:shadow-[0_10px_35px_rgba(16,24,63,0.05)] lg:h-[calc(100vh-2rem)] lg:min-h-0">
+      <div className="auth-page min-h-screen bg-white px-0 py-0 sm:px-4 sm:py-4 lg:px-8">
+        <div className="mx-auto flex min-h-screen w-full max-w-[1470px] overflow-hidden rounded-none border border-slate-100 bg-canvas shadow-none sm:min-h-[calc(100vh-2rem)] sm:rounded-panel sm:shadow-raised lg:h-[calc(100vh-2rem)] lg:min-h-0">
           {/* Left inspiration panel */}
-          <div className="hidden h-full basis-1/2 flex-none items-center justify-center overflow-hidden bg-[#fbfcfb] lg:flex">
+          <div className="hidden h-full basis-1/2 flex-none items-center justify-center overflow-hidden bg-canvas lg:flex">
             <img
               src={loginHero}
               alt="Matchet: Shop products and book services from trusted local businesses."
@@ -354,33 +344,33 @@ const CreateAccount = () => {
           </div>
 
           {/* Right create account panel */}
-          <div className="login-scrollbar-hidden flex min-h-screen min-w-0 flex-1 flex-col overflow-y-auto px-5 py-6 sm:px-8 sm:py-7 lg:h-full lg:min-h-0 lg:basis-1/2 lg:flex-none lg:px-12 xl:px-14">
-            <div className="flex shrink-0 items-center justify-between gap-4 text-[13px] text-[#24305f]">
+          <div className="auth-scrollbar-hidden flex min-h-screen min-w-0 flex-1 flex-col overflow-y-auto px-5 py-6 sm:px-8 sm:py-7 lg:h-full lg:min-h-0 lg:basis-1/2 lg:flex-none lg:px-12 xl:px-14">
+            <div className="flex shrink-0 items-center justify-between gap-4 text-[13px] text-ink-soft">
               <div className="flex min-w-0 items-center gap-1.5">
                 {breadcrumbPath === "/" ? (
-                  <Link to="/" className="font-medium text-[#6670ad] hover:text-[#10183f]">Home</Link>
+                  <Link to="/" className="font-medium text-muted-violet hover:text-ink">Home</Link>
                 ) : (
                   <>
-                    <Link to="/" className="font-medium text-[#6670ad] hover:text-[#10183f]">Home</Link>
+                    <Link to="/" className="font-medium text-muted-violet hover:text-ink">Home</Link>
                     <span className="text-[#a4abc5]">/</span>
-                    <Link to={breadcrumbPath} className="truncate font-semibold text-[#10183f] hover:text-[#07983f]">{breadcrumbLabel}</Link>
+                    <Link to={breadcrumbPath} className="truncate font-semibold text-ink hover:text-brand-bright">{breadcrumbLabel}</Link>
                   </>
                 )}
               </div>
               <div className="flex shrink-0 items-center">
                 <span>Already have an account?</span>
-                <Link to="/login" state={{ from: breadcrumbPath }} className="ml-2 font-semibold text-[#07983f] transition-colors hover:text-[#068936]">Log in</Link>
+                <Link to="/login" state={{ from: breadcrumbPath }} className="ml-2 font-semibold text-brand-bright transition-colors hover:text-brand-mid">Log in</Link>
               </div>
             </div>
 
             {/* Create account content */}
             <div className="flex flex-1 items-center justify-center py-7 sm:py-8 lg:py-5">
               <div className="w-full max-w-[540px]">
-                <h2 className="text-[34px] font-extrabold leading-[1.05] tracking-[-0.04em] text-[#10183f] sm:text-[40px] lg:text-[42px]">
+                <h2 className="text-[34px] font-extrabold leading-[1.05] tracking-[-0.04em] text-ink sm:text-[40px] lg:text-[42px]">
                   Create your account
                 </h2>
 
-                <p className="mt-2 text-[15px] leading-6 text-[#747ca1] sm:text-[16px]">
+                <p className="mt-2 text-[15px] leading-6 text-subtle sm:text-[16px]">
                   Join Matchet and get started in a few simple steps.
                 </p>
 
@@ -390,7 +380,7 @@ const CreateAccount = () => {
                     type="button"
                     disabled={isSubmitting}
                     onClick={() => { window.location.assign(GOOGLE_AUTH_URL + "/api/auth/google"); }}
-                    className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
+                    className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-ink transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
                   >
                     <svg
                       className="h-5 w-5 shrink-0"
@@ -430,7 +420,7 @@ const CreateAccount = () => {
                         showToast("Apple sign-in is not available yet. Please use Google or create an account with your email.", "warning");
                       }
                     }}
-                    className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-[#10183f] transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
+                    className="flex h-[54px] items-center justify-center gap-3 rounded-[10px] border border-slate-200 bg-white px-4 text-[13px] font-medium text-ink transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-gray-300"
                   >
                     <svg
                       className="h-5 w-5 shrink-0"
@@ -448,7 +438,7 @@ const CreateAccount = () => {
                 {/* Divider */}
                 <div className="my-5 flex items-center gap-4">
                   <div className="h-px flex-1 bg-slate-200" />
-                  <span className="text-[13px] text-[#747ca1]">or</span>
+                  <span className="text-[13px] text-subtle">or</span>
                   <div className="h-px flex-1 bg-slate-200" />
                 </div>
 <form
@@ -503,7 +493,7 @@ const CreateAccount = () => {
                   <div>
                     <label
                       htmlFor="phone"
-                      className="mb-2 block text-[14px] font-medium tracking-[-0.01em] text-[#10183f]"
+                      className="mb-2 block text-[14px] font-medium tracking-[-0.01em] text-ink"
                     >
                       Phone number
                     </label>
@@ -513,7 +503,7 @@ const CreateAccount = () => {
                         "flex h-[54px] rounded-[10px] border bg-white transition-colors",
                         touched.phone && errors.phone
                           ? "border-red-300"
-                          : "border-[#dfe3ef] focus-within:border-[#07983f]",
+                          : "border-[#dfe3ef] focus-within:border-brand-bright",
                       ].join(" ")}
                     >
                       <div className="flex shrink-0 items-center gap-2 border-r border-[#e4e7ef] px-3">
@@ -526,7 +516,7 @@ const CreateAccount = () => {
                           onChange={(event) =>
                             setCountryCode(event.target.value)
                           }
-                          className="bg-transparent text-[14px] font-medium text-[#24305f] outline-none"
+                          className="bg-transparent text-[14px] font-medium text-ink-soft outline-none"
                           aria-label="Country code"
                         >
                           <option value="+234">+234</option>
@@ -544,7 +534,7 @@ const CreateAccount = () => {
                         value={phone}
                         onChange={(event) => setPhone(event.target.value)}
                         onBlur={() => handleBlur("phone")}
-                        className="min-w-0 flex-1 bg-transparent px-3 text-[14px] text-[#10183f] outline-none placeholder:text-[#8b93b5]"
+                        className="min-w-0 flex-1 bg-transparent px-3 text-[14px] text-ink outline-none placeholder:text-[#8b93b5]"
                       />
                     </div>
 
@@ -573,7 +563,7 @@ const CreateAccount = () => {
                         onClick={() =>
                           setShowPassword((previous) => !previous)
                         }
-                        className="shrink-0 text-[#747ca1] transition-colors hover:text-[#10183f]"
+                        className="auth-password-toggle shrink-0 text-subtle transition-colors hover:text-ink"
                         aria-label={
                           showPassword ? "Hide password" : "Show password"
                         }
@@ -583,7 +573,7 @@ const CreateAccount = () => {
                     }
                   />
 
-                  <p className="mt-[-8px] text-[12px] leading-5 text-[#747ca1]">
+                  <p className="mt-[-8px] text-[12px] leading-5 text-subtle">
                     Use at least 8 characters with a mix of letters, numbers,
                     and symbols.
                   </p>
@@ -596,21 +586,21 @@ const CreateAccount = () => {
                         checked={accepted}
                         onChange={(event) => setAccepted(event.target.checked)}
                         onBlur={() => handleBlur("accepted")}
-                        className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 accent-[#07983f] focus:ring-[#07983f]"
+                        className="mt-0.5 h-5 w-5 shrink-0 rounded border-gray-300 accent-brand-bright focus:ring-brand-bright"
                       />
 
                       <span>
                         I agree to Matchet&apos;s{" "}
                         <Link
                           to="/terms"
-                          className="font-medium text-[#07983f] hover:text-[#068936]"
+                          className="font-medium text-brand-bright hover:text-brand-mid"
                         >
                           Terms of Service
                         </Link>{" "}
                         and{" "}
                         <Link
                           to="/privacy"
-                          className="font-medium text-[#07983f] hover:text-[#068936]"
+                          className="font-medium text-brand-bright hover:text-brand-mid"
                         >
                           Privacy Policy
                         </Link>
@@ -629,7 +619,7 @@ const CreateAccount = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="mt-1 flex h-[56px] w-full items-center justify-center gap-4 rounded-[10px] bg-[#07983f] px-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#068936] disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-1 flex h-[56px] w-full items-center justify-center gap-4 rounded-[10px] bg-brand-bright px-6 text-[15px] font-semibold text-white transition-colors hover:bg-brand-mid disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <span>
                       {isSubmitting ? "Creating account..." : "Create account"}

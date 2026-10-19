@@ -1,0 +1,801 @@
+/* Seller orders (/seller/orders) and the order cancellation dialog (also used by the order detail page).
+   Note: some selectors here are bare elements/generic classes (table, th, td, dl, dt, dd, .paid ...)
+   that apply app-wide; they are kept as-is for visual parity (see refactor report). */
+
+.seller-orders-page {
+  margin: auto;
+}
+.orders-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.orders-head h1 {
+  margin: 0;
+}
+.orders-head p {
+  margin: 2px 0;
+  color: #6871a7;
+}
+.orders-head-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+.export-btn {
+  background: #2672ef;
+  border: 0;
+  color: white;
+  border-radius: 6px;
+  padding: 9px 15px;
+  font-size: 12px;
+}
+.date-filter {
+  height: 40px;
+  min-width: 285px;
+  background: #fff;
+  border: 1px solid #dfe5f3;
+  border-radius: 6px;
+  color: #333b70;
+  text-align: left;
+  padding: 0 13px;
+}
+.date-filter span {
+  float: right;
+}
+.order-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.order-stat {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.order-stat-icon {
+  display: grid;
+  place-items: center;
+}
+.order-stat-icon.blue {
+  color: #1768eb;
+  background: #eaf2ff;
+}
+.order-stat-icon.green {
+  color: #0a9c50;
+  background: #e8f9ef;
+}
+.order-stat-icon.orange {
+  color: #ed7817;
+  background: #fff0e5;
+}
+.order-stat strong,
+.order-stat b,
+.order-stat span {
+  display: block;
+}
+.order-stat span {
+  color: #7881a9;
+  margin-top: 3px;
+}
+.orders-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 345px;
+}
+.orders-table-card,
+.order-detail {
+  background: #fff;
+  overflow: hidden;
+}
+.order-tabs {
+  border-bottom: 1px solid #e7ebf4;
+  display: flex;
+  padding: 0 13px;
+}
+.order-tabs button {
+  border: 0;
+  background: none;
+  padding: 0 13px;
+  color: #5962a0;
+  position: relative;
+}
+.order-tabs button.active {
+  color: #10183f;
+  font-weight: 700;
+}
+.order-tabs button.active:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  height: 2px;
+  background: #1768eb;
+  left: 12px;
+  right: 12px;
+}
+.order-tabs em {
+  font-style: normal;
+  font-size: 10px;
+  margin-left: 3px;
+}
+.order-filters {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 120px 120px 120px;
+  gap: 10px;
+}
+.order-filters label {
+  height: 42px;
+  border: 1px solid #dfe5f2;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  color: #6b75a6;
+}
+.order-filters input {
+  border: 0;
+  outline: 0;
+  width: 100%;
+  padding-left: 9px;
+  color: #222b58;
+}
+.order-filters select {
+  border: 1px solid #dfe5f2;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 8px;
+  color: #444d7c;
+}
+.order-table-wrap {
+  overflow: auto;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 11px;
+}
+th {
+  text-align: left;
+  color: #5c659e;
+  font-weight: 600;
+  padding: 9px 10px;
+  border-bottom: 1px solid #e7ebf4;
+  white-space: nowrap;
+}
+td {
+  padding: 10px;
+  border-bottom: 1px solid #edf0f6;
+  vertical-align: middle;
+}
+tbody tr {
+  cursor: pointer;
+}
+tbody tr.selected {
+  background: #f6f8ff;
+}
+td:first-child,
+th:first-child {
+  padding-left: 20px;
+}
+td strong {
+  font-size: 11px;
+}
+td small {
+  display: block;
+  color: #7b84aa;
+  margin-top: 3px;
+}
+.table-products span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0;
+  min-width: 135px;
+}
+.table-products img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 5px;
+  background: #f1f3f8;
+}
+.table-products b {
+  font-weight: 500;
+  max-width: 115px;
+}
+.order-pill {
+  display: inline-block;
+  border-radius: 14px;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 500;
+  background: #edf3ff;
+  color: #1768df;
+  white-space: nowrap;
+}
+.order-pill.processing {
+  background: #fff0da;
+  color: #c16b08;
+}
+.order-pill.shipped {
+  background: #e9f2ff;
+  color: #1465d9;
+}
+.order-pill.delivered {
+  background: #e5f8ed;
+  color: #078840;
+}
+.order-pill.cancelled {
+  background: #ffe9e9;
+  color: #d12e2e;
+}
+.dots {
+  border: 0;
+  background: none;
+  font-size: 19px;
+  color: #111940;
+}
+.order-footer {
+  height: 58px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #6871a7;
+  font-size: 11px;
+}
+.order-footer button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e0e5f2;
+  background: #fff;
+  margin-left: 4px;
+  border-radius: 5px;
+}
+.order-footer .page-active {
+  background: #2875ee;
+  color: #fff;
+  border-color: #2875ee;
+}
+.order-detail h2 {
+  margin: 0;
+  padding: 17px 18px;
+  border-bottom: 1px solid #e7ebf4;
+}
+.order-detail h2 .order-pill {
+  float: right;
+}
+.detail-body {
+  padding: 17px 18px;
+}
+.detail-product {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e7ebf4;
+}
+.detail-product > img,
+.detail-product > div {
+  width: 72px;
+  height: 65px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #f3f4f8;
+  display: grid;
+  place-items: center;
+}
+.detail-product section {
+  flex: 1;
+}
+.detail-product strong,
+.detail-product span,
+.detail-product b {
+  display: block;
+}
+.detail-product strong {
+  font-size: 12px;
+}
+.detail-product span {
+  font-size: 11px;
+  color: #6871a7;
+  margin: 4px 0;
+}
+.detail-product b {
+  font-size: 12px;
+}
+dl {
+  margin: 0;
+  padding: 5px 0;
+}
+dt {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  color: #25305d;
+  margin-top: 13px;
+}
+dt svg {
+  width: 17px;
+  color: #18255d;
+}
+dd {
+  margin: 4px 0 0 27px;
+  font-size: 11px;
+  color: #59628f;
+  line-height: 1.45;
+}
+.paid {
+  display: block;
+  width: max-content;
+  background: #e8f8ed;
+  color: #078a40;
+  border-radius: 12px;
+  padding: 4px 8px;
+  margin-top: 5px;
+}
+.detail-actions {
+  margin-top: 14px;
+}
+.detail-actions button {
+  width: 100%;
+  height: 42px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+.ship {
+  border: 0;
+  background: #2875ee;
+  color: #fff;
+}
+.update {
+  border: 1px solid #aebce2;
+  background: #fff;
+  color: #1c2a60;
+  text-align: left;
+  padding: 0 12px;
+}
+.update span {
+  float: right;
+}
+.cancel {
+  border: 1px solid #ff4949;
+  background: #fff;
+  color: #e52d2d;
+}
+.detail-empty {
+  min-height: 530px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  color: #7a83a9;
+  text-align: center;
+  gap: 7px;
+}
+.detail-empty strong {
+  color: #1d2755;
+  font-size: 14px;
+}
+.detail-empty p {
+  margin: 0;
+  font-size: 11px;
+}
+@media (max-width: 760px) {
+  .order-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .order-tabs {
+    overflow: auto;
+  }
+  .order-filters {
+    grid-template-columns: 1fr;
+  }
+  .order-filters label {
+    grid-column: auto;
+  }
+  .order-table-wrap {
+    overflow-x: auto;
+  }
+}
+.seller-orders-skeleton {
+  min-height: 500px;
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+}
+.seller-orders-skeleton div {
+  height: 58px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #edf1f7 25%, #f8f9fc 37%, #edf1f7 63%);
+  background-size: 1200px 100%;
+  animation: matchet-shimmer 1.4s ease-in-out infinite;
+}
+.seller-orders-page {
+  padding: 26px 0 42px;
+  max-width: 1380px;
+  color: #10183f;
+}
+.orders-head {
+  margin-bottom: 20px;
+}
+.orders-head h1 {
+  font-size: 25px;
+  letter-spacing: -0.5px;
+}
+.orders-head p {
+  font-size: 10px;
+}
+.order-stats {
+  gap: 13px;
+  margin-bottom: 14px;
+}
+.order-stat {
+  min-height: 0;
+  padding: 16px 17px;
+  border: 1px solid #e6eaf2;
+  border-radius: 9px;
+  box-shadow: 3px 3px 14px rgba(23, 38, 83, 0.025);
+}
+.order-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+}
+.order-stat strong {
+  font-size: 22px;
+}
+.order-stat b {
+  font-size: 10px;
+}
+.order-stat span {
+  font-size: 8px;
+}
+.orders-content {
+  gap: 14px;
+}
+.orders-table-card,
+.order-detail {
+  border: 1px solid #e6eaf2;
+  border-radius: 9px;
+}
+.order-tabs {
+  height: 44px;
+}
+.order-tabs button {
+  font-size: 9px;
+}
+.order-filters {
+  padding: 14px 12px;
+}
+.order-filters input,
+.order-filters select {
+  font-size: 9px;
+}
+.order-table-wrap table {
+  font-size: 9px;
+}
+.order-table-wrap th {
+  font-size: 8px;
+}
+.order-table-wrap td {
+  font-size: 9px;
+}
+.order-detail h2 {
+  font-size: 12px;
+}
+.detail-body {
+  font-size: 9px;
+}
+@media (max-width: 760px) {
+  .seller-orders-page {
+    padding: 20px 0;
+  }
+  .orders-head h1 {
+    font-size: 24px;
+  }
+  .orders-head {
+    display: block;
+  }
+  .orders-head-actions {
+    align-items: flex-start;
+    margin-top: 12px;
+  }
+}
+.order-action-cell {
+  position: relative;
+  overflow: visible !important;
+  white-space: nowrap;
+}
+.order-action-cell .dots {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.order-action-cell .dots:hover,
+.order-action-cell .dots[aria-expanded="true"] {
+  background: #eef3ff;
+  color: #1768eb;
+}
+.order-action-menu {
+  position: absolute;
+  right: 8px;
+  top: calc(100% - 4px);
+  z-index: 20;
+  min-width: 150px;
+  padding: 5px;
+  background: #fff;
+  border: 1px solid #e2e7f1;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(16, 24, 63, 0.16);
+  display: grid;
+  gap: 2px;
+}
+.order-action-menu button {
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 5px;
+  font-size: 11px;
+  color: #17234e;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.order-action-menu button:hover {
+  background: #f2f5fc;
+}
+.order-action-menu button.danger {
+  color: #d72f3b;
+}
+.detail-actions .view-order {
+  border: 1px solid #dce4f4;
+  background: #f7f9ff;
+  color: #1c2a60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.seller-cancel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 22, 49, 0.52);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.seller-cancel-dialog {
+  position: relative;
+  width: min(460px, 100%);
+  background: #fff;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 24px 80px rgba(9, 18, 49, 0.25);
+  color: #10183f;
+}
+.seller-cancel-close {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 7px;
+  background: #f3f5fa;
+  color: #536080;
+  font-size: 23px;
+  cursor: pointer;
+}
+.seller-cancel-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff0f0;
+  color: #cf2635;
+  font-weight: 800;
+  font-size: 22px;
+}
+.seller-cancel-dialog h2 {
+  font-size: 20px;
+  margin: 15px 0 8px;
+}
+.seller-cancel-dialog > p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #69728e;
+  margin: 0 0 20px;
+}
+.seller-cancel-dialog form label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.seller-cancel-dialog textarea {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  border: 1px solid #dce2ef;
+  border-radius: 8px;
+  padding: 12px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+  color: #182247;
+}
+.seller-cancel-dialog textarea:focus {
+  border-color: #6b92f1;
+  box-shadow: 0 0 0 3px rgba(40, 117, 238, 0.1);
+}
+.seller-cancel-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 20px;
+}
+.seller-cancel-actions button {
+  border: 1px solid #dce2ef;
+  border-radius: 7px;
+  background: #fff;
+  padding: 10px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.seller-cancel-actions button[type="submit"] {
+  background: #d92e3d;
+  border-color: #d92e3d;
+  color: #fff;
+}
+.seller-cancel-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.seller-cancel-error {
+  font-size: 12px;
+  color: #c72a37;
+  margin: 8px 0 0;
+}
+@media (max-width: 760px) {
+  .seller-cancel-dialog {
+    padding: 23px 18px;
+  }
+  .seller-cancel-actions {
+    flex-direction: column-reverse;
+  }
+  .seller-cancel-actions button {
+    width: 100%;
+  }
+}
+@media (max-width: 1100px) {
+  .orders-content {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .order-detail {
+    display: block;
+    min-width: 0;
+  }
+  .order-filters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .order-filters label {
+    grid-column: 1/-1;
+  }
+  .order-table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .order-table-wrap table {
+    min-width: 720px;
+  }
+  .order-detail .detail-body {
+    padding: 14px;
+  }
+  .order-detail .detail-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .order-detail .detail-actions button {
+    margin-top: 0;
+  }
+}
+@media (max-width: 600px) {
+  .seller-orders-page {
+    padding: 14px 0 24px;
+    width: 100%;
+    min-width: 0;
+  }
+  .orders-head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .orders-head h1 {
+    font-size: clamp(24px, 6vw, 30px);
+  }
+  .orders-head-actions {
+    align-items: stretch;
+    width: 100%;
+  }
+  .date-filter {
+    min-width: 0;
+    width: 100%;
+  }
+  .order-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .order-stat {
+    min-width: 0;
+    padding: 12px;
+    gap: 9px;
+  }
+  .order-stat strong {
+    font-size: 20px;
+  }
+  .order-stat b {
+    font-size: 10px;
+  }
+  .order-stat span {
+    font-size: 9px;
+    line-height: 1.35;
+  }
+  .order-stat-icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+  }
+  .order-tabs {
+    overflow-x: auto;
+    padding: 0 8px;
+  }
+  .order-tabs button {
+    white-space: nowrap;
+    padding: 0 10px;
+  }
+  .order-filters {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 12px;
+    gap: 8px;
+  }
+  .order-filters label {
+    grid-column: auto;
+  }
+  .order-footer {
+    height: auto;
+    min-height: 54px;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 12px;
+  }
+  .detail-product > img,
+  .detail-product > div {
+    flex: 0 0 64px;
+    width: 64px;
+    height: 64px;
+  }
+  .seller-cancel-dialog {
+    padding: 22px 16px;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Responsive fixes (UI refactor)
+   ------------------------------------------------------------------ */
+@media (max-width: 1100px) {
+  /* The empty "Select an order" panel no longer needs desktop height once stacked. */
+  .seller-orders-page .detail-empty {
+    min-height: 220px;
+  }
+  .seller-orders-page .order-filters select {
+    min-height: 40px;
+  }
+}

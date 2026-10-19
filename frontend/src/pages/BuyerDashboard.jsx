@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getBuyerOrders, getBuyerBookings, getSavedItems } from "../api/marketplace";
-import "./BuyerDashboard.css";
+import "../styles/account/dashboard.css";
 
 const money = (value, currency = "NGN") => new Intl.NumberFormat("en-NG", {
   style: "currency", currency, maximumFractionDigits: 0,

@@ -1,0 +1,300 @@
+/* Sell & Offer settings (/provider/settings): tabs, setting rows, toggles. */
+
+.provider-setting-row {
+  display: grid;
+  grid-template-columns: 35px 1fr 100px;
+  align-items: center;
+  gap: 15px;
+  padding: 18px 0;
+  border-bottom: 1px solid #edf0f5;
+}
+.provider-setting-row svg {
+  color: #0d1b77;
+}
+.provider-setting-row strong,
+.provider-setting-row small {
+  display: block;
+}
+.provider-setting-row small {
+  color: #6972aa;
+  margin-top: 3px;
+  font-size: 11px;
+}
+.provider-setting-row button {
+  height: 36px;
+  border: 1px solid #dce3ef;
+  border-radius: 6px;
+  background: #fff;
+  color: #10183f;
+  font: 500 11px Poppins;
+}
+.provider-setting-row:last-child button {
+  border: 0;
+  background: #dff8e9;
+  color: #07983f;
+}
+.provider-settings-page {
+  min-width: 0;
+}
+.provider-settings-tabs {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  min-height: 68px;
+  margin-bottom: 14px;
+  border: 1px solid #dfe5f0;
+  border-radius: 9px;
+  background: #fff;
+  overflow: hidden;
+}
+.provider-settings-tabs button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  border: 0;
+  background: #fff;
+  color: #10183f;
+  font: 500 13px Poppins;
+  cursor: pointer;
+}
+.provider-settings-tabs button.active {
+  color: #0755ee;
+}
+.provider-settings-tabs button.active:after {
+  content: "";
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  bottom: 0;
+  height: 2px;
+  background: #2864ed;
+}
+.provider-settings-tabs button svg {
+  width: 22px;
+  height: 22px;
+}
+.provider-settings-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 0.7fr);
+  gap: 14px;
+}
+.provider-settings-card {
+  padding: 22px;
+}
+.provider-settings-card-heading {
+  padding-bottom: 16px;
+  margin-bottom: 0;
+  border-bottom: 1px solid #e8ecf3;
+}
+.provider-settings-card-heading h2 {
+  margin: 0;
+  font-size: 19px;
+}
+.provider-settings-card-heading p {
+  margin: 5px 0 0;
+  color: #6972aa;
+  font-size: 11px;
+}
+.provider-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 84px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf0f5;
+}
+.provider-settings-row:last-child {
+  border-bottom: 0;
+}
+.provider-settings-row-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: #101d76;
+  flex-shrink: 0;
+}
+.provider-settings-row-copy {
+  min-width: 0;
+  flex: 1;
+}
+.provider-settings-row-copy strong,
+.provider-settings-row-copy small {
+  display: block;
+}
+.provider-settings-row-copy strong {
+  font-size: 12px;
+}
+.provider-settings-row-copy small {
+  margin-top: 4px;
+  color: #6972aa;
+  font-size: 10px;
+}
+.provider-settings-value {
+  max-width: 280px;
+  color: #6972aa;
+  font-size: 11px;
+  text-align: right;
+}
+.provider-settings-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.provider-settings-side .provider-card {
+  padding: 20px;
+}
+.provider-settings-side h2 {
+  margin: 0 0 8px;
+}
+.provider-settings-side .provider-settings-row {
+  min-height: 75px;
+}
+.provider-settings-side .provider-settings-row-copy strong {
+  font-size: 11px;
+}
+.provider-settings-help p {
+  color: #6972aa;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.provider-settings-help .provider-outline-button {
+  width: 100%;
+}
+.provider-settings-empty {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6972aa;
+  padding: 30px;
+}
+.provider-settings-empty svg {
+  color: #2864ed;
+  margin-bottom: 10px;
+}
+.provider-settings-empty strong {
+  color: #10183f;
+  font-size: 13px;
+}
+.provider-settings-empty p {
+  max-width: 430px;
+  margin: 5px 0;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.provider-toggle {
+  position: relative;
+  width: 46px;
+  height: 25px;
+  border: 0;
+  border-radius: 20px;
+  background: #d9deea;
+  padding: 3px;
+  cursor: pointer;
+}
+.provider-toggle span {
+  display: block;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.provider-toggle.on {
+  background: #2864ed;
+}
+.provider-toggle.on span {
+  transform: translateX(21px);
+}
+.provider-settings-card .provider-outline-button {
+  white-space: nowrap;
+}
+@media (max-width: 1000px) {
+  .provider-settings-layout {
+    grid-template-columns: 1fr;
+  }
+  .provider-settings-tabs {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 1px;
+  }
+  .provider-settings-tabs button {
+    min-height: 58px;
+  }
+}
+@media (max-width: 650px) {
+  .provider-settings-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .provider-settings-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .provider-settings-value {
+    margin-left: 54px;
+    max-width: none;
+    text-align: left;
+    width: calc(100% - 54px);
+  }
+  .provider-settings-row > .provider-outline-button,
+  .provider-settings-row > .provider-danger-button {
+    margin-left: auto;
+  }
+  .provider-settings-side {
+    display: block;
+  }
+  .provider-settings-side .provider-card {
+    margin-bottom: 14px;
+  }
+}
+.provider-settings-save-message {
+  margin-bottom: 12px;
+  padding: 11px 14px;
+  border: 1px solid #ccebd9;
+  border-radius: 7px;
+  background: #effbf4;
+  color: #078c48;
+  font-size: 10px;
+  animation: provider-save-in 0.18s ease-out;
+}
+@keyframes provider-save-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 760px) {
+  .provider-app .provider-settings-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+  }
+  .provider-app .provider-settings-tabs button {
+    min-width: 0;
+    min-height: 54px;
+    padding: 8px;
+    font-size: 11px;
+    gap: 7px;
+  }
+  .provider-app .provider-settings-row {
+    gap: 10px;
+    padding: 14px 0;
+  }
+  .provider-app .provider-settings-value {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+  .provider-app .provider-settings-row > .provider-outline-button,
+  .provider-app .provider-settings-row > .provider-danger-button {
+    margin-left: auto;
+  }
+}

@@ -1,1 +1,67 @@
-/* Design tokens placeholder */
+/* Matchet design tokens.
+   One source of truth for the colours, radii, shadows and type used across the platform.
+   Declared with Tailwind's `@theme static`, so every token is available two ways:
+     - as a CSS variable in plain CSS:   color: var(--color-ink);
+     - as a Tailwind utility in JSX:      className="text-ink bg-brand"
+   Breakpoints used across the stylesheets (keep media queries on these values):
+     480px  small phones and up      768px  tablets
+     1024px small laptops            1280px desktop                                   */
+
+@theme static {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  /* Text */
+  --color-ink: #10183f;          /* headings and body text */
+  --color-ink-deep: #071449;
+  --color-ink-soft: #24305f;
+  --color-muted: #69739a;        /* secondary text on marketplace pages */
+  --color-muted-cool: #6972aa;   /* secondary text in seller/provider workspaces */
+  --color-muted-soft: #6872a4;
+  --color-muted-violet: #6670ad; /* secondary text in onboarding */
+  --color-subtle: #747ca1;
+
+  /* Brand green */
+  --color-brand: #07863a;
+  --color-brand-bright: #07983f;
+  --color-brand-hover: #087d35;
+  --color-brand-mid: #068936;
+  --color-brand-tint: #e4f9e9;
+  --color-brand-wash: #eaf9ee;
+
+  /* Workspace blue */
+  --color-accent: #2864ed;
+  --color-accent-strong: #1768ef;
+  --color-accent-deep: #075fe0;
+  --color-accent-tint: #edf3ff;
+
+  /* Surfaces and borders */
+  --color-surface: #ffffff;
+  --color-canvas: #fbfcfb;
+  --color-canvas-cool: #f7f8fc;
+  --color-workspace: #f6f9ff;
+  --color-line: #e1e6ec;
+  --color-line-cool: #dfe5f2;
+  --color-line-soft: #edf0f5;
+
+  /* Status */
+  --color-star: #f5a900;
+  --color-danger: #e52c40;
+  --color-danger-tint: #ffe3e7;
+  --color-warning: #c27b00;
+  --color-warning-tint: #fff0cc;
+
+  /* Radii */
+  --radius-control: 7px;
+  --radius-card: 8px;
+  --radius-panel: 14px;
+  --radius-dialog: 16px;
+
+  /* Shadows (all tinted with the ink colour) */
+  --shadow-card: 0 3px 15px rgba(16, 24, 63, 0.04);
+  --shadow-raised: 0 10px 35px rgba(16, 24, 63, 0.05);
+  --shadow-dialog: 0 16px 50px rgba(16, 24, 63, 0.08);
+
+  /* Layout */
+  --gutter-mobile: 16px;
+  --tap-target: 44px;
+}

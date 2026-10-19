@@ -18,6 +18,7 @@ import mockup3 from "../assets/inspirations/homepage/mockup3.png";
 import appStoreBadge from "../assets/inspirations/homepage/app-store-badge.svg";
 import googlePlayBadge from "../assets/inspirations/homepage/google-play-badge.svg";
 import matchMockup from "../assets/inspirations/homepage/mockup1.png";
+import "../styles/marketplace/home.css";
 
 const CATEGORIES = [
   { label: "All Categories", icon: "grid", active: true },
@@ -126,7 +127,7 @@ function Icon({ name, size = 18, strokeWidth = 1.9 }) {
 
 function SearchBar() {
   return (
-    <div className="flex w-full max-w-[520px] flex-col rounded-[15px] bg-white p-1.5 shadow-[0_8px_24px_rgba(16,24,63,0.08)] sm:flex-row sm:items-center">
+    <div className="mk-search">
       <div className="flex h-12 min-w-0 w-full items-center gap-2 px-3 sm:h-[54px] sm:w-auto sm:flex-1">
         <Icon name="search" size={20} />
 
@@ -134,13 +135,13 @@ function SearchBar() {
           type="search"
           placeholder="Search for products, services, or providers..."
           aria-label="Search for products, services, or providers"
-          className="min-w-0 flex-1 bg-transparent text-[11px] text-[#10183f] outline-none placeholder:text-[#8790ae] sm:text-[12px]"
+          className="mk-search-input"
         />
       </div>
 
       <button
         type="button"
-        className="mt-1 h-12 w-full shrink-0 rounded-[11px] bg-[#07983f] px-6 text-[12px] font-semibold text-white transition-colors hover:bg-[#068936] sm:mt-0 sm:h-[54px] sm:w-auto sm:px-7 sm:text-[13px]"
+        className="mk-search-button"
       >
         Search
       </button>
@@ -151,7 +152,7 @@ function SearchBar() {
 function CategoryPills() {
   return (
     <div className="relative w-full max-w-[600px]">
-      <div className="flex w-full gap-2.5 overflow-x-auto pb-1 pr-2 scrollbar-none sm:flex-wrap sm:overflow-visible sm:pb-0">
+      <div className="mk-chip-row">
         {CATEGORIES.map((category) => (
           <Link
             key={category.label}
@@ -165,8 +166,8 @@ function CategoryPills() {
             className={[
               "flex min-h-[39px] shrink-0 items-center gap-2 whitespace-nowrap rounded-[11px] px-3.5 py-2 text-[11px] font-medium transition-colors sm:text-[12px]",
               category.active
-                ? "bg-[#dff7e7] text-[#07863a]"
-                : "bg-white text-[#10183f] hover:bg-slate-50",
+                ? "bg-[#dff7e7] text-brand"
+                : "bg-white text-ink hover:bg-slate-50",
             ].join(" ")}
           >
             <Icon name={category.icon} size={16} />
@@ -191,7 +192,7 @@ function FeatureCard({ icon, title, description, tone }) {
       </span>
 
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold leading-[15px] text-[#10183f] sm:text-[12px]">
+        <p className="text-[11px] font-semibold leading-[15px] text-ink sm:text-[12px]">
           {title}
         </p>
 
@@ -205,8 +206,8 @@ function FeatureCard({ icon, title, description, tone }) {
 
 function HeroVisual() {
   return (
-    <div className="relative hidden lg:absolute lg:inset-y-0 lg:right-0 lg:block lg:h-full lg:w-[58%]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_56%_48%,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.94)_42%,rgba(248,250,249,0)_76%)]" />
+    <div className="mk-hero-art">
+      <div className="mk-hero-art-glow" />
 
       <img
         src={heroImage}
@@ -214,9 +215,9 @@ function HeroVisual() {
         className="absolute left-[50%] top-1/2 h-[99%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 object-contain xl:h-[102%]"
       />
 
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-[#fbfcfb] via-[#fbfcfb]/75 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-[42%] bg-gradient-to-r from-canvas via-canvas/75 to-transparent" />
 
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[15%] bg-gradient-to-l from-[#fbfcfb]/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-[15%] bg-gradient-to-l from-canvas/70 to-transparent" />
     </div>
   );
 }
@@ -228,7 +229,7 @@ function DesktopFeatureCards() {
         icon="cart"
         title="Shop quality products"
         description="From trusted sellers"
-        tone="bg-[#e4f9e9] text-[#07983f]"
+        tone="bg-brand-tint text-brand-bright"
       />
 
       <FeatureCard
@@ -255,7 +256,7 @@ function MobileFeatureCards() {
         icon="cart"
         title="Shop quality products"
         description="From trusted sellers"
-        tone="bg-[#e4f9e9] text-[#07983f]"
+        tone="bg-brand-tint text-brand-bright"
       />
 
       <FeatureCard
@@ -339,19 +340,19 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading =
   };
 
   return (
-    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-[#fbfcfb] px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:mt-6 lg:px-10 lg:py-9">
+    <section className="mx-auto mt-5 max-w-[1470px] rounded-[14px] border border-slate-100 bg-canvas px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:mt-6 lg:px-10 lg:py-9">
       <div className="flex items-end justify-between gap-5">
         <div className="min-w-0">
-          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+          <p className="mk-eyebrow-sm">
             {eyebrow}
           </p>
 
-          <h2 className="mt-2 text-[30px] font-bold leading-none tracking-[-0.045em] text-[#10183f] sm:text-[38px]">
+          <h2 className="mt-2 text-[30px] font-bold leading-none tracking-[-0.045em] text-ink sm:text-[38px]">
             {title}{" "}
-            <span className="text-[#07863a]">{accent}</span>
+            <span className="text-brand">{accent}</span>
           </h2>
 
-          <p className="mt-2 text-[12px] leading-5 text-[#69739a] sm:text-[14px]">
+          <p className="mt-2 text-[12px] leading-5 text-muted sm:text-[14px]">
             {subtitle}
           </p>
         </div>
@@ -359,7 +360,7 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading =
         <div className="hidden shrink-0 items-center gap-4 sm:flex">
           <Link
             to={viewPath}
-            className="text-[12px] font-semibold text-[#07863a] transition-colors hover:text-[#056e2c]"
+            className="text-[12px] font-semibold text-brand transition-colors hover:text-[#056e2c]"
           >
             View all <span className="ml-1 text-[16px]">→</span>
           </Link>
@@ -378,7 +379,7 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading =
               type="button"
               aria-label={`Scroll ${title} right`}
               onClick={() => scrollRail(1)}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
             >
               <span className="text-[20px] leading-none">›</span>
             </button>
@@ -389,7 +390,7 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading =
       <div className="mt-6 flex items-center justify-between sm:hidden">
         <Link
           to={viewPath}
-          className="text-[11px] font-semibold text-[#07863a]"
+          className="text-[11px] font-semibold text-brand"
         >
           View all <span className="ml-1 text-[15px]">→</span>
         </Link>
@@ -408,7 +409,7 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading =
             type="button"
             aria-label={`Scroll ${title} right`}
             onClick={() => scrollRail(1)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)]"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-ink shadow-[0_3px_12px_rgba(16,24,63,0.07)]"
           >
             <span className="text-[19px] leading-none">›</span>
           </button>
@@ -439,8 +440,8 @@ function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading =
         </div>
       ) : (
         <div className="mt-6 rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-12 text-center">
-          <p className="text-[13px] font-semibold text-[#10183f]">Nothing to show here yet</p>
-          <p className="mt-1 text-[11px] text-[#69739a]">Products and services will appear here when sellers and providers publish active listings.</p>
+          <p className="text-[13px] font-semibold text-ink">Nothing to show here yet</p>
+          <p className="mt-1 text-[11px] text-muted">Products and services will appear here when sellers and providers publish active listings.</p>
         </div>
        )}
     </section>
@@ -472,16 +473,16 @@ function NearbyMarketplaceSection({ isAuthenticated, items, loading = false }) {
     >
       <div className="flex items-end justify-between gap-5">
         <div className="min-w-0">
-          <p className="text-[9px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[10px]">
+          <p className="mk-eyebrow-sm">
             {eyebrow}
           </p>
 
-          <h2 className="mt-2 text-[30px] font-bold leading-none tracking-[-0.045em] text-[#10183f] sm:text-[38px]">
+          <h2 className="mt-2 text-[30px] font-bold leading-none tracking-[-0.045em] text-ink sm:text-[38px]">
             {title}{" "}
-            <span className="text-[#07863a]">{accent}</span>
+            <span className="text-brand">{accent}</span>
           </h2>
 
-          <p className="mt-2 text-[12px] leading-5 text-[#69739a] sm:text-[14px]">
+          <p className="mt-2 text-[12px] leading-5 text-muted sm:text-[14px]">
             {subtitle}
           </p>
         </div>
@@ -489,7 +490,7 @@ function NearbyMarketplaceSection({ isAuthenticated, items, loading = false }) {
         <div className="hidden shrink-0 items-center gap-4 sm:flex">
           <Link
             to="/explore"
-            className="text-[12px] font-semibold text-[#07863a] transition-colors hover:text-[#056e2c]"
+            className="text-[12px] font-semibold text-brand transition-colors hover:text-[#056e2c]"
           >
             View all <span className="ml-1 text-[16px]">→</span>
           </Link>
@@ -508,7 +509,7 @@ function NearbyMarketplaceSection({ isAuthenticated, items, loading = false }) {
               type="button"
               aria-label={`Scroll ${title} right`}
               onClick={() => scrollRail(1)}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
             >
               <span className="text-[20px] leading-none">›</span>
             </button>
@@ -517,7 +518,7 @@ function NearbyMarketplaceSection({ isAuthenticated, items, loading = false }) {
       </div>
 
       <div className="mt-6 flex items-center justify-between sm:hidden">
-        <Link to="/explore" className="text-[11px] font-semibold text-[#07863a]">
+        <Link to="/explore" className="text-[11px] font-semibold text-brand">
           View all <span className="ml-1 text-[15px]">→</span>
         </Link>
 
@@ -535,7 +536,7 @@ function NearbyMarketplaceSection({ isAuthenticated, items, loading = false }) {
             type="button"
             aria-label={`Scroll ${title} right`}
             onClick={() => scrollRail(1)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)]"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-ink shadow-[0_3px_12px_rgba(16,24,63,0.07)]"
           >
             <span className="text-[19px] leading-none">›</span>
           </button>
@@ -562,8 +563,8 @@ function NearbyMarketplaceSection({ isAuthenticated, items, loading = false }) {
         </div>
       ) : (
         <div className="mt-6 rounded-[12px] border border-dashed border-[#d9dfe7] bg-white px-5 py-10 text-center">
-          <p className="text-[13px] font-semibold text-[#10183f]">No marketplace listings yet</p>
-          <p className="mt-1 text-[11px] text-[#69739a]">Live products and services will appear here once they are active.</p>
+          <p className="text-[13px] font-semibold text-ink">No marketplace listings yet</p>
+          <p className="mt-1 text-[11px] text-muted">Live products and services will appear here once they are active.</p>
         </div>
       )}
     </section>
@@ -639,7 +640,7 @@ function MatchingIcon({ name, size = 22 }) {
 
 const MATCH_TONES = {
   green: {
-    icon: "bg-[#e0f8e8] text-[#07863a]",
+    icon: "bg-[#e0f8e8] text-brand",
     card: "bg-white",
   },
   purple: {
@@ -665,11 +666,11 @@ function MatchingStep({ number, icon, title, description, tone = "green" }) {
         <div className={`flex h-12 w-12 items-center justify-center rounded-full ${colors.icon}`}>
           <MatchingIcon name={icon} size={22} />
         </div>
-        <p className="mt-3 text-[10px] font-semibold text-[#07863a]">{number}</p>
-        <h3 className="mt-1 text-[15px] font-bold leading-[1.12] tracking-[-0.02em] text-[#10183f] sm:text-[16px]">
+        <p className="mt-3 text-[10px] font-semibold text-brand">{number}</p>
+        <h3 className="mt-1 text-[15px] font-bold leading-[1.12] tracking-[-0.02em] text-ink sm:text-[16px]">
           {title}
         </h3>
-        <p className="mt-2 text-[12px] leading-[17px] text-[#69739a] sm:text-[13px] sm:leading-[18px]">
+        <p className="mt-2 text-[12px] leading-[17px] text-muted sm:text-[13px] sm:leading-[18px]">
           {description}
         </p>
       </div>
@@ -686,10 +687,10 @@ function MatchingStat({ metric }) {
         <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${colors.icon}`}>
           <MatchingIcon name={metric.icon} size={22} />
         </div>
-        <span className="text-[27px] font-bold tracking-[-0.04em] text-[#10183f]">{metric.value}</span>
+        <span className="text-[27px] font-bold tracking-[-0.04em] text-ink">{metric.value}</span>
       </div>
-      <h3 className="mt-3 text-[15px] font-bold tracking-[-0.02em] text-[#10183f]">{metric.title}</h3>
-      <p className="mt-1 text-[12px] leading-[17px] text-[#69739a] sm:text-[13px] sm:leading-[18px]">
+      <h3 className="mt-3 text-[15px] font-bold tracking-[-0.02em] text-ink">{metric.title}</h3>
+      <p className="mt-1 text-[12px] leading-[17px] text-muted sm:text-[13px] sm:leading-[18px]">
         {metric.description}
       </p>
     </div>
@@ -704,10 +705,10 @@ function MatchingRecommendation({ recommendation }) {
       <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${colors.icon}`}>
         <MatchingIcon name={recommendation.icon} size={18} />
       </div>
-      <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4 text-[#10183f]">
+      <span className="min-w-0 flex-1 text-[11px] font-semibold leading-4 text-ink">
         {recommendation.label}
       </span>
-      <span className="text-[18px] text-[#10183f]">›</span>
+      <span className="text-[18px] text-ink">›</span>
     </div>
   );
 }
@@ -717,19 +718,19 @@ function MatchingSection({ isAuthenticated, userName }) {
     <section className="mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#f3fbf6] shadow-[0_10px_35px_rgba(16,24,63,0.04)]">
       <div className="relative grid min-h-[545px] lg:grid-cols-[1.15fr_0.85fr]">
         <div className="relative z-10 px-6 py-9 sm:px-8 sm:py-10 lg:px-10 lg:py-11 xl:px-[35px]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+          <p className="mk-eyebrow">
             {isAuthenticated ? "YOUR MATCHES, MADE EASIER" : "MATCHET MATCHING EXPERIENCE"}
           </p>
 
-          <h2 className="mt-3 max-w-[650px] text-[34px] font-bold leading-[1.02] tracking-[-0.045em] text-[#10183f] sm:text-[43px]">
+          <h2 className="mt-3 max-w-[650px] text-[34px] font-bold leading-[1.02] tracking-[-0.045em] text-ink sm:text-[43px]">
             {isAuthenticated ? (
-              <>Your <span className="text-[#07863a]">next match</span></>
+              <>Your <span className="text-brand">next match</span></>
             ) : (
-              <>Find your <span className="text-[#07863a]">right match.</span></>
+              <>Find your <span className="text-brand">right match.</span></>
             )}
           </h2>
 
-          <p className="mt-3 max-w-[580px] text-[14px] leading-[22px] text-[#69739a] sm:text-[16px] sm:leading-[25px]">
+          <p className="mt-3 max-w-[580px] text-[14px] leading-[22px] text-muted sm:text-[16px] sm:leading-[25px]">
             {isAuthenticated
               ? "We’ve learned from what you browse, save, and explore. Let us help you find your next match."
               : "Tell us what you need, and we will help you find the right products, services, or providers without making you search endlessly."}
@@ -744,7 +745,7 @@ function MatchingSection({ isAuthenticated, userName }) {
                   title="Tell us what you need"
                   description="Describe what you’re looking for."
                 />
-                <span className="mt-[88px] shrink-0 text-[25px] text-[#07863a]">→</span>
+                <span className="mt-[88px] shrink-0 text-[25px] text-brand">→</span>
                 <MatchingStep
                   number="02"
                   icon="sliders"
@@ -752,7 +753,7 @@ function MatchingSection({ isAuthenticated, userName }) {
                   description="We consider your preferences, location, and budget."
                   tone="purple"
                 />
-                <span className="mt-[88px] shrink-0 text-[25px] text-[#07863a]">→</span>
+                <span className="mt-[88px] shrink-0 text-[25px] text-brand">→</span>
                 <MatchingStep
                   number="03"
                   icon="spark"
@@ -771,15 +772,15 @@ function MatchingSection({ isAuthenticated, userName }) {
               <div className="mt-7 flex flex-wrap items-center gap-7">
                 <Link
                   to="/explore"
-                  className="inline-flex h-12 items-center justify-center rounded-[12px] bg-[#07863a] px-7 text-[15px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)] transition-transform hover:-translate-y-0.5"
+                  className="inline-flex h-12 items-center justify-center rounded-[12px] bg-brand px-7 text-[15px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)] transition-transform hover:-translate-y-0.5"
                 >
                   Find my match <span className="ml-3 text-[20px]">→</span>
                 </Link>
                 <button type="button" className="flex items-center gap-3 text-left">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_4px_15px_rgba(16,24,63,0.06)]">▶</span>
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-ink shadow-[0_4px_15px_rgba(16,24,63,0.06)]">▶</span>
                   <span>
-                    <span className="block text-[12px] font-semibold text-[#10183f]">See how it works</span>
-                    <span className="block text-[11px] text-[#69739a]">Watch a short video</span>
+                    <span className="block text-[12px] font-semibold text-ink">See how it works</span>
+                    <span className="block text-[11px] text-muted">Watch a short video</span>
                   </span>
                 </button>
               </div>
@@ -795,15 +796,15 @@ function MatchingSection({ isAuthenticated, userName }) {
               <div className="mt-7 flex flex-wrap items-center gap-7">
                 <Link
                   to="/explore"
-                  className="inline-flex h-12 items-center justify-center rounded-[12px] bg-[#07863a] px-7 text-[15px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)] transition-transform hover:-translate-y-0.5"
+                  className="inline-flex h-12 items-center justify-center rounded-[12px] bg-brand px-7 text-[15px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)] transition-transform hover:-translate-y-0.5"
                 >
                   See my matches <span className="ml-3 text-[20px]">→</span>
                 </Link>
                 <button type="button" className="flex items-center gap-3 text-left">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_4px_15px_rgba(16,24,63,0.06)]">▶</span>
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-ink shadow-[0_4px_15px_rgba(16,24,63,0.06)]">▶</span>
                   <span>
-                    <span className="block text-[12px] font-semibold text-[#10183f]">How matching works</span>
-                    <span className="block text-[11px] text-[#69739a]">Watch a short video</span>
+                    <span className="block text-[12px] font-semibold text-ink">How matching works</span>
+                    <span className="block text-[11px] text-muted">Watch a short video</span>
                   </span>
                 </button>
               </div>
@@ -862,32 +863,11 @@ function CommunityIcon({ name, size = 22 }) {
   return <svg {...common}>{paths[name]}</svg>;
 }
 
-const COMMUNITY_REVIEW_ANIMATION_STYLES = `
-  @keyframes communityReviewEnter {
-    from {
-      opacity: 0;
-      transform: translate3d(18px, 0, 0);
-    }
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
-  }
 
-  .community-review-card {
-    animation: communityReviewEnter 520ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .community-review-card {
-      animation: none;
-    }
-  }
-`;
 
 
 const MOBILE_APP_TONES = {
-  green: "bg-[#dff7e6] text-[#07863a]",
+  green: "bg-[#dff7e6] text-brand",
   purple: "bg-[#eee4ff] text-[#6b35d9]",
   blue: "bg-[#e2efff] text-[#1769df]",
   orange: "bg-[#fff0df] text-[#f28a18]",
@@ -915,8 +895,8 @@ function MobileAppBenefit({ item, compact = false }) {
         <Icon name={item.icon} size={21} />
       </span>
       <span className="min-w-0">
-        <span className="block text-[12px] font-semibold leading-[16px] text-[#10183f]">{item.title}</span>
-        <span className="block text-[12px] font-semibold leading-[16px] text-[#10183f]">{item.description}</span>
+        <span className="block text-[12px] font-semibold leading-[16px] text-ink">{item.title}</span>
+        <span className="block text-[12px] font-semibold leading-[16px] text-ink">{item.description}</span>
       </span>
     </div>
   );
@@ -930,16 +910,16 @@ function MobileAppSection({ isAuthenticated, userName }) {
     <section className={`mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 shadow-[0_10px_35px_rgba(16,24,63,0.04)] ${isAuthenticated ? "bg-[#f8fbff]" : "bg-[#f1fbf4]"}`}>
       <div className="relative min-h-[560px] lg:min-h-[535px]">
         <div className="relative z-10 flex min-h-[560px] w-full flex-col justify-center px-7 py-10 sm:px-10 lg:min-h-[535px] lg:w-[52%] lg:px-10 xl:px-[40px]">
-          <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+          <p className="mk-eyebrow">
             {content.eyebrow}
           </p>
 
-          <h2 className="mt-4 max-w-[590px] text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-[#10183f] sm:text-[48px]">
+          <h2 className="mt-4 max-w-[590px] text-[38px] font-bold leading-[0.98] tracking-[-0.045em] text-ink sm:text-[48px]">
             {content.title}{" "}
-            <span className="text-[#07863a]">{content.accent}</span>
+            <span className="text-brand">{content.accent}</span>
           </h2>
 
-          <p className="mt-4 max-w-[560px] text-[14px] leading-[22px] text-[#69739a] sm:text-[16px] sm:leading-[25px]">
+          <p className="mt-4 max-w-[560px] text-[14px] leading-[22px] text-muted sm:text-[16px] sm:leading-[25px]">
             {content.subtitle}
           </p>
 
@@ -947,7 +927,7 @@ function MobileAppSection({ isAuthenticated, userName }) {
             {isAuthenticated && (
               <Link
                 to="/explore"
-                className="inline-flex h-[52px] items-center justify-center rounded-[10px] bg-[#07863a] px-7 text-[14px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)]"
+                className="inline-flex h-[52px] items-center justify-center rounded-[10px] bg-brand px-7 text-[14px] font-semibold text-white shadow-[0_7px_18px_rgba(7,134,58,0.18)]"
               >
                 {content.primaryCta} <span className="ml-2 text-[19px]">→</span>
               </Link>
@@ -980,11 +960,11 @@ function MobileAppSection({ isAuthenticated, userName }) {
             {content.sideBenefits.map((item) => {
               const tone = MOBILE_APP_TONES[item.tone] || MOBILE_APP_TONES.green;
               return (
-                <div key={item.title + item.description} className={`flex min-h-[62px] w-[142px] items-center gap-3 rounded-[11px] px-3 shadow-[0_5px_15px_rgba(16,24,63,0.03)] ${tone.replace("text-[#07863a]", "text-[#10183f]")}`}>
+                <div key={item.title + item.description} className={`flex min-h-[62px] w-[142px] items-center gap-3 rounded-[11px] px-3 shadow-[0_5px_15px_rgba(16,24,63,0.03)] ${tone.replace("text-brand", "text-ink")}`}>
                   <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${tone}`}>
                     <Icon name={item.icon} size={18} />
                   </span>
-                  <span className="text-[11px] font-semibold leading-4 text-[#10183f]">
+                  <span className="text-[11px] font-semibold leading-4 text-ink">
                     {item.title}<br />{item.description}
                   </span>
                 </div>
@@ -1015,7 +995,7 @@ function CommunityAvatar({ review, compact = false }) {
       ) : (
         <span
           className={[
-            "font-bold tracking-[-0.04em] text-[#10183f]",
+            "font-bold tracking-[-0.04em] text-ink",
             compact ? "text-[8px]" : "text-[28px] sm:text-[34px]",
           ].join(" ")}
         >
@@ -1062,18 +1042,18 @@ function CommunityReviewCard({ review, animationKey }) {
   return (
     <article
       key={animationKey}
-      className="community-review-card flex min-h-[320px] items-center gap-7 rounded-[14px] border border-slate-100 bg-white px-6 py-7 shadow-[0_5px_18px_rgba(16,24,63,0.025)] sm:px-7 lg:px-8"
+      className="mk-community-review-card flex min-h-[320px] flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7 rounded-[14px] border border-slate-100 bg-white px-6 py-7 shadow-[0_5px_18px_rgba(16,24,63,0.025)] sm:px-7 lg:px-8"
     >
       <CommunityAvatar review={review} />
       <div className="min-w-0">
-        <blockquote className="max-w-[640px] text-[17px] font-medium leading-[1.38] tracking-[-0.02em] text-[#10183f] sm:text-[20px] lg:text-[22px]">
+        <blockquote className="max-w-[640px] text-[17px] font-medium leading-[1.38] tracking-[-0.02em] text-ink sm:text-[20px] lg:text-[22px]">
           “{review.quote}”
         </blockquote>
 
         <div className="mt-6">
           <ReviewStars rating={review.rating} />
-          <p className="mt-3 text-[14px] font-bold text-[#10183f]">{review.name}</p>
-          <p className="mt-1 text-[13px] text-[#69739a]">{review.role} · {review.location}</p>
+          <p className="mt-3 text-[14px] font-bold text-ink">{review.name}</p>
+          <p className="mt-1 text-[13px] text-muted">{review.role} · {review.location}</p>
         </div>
       </div>
     </article>
@@ -1087,12 +1067,12 @@ function CommunityStats({ reviews }) {
   return (
     <aside className="rounded-[14px] bg-[#eaf9ef] px-6 py-6">
       <div>
-        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-[#10183f]">
+        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-ink">
           {averageRating.toFixed(1)} / 5
         </p>
-        <p className="mt-1 text-[12px] text-[#69739a]">Average community rating</p>
+        <p className="mt-1 text-[12px] text-muted">Average community rating</p>
         <ReviewStars rating={averageRating} />
-        <p className="mt-1 text-[11px] text-[#69739a]">
+        <p className="mt-1 text-[11px] text-muted">
           Based on {formatReviewCount(reviewCount)} {reviewCount === 1 ? "review" : "reviews"}
         </p>
       </div>
@@ -1100,10 +1080,10 @@ function CommunityStats({ reviews }) {
       <div className="my-4 h-px bg-[#cfe8d6]" />
 
       <div>
-        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-[#10183f]">
+        <p className="text-[38px] font-bold leading-none tracking-[-0.045em] text-ink">
           {formatReviewCount(reviewCount)}
         </p>
-        <p className="mt-1 text-[12px] text-[#69739a]">Reviews from buyers and providers</p>
+        <p className="mt-1 text-[12px] text-muted">Reviews from buyers and providers</p>
       </div>
 
       <div className="my-4 flex items-center gap-2">
@@ -1111,13 +1091,13 @@ function CommunityStats({ reviews }) {
           <CommunityAvatar key={review.id} review={review} compact />
         ))}
         {reviewCount > reviewerAvatars.length && (
-          <span className="flex h-9 items-center rounded-full bg-[#d8f3df] px-3 text-[10px] font-bold text-[#07863a]">
+          <span className="flex h-9 items-center rounded-full bg-[#d8f3df] px-3 text-[10px] font-bold text-brand">
             +{formatReviewCount(reviewCount - reviewerAvatars.length)}
           </span>
         )}
       </div>
 
-      <p className="text-[11px] text-[#69739a]">A growing community you can trust</p>
+      <p className="text-[11px] text-muted">A growing community you can trust</p>
     </aside>
   );
 }
@@ -1127,12 +1107,12 @@ function CommunityPoints({ points }) {
     <aside className="overflow-hidden rounded-[14px] bg-[#eaf9ef]">
       {points.map((point) => (
         <div key={point.title} className="flex items-center gap-3 border-b border-[#d7eee0] px-4 py-3 last:border-b-0">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d5f3dd] text-[#07863a]">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#d5f3dd] text-brand">
             <CommunityIcon name={point.icon} size={20} />
           </span>
           <div className="min-w-0">
-            <p className="text-[12px] font-bold text-[#10183f]">{point.title}</p>
-            <p className="mt-0.5 text-[10px] text-[#69739a]">{point.description}</p>
+            <p className="text-[12px] font-bold text-ink">{point.title}</p>
+            <p className="mt-0.5 text-[10px] text-muted">{point.description}</p>
           </div>
         </div>
       ))}
@@ -1174,7 +1154,6 @@ function CommunitySection({ isAuthenticated }) {
 
   return (
     <>
-      <style>{COMMUNITY_REVIEW_ANIMATION_STYLES}</style>
       <section
       className={[
         "mx-auto mt-6 max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 px-5 py-7 shadow-[0_10px_35px_rgba(16,24,63,0.04)] sm:px-7 sm:py-8 lg:px-8 lg:py-9",
@@ -1183,23 +1162,23 @@ function CommunitySection({ isAuthenticated }) {
     >
       <div className="flex items-start justify-between gap-5">
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+          <p className="mk-eyebrow">
             {content.eyebrow}
           </p>
 
-          <h2 className="mt-3 text-[32px] font-bold leading-[1.02] tracking-[-0.045em] text-[#10183f] sm:text-[43px]">
+          <h2 className="mt-3 text-[32px] font-bold leading-[1.02] tracking-[-0.045em] text-ink sm:text-[43px]">
             {content.title}{" "}
-            <span className="text-[#07863a]">{content.accent}</span>
+            <span className="text-brand">{content.accent}</span>
           </h2>
 
-          <p className="mt-2 text-[14px] leading-6 text-[#69739a] sm:text-[16px]">
+          <p className="mt-2 text-[14px] leading-6 text-muted sm:text-[16px]">
             {content.subtitle}
           </p>
         </div>
 
         <div className="hidden shrink-0 items-center gap-2 sm:flex">
           {isAuthenticated && (
-            <span className="mr-2 text-[12px] font-medium text-[#69739a]">
+            <span className="mr-2 text-[12px] font-medium text-muted">
               {String(activeIndex + 1).padStart(2, "0")}/{String(content.reviews.length).padStart(2, "0")}
             </span>
           )}
@@ -1217,7 +1196,7 @@ function CommunitySection({ isAuthenticated }) {
             type="button"
             aria-label="Next review"
             onClick={() => moveReview(1)}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#10183f] shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-ink shadow-[0_3px_12px_rgba(16,24,63,0.07)] transition-colors hover:bg-[#f7f8fa]"
           >
             <span className="text-[22px] leading-none">›</span>
           </button>
@@ -1259,7 +1238,7 @@ function CommunitySection({ isAuthenticated }) {
               onClick={() => selectReview(index)}
               className={[
                 "h-2.5 rounded-full transition-all",
-                index === activeIndex ? "w-4 bg-[#07863a]" : "w-2.5 bg-[#d6dceb]",
+                index === activeIndex ? "w-4 bg-brand" : "w-2.5 bg-[#d6dceb]",
               ].join(" ")}
             />
           ))}
@@ -1267,7 +1246,7 @@ function CommunitySection({ isAuthenticated }) {
 
         <Link
           to="/reviews"
-          className="text-[12px] font-semibold text-[#07863a] transition-colors hover:text-[#056e2c]"
+          className="text-[12px] font-semibold text-brand transition-colors hover:text-[#056e2c]"
         >
           {content.cta} <span className="ml-1 text-[16px]">→</span>
         </Link>
@@ -1324,33 +1303,33 @@ export default function Home() {
   }, [selectedLocation]);
 
   return (
-    <main className="w-full px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
-      <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-[#fbfcfb] shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
-        <div className="relative min-h-0 lg:min-h-[535px]">
-          <div className="relative z-20 flex w-full flex-col justify-center px-6 pb-0 pt-10 sm:px-10 sm:pt-12 lg:min-h-[535px] lg:w-[51%] lg:px-12 lg:pb-12 lg:pt-12 xl:px-[50px]">
-            <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-[#07863a] sm:text-[11px]">
+    <main className="mk-page">
+      <section className="relative mx-auto max-w-[1470px] overflow-hidden rounded-[14px] border border-slate-100 bg-canvas shadow-[0_10px_35px_rgba(16,24,63,0.05)]">
+        <div className="mk-hero-inner">
+          <div className="mk-hero-copy">
+            <p className="mk-eyebrow">
               {isAuthenticated
                 ? `WELCOME BACK, ${userName}`
                 : "A SMARTER WAY TO BUY, BOOK, AND WORK"}
             </p>
 
-            <h1 className="mt-4 max-w-[520px] text-[36px] font-bold leading-[0.99] tracking-[-0.045em] text-[#10183f] sm:text-[48px] lg:text-[43px] xl:text-[48px]">
+            <h1 className="mk-hero-title">
               {isAuthenticated ? (
                 <>
                   What are you looking
                   <br />
-                  for <span className="text-[#07863a]">today?</span>
+                  for <span className="text-brand">today?</span>
                 </>
               ) : (
                 <>
                   Everything you need
                   <br />
-                  in <span className="text-[#07863a]">one place.</span>
+                  in <span className="text-brand">one place.</span>
                 </>
               )}
             </h1>
 
-            <p className="mt-4 max-w-[475px] text-[14px] leading-[22px] text-[#69739a] sm:text-[15px] sm:leading-6">
+            <p className="mk-hero-lead">
               {isAuthenticated
                 ? "Find products, book services, and connect with trusted providers near you."
                 : "Discover products, book services, and connect with trusted providers near you."}
