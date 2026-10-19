@@ -20,28 +20,20 @@ export function MarketplaceItemCard({ item, view = "grid", onSave, saved = false
   const seller = item.seller || item.businessName || item.providerName || "Matchet seller";
   const location = item.location || "Location not specified";
   const price = item.price || item.formattedPrice || "";
-  return <article className={`group min-w-0 overflow-hidden rounded-[16px] bg-white p-2.5 shadow-[0_5px_18px_rgba(16,24,63,0.07)] ${isList ? "grid grid-cols-[minmax(112px,224px)_minmax(0,1fr)] gap-3 sm:grid-cols-[224px_minmax(0,1fr)_232px] sm:gap-5 sm:p-2.5" : "flex h-[370px] flex-col max-[639px]:h-[320px] max-[639px]:p-2"} ${className}`}>
-    <div className={`relative min-w-0 overflow-hidden rounded-[15px] bg-[#edf1ed] ${isList ? "h-[156px] sm:h-[156px]" : "h-[184px] w-full shrink-0 max-[639px]:h-[145px]"}`}>
+  return <article className={`group min-w-0 overflow-hidden rounded-[10px] border border-[#484848] bg-[#242424] p-1.5 text-[#f5f5f5] ${isList ? "grid grid-cols-[minmax(112px,224px)_minmax(0,1fr)] gap-3 sm:grid-cols-[224px_minmax(0,1fr)_232px] sm:gap-5 sm:p-2.5" : "flex h-[370px] flex-col max-[639px]:h-[320px]"} ${className}`}>
+    <div className={`relative min-w-0 overflow-hidden rounded-[7px] bg-[#303030] ${isList ? "h-[156px] sm:h-[156px]" : "mx-0.5 mt-0.5 aspect-square w-auto shrink-0"}`}>
       <Link to={href} className="absolute inset-0 block">
         {image ? <img src={image} alt={title} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.025]" onError={e => {e.currentTarget.style.display="none";e.currentTarget.nextElementSibling?.classList.remove("hidden");}}/> : null}
         <span className={image ? "hidden absolute inset-0 items-center justify-center text-4xl text-slate-400" : "absolute inset-0 flex items-center justify-center text-4xl text-slate-400"}>{type === "service" ? "✳" : "◇"}</span>
-        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink/70 via-ink/20 to-transparent"/>
-        <span className="absolute bottom-3 left-3 max-w-[80%] truncate rounded-full bg-white/85 px-2.5 py-1 text-[10px] font-medium text-ink max-[639px]:bottom-2 max-[639px]:left-2 max-[639px]:px-2 max-[639px]:py-0.5 max-[639px]:text-[9px]">{item.category || (type === "service" ? "Service" : "Product")}</span>
+        {onSave && <button type="button" aria-label={saved ? `Unsave ${title}` : `Save ${title}`} aria-pressed={saved} onClick={(event) => { event.preventDefault(); event.stopPropagation(); onSave(event); }} className={`absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-[#242424]/90 text-white shadow-sm transition-colors hover:text-brand ${saved ? "text-brand" : ""}`}><span className="[&>svg]:h-[15px] [&>svg]:w-[15px]"><HeartIcon filled={saved}/></span></button>}
+        <span className="absolute bottom-2 left-2 max-w-[80%] truncate rounded-[4px] bg-[#168653] px-2 py-1 text-[10px] font-medium text-white">{item.category || (type === "service" ? "Service" : "Product")}</span>
       </Link>
-      {onSave && <button type="button" aria-label={saved ? `Unsave ${title}` : `Save ${title}`} aria-pressed={saved} onClick={(event) => { event.preventDefault(); event.stopPropagation(); onSave(event); }} className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white max-[639px]:right-2 max-[639px]:top-2 max-[639px]:h-7 max-[639px]:w-7 text-ink shadow-sm transition-colors hover:text-brand ${saved ? "text-brand" : ""}`}><span className="[&>svg]:h-[17px] [&>svg]:w-[17px]"><HeartIcon filled={saved}/></span></button>}
     </div>
-    <div className={`flex min-w-0 flex-col ${isList ? "py-1 sm:py-2" : "flex-1 pt-3 max-[639px]:pt-2"}`}>
-      <div className="flex min-w-0 items-center justify-between gap-2">
-        <span className="truncate text-[10px] text-[#71809f] max-[639px]:text-[9px]">{item.category || (type === "service" ? "Service" : "Product")}</span>
-        <span className="shrink-0 text-[10px] text-ink max-[639px]:text-[9px]">{reviews > 0 ? <><span className="text-[#ffbf00]">★</span> {rating.toFixed(1)} <span className="text-[#8290ad]">({reviews})</span></> : <span className="text-[#8290ad]">New</span>}</span>
-      </div>
-      <Link to={href} className="mt-1.5 line-clamp-2 text-[13px] font-bold leading-[17px] tracking-[-0.015em] text-[#090f35] hover:text-brand max-[639px]:mt-1 max-[639px]:text-[11px] max-[639px]:leading-[14px]">{title}</Link>
-      {isList && description && <p className="mt-2 line-clamp-2 text-[14px] leading-5 text-[#71809f]">{description}</p>}
-      <p className={`truncate font-bold tracking-[-0.02em] text-[#078b4b] ${isList ? "mt-auto pt-2 text-[19px]" : "mt-1.5 text-[16px] max-[639px]:mt-1 max-[639px]:text-[13px]"}`}>{price}</p>
-      <div className={`flex min-w-0 items-center gap-1.5 text-[10px] text-[#71809f] max-[639px]:gap-1 max-[639px]:text-[9px] ${isList ? "mt-2" : "mt-auto pt-2 max-[639px]:pt-1"}`}>
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#17213e] text-[10px] text-white max-[639px]:h-5 max-[639px]:w-5">{item.sellerImage ? <img src={item.sellerImage} alt="" className="h-full w-full object-cover"/> : "♙"}</span>
-        <span className="min-w-0 truncate text-[#17213e]">{seller}</span>
-        <span className="flex shrink-0 items-center gap-1"><PinIcon/><span className="hidden sm:inline">{location}</span></span>
+    <div className={`flex min-w-0 flex-col ${isList ? "py-1 sm:py-2" : "flex-1 px-1 pt-2"}`}>
+      <Link to={href} className="line-clamp-2 text-[13px] font-bold leading-[17px] tracking-[-0.015em] text-[#f5f5f5] hover:text-white max-[639px]:text-[11px] max-[639px]:leading-[14px]">{title}</Link>
+      <p className={`truncate font-bold tracking-[-0.02em] text-[#f5f5f5] ${isList ? "mt-auto pt-2 text-[19px]" : "mt-1.5 text-[16px] max-[639px]:mt-1 max-[639px]:text-[13px]"}`}>{price}</p>
+      <div className={`flex min-w-0 items-center gap-1.5 text-[10px] text-[#bcbcbc] max-[639px]:gap-1 max-[639px]:text-[9px] ${isList ? "mt-2" : "mt-auto pt-2 max-[639px]:pt-1"}`}>
+        <span className="min-w-0 truncate">{location}</span>
       </div>
     </div>
     {showPrimaryAction && onPrimaryAction && <div className={`flex shrink-0 flex-col justify-end gap-2 ${isList ? "col-span-2 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:px-2 sm:py-2"  : "mt-3 max-[639px]:mt-2"}`}>
