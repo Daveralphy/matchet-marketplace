@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { applyAppearance, applyLanguage } from "../utils/uiPreferences";
 import { getCurrentUser, login as loginRequest, logout as logoutRequest, register as registerRequest } from "../api/auth";
 
 const API_BASE_URL = import.meta.env.PROD ? "" : (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/$/, "");
@@ -37,6 +38,11 @@ async function markServerNotificationsRead() {
     credentials: "include",
     headers: { "Content-Type": "application/json" },
   });
+}
+
+async function deleteServerNotification(id) {
+  const response = await fetch(API_BASE_URL + "/api/notifications/" + encodeURIComponent(id), { method: "DELETE", credentials: "include" });
+  if (!response.ok) throw new Error("Unable to delete notification.");
 }
 
 async function markServerNotificationRead(id) {
@@ -80,6 +86,11 @@ export function AuthProvider({ children }) {
     setNotifications((current) => current.map((item) => String(item.id) === String(notificationId) ? { ...item, read: true } : item));
     try { await markServerNotificationRead(notificationId); } catch { /* Keep the local read state responsive during a network issue. */ }
   };
+  const deleteNotification = async (notificationId) => {
+    if (!user || !notificationId) return;
+    await deleteServerNotification(notificationId);
+    setNotifications((current) => current.filter((item) => String(item.id) !== String(notificationId)));
+  };
   const markNotificationsRead = () => {
     if (!user) return;
     const next = notifications.map((item) => ({ ...item, read: true }));
@@ -108,6 +119,13 @@ export function AuthProvider({ children }) {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    let storedAppearance = {};
+    try { storedAppearance = JSON.parse(localStorage.getItem("matchet_appearance") || "{}"); } catch { storedAppearance = {}; }
+    applyAppearance(user?.preferences?.appearance || storedAppearance);
+    applyLanguage(user?.preferences?.language || "English");
+  }, [user]);
 
   useEffect(() => {
     if (!user) return undefined;
@@ -146,8 +164,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, isAuthenticated: Boolean(user), notifications, login, register, logout, refreshUser, markNotificationsRead, markNotificationRead }),
-    [user, loading, notifications, login, register, logout, refreshUser, markNotificationsRead, markNotificationRead],
+    () => ({ user, loading, isAuthenticated: Boolean(user), notifications, login, register, logout, refreshUser, markNotificationsRead, markNotificationRead, deleteNotification }),
+    [user, loading, notifications, login, register, logout, refreshUser, markNotificationsRead, markNotificationRead, deleteNotification],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

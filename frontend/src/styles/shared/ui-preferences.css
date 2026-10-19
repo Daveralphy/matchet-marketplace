@@ -1,0 +1,87 @@
+/* Appearance preferences (text size and dark theme) set on <html> by utils/uiPreferences.js.
+   Each colour override lists both the token utility (text-ink, border-line...) and the
+   arbitrary-value class it replaced, so it works on every page. */
+
+html[data-text-size="small"] { font-size: 14px; }
+html[data-text-size="medium"] { font-size: 16px; }
+html[data-text-size="large"] { font-size: 18px; }
+
+html[data-theme="dark"] body {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .bg-\[white\],
+html[data-theme="dark"] .bg-surface {
+  background-color: #111c2e !important;
+}
+
+html[data-theme="dark"] .bg-slate-50,
+html[data-theme="dark"] .bg-\[\#fbfcfd\],
+html[data-theme="dark"] .bg-\[\#f7f8fc\],
+html[data-theme="dark"] .bg-canvas-cool {
+  background-color: #0b1220 !important;
+}
+
+html[data-theme="dark"] .text-\[\#10183f\],
+html[data-theme="dark"] .text-\[\#071449\],
+html[data-theme="dark"] .text-\[\#24305f\],
+html[data-theme="dark"] .text-ink,
+html[data-theme="dark"] .text-ink-deep,
+html[data-theme="dark"] .text-ink-soft {
+  color: #e5e7eb !important;
+}
+
+html[data-theme="dark"] .text-slate-500,
+html[data-theme="dark"] .text-slate-600,
+html[data-theme="dark"] .text-slate-400 {
+  color: #a8b3c7 !important;
+}
+
+html[data-theme="dark"] .border-slate-100,
+html[data-theme="dark"] .border-slate-200,
+html[data-theme="dark"] .border-\[\#e1e6ec\],
+html[data-theme="dark"] .border-line {
+  border-color: #263449 !important;
+}
+
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background-color: #111c2e;
+  color: #e5e7eb;
+}
+
+/* Buyer account pages (styles/account/). */
+html[data-theme="dark"] .buyer-account-page { background: #0b1220 !important; }
+
+html[data-theme="dark"] .settings-card,
+html[data-theme="dark"] .buyer-card,
+html[data-theme="dark"] .buyer-empty,
+html[data-theme="dark"] .faq-row,
+html[data-theme="dark"] .buyer-order-card,
+html[data-theme="dark"] .buyer-booking-card {
+  background: #111c2e !important;
+  border-color: #263449 !important;
+}
+
+html[data-theme="dark"] .buyer-account-container h1,
+html[data-theme="dark"] .buyer-account-container h2,
+html[data-theme="dark"] .settings-card label span,
+html[data-theme="dark"] .buyer-card h2,
+html[data-theme="dark"] .buyer-card-right strong,
+html[data-theme="dark"] .buyer-empty h2,
+html[data-theme="dark"] .faq-row strong {
+  color: #e5e7eb !important;
+}
+
+html[data-theme="dark"] .buyer-account-container > header p,
+html[data-theme="dark"] .buyer-breadcrumb,
+html[data-theme="dark"] .buyer-breadcrumb a,
+html[data-theme="dark"] .settings-card label small,
+html[data-theme="dark"] .buyer-card p,
+html[data-theme="dark"] .buyer-empty p,
+html[data-theme="dark"] .faq-row small {
+  color: #a8b3c7 !important;
+}

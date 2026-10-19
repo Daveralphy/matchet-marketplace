@@ -11,6 +11,9 @@ import BuyerMessages from "./pages/BuyerMessages";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import BuyerBookings from "./pages/BuyerBookings";
 import AccountSettings from "./pages/AccountSettings";
+import AccountNotificationPreferences from "./pages/AccountNotificationPreferences";
+import AccountLanguage from "./pages/AccountLanguage";
+import AccountAppearance from "./pages/AccountAppearance";
 import AccountSecurity from "./pages/AccountSecurity";
 import DeleteAccount from "./pages/DeleteAccount";
 import HelpSupport from "./pages/HelpSupport";
@@ -674,6 +677,18 @@ const router = createBrowserRouter([
   {
     path: "/account/settings",
     element: <RequireAuth><MarketplaceLayout><AccountSettings /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/settings/notifications",
+    element: <RequireAuth><MarketplaceLayout><AccountNotificationPreferences /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/settings/language",
+    element: <RequireAuth><MarketplaceLayout><AccountLanguage /></MarketplaceLayout></RequireAuth>,
+  },
+  {
+    path: "/account/settings/appearance",
+    element: <RequireAuth><MarketplaceLayout><AccountAppearance /></MarketplaceLayout></RequireAuth>,
   },
   {
     path: "/account/security",

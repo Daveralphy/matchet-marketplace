@@ -24,6 +24,15 @@ async function markNotificationRead(req, res) {
     return res.json({ success: true });
   } catch (error) { return res.status(500).json({ success: false, message: "Unable to update this notification." }); }
 }
+async function deleteNotification(req, res) {
+  try {
+    const deleted = await Notification.findOneAndDelete({ _id: req.params.id, userId: req.user._id }).select("_id");
+    if (!deleted) return res.status(404).json({ success: false, message: "Notification not found." });
+    return res.json({ success: true });
+  } catch (error) {
+    return res.status(400).json({ success: false, message: "Unable to delete this notification." });
+  }
+}
 async function savePushSubscription(req, res) {
   const subscription = req.body?.subscription;
   if (!subscription?.endpoint || !subscription?.keys?.p256dh || !subscription?.keys?.auth) return res.status(400).json({ success: false, message: "A valid browser push subscription is required." });
@@ -129,4 +138,4 @@ async function unsubscribeEmail(req, res) {
   await User.updateOne({ _id: userId }, { $set: { [`preferences.notifications.email.${category}`]: false } });
   return res.status(200).send("You have been unsubscribed from this email category. You can close this page.");
 }
-module.exports = { listNotifications, markNotificationsRead, markNotificationRead, savePushSubscription, removePushSubscription, getNotificationPreferences, updateNotificationPreferences, getPushKey, unsubscribeEmail, sendRecommendationsCron };
+module.exports = { listNotifications, markNotificationsRead, markNotificationRead, deleteNotification, savePushSubscription, removePushSubscription, getNotificationPreferences, updateNotificationPreferences, getPushKey, unsubscribeEmail, sendRecommendationsCron };
