@@ -326,7 +326,7 @@ function MarketplaceCard({ item, compact = false }) {
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1600);
   };
-  return <MarketplaceItemCard item={item} saved={saved} onSave={handleSave} onPrimaryAction={handleAction} primaryLabel={item.type === "service" ? "Book Now" : alreadyInCart ? "In Cart" : added ? "Added" : "Add to Cart"} primaryDisabled={item.type !== "service" && alreadyInCart} primaryIcon={item.type === "service" ? "calendar" : "cart"} className="w-[328px] shrink-0" />;
+  return <MarketplaceItemCard item={item} saved={saved} onSave={handleSave} onPrimaryAction={handleAction} primaryLabel={item.type === "service" ? "Book Now" : alreadyInCart ? "In Cart" : added ? "Added" : "Add to Cart"} primaryDisabled={item.type !== "service" && alreadyInCart} primaryIcon={item.type === "service" ? "calendar" : "cart"} className="w-[274px] shrink-0" />;
 }
 
 function MarketplaceSection({ eyebrow, title, accent, subtitle, items, loading = false, viewPath = "/explore" }) {
