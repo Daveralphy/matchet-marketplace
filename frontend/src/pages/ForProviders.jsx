@@ -100,15 +100,33 @@ export default function ForProviders() {
               and manage your orders all in one place.
             </p>
 
-            <div className="mt-7 flex w-full max-w-[625px] flex-col gap-3 sm:flex-row sm:gap-5">
-              <button type="button" onClick={() => handleProviderChoice("product")} disabled={Boolean(loading)} className="flex h-[58px] flex-1 items-center justify-center gap-4 rounded-[11px] bg-[#07983f] px-6 text-[15px] font-semibold text-white transition-colors hover:bg-[#068936] disabled:cursor-wait disabled:opacity-70 sm:text-[16px]">
-                <span>{loading === "product" ? "Checking..." : "Sell products"}</span>
-                <span aria-hidden="true" className="text-[26px] font-normal leading-none">→</span>
+            <div className="mt-7 grid w-full max-w-[625px] grid-cols-2 gap-2.5 sm:flex sm:gap-5">
+              <button
+                type="button"
+                onClick={() => handleProviderChoice("product")}
+                disabled={Boolean(loading)}
+                className="flex h-16 min-w-0 flex-1 items-center justify-center gap-2 rounded-[11px] bg-[#07983f] px-2.5 text-[12px] font-semibold leading-tight text-white transition-colors hover:bg-[#068936] disabled:cursor-wait disabled:opacity-70 sm:h-[58px] sm:gap-4 sm:px-6 sm:text-[15px] sm:leading-normal sm:text-[16px]"
+              >
+                <svg className="h-[18px] w-[18px] shrink-0 sm:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                  <path d="M4 8.5 12 4l8 4.5v9L12 22l-8-4.5z" />
+                  <path d="m4.5 8.7 7.5 4.2 7.5-4.2M12 13v8.5M8 6.2l8 4.5" />
+                </svg>
+                <span className="min-w-0">{loading === "product" ? "Checking..." : "Sell products"}</span>
+                <span aria-hidden="true" className="hidden text-[26px] font-normal leading-none sm:inline">→</span>
               </button>
 
-              <button type="button" onClick={() => handleProviderChoice("service")} disabled={Boolean(loading)} className="flex h-[58px] flex-1 items-center justify-center gap-4 rounded-[11px] border-2 border-[#b7b9df] bg-white px-6 text-[15px] font-semibold text-[#10183f] transition-colors hover:bg-[#f8f8fc] disabled:cursor-wait disabled:opacity-70 sm:text-[16px]">
-                <span>{loading === "service" ? "Checking..." : "Offer services"}</span>
-                <span aria-hidden="true" className="text-[26px] font-normal leading-none">→</span>
+              <button
+                type="button"
+                onClick={() => handleProviderChoice("service")}
+                disabled={Boolean(loading)}
+                className="flex h-16 min-w-0 flex-1 items-center justify-center gap-2 rounded-[11px] border-2 border-[#b7b9df] bg-white px-2.5 text-[12px] font-semibold leading-tight text-[#10183f] transition-colors hover:bg-[#f8f8fc] disabled:cursor-wait disabled:opacity-70 sm:h-[58px] sm:gap-4 sm:px-6 sm:text-[15px] sm:leading-normal sm:text-[16px]"
+              >
+                <svg className="h-[18px] w-[18px] shrink-0 sm:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                  <rect x="3.5" y="7.5" width="17" height="13" rx="2" />
+                  <path d="M8.5 7.5V5.8A1.8 1.8 0 0 1 10.3 4h3.4a1.8 1.8 0 0 1 1.8 1.8v1.7M3.5 12.5h17M10 12.5v2h4v-2" />
+                </svg>
+                <span className="min-w-0">{loading === "service" ? "Checking..." : "Offer services"}</span>
+                <span aria-hidden="true" className="hidden text-[26px] font-normal leading-none sm:inline">→</span>
               </button>
             </div>
           </div>
