@@ -164,13 +164,15 @@ function CompactFooter() {
           </div>
         </div>
         <div className="flex min-w-0 flex-col items-center gap-3 sm:items-end">
-          <nav aria-label="Legal links" className="flex flex-wrap justify-center gap-x-4 gap-y-2 sm:justify-end">
-            <span>© 2026 Matchet. All rights reserved.</span>
-            <Link to="/terms" className="transition-colors hover:text-white">Terms of Service</Link>
-            <Link to="/privacy" className="transition-colors hover:text-[#17213e]">Privacy Policy</Link>
-            <Link to="/cookies" className="transition-colors hover:text-[#17213e]">Cookie Policy</Link>
-            <Link to="/sitemap" className="transition-colors hover:text-[#17213e]">Sitemap</Link>
-          </nav>
+          <div className="flex w-full min-w-0 flex-col items-center gap-2 sm:items-end">
+            <p className="w-full whitespace-nowrap text-center sm:text-right">© 2026 Matchet. All rights reserved.</p>
+            <nav aria-label="Legal links" className="flex flex-wrap justify-center gap-x-4 gap-y-2 sm:justify-end">
+              <Link to="/terms" className="transition-colors hover:text-white">Terms of Service</Link>
+              <Link to="/privacy" className="transition-colors hover:text-white">Privacy Policy</Link>
+              <Link to="/cookies" className="transition-colors hover:text-white">Cookie Policy</Link>
+              <Link to="/sitemap" className="transition-colors hover:text-white">Sitemap</Link>
+            </nav>
+          </div>
           <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="inline-flex shrink-0 items-center justify-center gap-1.5 text-[12px] font-medium text-[#75f17f] transition-colors hover:text-white">
             Back to top <span aria-hidden="true">↑</span>
           </button>
