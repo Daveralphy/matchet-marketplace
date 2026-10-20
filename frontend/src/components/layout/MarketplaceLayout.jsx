@@ -30,7 +30,6 @@ export default function MarketplaceLayout({ children }) {
   const [pageLoading, setPageLoading] = useState(true);
   const userName = user?.firstName || user?.username || "Daveralphy";
   const hideFooter =
-    location.pathname === "/for-providers" ||
     location.pathname === "/messages" ||
     location.pathname === "/seller/messages" ||
     location.pathname === "/provider/messages" ||
@@ -118,7 +117,7 @@ export default function MarketplaceLayout({ children }) {
           )}
         </main>
 
-        {!hideFooter && <Footer isAuthenticated={isAuthenticated} />}
+        {!hideFooter && <Footer isAuthenticated={isAuthenticated} compact={location.pathname !== "/"} />}
       </div>
     </SavedItemsProvider>
   );
