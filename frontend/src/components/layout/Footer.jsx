@@ -155,7 +155,7 @@ function CompactFooter() {
     <footer className="w-full border-t border-white/20 bg-[#061c2d] px-4 py-5 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1470px] flex-col items-center gap-4 text-center text-[12px] text-slate-300 sm:flex-row sm:items-center sm:justify-between sm:text-left">
         <div className="flex min-w-0 flex-col items-center gap-3 sm:items-start sm:gap-2">
-          <Link to="/" aria-label="Matchet home" className="hidden shrink-0 items-center sm:inline-flex">
+          <Link to="/" aria-label="Matchet home" className="flex shrink-0 items-center justify-center">
             <FooterLogo />
           </Link>
           <div className="min-w-0">
