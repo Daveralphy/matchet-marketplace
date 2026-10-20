@@ -153,8 +153,8 @@ function Newsletter() {
 function CompactFooter() {
   return (
     <footer className="w-full border-t border-white/20 bg-[#061c2d] px-4 py-5 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-[1470px] flex-col gap-4 text-[12px] text-slate-300 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+      <div className="mx-auto flex max-w-[1470px] flex-col items-center gap-4 text-center text-[12px] text-slate-300 sm:flex-row sm:items-center sm:justify-between sm:text-left">
+        <div className="flex min-w-0 flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-5">
           <Link to="/" aria-label="Matchet home" className="hidden shrink-0 items-center sm:inline-flex">
             <FooterLogo />
           </Link>
@@ -163,15 +163,15 @@ function CompactFooter() {
             <p className="mt-1 text-[12px] text-slate-300">Official social channels will be listed here when they are ready.</p>
           </div>
         </div>
-        <div className="flex min-w-0 flex-col gap-3 sm:items-end">
-          <nav aria-label="Legal links" className="flex flex-wrap gap-x-4 gap-y-2">
+        <div className="flex min-w-0 flex-col items-center gap-3 sm:items-end">
+          <nav aria-label="Legal links" className="flex flex-wrap justify-center gap-x-4 gap-y-2 sm:justify-end">
             <span>© 2026 Matchet. All rights reserved.</span>
             <Link to="/terms" className="transition-colors hover:text-white">Terms of Service</Link>
             <Link to="/privacy" className="transition-colors hover:text-[#17213e]">Privacy Policy</Link>
             <Link to="/cookies" className="transition-colors hover:text-[#17213e]">Cookie Policy</Link>
             <Link to="/sitemap" className="transition-colors hover:text-[#17213e]">Sitemap</Link>
           </nav>
-          <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="inline-flex shrink-0 items-center gap-1.5 text-[12px] font-medium text-[#75f17f] transition-colors hover:text-white">
+          <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="inline-flex shrink-0 items-center justify-center gap-1.5 text-[12px] font-medium text-[#75f17f] transition-colors hover:text-white">
             Back to top <span aria-hidden="true">↑</span>
           </button>
         </div>
