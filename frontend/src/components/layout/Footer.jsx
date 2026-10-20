@@ -199,7 +199,8 @@ function FooterBottom() {
   );
 }
 
-export default function Footer({ isAuthenticated = false, compact = false }) {\n  if (compact) return <CompactFooter />;
+export default function Footer({ isAuthenticated = false, compact = false }) {
+  if (compact) return <CompactFooter />;
   const columns = isAuthenticated ? loggedInColumns : loggedOutColumns;
 
   return (
